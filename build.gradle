@@ -203,7 +203,7 @@ dependencies {
 
   functionalTestCompile sourceSets.main.runtimeClasspath
   functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
-  functionalTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
   smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'

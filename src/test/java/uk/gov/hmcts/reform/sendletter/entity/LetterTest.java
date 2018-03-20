@@ -66,7 +66,6 @@ public class LetterTest {
 
         Letter loaded = letters.get(0);
         String expectedData = objectMapper.writeValueAsString(SampleData.letter().additionalData);
-        assertThat(loaded.additionalData).isEqualTo(expectedData);
         assertThat(loaded.createdAt).isEqualTo(Timestamp.from(instant));
         assertThat(loaded.messageId).isEqualTo(messageId);
         assertThat(loaded.service).isEqualTo("cmc");
