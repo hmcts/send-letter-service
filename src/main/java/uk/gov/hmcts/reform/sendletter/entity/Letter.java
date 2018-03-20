@@ -20,6 +20,7 @@ public class Letter {
 
     public final String messageId;
     public final String service;
+    public final String additionalData;
     public final Timestamp createdAt = Timestamp.from(Instant.now());
     public final String type;
     @Enumerated(EnumType.STRING)
@@ -30,6 +31,7 @@ public class Letter {
     protected Letter() {
         messageId = null;
         service = null;
+        additionalData = null;
         type = null;
         pdf = null;
     }
@@ -43,6 +45,7 @@ public class Letter {
     ) {
         this.messageId = messageId;
         this.service = service;
+        this.additionalData = additionalData;
         this.type = type;
         this.pdf = pdf;
     }
