@@ -1,18 +1,25 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "letters")
+@TypeDefs({
+    @TypeDef(name = "json", typeClass = JsonStringType.class),
+    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public class Letter {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,7 +27,9 @@ public class Letter {
 
     public final String messageId;
     public final String service;
-    public final String additionalData;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    public final JsonNode additionalData;
     public final Timestamp createdAt = Timestamp.from(Instant.now());
     public final String type;
     @Enumerated(EnumType.STRING)
@@ -39,7 +48,7 @@ public class Letter {
     public Letter(
         String messageId,
         String service,
-        String additionalData,
+        JsonNode additionalData,
         String type,
         byte[] pdf
     ) {
