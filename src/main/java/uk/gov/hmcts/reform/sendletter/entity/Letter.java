@@ -17,7 +17,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "letters")
 @TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonStringType.class),
     @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
 public class Letter {
@@ -28,7 +27,7 @@ public class Letter {
     public final String messageId;
     public final String service;
     @Type(type = "jsonb")
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     public final JsonNode additionalData;
     public final Timestamp createdAt = Timestamp.from(Instant.now());
     public final String type;
