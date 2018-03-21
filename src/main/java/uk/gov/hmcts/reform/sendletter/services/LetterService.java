@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +24,13 @@ public class LetterService {
     private static final Logger log = LoggerFactory.getLogger(LetterService.class);
 
     private final PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator());
-    private final LetterRepository repo;
+    private final LetterRepository letterRepository;
 
-    public LetterService(LetterRepository repo) {
-        this.repo = repo;
+    public LetterService(LetterRepository letterRepository) {
+        this.letterRepository = letterRepository;
     }
 
-    public UUID send(Letter letter, String serviceName) throws JsonProcessingException {
+    public UUID send(Letter letter, String serviceName) {
         Asserts.notEmpty(serviceName, "serviceName");
 
         final String messageId = generateChecksum(letter);
@@ -46,7 +45,7 @@ public class LetterService {
         uk.gov.hmcts.reform.sendletter.entity.Letter dbLetter = new uk.gov.hmcts.reform.sendletter.entity.Letter(
             messageId, serviceName, null, letter.type, pdf);
 
-        repo.save(dbLetter);
+        letterRepository.save(dbLetter);
         return dbLetter.getId();
     }
 
@@ -56,12 +55,19 @@ public class LetterService {
     }
 
     public LetterStatus getStatus(UUID id, String serviceName) {
-        uk.gov.hmcts.reform.sendletter.entity.Letter l =
-            repo.findByIdAndService(id, serviceName)
-            .orElseThrow(() -> new LetterNotFoundException(id));
+        uk.gov.hmcts.reform.sendletter.entity.Letter letter =
+            letterRepository
+                .findByIdAndService(id, serviceName)
+                .orElseThrow(() -> new LetterNotFoundException(id));
 
-        return new LetterStatus(id, l.messageId, toDateTime(l.createdAt),
-            toDateTime(l.sentToPrintAt), toDateTime(l.printedAt), l.isFailed);
+        return new LetterStatus(
+            id,
+            letter.messageId,
+            toDateTime(letter.createdAt),
+            toDateTime(letter.sentToPrintAt),
+            toDateTime(letter.printedAt),
+            letter.isFailed
+        );
     }
 
     public static ZonedDateTime toDateTime(Timestamp stamp) {
