@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import net.schmizz.sshj.SSHClient;
 import org.mockito.Mockito;
-import uk.gov.hmcts.reform.sendletter.MockSftpServer;
+import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.slc.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.slc.logging.AppInsights;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
@@ -31,12 +31,12 @@ public final class FtpHelper {
     private static FtpConfigProperties getFtpConfig() throws IOException {
         FtpConfigProperties p = new FtpConfigProperties();
         p.setHostname("localhost");
-        p.setPort(MockSftpServer.port);
+        p.setPort(LocalSftpServer.port);
         p.setPublicKey(Resources.toString(Resources.getResource("keypair.pub"), Charsets.UTF_8));
         p.setPrivateKey(Resources.toString(Resources.getResource("keypair"), Charsets.UTF_8));
         p.setUsername("irrelevant");
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
-        p.setTargetFolder(MockSftpServer.pdfFolderName);
+        p.setTargetFolder(LocalSftpServer.pdfFolderName);
         return p;
     }
 }

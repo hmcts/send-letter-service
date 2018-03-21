@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-public final class MockSftpServer implements AutoCloseable {
+public final class LocalSftpServer implements AutoCloseable {
     private final SshServer sshd;
 
     public static final int port = 8001;
@@ -27,16 +27,16 @@ public final class MockSftpServer implements AutoCloseable {
     // This is the folder where xerox expects pdf uploads.
     public File pdfFolder;
 
-    public static MockSftpServer create() throws IOException {
+    public static LocalSftpServer create() throws IOException {
         TemporaryFolder tmp = new TemporaryFolder();
         tmp.create();
         File root = tmp.getRoot();
         File workingDirectory = new File(root, pdfFolderName);
         workingDirectory.mkdir();
-        return new MockSftpServer(root, workingDirectory);
+        return new LocalSftpServer(root, workingDirectory);
     }
 
-    private MockSftpServer(File root, File pdfFolder) throws IOException {
+    private LocalSftpServer(File root, File pdfFolder) throws IOException {
         this.rootFolder = root;
         this.pdfFolder = pdfFolder;
         sshd = SshServer.setUpDefaultServer();
@@ -47,7 +47,7 @@ public final class MockSftpServer implements AutoCloseable {
                 return new NativeFileSystemView(session.getUsername(), false) {
                     @Override
                     public String getVirtualUserDir() {
-                        return MockSftpServer.this.rootFolder.getAbsolutePath();
+                        return LocalSftpServer.this.rootFolder.getAbsolutePath();
                     }
                 };
             }

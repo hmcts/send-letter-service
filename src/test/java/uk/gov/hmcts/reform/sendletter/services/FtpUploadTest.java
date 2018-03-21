@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.Files;
-import org.junit.Before;
 import org.junit.Test;
-import uk.gov.hmcts.reform.sendletter.MockSftpServer;
+import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +15,7 @@ public class FtpUploadTest {
 
     @Test
     public void connects_to_ftp() throws Exception {
-        try (MockSftpServer test = MockSftpServer.create()) {
+        try (LocalSftpServer test = LocalSftpServer.create()) {
             FtpHelper.getClient().testConnection();
         }
     }
@@ -25,7 +23,7 @@ public class FtpUploadTest {
     @Test
     public void uploads_file() throws Exception {
         PdfDoc doc = new PdfDoc("hello.txt", "world".getBytes());
-        try (MockSftpServer server = MockSftpServer.create()) {
+        try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getClient();
             client.upload(doc);
             File[] files = server.pdfFolder.listFiles();
