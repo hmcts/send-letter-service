@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.UUID;
 import javax.activation.DataSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringRunner.class)
@@ -69,5 +70,10 @@ public class LetterServiceTest {
     public void should_not_allow_empty_service_name() {
         assertThatThrownBy(() -> service.send(SampleData.letter(), ""))
             .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void handles_null_timestamps() {
+        assertThat(LetterService.toDateTime(null)).isNull();
     }
 }

@@ -68,7 +68,10 @@ public class LetterService {
             toDateTime(l.sentToPrintAt), toDateTime(l.printedAt), l.isFailed);
     }
 
-    private ZonedDateTime toDateTime(Timestamp stamp) {
+    public static ZonedDateTime toDateTime(Timestamp stamp) {
+        if (null == stamp) {
+            return null;
+        }
         return stamp.toInstant().atZone(ZoneId.of("UTC"));
     }
 }
