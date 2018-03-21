@@ -3,30 +3,21 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.sendletter.Application;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.data.model.DbLetter;
-import uk.gov.hmcts.reform.sendletter.services.LetterService;
-import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.sql.DataSource;
 
@@ -42,6 +33,7 @@ public class LetterTest {
 
     @Autowired
     private DataSource dataSource;
+
     public static Letter getTestLetter(String service) {
         try {
             JsonNode n = new ObjectMapper().readTree("{}");
@@ -53,13 +45,12 @@ public class LetterTest {
     }
 
     public static Letter getTestLetter() {
-       return getTestLetter("a_service");
+        return getTestLetter("a_service");
     }
 
     @Test
     public void should_successfully_save_report_in_db() {
         repository.save(getTestLetter());
-        int count = (int) repository.count();
         List<Letter> letters = Lists.newArrayList(repository.findAll());
         assertThat(letters.size()).isEqualTo(1);
         assertThat(letters.get(0).state).isEqualTo(LetterState.Created);
@@ -90,7 +81,7 @@ public class LetterTest {
     }
 
     @Test
-    public void finds_letters_by_id_and_service(){
+    public void finds_letters_by_id_and_service() {
         repository.save(getTestLetter());
         Letter second = getTestLetter("different");
         repository.save(second);
