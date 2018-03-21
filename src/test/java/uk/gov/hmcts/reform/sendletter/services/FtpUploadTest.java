@@ -15,10 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FtpUploadTest {
 
-    @Before
-    public void before() throws IOException {
-    }
-
     @Test
     public void connects_to_ftp() throws Exception {
         try (MockSftpServer test = MockSftpServer.create()) {
