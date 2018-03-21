@@ -33,7 +33,7 @@ public final class LocalSftpServer implements AutoCloseable {
         File root = tmp.getRoot();
         File workingDirectory = new File(root, pdfFolderName);
         workingDirectory.mkdir();
-        return new LocalSftpServer(root, workingDirectory, );
+        return new LocalSftpServer(root, workingDirectory);
     }
 
     private LocalSftpServer(File root, File pdfFolder) throws IOException {
