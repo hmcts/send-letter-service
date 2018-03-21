@@ -11,10 +11,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.sendletter.Application;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.data.model.DbLetter;
+import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 
 import java.io.IOException;
@@ -37,14 +42,18 @@ public class LetterTest {
 
     @Autowired
     private DataSource dataSource;
-    public static Letter getTestLetter() {
+    public static Letter getTestLetter(String service) {
         try {
             JsonNode n = new ObjectMapper().readTree("{}");
             return new Letter("messageId",
-                "service", n, "a type", new byte[1]);
+                service, n, "a type", new byte[1]);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Letter getTestLetter() {
+       return getTestLetter("a_service");
     }
 
     @Test
@@ -81,10 +90,12 @@ public class LetterTest {
     }
 
     @Test
-    public void generates_pdf() throws IOException {
-        byte[] template = Resources.toByteArray(Resources.getResource("template.html"));
-        Map<String, Object> content = ImmutableMap.of("name", "John");
-        byte[] result = PdfCreator.generatePdf(template, content);
-        assertThat(result).isNotEmpty();
+    public void finds_letters_by_id_and_service(){
+        repository.save(getTestLetter());
+        Letter second = getTestLetter("different");
+        repository.save(second);
+
+        Letter found = repository.findByIdAndService(second.getId(), second.service).get();
+        assertThat(found.getId()).isEqualTo(second.getId());
     }
 }
