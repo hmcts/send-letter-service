@@ -5,7 +5,7 @@ variable "product" {
 
 variable "microservice" {
   type = "string"
-  default = "api"
+  default = "service"
 }
 
 variable "location_app" {
