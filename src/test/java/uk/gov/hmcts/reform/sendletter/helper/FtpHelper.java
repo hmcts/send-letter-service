@@ -18,6 +18,9 @@ public final class FtpHelper {
     private FtpHelper() {
     }
 
+    // Instantiate an FtpClient with host key verification disabled,
+    // so it will connect to a local ftp server without verifying the
+    // server's public key.
     public static FtpClient getClient(int port) throws IOException {
         AppInsights insights = Mockito.mock(AppInsights.class);
         Supplier<SSHClient> s = () -> {
