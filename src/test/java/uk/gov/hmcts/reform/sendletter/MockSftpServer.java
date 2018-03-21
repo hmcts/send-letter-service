@@ -14,20 +14,40 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class MockSftpServer implements AutoCloseable {
-    private SshServer sshd;
+public final class MockSftpServer implements AutoCloseable {
+    private final SshServer sshd;
 
     public static final int port = 8001;
 
-    public MockSftpServer(File testFolder) throws IOException {
+    // This is the working directory of the SFTP server.
+    public static final String pdfFolderName = "moj";
+
+    public File rootFolder;
+
+    // This is the folder where xerox expects pdf uploads.
+    public File pdfFolder;
+
+    public static MockSftpServer create() throws IOException {
+        TemporaryFolder tmp = new TemporaryFolder();
+        tmp.create();
+        File root = tmp.getRoot();
+        File workingDirectory = new File(root, pdfFolderName);
+        workingDirectory.mkdir();
+        return new MockSftpServer(root, workingDirectory);
+    }
+
+    private MockSftpServer(File root, File pdfFolder) throws IOException {
+        this.rootFolder = root;
+        this.pdfFolder = pdfFolder;
         sshd = SshServer.setUpDefaultServer();
+
         sshd.setFileSystemFactory(new NativeFileSystemFactory() {
             @Override
             public FileSystemView createFileSystemView(final Session session) {
                 return new NativeFileSystemView(session.getUsername(), false) {
                     @Override
                     public String getVirtualUserDir() {
-                        return testFolder.getAbsolutePath();
+                        return MockSftpServer.this.rootFolder.getAbsolutePath();
                     }
                 };
             }
