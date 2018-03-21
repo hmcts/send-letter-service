@@ -207,7 +207,7 @@ dependencies {
 }
 
 jar {
-  archiveName 'send-letter-producer-service.jar'
+  archiveName 'send-letter-service.jar'
 }
 
 task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
