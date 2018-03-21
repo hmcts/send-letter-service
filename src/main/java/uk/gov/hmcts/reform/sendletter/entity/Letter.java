@@ -26,7 +26,10 @@ public class Letter {
 
     public final String messageId;
     public final String service;
+    // Instruct jpa to use a JSON serializer for this field.
     @Type(type = "json")
+    // Instruct jpa that this field is stored as a json type
+    // and should be addressed with ::json in SQL.
     @Column(columnDefinition = "json")
     public final JsonNode additionalData;
     public final Timestamp createdAt = Timestamp.from(Instant.now());
