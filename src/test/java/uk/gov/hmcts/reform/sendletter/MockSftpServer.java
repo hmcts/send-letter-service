@@ -10,6 +10,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.sftp.subsystem.SftpSubsystem;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -18,7 +19,7 @@ public class MockSftpServer implements AutoCloseable {
 
     public static final int port = 8001;
 
-    public MockSftpServer(TemporaryFolder testFolder) throws IOException {
+    public MockSftpServer(File testFolder) throws IOException {
         sshd = SshServer.setUpDefaultServer();
         sshd.setFileSystemFactory(new NativeFileSystemFactory() {
             @Override
@@ -26,7 +27,7 @@ public class MockSftpServer implements AutoCloseable {
                 return new NativeFileSystemView(session.getUsername(), false) {
                     @Override
                     public String getVirtualUserDir() {
-                        return testFolder.getRoot().getAbsolutePath();
+                        return testFolder.getAbsolutePath();
                     }
                 };
             }

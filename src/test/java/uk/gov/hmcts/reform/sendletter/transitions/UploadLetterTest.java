@@ -55,24 +55,4 @@ public class UploadLetterTest {
         assertThat(uploaded).isEqualTo(0);
     }
 
-    private FtpClient getFtpClient() throws IOException {
-        AppInsights insights = Mockito.mock(AppInsights.class);
-        Supplier<SSHClient> s = () -> {
-            SSHClient client = new SSHClient();
-            client.addHostKeyVerifier((a, b, c) -> true);
-            return client;
-        };
-        return new FtpClient(s, getFtpConfig(), insights);
-    }
-
-    private FtpConfigProperties getFtpConfig() throws IOException {
-        FtpConfigProperties p = new FtpConfigProperties();
-        p.setHostname("localhost");
-        p.setPort(MockSftpServer.port);
-        p.setPublicKey(Resources.toString(Resources.getResource("keypair.pub"), Charsets.UTF_8));
-        p.setPrivateKey(Resources.toString(Resources.getResource("keypair"), Charsets.UTF_8));
-        p.setUsername("irrelevant");
-        p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
-        return p;
-    }
 }
