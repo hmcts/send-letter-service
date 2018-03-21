@@ -15,8 +15,8 @@ public class FtpUploadTest {
 
     @Test
     public void connects_to_ftp() throws Exception {
-        try (LocalSftpServer test = LocalSftpServer.create()) {
-            FtpHelper.getClient().testConnection();
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            FtpHelper.getClient(server.port).testConnection();
         }
     }
 
@@ -24,7 +24,7 @@ public class FtpUploadTest {
     public void uploads_file() throws Exception {
         PdfDoc doc = new PdfDoc("hello.txt", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpClient client = FtpHelper.getClient();
+            FtpClient client = FtpHelper.getClient(server.port);
             client.upload(doc);
             File[] files = server.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);

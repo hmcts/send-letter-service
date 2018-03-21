@@ -18,20 +18,20 @@ public final class FtpHelper {
     private FtpHelper() {
     }
 
-    public static FtpClient getClient() throws IOException {
+    public static FtpClient getClient(int port) throws IOException {
         AppInsights insights = Mockito.mock(AppInsights.class);
         Supplier<SSHClient> s = () -> {
             SSHClient client = new SSHClient();
             client.addHostKeyVerifier((a, b, c) -> true);
             return client;
         };
-        return new FtpClient(s, getFtpConfig(), insights);
+        return new FtpClient(s, getFtpConfig(port), insights);
     }
 
-    private static FtpConfigProperties getFtpConfig() throws IOException {
+    private static FtpConfigProperties getFtpConfig(int port) throws IOException {
         FtpConfigProperties p = new FtpConfigProperties();
         p.setHostname("localhost");
-        p.setPort(LocalSftpServer.port);
+        p.setPort(port);
         p.setPublicKey(Resources.toString(Resources.getResource("keypair.pub"), Charsets.UTF_8));
         p.setPrivateKey(Resources.toString(Resources.getResource("keypair"), Charsets.UTF_8));
         p.setUsername("irrelevant");

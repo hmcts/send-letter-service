@@ -17,15 +17,15 @@ import java.util.Arrays;
 public final class LocalSftpServer implements AutoCloseable {
     private final SshServer sshd;
 
-    public static final int port = 8001;
+    public final int port = 46043;
 
     // This is the working directory of the SFTP server.
     public static final String pdfFolderName = "moj";
 
-    public File rootFolder;
+    public final File rootFolder;
 
     // This is the folder where xerox expects pdf uploads.
-    public File pdfFolder;
+    public final File pdfFolder;
 
     public static LocalSftpServer create() throws IOException {
         TemporaryFolder tmp = new TemporaryFolder();
@@ -33,7 +33,7 @@ public final class LocalSftpServer implements AutoCloseable {
         File root = tmp.getRoot();
         File workingDirectory = new File(root, pdfFolderName);
         workingDirectory.mkdir();
-        return new LocalSftpServer(root, workingDirectory);
+        return new LocalSftpServer(root, workingDirectory, );
     }
 
     private LocalSftpServer(File root, File pdfFolder) throws IOException {
