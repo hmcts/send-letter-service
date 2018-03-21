@@ -61,13 +61,13 @@ public class LetterServiceTest {
 
     @Test
     public void should_not_allow_null_service_name() {
-        assertThatThrownBy(() -> service.send(letter, null))
+        assertThatThrownBy(() -> service.send(SampleData.letter(), null))
             .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void should_not_allow_empty_service_name() {
-        assertThatThrownBy(() -> service.send(letter, ""))
+        assertThatThrownBy(() -> service.send(SampleData.letter(), ""))
             .isInstanceOf(IllegalStateException.class);
     }
 }

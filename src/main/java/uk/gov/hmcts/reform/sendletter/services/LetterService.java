@@ -51,7 +51,6 @@ public class LetterService {
             messageId, serviceName, null, letter.type, pdf);
 
         repo.save(dbLetter);
-
         return dbLetter.getId();
     }
 
