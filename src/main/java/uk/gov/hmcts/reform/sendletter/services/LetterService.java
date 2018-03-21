@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.in.Letter;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -23,19 +23,14 @@ public class LetterService {
 
     private static final Logger log = LoggerFactory.getLogger(LetterService.class);
 
+    private final PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator());
     private final LetterRepository letterRepository;
-    private final PdfCreator pdfCreator;
-    private final uk.gov.hmcts.reform.sendletter.entity.LetterRepository repo;
 
-    public LetterService(LetterRepository letterRepository,
-                         PdfCreator pdfCreator,
-                         uk.gov.hmcts.reform.sendletter.entity.LetterRepository repo) {
+    public LetterService(LetterRepository letterRepository) {
         this.letterRepository = letterRepository;
-        this.pdfCreator = pdfCreator;
-        this.repo = repo;
     }
 
-    public UUID send(Letter letter, String serviceName) throws JsonProcessingException {
+    public UUID send(Letter letter, String serviceName) {
         Asserts.notEmpty(serviceName, "serviceName");
 
         final String messageId = generateChecksum(letter);
@@ -50,7 +45,7 @@ public class LetterService {
         uk.gov.hmcts.reform.sendletter.entity.Letter dbLetter = new uk.gov.hmcts.reform.sendletter.entity.Letter(
             messageId, serviceName, null, letter.type, pdf);
 
-        repo.save(dbLetter);
+        letterRepository.save(dbLetter);
         return dbLetter.getId();
     }
 
@@ -60,12 +55,19 @@ public class LetterService {
     }
 
     public LetterStatus getStatus(UUID id, String serviceName) {
-        uk.gov.hmcts.reform.sendletter.entity.Letter l =
-            repo.findByIdAndService(id, serviceName)
-            .orElseThrow(() -> new LetterNotFoundException(id));
+        uk.gov.hmcts.reform.sendletter.entity.Letter letter =
+            letterRepository
+                .findByIdAndService(id, serviceName)
+                .orElseThrow(() -> new LetterNotFoundException(id));
 
-        return new LetterStatus(id, l.messageId, toDateTime(l.createdAt),
-            toDateTime(l.sentToPrintAt), toDateTime(l.printedAt), l.isFailed);
+        return new LetterStatus(
+            id,
+            letter.messageId,
+            toDateTime(letter.createdAt),
+            toDateTime(letter.sentToPrintAt),
+            toDateTime(letter.printedAt),
+            letter.isFailed
+        );
     }
 
     public static ZonedDateTime toDateTime(Timestamp stamp) {
