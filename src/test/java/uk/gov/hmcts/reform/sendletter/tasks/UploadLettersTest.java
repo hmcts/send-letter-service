@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import java.io.File;
 import java.util.UUID;
+import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +27,9 @@ public class UploadLettersTest {
 
     @Autowired
     LetterRepository repository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     public void uploads_pdfs_to_sftp() throws Exception {
@@ -42,7 +46,9 @@ public class UploadLettersTest {
             File[] files = f.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
 
-            // Letter should be marked as uploaded.
+            // Ensure the letter is marked as uploaded in the database.
+            // Clear the JPA cache to force a read.
+            entityManager.clear();
             Letter l = repository.findById(id).get();
             assertThat(l.getState()).isEqualTo(LetterState.Uploaded);
             assertThat(l.getSentToPrintAt()).isNotNull();

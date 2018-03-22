@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
+import uk.gov.hmcts.reform.slc.services.steps.sftpupload.exceptions.FtpStepException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -27,20 +28,28 @@ public class UploadLetters {
 
     @Transactional
     public void run() {
-        repo.findByState(LetterState.Created).forEach(this::process);
+        repo.findByState(LetterState.Created).forEach(letter -> {
+            try {
+                upload(letter);
+                logger.debug("Successfully uploaded letter {}", letter.getId());
+
+                // Upload succeeded, mark the letter as Uploaded.
+                letter.setState(LetterState.Uploaded);
+                letter.setSentToPrintAt(Timestamp.from(Instant.now()));
+                repo.saveAndFlush(letter);
+
+                logger.debug("Marked letter {} as Uploaded", letter.getId());
+            } catch (FtpStepException e) {
+                logger.error("Exception uploading letter {}", letter.getId(), e);
+            }
+        });
     }
 
-    public void process(Letter letter) {
+    private void upload(Letter letter) {
         String name = FileNameHelper.generateName(letter, "pdf", letter.getService(), letter.getId().toString());
         logger.debug("Uploading letter {}, messageId {}, filename {}",
             letter.getId(), letter.getMessageId(), name);
-        PdfDoc doc = new PdfDoc(name, letter.getPdf());
 
-        ftp.upload(doc);
-
-        logger.debug("Successfully uploaded letter {}", letter.getId());
-
-        letter.setState(LetterState.Uploaded);
-        letter.setSentToPrintAt(Timestamp.from(Instant.now()));
+        ftp.upload(new PdfDoc(name, letter.getPdf()));
     }
 }

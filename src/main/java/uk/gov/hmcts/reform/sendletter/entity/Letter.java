@@ -36,7 +36,7 @@ public class Letter {
     @Type(type = "json")
     @Column(columnDefinition = "json")
     private JsonNode additionalData;
-    private Timestamp createdAt = Timestamp.from(Instant.now());
+    private final Timestamp createdAt = Timestamp.from(Instant.now());
     private Timestamp sentToPrintAt;
     private Timestamp printedAt;
     private boolean isFailed;
