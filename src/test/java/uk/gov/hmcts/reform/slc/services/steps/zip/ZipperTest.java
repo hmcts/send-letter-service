@@ -26,7 +26,6 @@ public class ZipperTest {
         assertThat(result).isNotNull();
         assertThat(result.filename).isEqualTo("hello.zip");
         assertThat(asZip(result.content)).hasSameContentAs(asZip(expectedZipFileContent));
-
     }
 
     private ZipInputStream asZip(byte[] bytes) {
