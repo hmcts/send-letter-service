@@ -15,13 +15,13 @@ import uk.gov.hmcts.reform.slc.services.steps.sftpupload.exceptions.FtpStepExcep
 import java.sql.Timestamp;
 import java.time.Instant;
 
-public class UploadLetters {
+public class UploadLettersTask {
     private final LetterRepository repo;
     private final FtpClient ftp;
-    private static final Logger logger = LoggerFactory.getLogger(UploadLetters.class);
+    private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
 
     @Autowired
-    public UploadLetters(LetterRepository repo, FtpClient ftp) {
+    public UploadLettersTask(LetterRepository repo, FtpClient ftp) {
         this.repo = repo;
         this.ftp = ftp;
     }

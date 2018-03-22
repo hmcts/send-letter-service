@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class UploadLettersTest {
+public class UploadLettersTaskTest {
 
     @Autowired
     LetterRepository repository;
@@ -38,7 +38,7 @@ public class UploadLettersTest {
 
         // Invoke the upload job.
         try (LocalSftpServer f = LocalSftpServer.create()) {
-            UploadLetters task = new UploadLetters(repository, FtpHelper.getClient(f.port));
+            UploadLettersTask task = new UploadLettersTask(repository, FtpHelper.getClient(f.port));
 
             task.run();
 
