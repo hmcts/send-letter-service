@@ -8,7 +8,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 public class ZipFileNameHelper {
 
     public static String generateName(Letter letter) {
-
         return String.format(
             "%s_%s_%s_%s.zip",
             letter.getType(),
