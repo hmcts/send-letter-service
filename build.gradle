@@ -26,13 +26,13 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
-  functionalTest {
+  integrationTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/functionalTest/java')
+      srcDir file('src/integrationTest/java')
     }
-    resources.srcDir file('src/functionalTest/resources')
+    resources.srcDir file('src/integrationTest/resources')
   }
 
   smokeTest {
@@ -53,7 +53,7 @@ compileTestJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
-compileFunctionalTestJava {
+compileIntegrationTestJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
@@ -61,11 +61,11 @@ compileSmokeTestJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
-task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  classpath = sourceSets.functionalTest.runtimeClasspath
+task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
 
-  environment("APPLICATION_INSIGHTS_IKEY", "test-key")
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task smoke(type: Test) {
@@ -84,25 +84,25 @@ checkstyle {
 pmd {
   toolVersion = "5.8.1"
   ignoreFailures = true
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.smokeTest]
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
-  executionData(test, functional)
+  executionData(test, integration)
   reports {
     xml.enabled = true
     csv.enabled = false
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, functional
+project.tasks['sonarqube'].dependsOn test, integration
 sonarqube {
   properties {
     property "sonar.projectName", "Reform :: Send Letter Producer"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
+    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/integration.exec"
     property 'sonar.coverage.exclusions', "**/src/main/java/uk/gov/hmcts/reform/sendletter/config/**"
   }
 }
@@ -199,9 +199,9 @@ dependencies {
   testCompile group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.8'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
 
-  functionalTestCompile sourceSets.main.runtimeClasspath
-  functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
-  functionalTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
+  integrationTestCompile sourceSets.main.runtimeClasspath
+  integrationTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
   smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
