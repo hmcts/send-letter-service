@@ -53,8 +53,13 @@ public class XeroxCsvProcessorTask {
     private void updatePrintedAt(LetterPrintStatus letterPrintStatus) {
         UUID id = UUID.fromString(letterPrintStatus.id);
         Letter letter = repo.findById(id).orElseThrow(() -> new LetterNotFoundException(id));
-        letter.setSentToPrintAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
-        letter.setState(LetterState.Posted);
-        repo.saveAndFlush(letter);
+        if (LetterState.Uploaded == letter.getState()) {
+            letter.setSentToPrintAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
+            letter.setState(LetterState.Posted);
+            repo.saveAndFlush(letter);
+            logger.info("Marking letter {} as Posted", letter.getId());
+        } else {
+            logger.info("Skipping processing of letter {} in state {}", letter.getId(), letter.getState());
+        }
     }
 }
