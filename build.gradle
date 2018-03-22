@@ -26,6 +26,15 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/functionalTest/java')
+    }
+    resources.srcDir file('src/functionalTest/resources')
+  }
+
   integrationTest {
     java {
       compileClasspath += main.output
@@ -53,12 +62,21 @@ compileTestJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
+compileFunctionalTestJava {
+  options.compilerArgs << "-Xlint:unchecked"
+}
+
 compileIntegrationTestJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
 compileSmokeTestJava {
   options.compilerArgs << "-Xlint:unchecked"
+}
+
+task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
@@ -84,7 +102,7 @@ checkstyle {
 pmd {
   toolVersion = "5.8.1"
   ignoreFailures = true
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.smokeTest]
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
@@ -97,7 +115,7 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, integration
+project.tasks['sonarqube'].dependsOn test, functional, integration
 sonarqube {
   properties {
     property "sonar.projectName", "Reform :: Send Letter Producer"
