@@ -52,12 +52,7 @@ public class UploadLettersTask {
     }
 
     private void upload(Letter letter) throws IOException {
-        PdfDoc pdfDoc =
-            new PdfDoc(
-                FileNameHelper.generateName(letter, "pdf", letter.getService(), letter.getId().toString()),
-                letter.getPdf()
-            );
-
+        PdfDoc pdfDoc = new PdfDoc(FileNameHelper.generateName(letter, "pdf"), letter.getPdf());
         ZippedDoc zippedDoc = zipper.zip(ZipFileNameHelper.generateName(letter), pdfDoc);
 
         logger.debug(
