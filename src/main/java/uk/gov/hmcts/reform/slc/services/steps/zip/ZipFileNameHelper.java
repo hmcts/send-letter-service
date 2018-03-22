@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
-public class ZipFileNameHelper {
+public final class ZipFileNameHelper {
 
     public static String generateName(Letter letter, LocalDateTime timestamp) {
         return String.format(

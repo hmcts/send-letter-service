@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.slc.services.steps.zip.Zipper;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 
