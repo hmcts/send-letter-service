@@ -37,13 +37,13 @@ public class UploadLettersTaskTest {
         UUID id = s.send(SampleData.letter(), "service");
 
         // Invoke the upload job.
-        try (LocalSftpServer f = LocalSftpServer.create()) {
-            UploadLettersTask task = new UploadLettersTask(repository, FtpHelper.getClient(f.port));
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            UploadLettersTask task = new UploadLettersTask(repository, FtpHelper.getClient(server.port));
 
             task.run();
 
             // PDF should exist in SFTP site.
-            File[] files = f.pdfFolder.listFiles();
+            File[] files = server.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
 
             // Ensure the letter is marked as uploaded in the database.
