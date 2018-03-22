@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.slc.services.steps.zip;
 import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
-import java.util.regex.Pattern;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,13 +16,17 @@ public class ZipFileNameHelperTest {
     public void should_generate_expected_file_name() {
         // given
         Letter letter = new Letter(randomUUID().toString(), "cmc", null, "type", null);
+        LocalDateTime timestamp =
+            LocalDateTime.of(
+                LocalDate.of(2018, 3, 22),
+                LocalTime.of(16, 22, 11)
+            );
 
         // when
-        String name = ZipFileNameHelper.generateName(letter);
+        String name = ZipFileNameHelper.generateName(letter, timestamp);
 
         // then
-        assertThat(name)
-            .matches(Pattern.compile("type_cmc_[0-9]{14}_" + letter.getId() + ".zip"));
+        assertThat(name).isEqualTo("type_cmc_22032018162211_" + letter.getId() + ".zip");
     }
 
     @Test
@@ -29,7 +35,7 @@ public class ZipFileNameHelperTest {
         Letter letter = new Letter(randomUUID().toString(), "cmc_claim_store", null, "type", null);
 
         // when
-        String name = ZipFileNameHelper.generateName(letter);
+        String name = ZipFileNameHelper.generateName(letter, LocalDateTime.now());
 
         // then
         assertThat(name).contains("cmcclaimstore");

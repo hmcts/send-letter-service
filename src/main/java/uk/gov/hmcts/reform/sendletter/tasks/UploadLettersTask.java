@@ -17,6 +17,9 @@ import uk.gov.hmcts.reform.slc.services.steps.zip.Zipper;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+
+import static java.time.LocalDateTime.now;
 
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
@@ -53,7 +56,7 @@ public class UploadLettersTask {
 
     private void upload(Letter letter) throws IOException {
         PdfDoc pdfDoc = new PdfDoc(FileNameHelper.generateName(letter, "pdf"), letter.getPdf());
-        ZippedDoc zippedDoc = zipper.zip(ZipFileNameHelper.generateName(letter), pdfDoc);
+        ZippedDoc zippedDoc = zipper.zip(ZipFileNameHelper.generateName(letter, now()), pdfDoc);
 
         logger.debug(
             "Uploading letter id: {}, messageId: {}, pdf filename: {}, zip filename:",
