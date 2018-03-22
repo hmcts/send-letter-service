@@ -32,7 +32,7 @@ public class UploadLettersTaskTest {
     private EntityManager entityManager;
 
     @Test
-    public void uploads_pdfs_to_sftp() throws Exception {
+    public void uploads_pdfs_to_sftp_and_saves_letter_as_uploaded() throws Exception {
         LetterService s = new LetterService(repository);
         UUID id = s.send(SampleData.letter(), "service");
 
