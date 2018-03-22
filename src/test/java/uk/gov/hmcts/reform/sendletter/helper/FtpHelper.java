@@ -40,6 +40,7 @@ public final class FtpHelper {
         p.setUsername("irrelevant");
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
         p.setTargetFolder(LocalSftpServer.pdfFolderName);
+        p.setReportsFolder(LocalSftpServer.reportFolderName);
         return p;
     }
 }
