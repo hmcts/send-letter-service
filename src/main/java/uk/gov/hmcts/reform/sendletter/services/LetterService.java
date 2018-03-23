@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.model.in.Letter;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
@@ -30,7 +30,7 @@ public class LetterService {
         this.letterRepository = letterRepository;
     }
 
-    public UUID send(Letter letter, String serviceName) {
+    public UUID send(LetterRequest letter, String serviceName) {
         Asserts.notEmpty(serviceName, "serviceName");
 
         final String messageId = generateChecksum(letter);
