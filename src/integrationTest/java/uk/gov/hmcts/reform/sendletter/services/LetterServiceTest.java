@@ -13,6 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.entity.LetterState;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -48,6 +50,42 @@ public class LetterServiceTest {
         // This will throw an exception if the file format is invalid,
         // but ignores more minor errors such as missing metadata.
         document.validate();
+    }
+
+    @Test
+    public void generate_and_save_pdf_and_return_same_id_on_resubmit() throws IOException {
+        // given
+        LetterRequest sampleRequest = SampleData.letter();
+        UUID id1 = service.send(sampleRequest, "a_service");
+        Letter result = letterRepository.findOne(id1);
+
+        // and
+        assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
+
+        // then
+        UUID id2 = service.send(sampleRequest, "a_service");
+
+        // and
+        assertThat(id1).isEqualByComparingTo(id2);
+    }
+
+    @Test
+    public void generate_and_save_pdf_twice_if_previous_letter_has_been_sent_to_print() throws IOException {
+        // given
+        LetterRequest sampleRequest = SampleData.letter();
+        UUID id1 = service.send(sampleRequest, "a_service");
+        Letter result = letterRepository.findOne(id1);
+
+        // and
+        assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
+
+        // then
+        result.setState(LetterState.Uploaded);
+        letterRepository.saveAndFlush(result);
+        UUID id2 = service.send(sampleRequest, "a_service");
+
+        // and
+        assertThat(id1).isNotEqualByComparingTo(id2);
     }
 
     @Test

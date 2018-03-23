@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
@@ -38,11 +40,22 @@ public class LetterService {
 
         log.info("Generated message: id = {} for letter with print queue id = {}", messageId, letter.type);
 
-        byte[] pdf = pdfCreator.create(letter);
-        Letter dbLetter = new Letter(messageId, serviceName, null, letter.type, pdf);
+        Optional<Letter> result = letterRepository.findByMessageId(messageId);
 
-        letterRepository.save(dbLetter);
+        Letter dbLetter = result.filter(l -> l.getState().equals(LetterState.Created))
+            .orElse(getNewLetter(letter, messageId, serviceName));
+
         return dbLetter.getId();
+    }
+
+    private Letter getNewLetter(LetterRequest letterRequest, String messageId, String serviceName) {
+        byte[] pdf = pdfCreator.create(letterRequest);
+
+        Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
+
+        letterRepository.save(letter);
+
+        return letter;
     }
 
     public void checkPrintState() {
