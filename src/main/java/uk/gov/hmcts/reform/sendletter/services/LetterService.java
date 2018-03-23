@@ -35,12 +35,8 @@ public class LetterService {
         Asserts.notEmpty(serviceName, "serviceName");
 
         final String messageId = generateChecksum(letter);
-        final UUID id = UUID.randomUUID();
 
-        log.info("Generated message: id = {} for letter with print queue id = {} and letter id = {} ",
-            messageId,
-            letter.type,
-            id);
+        log.info("Generated message: id = {} for letter with print queue id = {}", messageId, letter.type);
 
         byte[] pdf = pdfCreator.create(letter);
         Letter dbLetter = new Letter(messageId, serviceName, null, letter.type, pdf);
