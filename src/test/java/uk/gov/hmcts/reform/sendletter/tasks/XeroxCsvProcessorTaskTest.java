@@ -38,33 +38,36 @@ public class XeroxCsvProcessorTaskTest {
     @Autowired
     private EntityManager entityManager;
 
+    ReportParser parser = new ReportParser();
+    FtpAvailabilityChecker checker = mock(FtpAvailabilityChecker.class);
+
     @Test
     public void marks_uploaded_letters_as_posted() throws Exception {
+        // Create a letter in the Uploaded state.
         Letter letter = SampleData.letterEntity("testService");
         letter.setState(LetterState.Uploaded);
         repository.saveAndFlush(letter);
 
-
-        ReportParser parser = new ReportParser();
-        FtpAvailabilityChecker checker = mock(FtpAvailabilityChecker.class);
         when(checker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
-
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getClient(LocalSftpServer.port);
             XeroxCsvProcessorTask task = new XeroxCsvProcessorTask(repository, client, checker, parser);
 
-            // Prepare the response from Xerox
+            // Prepare the response CSV from Xerox and run the task.
             writeXeroxCsvForLetter(letter, server.reportFolder);
-
             task.run();
         }
 
+        // Check that the letter has moved to the Posted state.
         entityManager.clear();
         letter = repository.findById(letter.getId()).get();
         assertThat(letter.getState()).isEqualTo(LetterState.Posted);
+        // Check that the sent to print date has been set.
         assertThat(letter.getSentToPrintAt()).isNotNull();
     }
 
+    // Prepare a CSV in the format provided by Xerox for a given letter
+    // and put it in the reports sftp folder.
     private void writeXeroxCsvForLetter(Letter l, File reportFolder) throws IOException {
         String content =
             "\"Date\",\"Time\",\"Filename\"\n"
