@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class XeroxCsvProcessorTaskTest {
+public class MarkLettersPostedTaskTest {
 
     @Autowired
     LetterRepository repository;
@@ -51,7 +51,7 @@ public class XeroxCsvProcessorTaskTest {
         when(checker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getClient(LocalSftpServer.port);
-            XeroxCsvProcessorTask task = new XeroxCsvProcessorTask(repository, client, checker, parser);
+            MarkLettersPostedTask task = new MarkLettersPostedTask(repository, client, checker, parser);
 
             // Prepare the response CSV from Xerox and run the task.
             writeXeroxCsvForLetter(letter, server.reportFolder);

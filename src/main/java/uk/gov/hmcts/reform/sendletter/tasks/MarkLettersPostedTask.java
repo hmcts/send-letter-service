@@ -17,15 +17,19 @@ import java.util.UUID;
 
 import static java.time.LocalTime.now;
 
-public class XeroxCsvProcessorTask {
+/**
+ * Fetches reports from Xerox SFTP concerning posted
+ * letters and sets posted letters as Posted in the database.
+ */
+public class MarkLettersPostedTask {
     private final LetterRepository repo;
     private final FtpClient ftpClient;
-    private static final Logger logger = LoggerFactory.getLogger(XeroxCsvProcessorTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(MarkLettersPostedTask.class);
     private final FtpAvailabilityChecker ftpAvailabilityChecker;
     private final ReportParser parser;
 
     @Autowired
-    public XeroxCsvProcessorTask(LetterRepository repo, FtpClient ftp,
+    public MarkLettersPostedTask(LetterRepository repo, FtpClient ftp,
                                  FtpAvailabilityChecker checker, ReportParser parser) {
         this.repo = repo;
         this.ftpClient = ftp;
