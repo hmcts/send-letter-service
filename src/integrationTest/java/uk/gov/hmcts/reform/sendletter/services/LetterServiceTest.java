@@ -29,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 public class LetterServiceTest {
 
+    private static final String SERVICE_NAME = "a_service";
+
     private LetterService service;
 
     @Autowired
@@ -41,7 +43,7 @@ public class LetterServiceTest {
 
     @Test
     public void generates_and_saves_pdf() throws IOException {
-        UUID id = service.send(SampleData.letter(), "a_service");
+        UUID id = service.send(SampleData.letter(), SERVICE_NAME);
         Letter result = letterRepository.findOne(id);
         DataSource dataSource = new ByteArrayDataSource(new ByteArrayInputStream(result.getPdf()));
         PreflightParser pdfParser = new PreflightParser(dataSource);
@@ -56,14 +58,14 @@ public class LetterServiceTest {
     public void generate_and_save_pdf_and_return_same_id_on_resubmit() throws IOException {
         // given
         LetterRequest sampleRequest = SampleData.letter();
-        UUID id1 = service.send(sampleRequest, "a_service");
+        UUID id1 = service.send(sampleRequest, SERVICE_NAME);
         Letter result = letterRepository.findOne(id1);
 
         // and
         assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
 
         // then
-        UUID id2 = service.send(sampleRequest, "a_service");
+        UUID id2 = service.send(sampleRequest, SERVICE_NAME);
 
         // and
         assertThat(id1).isEqualByComparingTo(id2);
@@ -73,7 +75,7 @@ public class LetterServiceTest {
     public void generate_and_save_pdf_twice_if_previous_letter_has_been_sent_to_print() throws IOException {
         // given
         LetterRequest sampleRequest = SampleData.letter();
-        UUID id1 = service.send(sampleRequest, "a_service");
+        UUID id1 = service.send(sampleRequest, SERVICE_NAME);
         Letter result = letterRepository.findOne(id1);
 
         // and
@@ -82,7 +84,7 @@ public class LetterServiceTest {
         // then
         result.setState(LetterState.Uploaded);
         letterRepository.saveAndFlush(result);
-        UUID id2 = service.send(sampleRequest, "a_service");
+        UUID id2 = service.send(sampleRequest, SERVICE_NAME);
 
         // and
         assertThat(id1).isNotEqualByComparingTo(id2);
