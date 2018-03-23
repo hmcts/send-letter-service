@@ -215,10 +215,9 @@ dependencies {
   testCompile group: 'org.apache.sshd', name: 'sshd-sftp', version: '0.9.0'
   testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
   testCompile group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.8'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
 
   integrationTestCompile sourceSets.main.runtimeClasspath
-  integrationTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  integrationTestCompile sourceSets.test.runtimeClasspath
   integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
