@@ -42,26 +42,27 @@ public class LetterService {
 
         Optional<Letter> result = letterRepository.findByMessageId(messageId);
 
-        Letter dbLetter = result.filter(l -> l.getState().equals(LetterState.Created))
+        return result.filter(l -> l.getState().equals(LetterState.Created))
             .map(l -> {
-                log.info("Same message found already created. Returning {} letter", l.getId());
-                return l;
+                UUID id = l.getId();
+                log.info("Same message found already created. Returning {} letter", id);
+                return id;
             })
-            .orElse(getNewLetter(letter, messageId, serviceName));
-
-        return dbLetter.getId();
+            .orElse(getNewLetterId(letter, messageId, serviceName));
     }
 
-    private Letter getNewLetter(LetterRequest letterRequest, String messageId, String serviceName) {
+    private UUID getNewLetterId(LetterRequest letterRequest, String messageId, String serviceName) {
         byte[] pdf = pdfCreator.create(letterRequest);
 
         Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
 
         letterRepository.save(letter);
 
-        log.info("Created new letter {}", letter.getId());
+        UUID letterId = letter.getId();
 
-        return letter;
+        log.info("Created new letter {}", letterId);
+
+        return letterId;
     }
 
     public void checkPrintState() {
