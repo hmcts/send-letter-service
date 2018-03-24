@@ -40,7 +40,7 @@ public class LetterService {
 
         log.info("Generated message: id = {}", messageId);
 
-        Optional<Letter> result = letterRepository.findByMessageId(messageId);
+        Optional<Letter> result = letterRepository.findByMessageIdOrderByCreatedAtDesc(messageId);
 
         return result.filter(l -> l.getState().equals(LetterState.Created))
             .map(l -> {
