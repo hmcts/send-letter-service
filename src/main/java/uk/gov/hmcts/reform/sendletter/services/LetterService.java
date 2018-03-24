@@ -38,11 +38,15 @@ public class LetterService {
 
         final String messageId = generateChecksum(letter);
 
-        log.info("Generated message: id = {} for letter with print queue id = {}", messageId, letter.type);
+        log.info("Generated message: id = {}", messageId);
 
         Optional<Letter> result = letterRepository.findByMessageId(messageId);
 
         Letter dbLetter = result.filter(l -> l.getState().equals(LetterState.Created))
+            .map(l -> {
+                log.info("Same message found already created. Returning {} letter", l.getId());
+                return l;
+            })
             .orElse(getNewLetter(letter, messageId, serviceName));
 
         return dbLetter.getId();
@@ -54,6 +58,8 @@ public class LetterService {
         Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
 
         letterRepository.save(letter);
+
+        log.info("Created new letter {}", letter.getId());
 
         return letter;
     }
