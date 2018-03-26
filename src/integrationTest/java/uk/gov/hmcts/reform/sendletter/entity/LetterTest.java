@@ -31,13 +31,9 @@ public class LetterTest {
     @Autowired
     private DataSource dataSource;
 
-    public static Letter getTestLetter() {
-        return SampleData.letterEntity("a_service");
-    }
-
     @Test
     public void should_successfully_save_report_in_db() {
-        repository.save(getTestLetter());
+        repository.save(SampleData.letterEntity("a.service"));
         List<Letter> letters = Lists.newArrayList(repository.findAll());
         assertThat(letters.size()).isEqualTo(1);
         assertThat(letters.get(0).getState()).isEqualTo(LetterState.Created);
@@ -69,7 +65,7 @@ public class LetterTest {
 
     @Test
     public void finds_letters_by_id_and_service() {
-        repository.save(getTestLetter());
+        repository.save(SampleData.letterEntity("a.service"));
         Letter second = SampleData.letterEntity("different");
         repository.save(second);
 
