@@ -48,7 +48,7 @@ public class LetterService {
         return duplicateLetter
             .map(l -> {
                 UUID id = l.getId();
-                log.info("Same message found already created. Returning {} letter", id);
+                log.info("Same message found already created. Returning letter id {} instead", id);
                 return id;
             })
             .orElse(getNewLetterId(letter, messageId, serviceName));
