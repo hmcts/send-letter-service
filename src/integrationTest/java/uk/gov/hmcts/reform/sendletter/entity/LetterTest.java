@@ -73,7 +73,7 @@ public class LetterTest {
         Letter second = SampleData.letterEntity("different");
         repository.save(second);
 
-        Letter found = repository.findByIdAndService(second.getId(), second.getService()).get();
+        Letter found = repository.findOptionalByIdAndService(second.getId(), second.getService()).get();
         assertThat(found.getId()).isEqualTo(second.getId());
     }
 }
