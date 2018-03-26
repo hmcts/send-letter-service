@@ -40,26 +40,23 @@ public class SerialTaskRunnerTest {
     @Test
     public void does_not_run_same_task_concurrently() throws SQLException {
         Runnable shouldNotRun = mock(Runnable.class);
-        SerialTaskRunner.get(source).tryRun(1, () -> {
-            try {
-                SerialTaskRunner.get(source).tryRun(1, shouldNotRun);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        tryRun(1, () -> tryRun(1, shouldNotRun));
         verify(shouldNotRun, never()).run();
     }
 
     @Test
     public void runs_different_tasks_concurrently() throws SQLException {
         Runnable different = mock(Runnable.class);
-        SerialTaskRunner.get(source).tryRun(1, () -> {
-            try {
-                SerialTaskRunner.get(source).tryRun(2, different);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        tryRun(1, () -> tryRun(2, different));
         verify(different).run();
+    }
+
+    // Try to run the task converting any exception to RuntimeException.
+    private void tryRun(int taskId, Runnable task) {
+        try {
+            SerialTaskRunner.get(source).tryRun(taskId, task);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
