@@ -100,7 +100,7 @@ public class FileNameHelperTest {
     }
 
     @Test
-    public void throws_custom_exception_when_invalid_uuid() {
+    public void should_throw_custom_exception_when_uuid_invalid() {
         assertThatThrownBy(
             () -> FileNameHelper.extractId("a_b_notauuid.pdf")
         ).isInstanceOf(FileNameHelper.UnableToExtractIdFromFileNameException.class);
