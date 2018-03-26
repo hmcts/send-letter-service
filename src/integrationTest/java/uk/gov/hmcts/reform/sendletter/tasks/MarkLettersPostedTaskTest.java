@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalTime;
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;

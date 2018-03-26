@@ -57,7 +57,7 @@ public class MarkLettersPostedTask {
     }
 
     private void updatePrintedAt(LetterPrintStatus letterPrintStatus) {
-        UUID id = UUID.fromString(letterPrintStatus.id);
+        UUID id = letterPrintStatus.id;
         Letter letter = repo.findById(id).orElseThrow(() -> new LetterNotFoundException(id));
         if (LetterState.Uploaded == letter.getState()) {
             letter.setSentToPrintAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
