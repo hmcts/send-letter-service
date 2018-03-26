@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.slc.services.steps.sftpupload;
 
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
