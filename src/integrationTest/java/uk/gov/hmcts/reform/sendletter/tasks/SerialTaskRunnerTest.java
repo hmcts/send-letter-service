@@ -22,7 +22,7 @@ public class SerialTaskRunnerTest {
     @Autowired DataSource source;
 
     @Test
-    public void runs_task_if_not_running() throws SQLException {
+    public void runs_task() throws SQLException {
         Runnable runnable = mock(Runnable.class);
         SerialTaskRunner.get(source).tryRun(1, runnable);
         verify(runnable).run();

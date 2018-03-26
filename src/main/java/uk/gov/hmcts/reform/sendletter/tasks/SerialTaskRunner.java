@@ -32,21 +32,21 @@ public final class SerialTaskRunner {
      * supplied Runnable is simply not executed.
      */
     public void tryRun(long id, Runnable runnable) throws SQLException {
-        log.debug("Trying to lock {}", id);
+        log.info("Trying to lock {}", id);
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
             try {
                 if (tryLock(id, connection)) {
-                    log.debug("Acquired lock {}", id);
+                    log.info("Acquired lock {}", id);
                     locked = true;
                     runnable.run();
                 } else {
-                    log.debug("Failed to acquired lock {}", id);
+                    log.info("Failed to acquire lock {}", id);
                 }
             } finally {
                 if (locked) {
                     unlock(id, connection);
-                    log.debug("Released lock {}", id);
+                    log.info("Released lock {}", id);
                 }
             }
         }
@@ -59,15 +59,16 @@ public final class SerialTaskRunner {
      * or the database connection is closed/dies.
      *
      * <p>https://www.postgresql.org/docs/9.4/static/explicit-locking.html#ADVISORY-LOCKS
+     * @return true if lock is acquired, false otherwise
      */
     private boolean tryLock(long id, Connection connection) throws SQLException {
         String sql = String.format("SELECT pg_try_advisory_lock(%d);", id);
         return executeReturningBool(connection, sql);
     }
 
-    private void unlock(long id, Connection connection) throws SQLException {
+    private boolean unlock(long id, Connection connection) throws SQLException {
         String sql = String.format("SELECT pg_advisory_unlock(%d);", id);
-        executeReturningBool(connection, sql);
+        return executeReturningBool(connection, sql);
     }
 
     /**
