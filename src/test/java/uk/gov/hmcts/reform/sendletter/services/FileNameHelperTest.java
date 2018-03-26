@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.UnableToExtractIdFromFileNameException;
 
 import java.util.UUID;
 
@@ -96,14 +97,14 @@ public class FileNameHelperTest {
     public void should_throw_custom_exception_when_id_cannot_be_extracted_from_file_name() {
         assertThatThrownBy(
             () -> FileNameHelper.extractId("a_b.pdf")
-        ).isInstanceOf(FileNameHelper.UnableToExtractIdFromFileNameException.class);
+        ).isInstanceOf(UnableToExtractIdFromFileNameException.class);
     }
 
     @Test
     public void should_throw_custom_exception_when_uuid_invalid() {
         assertThatThrownBy(
             () -> FileNameHelper.extractId("a_b_notauuid.pdf")
-        ).isInstanceOf(FileNameHelper.UnableToExtractIdFromFileNameException.class);
+        ).isInstanceOf(UnableToExtractIdFromFileNameException.class);
     }
 
     private Letter createLetter(UUID id, String type, String service) {

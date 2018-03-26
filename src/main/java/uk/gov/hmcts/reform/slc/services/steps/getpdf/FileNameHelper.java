@@ -30,14 +30,4 @@ public final class FileNameHelper {
     private FileNameHelper() {
     }
 
-    public static class UnableToExtractIdFromFileNameException extends RuntimeException {
-
-        public UnableToExtractIdFromFileNameException(Exception inner) {
-            super(inner);
-        }
-
-        public UnableToExtractIdFromFileNameException(String message) {
-            super(message);
-        }
-    }
 }
