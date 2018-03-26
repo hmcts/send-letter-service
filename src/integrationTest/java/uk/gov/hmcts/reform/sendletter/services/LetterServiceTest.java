@@ -64,10 +64,10 @@ public class LetterServiceTest {
         // and
         assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
 
-        // then
+        // when
         UUID id2 = service.send(sampleRequest, SERVICE_NAME);
 
-        // and
+        // then
         assertThat(id1).isEqualByComparingTo(id2);
     }
 
@@ -81,12 +81,12 @@ public class LetterServiceTest {
         // and
         assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
 
-        // then
+        // when
         result.setState(LetterState.Uploaded);
         letterRepository.saveAndFlush(result);
         UUID id2 = service.send(sampleRequest, SERVICE_NAME);
 
-        // and
+        // then
         assertThat(id1).isNotEqualByComparingTo(id2);
     }
 
