@@ -40,7 +40,7 @@ public class LetterService {
 
         log.info("Generated message: id = {}", messageId);
 
-        Optional<Letter> result = letterRepository.findOptionalByMessageIdAndStateOrderByCreatedAtDesc(
+        Optional<Letter> result = letterRepository.findByMessageIdAndStateOrderByCreatedAtDesc(
             messageId,
             LetterState.Created
         );
@@ -68,7 +68,7 @@ public class LetterService {
 
     public LetterStatus getStatus(UUID id, String serviceName) {
         Letter letter = letterRepository
-            .findOptionalByIdAndService(id, serviceName)
+            .findByIdAndService(id, serviceName)
             .orElseThrow(() -> new LetterNotFoundException(id));
 
         return new LetterStatus(
