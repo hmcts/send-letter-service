@@ -40,7 +40,7 @@ public class LetterService {
 
         log.info("Generated message: id = {}", messageId);
 
-        Optional<Letter> result = letterRepository.findByMessageIdOrderByCreatedAtDesc(messageId);
+        Optional<Letter> result = letterRepository.findOptionalByMessageIdOrderByCreatedAtDesc(messageId);
 
         return result.filter(l -> l.getState().equals(LetterState.Created))
             .map(l -> {
@@ -63,14 +63,9 @@ public class LetterService {
         return letterId;
     }
 
-    public void checkPrintState() {
-        // TODO: does previous implementation
-        // do anything with this request?
-    }
-
     public LetterStatus getStatus(UUID id, String serviceName) {
         Letter letter = letterRepository
-            .findByIdAndService(id, serviceName)
+            .findOptionalByIdAndService(id, serviceName)
             .orElseThrow(() -> new LetterNotFoundException(id));
 
         return new LetterStatus(
