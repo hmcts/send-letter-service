@@ -29,8 +29,10 @@ public class MarkLettersPostedTask {
     private final ReportParser parser;
 
     @Autowired
-    public MarkLettersPostedTask(LetterRepository repo, FtpClient ftp,
-                                 FtpAvailabilityChecker checker, ReportParser parser) {
+    public MarkLettersPostedTask(LetterRepository repo,
+                                 FtpClient ftp,
+                                 FtpAvailabilityChecker checker,
+                                 ReportParser parser) {
         this.repo = repo;
         this.ftpClient = ftp;
         this.ftpAvailabilityChecker = checker;

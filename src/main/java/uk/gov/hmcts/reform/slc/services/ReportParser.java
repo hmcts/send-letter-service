@@ -31,7 +31,7 @@ public class ReportParser {
 
             List<LetterPrintStatus> statuses =
                 stream(parser.spliterator(), false)
-                    .map(row -> toPrintStatus(row))
+                    .map(this::toPrintStatus)
                     .filter(Objects::nonNull)
                     .collect(toList());
 
