@@ -56,9 +56,7 @@ public class LetterService {
 
         Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
 
-        letterRepository.save(letter);
-
-        UUID letterId = letter.getId();
+        UUID letterId = letterRepository.save(letter).getId();
 
         log.info("Created new letter {}", letterId);
 
