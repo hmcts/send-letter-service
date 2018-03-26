@@ -5,9 +5,9 @@ import com.google.common.io.Resources;
 import net.schmizz.sshj.SSHClient;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
+import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
+import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.slc.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.slc.logging.AppInsights;
-import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
 
 import java.io.IOException;
 import java.util.function.Supplier;
@@ -39,7 +39,8 @@ public final class FtpHelper {
         p.setPrivateKey(Resources.toString(Resources.getResource("keypair"), Charsets.UTF_8));
         p.setUsername("irrelevant");
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
-        p.setTargetFolder(LocalSftpServer.pdfFolderName);
+        p.setTargetFolder(LocalSftpServer.PDF_FOLDER_NAME);
+        p.setReportsFolder(LocalSftpServer.REPORT_FOLDER_NAME);
         return p;
     }
 }

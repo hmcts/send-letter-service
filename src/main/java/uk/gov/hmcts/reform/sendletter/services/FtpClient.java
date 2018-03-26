@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services.steps.sftpupload;
+package uk.gov.hmcts.reform.sendletter.services;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.slc.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.slc.logging.AppInsights;
+import uk.gov.hmcts.reform.slc.services.steps.sftpupload.InMemoryDownloadedFile;
+import uk.gov.hmcts.reform.slc.services.steps.sftpupload.Report;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.exceptions.FtpStepException;
 
 import java.io.IOException;
@@ -48,12 +50,16 @@ public class FtpClient {
     }
     // endregion
 
-    public void upload(LocalSourceFile file) {
+    public void upload(LocalSourceFile file, boolean isSmokeTestFile) {
         Instant start = Instant.now();
 
         runWith(sftp -> {
             try {
-                String path = String.join("/", configProperties.getTargetFolder(), file.getName());
+                String folder = isSmokeTestFile
+                    ? configProperties.getSmokeTestTargetFolder()
+                    : configProperties.getTargetFolder();
+
+                String path = String.join("/", folder, file.getName());
                 sftp.getFileTransfer().upload(file, path);
                 insights.trackFtpUpload(Duration.between(start, Instant.now()), true);
 
