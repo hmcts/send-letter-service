@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 import org.junit.Test;
 import uk.gov.hmcts.reform.slc.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.slc.services.ReportParser;
+import uk.gov.hmcts.reform.slc.services.ReportParsingException;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.ParsedReport;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.Report;
 
@@ -76,7 +77,7 @@ public class ReportParserTest {
             new ReportParser().parse(new Report("a.csv", report.getBytes())));
 
         assertThat(exc)
-            .isInstanceOf(ReportParser.ReportParsingException.class);
+            .isInstanceOf(ReportParsingException.class);
     }
 
     private String formatReport(Object... ids) {

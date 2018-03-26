@@ -65,9 +65,4 @@ public class ReportParser {
         }
     }
 
-    public static class ReportParsingException extends RuntimeException {
-        public ReportParsingException(Throwable cause) {
-            super(cause);
-        }
-    }
 }
