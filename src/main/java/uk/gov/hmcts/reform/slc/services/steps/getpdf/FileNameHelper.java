@@ -10,15 +10,16 @@ public final class FileNameHelper {
     private static final String SEPARATOR = "_";
 
     public static String generateName(Letter letter, String extension) {
-        return letter.getType() + SEPARATOR + letter.getService() + SEPARATOR + letter.getId() + "." + extension;
+        String serviceName = letter.getService().replace(SEPARATOR, "");
+        return letter.getType() + SEPARATOR + serviceName + SEPARATOR + letter.getId() + "." + extension;
     }
 
     public static UUID extractId(String fileName) {
         String[] parts = FilenameUtils.removeExtension(fileName).split(SEPARATOR);
-        if (parts.length != 3) {
+        if (parts.length < 3) {
             throw new UnableToExtractIdFromFileNameException();
         } else {
-            return UUID.fromString(parts[2]);
+            return UUID.fromString(parts[parts.length - 1]);
         }
     }
 
