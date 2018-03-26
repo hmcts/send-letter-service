@@ -51,10 +51,10 @@ public class LetterService {
                 log.info("Same message found already created. Returning letter id {} instead", id);
                 return id;
             })
-            .orElse(getNewLetterId(letter, messageId, serviceName));
+            .orElseGet(() -> saveNewLetterAndReturnId(letter, messageId, serviceName));
     }
 
-    private UUID getNewLetterId(LetterRequest letterRequest, String messageId, String serviceName) {
+    private UUID saveNewLetterAndReturnId(LetterRequest letterRequest, String messageId, String serviceName) {
         byte[] pdf = pdfCreator.create(letterRequest);
 
         Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
