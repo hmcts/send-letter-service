@@ -23,9 +23,10 @@ import static java.time.LocalTime.now;
 public class MarkLettersPostedTask {
     private final LetterRepository repo;
     private final FtpClient ftpClient;
-    private static final Logger logger = LoggerFactory.getLogger(MarkLettersPostedTask.class);
     private final FtpAvailabilityChecker ftpAvailabilityChecker;
     private final ReportParser parser;
+
+    private static final Logger logger = LoggerFactory.getLogger(MarkLettersPostedTask.class);
 
     @Autowired
     public MarkLettersPostedTask(LetterRepository repo,
