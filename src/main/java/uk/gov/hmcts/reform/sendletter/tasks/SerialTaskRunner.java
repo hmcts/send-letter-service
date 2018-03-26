@@ -45,8 +45,11 @@ public final class SerialTaskRunner {
                 }
             } finally {
                 if (locked) {
-                    unlock(id, connection);
-                    log.info("Released lock {}", id);
+                    if (unlock(id, connection)) {
+                        log.info("Released lock {}", id);
+                    } else {
+                        log.warn("Failed to release lock {}", id);
+                    }
                 }
             }
         }
