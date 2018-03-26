@@ -6,15 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
+import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.slc.model.LetterPrintStatus;
-import uk.gov.hmcts.reform.slc.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.slc.services.ReportParser;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.Optional;
-
-import static java.time.LocalTime.now;
 
 /**
  * Fetches reports from Xerox SFTP concerning posted
@@ -39,10 +38,10 @@ public class MarkLettersPostedTask {
         this.parser = parser;
     }
 
-    public void run() {
+    public void run(LocalTime now) {
         logger.trace("Running job");
 
-        if (ftpAvailabilityChecker.isFtpAvailable(now())) {
+        if (ftpAvailabilityChecker.isFtpAvailable(now)) {
             ftpClient
                 .downloadReports()
                 .stream()

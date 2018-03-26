@@ -9,14 +9,15 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
+import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.slc.model.LetterPrintStatus;
-import uk.gov.hmcts.reform.slc.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.slc.services.ReportParser;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.ParsedReport;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.Report;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class MarkLettersPostedTest {
         letter.setState(LetterState.Uploaded);
         given(repo.findById(known)).willReturn(Optional.of(letter));
         given(repo.findById(unknown)).willReturn(Optional.empty());
-        task.run();
+        task.run(LocalTime.MIDNIGHT);
         assertThat(letter.getState()).isEqualTo(LetterState.Posted);
     }
 }

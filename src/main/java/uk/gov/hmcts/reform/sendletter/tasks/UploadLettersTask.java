@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -21,19 +22,19 @@ import java.util.Objects;
 
 import static java.time.LocalDateTime.now;
 
+@Component
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
 
     public static String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
     private final LetterRepository repo;
-    private final Zipper zipper;
+    private final Zipper zipper = new Zipper();
     private final FtpClient ftp;
 
     @Autowired
-    public UploadLettersTask(LetterRepository repo, Zipper zipper, FtpClient ftp) {
+    public UploadLettersTask(LetterRepository repo, FtpClient ftp) {
         this.repo = repo;
-        this.zipper = zipper;
         this.ftp = ftp;
     }
 

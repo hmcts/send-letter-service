@@ -31,7 +31,7 @@ public class UploadLettersTaskTest {
 
     @Before
     public void setUp() throws Exception {
-        this.task = new UploadLettersTask(repo, zipper, ftpClient);
+        this.task = new UploadLettersTask(repo, ftpClient);
     }
 
     @Test
