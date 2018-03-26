@@ -59,7 +59,7 @@ public class MarkLettersPostedTask {
         Optional<Letter> optional = repo.findById(letterPrintStatus.id);
         if (optional.isPresent()) {
             Letter letter = optional.get();
-            if (LetterState.Uploaded == letter.getState()) {
+            if (letter.getState() == LetterState.Uploaded) {
                 letter.setPrintedAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
                 letter.setState(LetterState.Posted);
                 repo.save(letter);
