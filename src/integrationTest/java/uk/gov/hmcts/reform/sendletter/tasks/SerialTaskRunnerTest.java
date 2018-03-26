@@ -33,7 +33,6 @@ public class SerialTaskRunnerTest {
         Runnable runnable = mock(Runnable.class);
         SerialTaskRunner.get(source).tryRun(1, runnable);
         SerialTaskRunner.get(source).tryRun(1, runnable);
-
         verify(runnable, times(2)).run();
     }
 
