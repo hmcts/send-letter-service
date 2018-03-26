@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.TelemetryConfiguration;
 import com.microsoft.applicationinsights.telemetry.Duration;
@@ -12,11 +13,15 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -29,7 +34,7 @@ public class AppInsightsTest {
     private static final String IKEY = "some-key";
     private static final String MESSAGE_ID = "some-message-id";
     private static final String SERVICE_NAME = "some-service-name";
-    private static final String TEMPLATE = "some-template";
+    private static final String TYPE = "some-type";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -107,6 +112,34 @@ public class AppInsightsTest {
             eq(false)
         );
         verifyNoMoreInteractions(telemetry);
+    }
+
+    @Test
+    public void should_track_event_of_not_printed_letter() {
+        Letter letter = new Letter(
+            MESSAGE_ID,
+            SERVICE_NAME,
+            null,
+            TYPE,
+            null
+        );
+        ReflectionTestUtils.setField(letter, "id", UUID.randomUUID());
+
+        context.setInstrumentationKey(IKEY);
+        AppInsights insights = new AppInsights(telemetry);
+
+        insights.trackNotPrintedLetter(letter);
+
+        verify(telemetry).trackEvent(
+            eq(AppInsights.LETTER_NOT_PRINTED),
+            eq(ImmutableMap.of(
+                "letterId", letter.getId().toString(),
+                "messageId", letter.getMessageId(),
+                "service", letter.getService(),
+                "type", letter.getType()
+            )),
+            anyMapOf(String.class, Double.class)
+        );
     }
 
     @Test

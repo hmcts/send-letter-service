@@ -1,17 +1,27 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collections;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Component
 public class AppInsights extends AbstractAppInsights {
 
+    private static final int SECONDS_PER_DAY = 86_400;
+
     static final String SERVICE_BUS_DEPENDENCY = "ServiceBus";
     static final String SERVICE_BUS_MESSAGE_ACKNOWLEDGED = "MessageAcknowledged";
+
+    static final String LETTER_NOT_PRINTED = "LetterNotPrinted";
 
     public AppInsights(TelemetryClient telemetry) {
         super(telemetry);
@@ -40,6 +50,32 @@ public class AppInsights extends AbstractAppInsights {
             AppDependencyCommand.FTP_FILE_UPLOADED,
             new Duration(duration.toMillis()),
             success
+        );
+    }
+
+    private double getSecondsSince(Timestamp time) {
+        if (time == null) {
+            return 0;
+        }
+
+        long seconds = SECONDS.between(time.toInstant(), Instant.now());
+
+        return ((double) seconds) / SECONDS_PER_DAY;
+    }
+
+    public void trackNotPrintedLetter(Letter notPrintedLetter) {
+        telemetry.trackEvent(
+            LETTER_NOT_PRINTED,
+            ImmutableMap.of(
+                "letterId", notPrintedLetter.getId().toString(),
+                "messageId", notPrintedLetter.getMessageId(),
+                "service", notPrintedLetter.getService(),
+                "type", notPrintedLetter.getType()
+            ),
+            ImmutableMap.of(
+                "daysCreated", getSecondsSince(notPrintedLetter.getCreatedAt()),
+                "daysSentToPrint", getSecondsSince(notPrintedLetter.getSentToPrintAt())
+            )
         );
     }
 
