@@ -17,9 +17,13 @@ public final class FileNameHelper {
     public static UUID extractId(String fileName) {
         String[] parts = FilenameUtils.removeExtension(fileName).split(SEPARATOR);
         if (parts.length < 3) {
-            throw new UnableToExtractIdFromFileNameException();
+            throw new UnableToExtractIdFromFileNameException("Invalid filename " + fileName);
         } else {
-            return UUID.fromString(parts[parts.length - 1]);
+            try {
+                return UUID.fromString(parts[parts.length - 1]);
+            } catch (IllegalArgumentException e) {
+                throw new UnableToExtractIdFromFileNameException(e);
+            }
         }
     }
 
@@ -28,5 +32,12 @@ public final class FileNameHelper {
 
     public static class UnableToExtractIdFromFileNameException extends RuntimeException {
 
+        public UnableToExtractIdFromFileNameException(Exception inner) {
+            super(inner);
+        }
+
+        public UnableToExtractIdFromFileNameException(String message) {
+            super(message);
+        }
     }
 }

@@ -99,6 +99,13 @@ public class FileNameHelperTest {
         ).isInstanceOf(FileNameHelper.UnableToExtractIdFromFileNameException.class);
     }
 
+    @Test
+    public void throws_custom_exception_when_invalid_uuid() {
+        assertThatThrownBy(
+            () -> FileNameHelper.extractId("a_b_notauuid.pdf")
+        ).isInstanceOf(FileNameHelper.UnableToExtractIdFromFileNameException.class);
+    }
+
     private Letter createLetter(UUID id, String type, String service) {
         Letter result = mock(Letter.class);
         when(result.getId()).thenReturn(id);
