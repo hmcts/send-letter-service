@@ -60,7 +60,7 @@ public class MarkLettersPostedTask {
         UUID id = letterPrintStatus.id;
         Letter letter = repo.findById(id).orElseThrow(() -> new LetterNotFoundException(id));
         if (LetterState.Uploaded == letter.getState()) {
-            letter.setSentToPrintAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
+            letter.setPrintedAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
             letter.setState(LetterState.Posted);
             repo.save(letter);
             logger.info("Marking letter {} as Posted", letter.getId());

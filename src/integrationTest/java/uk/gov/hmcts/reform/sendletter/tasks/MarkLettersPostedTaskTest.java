@@ -19,7 +19,9 @@ import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +42,7 @@ public class MarkLettersPostedTaskTest {
 
     ReportParser parser = new ReportParser();
     FtpAvailabilityChecker checker = mock(FtpAvailabilityChecker.class);
+    final LocalDateTime printedAt = LocalDateTime.parse("2018-01-01T10:30:53");
 
     @Test
     public void marks_uploaded_letters_as_posted() throws Exception {
@@ -62,8 +65,8 @@ public class MarkLettersPostedTaskTest {
         entityManager.flush();
         letter = repository.findById(letter.getId()).get();
         assertThat(letter.getState()).isEqualTo(LetterState.Posted);
-        // Check that the sent to print date has been set.
-        assertThat(letter.getSentToPrintAt()).isNotNull();
+        // Check that the printedAt date has been set.
+        assertThat(letter.getPrintedAt().toLocalDateTime()).isEqualTo(printedAt);
     }
 
     // Prepare a CSV in the format provided by Xerox for a given letter
@@ -71,7 +74,10 @@ public class MarkLettersPostedTaskTest {
     private void writeXeroxCsvForLetter(Letter l, File reportFolder) throws IOException {
         String content =
             "\"Date\",\"Time\",\"Filename\"\n"
-                + String.format("2018-01-01,10:30:53,first_second_%s\n", l.getId());
+                + String.format("%s,%s,first_second_%s\n",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd").format(printedAt),
+                DateTimeFormatter.ofPattern("hh:mm:ss").format(printedAt),
+                l.getId());
         File report = new File(reportFolder, l.getMessageId() + ".csv");
         report.createNewFile();
         Files.write(report.toPath(), content.getBytes());
