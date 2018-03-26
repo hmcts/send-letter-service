@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
-import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.slc.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.slc.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.slc.services.ReportParser;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
 
 import java.sql.Timestamp;
-import java.util.UUID;
+import java.util.Optional;
 
 import static java.time.LocalTime.now;
 
@@ -57,15 +56,19 @@ public class MarkLettersPostedTask {
     }
 
     private void updatePrintedAt(LetterPrintStatus letterPrintStatus) {
-        UUID id = letterPrintStatus.id;
-        Letter letter = repo.findById(id).orElseThrow(() -> new LetterNotFoundException(id));
-        if (LetterState.Uploaded == letter.getState()) {
-            letter.setPrintedAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
-            letter.setState(LetterState.Posted);
-            repo.save(letter);
-            logger.info("Marking letter {} as Posted", letter.getId());
+        Optional<Letter> optional = repo.findById(letterPrintStatus.id);
+        if (optional.isPresent()) {
+            Letter letter = optional.get();
+            if (LetterState.Uploaded == letter.getState()) {
+                letter.setPrintedAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
+                letter.setState(LetterState.Posted);
+                repo.save(letter);
+                logger.info("Marking letter {} as Posted", letter.getId());
+            } else {
+                logger.info("Skipping processing of letter {} in state {}", letter.getId(), letter.getState());
+            }
         } else {
-            logger.info("Skipping processing of letter {} in state {}", letter.getId(), letter.getState());
+            logger.error("Unknown letter {}", letterPrintStatus.id);
         }
     }
 }
