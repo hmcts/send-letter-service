@@ -1,35 +1,30 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.io.Resources;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
-import uk.gov.hmcts.reform.sendletter.model.in.Letter;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 
-import java.util.UUID;
+import java.io.IOException;
 
+import static com.google.common.io.Resources.getResource;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 
 public final class SampleData {
 
-    public static Letter letter() {
-
-        return new Letter(
-            singletonList(new Document(
-                uuid(),
-                ImmutableMap.of(
-                    "key1", uuid(),
-                    "key2", uuid()
+    public static LetterRequest letter() throws IOException {
+        return new LetterRequest(
+            singletonList(
+                new Document(
+                    Resources.toString(getResource("template.html"), UTF_8),
+                    ImmutableMap.of("name", "John")
                 )
-            )),
-            uuid(),
-            ImmutableMap.of(
-                "caseId", "12345",
-                "documentType", "counter-claim"
-            )
+            ),
+            "someType",
+            Maps.newHashMap()
         );
-    }
-
-    public static String uuid() {
-        return UUID.randomUUID().toString();
     }
 
     private SampleData() {
