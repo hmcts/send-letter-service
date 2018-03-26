@@ -40,9 +40,12 @@ public class LetterService {
 
         log.info("Generated message: id = {}", messageId);
 
-        Optional<Letter> result = letterRepository.findOptionalByMessageIdOrderByCreatedAtDesc(messageId);
+        Optional<Letter> result = letterRepository.findOptionalByMessageIdAndStateOrderByCreatedAtDesc(
+            messageId,
+            LetterState.Created
+        );
 
-        return result.filter(l -> l.getState().equals(LetterState.Created))
+        return result
             .map(l -> {
                 UUID id = l.getId();
                 log.info("Same message found already created. Returning {} letter", id);

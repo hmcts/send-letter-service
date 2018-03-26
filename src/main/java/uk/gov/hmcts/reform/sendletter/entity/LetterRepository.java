@@ -14,7 +14,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Stream<Letter> findByState(LetterState state);
 
-    Optional<Letter> findOptionalByMessageIdOrderByCreatedAtDesc(String messageId);
+    Optional<Letter> findOptionalByMessageIdAndStateOrderByCreatedAtDesc(String messageId, LetterState state);
 
     Optional<Letter> findOptionalById(UUID id);
 
