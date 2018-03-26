@@ -62,7 +62,7 @@ public class MarkLettersPostedTask {
         if (LetterState.Uploaded == letter.getState()) {
             letter.setSentToPrintAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
             letter.setState(LetterState.Posted);
-            repo.saveAndFlush(letter);
+            repo.save(letter);
             logger.info("Marking letter {} as Posted", letter.getId());
         } else {
             logger.info("Skipping processing of letter {} in state {}", letter.getId(), letter.getState());

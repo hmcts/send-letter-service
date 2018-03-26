@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalTime;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -59,7 +60,7 @@ public class MarkLettersPostedTaskTest {
         }
 
         // Check that the letter has moved to the Posted state.
-        entityManager.clear();
+        entityManager.flush();
         letter = repository.findById(letter.getId()).get();
         assertThat(letter.getState()).isEqualTo(LetterState.Posted);
         // Check that the sent to print date has been set.
