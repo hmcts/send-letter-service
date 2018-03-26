@@ -3,14 +3,17 @@ package uk.gov.hmcts.reform.sendletter.services;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.SampleData;
+import uk.gov.hmcts.reform.sendletter.config.SpyOnJpaConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
@@ -23,10 +26,15 @@ import javax.activation.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
+@ImportAutoConfiguration(SpyOnJpaConfig.class)
 public class LetterServiceTest {
 
     private static final String SERVICE_NAME = "a_service";
@@ -39,6 +47,11 @@ public class LetterServiceTest {
     @Before
     public void setUp() {
         service = new LetterService(letterRepository);
+    }
+
+    @After
+    public void tearDown() {
+        reset(letterRepository);
     }
 
     @Test
@@ -69,6 +82,9 @@ public class LetterServiceTest {
 
         // then
         assertThat(id1).isEqualByComparingTo(id2);
+
+        // and
+        verify(letterRepository).save(any(Letter.class));
     }
 
     @Test
@@ -88,6 +104,9 @@ public class LetterServiceTest {
 
         // then
         assertThat(id1).isNotEqualByComparingTo(id2);
+
+        // and
+        verify(letterRepository, times(2)).save(any(Letter.class));
     }
 
     @Test
