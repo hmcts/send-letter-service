@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
-import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.TelemetryConfiguration;
 import com.microsoft.applicationinsights.telemetry.Duration;
@@ -11,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
@@ -18,11 +19,11 @@ import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -40,6 +41,9 @@ public class AppInsightsTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
+    @Captor
+    private ArgumentCaptor<Map<String, String>> properties;
 
     @Mock
     private TelemetryClient telemetry;
@@ -133,13 +137,16 @@ public class AppInsightsTest {
 
         verify(telemetry).trackEvent(
             eq(AppInsights.LETTER_NOT_PRINTED),
-            eq(ImmutableMap.of(
-                "letterId", letterId.toString(),
-                "messageId", MESSAGE_ID,
-                "service", SERVICE_NAME,
-                "type", TYPE
-            )),
-            anyMapOf(String.class, Double.class)
+            properties.capture(),
+            eq(null)
+        );
+        assertThat(properties.getValue().keySet()).containsOnly(
+            "letterId",
+            "messageId",
+            "service",
+            "type",
+            "weekday",
+            "createdAt"
         );
     }
 

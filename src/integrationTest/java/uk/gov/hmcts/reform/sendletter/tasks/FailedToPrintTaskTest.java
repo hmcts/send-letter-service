@@ -22,8 +22,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -95,9 +93,6 @@ public class FailedToPrintTaskTest {
         // and
         assertThat(captor.getAllValues()).hasSize(1);
         assertThat(captor.getValue().getId()).isEqualTo(letter.getId());
-        assertThat(captor.getValue().getSentToPrintAt()).isEqualToIgnoringMillis(
-            Date.from(ZonedDateTime.now().minusDays(1).with(secondBeforeCutOff).toInstant())
-        );
     }
 
     @Test

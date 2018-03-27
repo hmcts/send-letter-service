@@ -14,6 +14,4 @@ public interface StaleLetter {
     String getType();
 
     Timestamp getCreatedAt();
-
-    Timestamp getSentToPrintAt();
 }

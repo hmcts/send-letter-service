@@ -1,22 +1,18 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
-import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
 import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class AppInsights extends AbstractAppInsights {
-
-    private static final int SECONDS_PER_DAY = 86_400;
 
     static final String SERVICE_BUS_DEPENDENCY = "ServiceBus";
     static final String SERVICE_BUS_MESSAGE_ACKNOWLEDGED = "MessageAcknowledged";
@@ -53,30 +49,18 @@ public class AppInsights extends AbstractAppInsights {
         );
     }
 
-    private double getSecondsSince(Timestamp time) {
-        if (time == null) {
-            return 0;
-        }
-
-        long seconds = SECONDS.between(time.toInstant(), Instant.now());
-
-        return ((double) seconds) / SECONDS_PER_DAY;
-    }
-
     public void trackNotPrintedLetter(StaleLetter staleLetter) {
-        telemetry.trackEvent(
-            LETTER_NOT_PRINTED,
-            ImmutableMap.of(
-                "letterId", staleLetter.getId().toString(),
-                "messageId", staleLetter.getMessageId(),
-                "service", staleLetter.getService(),
-                "type", staleLetter.getType()
-            ),
-            ImmutableMap.of(
-                "daysCreated", getSecondsSince(staleLetter.getCreatedAt()),
-                "daysSentToPrint", getSecondsSince(staleLetter.getSentToPrintAt())
-            )
-        );
+        LocalDateTime created = staleLetter.getCreatedAt().toLocalDateTime();
+        Map<String, String> properties = new HashMap<>();
+
+        properties.put("letterId", staleLetter.getId().toString());
+        properties.put("messageId", staleLetter.getMessageId());
+        properties.put("service", staleLetter.getService());
+        properties.put("type", staleLetter.getType());
+        properties.put("weekday", created.getDayOfWeek().name());
+        properties.put("createdAt", created.toLocalTime().toString());
+
+        telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
 
     public void trackException(Exception exception) {
