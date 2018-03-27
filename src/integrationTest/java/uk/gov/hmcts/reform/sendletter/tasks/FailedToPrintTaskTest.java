@@ -80,7 +80,7 @@ public class FailedToPrintTaskTest {
     @SuppressWarnings("VariableDeclarationUsageDistance")
     public void should_report_to_insights_when_there_is_an_unprinted_letter() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeCutOff);
+        Letter letter = createLetter(secondBeforeCutOff);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -101,7 +101,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_sent_to_print_happened_after_the_cutoff() {
         // given
-        createLetterAndReturn(cutOff);
+        createLetter(cutOff);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -118,7 +118,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_not_sent_to_print() {
         // given
-        createLetterAndReturn(null);
+        createLetter(null);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -135,7 +135,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_it_is_marked_as_failed() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeCutOff);
+        Letter letter = createLetter(secondBeforeCutOff);
         letter.hasFailed(true);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
@@ -154,7 +154,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_it_is_already_printed() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeCutOff);
+        Letter letter = createLetter(secondBeforeCutOff);
         letter.setState(LetterState.Posted);
         letter.setPrintedAt(Timestamp.from(Instant.now()));
 
@@ -171,7 +171,7 @@ public class FailedToPrintTaskTest {
         assertThat(captor.getAllValues()).isEmpty();
     }
 
-    private Letter createLetterAndReturn(LocalTime withSentToPrintAt) {
+    private Letter createLetter(LocalTime withSentToPrintAt) {
         Letter letter = new Letter(MessageIdProvider.randomMessageId(), "service", null, "type", null);
 
         if (withSentToPrintAt != null) {
