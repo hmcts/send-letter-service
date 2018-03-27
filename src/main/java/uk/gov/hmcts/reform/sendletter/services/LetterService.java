@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,11 @@ public class LetterService {
 
     private final PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator());
     private final LetterRepository letterRepository;
+    private final ObjectMapper mapper;
 
-    public LetterService(LetterRepository letterRepository) {
+    public LetterService(LetterRepository letterRepository, ObjectMapper mapper) {
         this.letterRepository = letterRepository;
+        this.mapper = mapper;
     }
 
     public UUID send(LetterRequest letter, String serviceName) {
@@ -57,7 +60,13 @@ public class LetterService {
     private UUID saveNewLetterAndReturnId(LetterRequest letterRequest, String messageId, String serviceName) {
         byte[] pdf = pdfCreator.create(letterRequest);
 
-        Letter letter = new Letter(messageId, serviceName, null, letterRequest.type, pdf);
+        Letter letter = new Letter(
+            messageId,
+            serviceName,
+            mapper.valueToTree(letterRequest.additionalData),
+            letterRequest.type,
+            pdf
+        );
 
         UUID letterId = letterRepository.save(letter).getId();
 

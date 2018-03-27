@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
@@ -44,9 +45,11 @@ public class LetterServiceTest {
     @Autowired
     private LetterRepository letterRepository;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Before
     public void setUp() {
-        service = new LetterService(letterRepository);
+        service = new LetterService(letterRepository, mapper);
     }
 
     @After
