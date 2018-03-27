@@ -13,9 +13,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -116,14 +118,13 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        Letter letter = new Letter(
-            MESSAGE_ID,
-            SERVICE_NAME,
-            null,
-            TYPE,
-            null
-        );
-        ReflectionTestUtils.setField(letter, "id", UUID.randomUUID());
+        StaleLetter letter = mock(StaleLetter.class);
+        UUID letterId = UUID.randomUUID();
+        when(letter.getId()).thenReturn(letterId);
+        when(letter.getMessageId()).thenReturn(MESSAGE_ID);
+        when(letter.getService()).thenReturn(SERVICE_NAME);
+        when(letter.getType()).thenReturn(TYPE);
+        when(letter.getCreatedAt()).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
 
         context.setInstrumentationKey(IKEY);
         AppInsights insights = new AppInsights(telemetry);
@@ -133,10 +134,10 @@ public class AppInsightsTest {
         verify(telemetry).trackEvent(
             eq(AppInsights.LETTER_NOT_PRINTED),
             eq(ImmutableMap.of(
-                "letterId", letter.getId().toString(),
-                "messageId", letter.getMessageId(),
-                "service", letter.getService(),
-                "type", letter.getType()
+                "letterId", letterId.toString(),
+                "messageId", MESSAGE_ID,
+                "service", SERVICE_NAME,
+                "type", TYPE
             )),
             anyMapOf(String.class, Double.class)
         );

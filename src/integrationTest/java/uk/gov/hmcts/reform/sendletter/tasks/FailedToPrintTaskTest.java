@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
@@ -65,7 +66,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_do_nothing_when_there_are_no_unprinted_letters() {
         // given
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         // when
         task.run();
@@ -83,7 +84,7 @@ public class FailedToPrintTaskTest {
         // given
         Letter letter = createLetter(secondBeforeCutOff);
 
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         // when
         task.run();
@@ -104,7 +105,7 @@ public class FailedToPrintTaskTest {
         // given
         createLetter(cutOff);
 
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         // when
         task.run();
@@ -121,7 +122,7 @@ public class FailedToPrintTaskTest {
         // given
         createLetter(null);
 
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         // when
         task.run();
@@ -139,7 +140,7 @@ public class FailedToPrintTaskTest {
         Letter letter = createLetter(secondBeforeCutOff);
         letter.hasFailed(true);
 
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         //when
         repository.save(letter);
@@ -159,7 +160,7 @@ public class FailedToPrintTaskTest {
         letter.setState(LetterState.Posted);
         letter.setPrintedAt(Timestamp.from(Instant.now()));
 
-        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
+        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
 
         // when
         repository.save(letter);

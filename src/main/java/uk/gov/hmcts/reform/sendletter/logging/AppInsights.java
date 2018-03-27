@@ -5,7 +5,7 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
-import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -63,18 +63,18 @@ public class AppInsights extends AbstractAppInsights {
         return ((double) seconds) / SECONDS_PER_DAY;
     }
 
-    public void trackNotPrintedLetter(Letter notPrintedLetter) {
+    public void trackNotPrintedLetter(StaleLetter staleLetter) {
         telemetry.trackEvent(
             LETTER_NOT_PRINTED,
             ImmutableMap.of(
-                "letterId", notPrintedLetter.getId().toString(),
-                "messageId", notPrintedLetter.getMessageId(),
-                "service", notPrintedLetter.getService(),
-                "type", notPrintedLetter.getType()
+                "letterId", staleLetter.getId().toString(),
+                "messageId", staleLetter.getMessageId(),
+                "service", staleLetter.getService(),
+                "type", staleLetter.getType()
             ),
             ImmutableMap.of(
-                "daysCreated", getSecondsSince(notPrintedLetter.getCreatedAt()),
-                "daysSentToPrint", getSecondsSince(notPrintedLetter.getSentToPrintAt())
+                "daysCreated", getSecondsSince(staleLetter.getCreatedAt()),
+                "daysSentToPrint", getSecondsSince(staleLetter.getSentToPrintAt())
             )
         );
     }
