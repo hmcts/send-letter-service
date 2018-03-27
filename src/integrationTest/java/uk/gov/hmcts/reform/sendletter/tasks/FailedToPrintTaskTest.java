@@ -93,7 +93,7 @@ public class FailedToPrintTaskTest {
 
         // and
         assertThat(captor.getAllValues()).hasSize(1);
-        assertThat(captor.getValue().getId()).isEqualByComparingTo(letter.getId());
+        assertThat(captor.getValue().getId()).isEqualTo(letter.getId());
         assertThat(captor.getValue().getSentToPrintAt()).isEqualToIgnoringMillis(
             Date.from(ZonedDateTime.now().minusDays(1).with(secondBeforeCutOff).toInstant())
         );
