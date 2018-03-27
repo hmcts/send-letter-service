@@ -128,7 +128,7 @@ public class AppInsightsTest {
         when(letter.getMessageId()).thenReturn(MESSAGE_ID);
         when(letter.getService()).thenReturn(SERVICE_NAME);
         when(letter.getType()).thenReturn(TYPE);
-        when(letter.getCreatedAt()).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
+        when(letter.getSentToPrintAt()).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
 
         context.setInstrumentationKey(IKEY);
         AppInsights insights = new AppInsights(telemetry);
@@ -146,7 +146,7 @@ public class AppInsightsTest {
             "service",
             "type",
             "weekday",
-            "createdAt"
+            "sentToPrintAt"
         );
     }
 

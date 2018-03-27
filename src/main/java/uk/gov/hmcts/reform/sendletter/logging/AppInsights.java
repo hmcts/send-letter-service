@@ -50,15 +50,15 @@ public class AppInsights extends AbstractAppInsights {
     }
 
     public void trackNotPrintedLetter(StaleLetter staleLetter) {
-        LocalDateTime created = staleLetter.getCreatedAt().toLocalDateTime();
+        LocalDateTime sentToPrint = staleLetter.getSentToPrintAt().toLocalDateTime();
         Map<String, String> properties = new HashMap<>();
 
         properties.put("letterId", staleLetter.getId().toString());
         properties.put("messageId", staleLetter.getMessageId());
         properties.put("service", staleLetter.getService());
         properties.put("type", staleLetter.getType());
-        properties.put("weekday", created.getDayOfWeek().name());
-        properties.put("createdAt", created.toLocalTime().toString());
+        properties.put("weekday", sentToPrint.getDayOfWeek().name());
+        properties.put("sentToPrintAt", sentToPrint.toLocalTime().toString());
 
         telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
