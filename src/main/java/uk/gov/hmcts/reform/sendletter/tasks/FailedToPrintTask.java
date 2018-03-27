@@ -43,7 +43,7 @@ public class FailedToPrintTask {
                 .with(staleCutOffTime)
         );
 
-        repo.filterStaleLetters(LetterState.Uploaded, staleCutOff)
+        repo.findStaleLetters(LetterState.Uploaded, staleCutOff)
             .forEach(insights::trackNotPrintedLetter);
     }
 }

@@ -24,7 +24,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     Stream<Letter> findByState(LetterState state);
 
     @Query(value = STALE_LETTERS_QUERY)
-    Stream<StaleLetter> filterStaleLetters(LetterState state, Timestamp before);
+    Stream<StaleLetter> findStaleLetters(LetterState state, Timestamp before);
 
     Optional<Letter> findByMessageIdAndStateOrderByCreatedAtDesc(String messageId, LetterState state);
 
