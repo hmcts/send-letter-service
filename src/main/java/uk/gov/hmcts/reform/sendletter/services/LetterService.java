@@ -5,6 +5,7 @@ import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
@@ -36,6 +37,7 @@ public class LetterService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public UUID send(LetterRequest letter, String serviceName) {
         Asserts.notEmpty(serviceName, "serviceName");
 
