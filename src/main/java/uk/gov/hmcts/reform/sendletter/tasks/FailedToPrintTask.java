@@ -41,7 +41,7 @@ public class FailedToPrintTask {
                 .toInstant()
         );
 
-        repo.findByStateAndSentToPrintAtBeforeAndIsFailedFalse(LetterState.Uploaded, staleCutOff)
+        repo.filterStaleLetters(LetterState.Uploaded, staleCutOff)
             .forEach(insights::trackNotPrintedLetter);
     }
 }
