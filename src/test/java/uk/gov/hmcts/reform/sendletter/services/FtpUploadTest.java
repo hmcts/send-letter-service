@@ -5,7 +5,6 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
-import uk.gov.hmcts.reform.slc.services.steps.sftpupload.FtpClient;
 
 import java.io.File;
 
@@ -25,7 +24,7 @@ public class FtpUploadTest {
         PdfDoc doc = new PdfDoc("hello.txt", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getClient(server.port);
-            client.upload(doc);
+            client.upload(doc, false);
             File[] files = server.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
             String content = new String(Files.toByteArray(files[0]));
