@@ -62,7 +62,7 @@ public class FailedToPrintTaskTest {
     }
 
     @Test
-    public void should_return_204_when_there_are_no_unprinted_letters() {
+    public void should_do_nothing_when_there_are_no_unprinted_letters() {
         // given
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -78,7 +78,7 @@ public class FailedToPrintTaskTest {
 
     @Test
     @SuppressWarnings("VariableDeclarationUsageDistance")
-    public void should_return_204_when_there_is_an_unprinted_letter() {
+    public void should_report_to_insights_when_there_is_an_unprinted_letter() {
         // given
         Letter letter = createLetterAndReturn(secondBeforeCutOff);
 
@@ -99,7 +99,7 @@ public class FailedToPrintTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_sent_to_print_happened_after_the_deadline() {
+    public void should_not_pick_up_letter_if_sent_to_print_happened_after_the_cutoff() {
         // given
         createLetterAndReturn(cutOff);
 
