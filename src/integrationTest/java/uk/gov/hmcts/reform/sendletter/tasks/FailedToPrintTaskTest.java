@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
+import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
 
 import java.sql.Timestamp;
@@ -33,9 +34,12 @@ public class FailedToPrintTaskTest {
     @Autowired
     LetterRepository repository;
 
-    private static final LocalTime fivePm = LocalTime.of(17, 0, 0);
+    @Autowired
+    private FtpAvailabilityChecker availabilityChecker;
 
-    private static final LocalTime secondBeforeFivePm = LocalTime.of(16, 59, 59);
+    private LocalTime cutOff;
+
+    private LocalTime secondBeforeCutOff;
 
     @Mock
     private AppInsights insights;
@@ -44,7 +48,9 @@ public class FailedToPrintTaskTest {
 
     @Before
     public void setUp() {
-        task = new FailedToPrintTask(repository, insights);
+        task = new FailedToPrintTask(repository, insights, availabilityChecker);
+        cutOff = availabilityChecker.getDowntimeStart();
+        secondBeforeCutOff = cutOff.minusSeconds(1);
 
         // making sure each test has fresh table
         repository.deleteAll();
@@ -69,7 +75,7 @@ public class FailedToPrintTaskTest {
     @SuppressWarnings("VariableDeclarationUsageDistance")
     public void should_return_204_when_there_is_an_unprinted_letter() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeFivePm);
+        Letter letter = createLetterAndReturn(secondBeforeCutOff);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -83,14 +89,14 @@ public class FailedToPrintTaskTest {
         assertThat(captor.getAllValues()).hasSize(1);
         assertThat(captor.getValue().getId()).isEqualByComparingTo(letter.getId());
         assertThat(captor.getValue().getSentToPrintAt()).isEqualToIgnoringMillis(
-            Date.from(ZonedDateTime.now().minusDays(1).with(secondBeforeFivePm).toInstant())
+            Date.from(ZonedDateTime.now().minusDays(1).with(secondBeforeCutOff).toInstant())
         );
     }
 
     @Test
     public void should_not_pick_up_letter_if_sent_to_print_happened_after_the_deadline() {
         // given
-        createLetterAndReturn(fivePm);
+        createLetterAndReturn(cutOff);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -124,7 +130,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_it_is_marked_as_failed() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeFivePm);
+        Letter letter = createLetterAndReturn(secondBeforeCutOff);
         letter.hasFailed(true);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
@@ -143,7 +149,7 @@ public class FailedToPrintTaskTest {
     @Test
     public void should_not_pick_up_letter_if_it_is_already_printed() {
         // given
-        Letter letter = createLetterAndReturn(secondBeforeFivePm);
+        Letter letter = createLetterAndReturn(secondBeforeCutOff);
         letter.setState(LetterState.Posted);
         letter.setPrintedAt(Timestamp.from(Instant.now()));
 

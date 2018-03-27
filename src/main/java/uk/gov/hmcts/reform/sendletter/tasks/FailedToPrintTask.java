@@ -6,23 +6,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
+import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 
 import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 public class FailedToPrintTask {
-    private static final LocalTime STALE_CUT_OFF_TIME = LocalTime.of(17, 0, 0);
 
     private static final Logger logger = LoggerFactory.getLogger(FailedToPrintTask.class);
 
     private final LetterRepository repo;
     private final AppInsights insights;
+    private final LocalTime staleCutOffTime;
 
     @Autowired
-    public FailedToPrintTask(LetterRepository repo, AppInsights insights) {
+    public FailedToPrintTask(
+        LetterRepository repo,
+        AppInsights insights,
+        FtpAvailabilityChecker availabilityChecker
+    ) {
         this.repo = repo;
         this.insights = insights;
+        this.staleCutOffTime = availabilityChecker.getDowntimeStart();
     }
 
     public void run() {
@@ -31,7 +37,7 @@ public class FailedToPrintTask {
         Timestamp staleCutOff = Timestamp.from(
             ZonedDateTime.now()
                 .minusDays(1)
-                .with(STALE_CUT_OFF_TIME)
+                .with(staleCutOffTime)
                 .toInstant()
         );
 
