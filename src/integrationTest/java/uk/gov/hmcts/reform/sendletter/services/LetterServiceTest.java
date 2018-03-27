@@ -45,11 +45,9 @@ public class LetterServiceTest {
     @Autowired
     private LetterRepository letterRepository;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
     @Before
     public void setUp() {
-        service = new LetterService(letterRepository, mapper);
+        service = new LetterService(letterRepository, new ObjectMapper());
     }
 
     @After
@@ -75,10 +73,10 @@ public class LetterServiceTest {
         // given
         LetterRequest sampleRequest = SampleData.letter();
         UUID id1 = service.send(sampleRequest, SERVICE_NAME);
-        Letter result = letterRepository.findOne(id1);
+        Letter letter = letterRepository.findOne(id1);
 
         // and
-        assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
+        assertThat(letter.getState()).isEqualByComparingTo(LetterState.Created);
 
         // when
         UUID id2 = service.send(sampleRequest, SERVICE_NAME);
@@ -95,14 +93,14 @@ public class LetterServiceTest {
         // given
         LetterRequest sampleRequest = SampleData.letter();
         UUID id1 = service.send(sampleRequest, SERVICE_NAME);
-        Letter result = letterRepository.findOne(id1);
+        Letter letter = letterRepository.findOne(id1);
 
         // and
-        assertThat(result.getState()).isEqualByComparingTo(LetterState.Created);
+        assertThat(letter.getState()).isEqualByComparingTo(LetterState.Created);
 
         // when
-        result.setState(LetterState.Uploaded);
-        letterRepository.saveAndFlush(result);
+        letter.setState(LetterState.Uploaded);
+        letterRepository.saveAndFlush(letter);
         UUID id2 = service.send(sampleRequest, SERVICE_NAME);
 
         // then
