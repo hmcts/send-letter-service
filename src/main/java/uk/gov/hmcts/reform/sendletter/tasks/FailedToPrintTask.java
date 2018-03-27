@@ -12,6 +12,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * Task to run report on unprinted letters and report them to AppInsights.
+ */
 public class FailedToPrintTask {
 
     private static final Logger logger = LoggerFactory.getLogger(FailedToPrintTask.class);
