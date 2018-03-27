@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -177,10 +178,9 @@ public class FailedToPrintTaskTest {
         if (withSentToPrintAt != null) {
             letter.setState(LetterState.Uploaded);
             letter.setSentToPrintAt(
-                Timestamp.from(ZonedDateTime.now()
+                Timestamp.valueOf(LocalDateTime.now()
                     .minusDays(1)
                     .with(withSentToPrintAt)
-                    .toInstant()
                 )
             );
         }

@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 
 public class FailedToPrintTask {
 
@@ -34,11 +34,10 @@ public class FailedToPrintTask {
     public void run() {
         logger.trace("Running job");
 
-        Timestamp staleCutOff = Timestamp.from(
-            ZonedDateTime.now()
+        Timestamp staleCutOff = Timestamp.valueOf(
+            LocalDateTime.now()
                 .minusDays(1)
                 .with(staleCutOffTime)
-                .toInstant()
         );
 
         repo.filterStaleLetters(LetterState.Uploaded, staleCutOff)
