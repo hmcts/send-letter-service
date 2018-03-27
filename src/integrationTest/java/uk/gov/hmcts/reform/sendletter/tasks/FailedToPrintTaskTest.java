@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,8 +35,11 @@ public class FailedToPrintTaskTest {
     @Autowired
     LetterRepository repository;
 
-    @Autowired
-    private FtpAvailabilityChecker availabilityChecker;
+    @Value("${ftp.downtime.from}")
+    private String downtimeFromHour;
+
+    @Value("${ftp.downtime.to}")
+    private String downtimeToHour;
 
     private LocalTime cutOff;
 
@@ -48,6 +52,7 @@ public class FailedToPrintTaskTest {
 
     @Before
     public void setUp() {
+        FtpAvailabilityChecker availabilityChecker = new FtpAvailabilityChecker(downtimeFromHour, downtimeToHour);
         task = new FailedToPrintTask(repository, insights, availabilityChecker);
         cutOff = availabilityChecker.getDowntimeStart();
         secondBeforeCutOff = cutOff.minusSeconds(1);
