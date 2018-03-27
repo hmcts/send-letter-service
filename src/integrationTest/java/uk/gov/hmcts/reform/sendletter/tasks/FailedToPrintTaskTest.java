@@ -96,7 +96,7 @@ public class FailedToPrintTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_sent_to_print_happened_after_the_cutoff() {
+    public void should_not_pick_up_letter_if_sent_to_print_happened_from_the_cutoff() {
         // given
         createLetter(cutOff);
 
