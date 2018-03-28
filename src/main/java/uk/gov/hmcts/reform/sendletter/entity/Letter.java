@@ -120,6 +120,10 @@ public class Letter {
         return isFailed;
     }
 
+    public void hasFailed(boolean isFailed) {
+        this.isFailed = isFailed;
+    }
+
     public JsonNode getAdditionalData() {
         return additionalData;
     }

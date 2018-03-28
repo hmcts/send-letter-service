@@ -7,10 +7,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.zip.ZippedDoc;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
+import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
@@ -26,12 +28,14 @@ public class UploadLettersTaskTest {
     @Mock private LetterRepository repo;
     @Mock private Zipper zipper;
     @Mock private FtpClient ftpClient;
+    @Mock private FtpAvailabilityChecker availabilityChecker;
 
     private UploadLettersTask task;
 
     @Before
     public void setUp() throws Exception {
-        this.task = new UploadLettersTask(repo, zipper, ftpClient);
+        given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
+        this.task = new UploadLettersTask(repo, zipper, ftpClient, availabilityChecker);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services;
+package uk.gov.hmcts.reform.sendletter.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,5 +25,9 @@ public class FtpAvailabilityChecker {
         } else {
             return time.isBefore(downtimeStart) && time.isAfter(downtimeEnd);
         }
+    }
+
+    public LocalTime getDowntimeStart() {
+        return downtimeStart;
     }
 }

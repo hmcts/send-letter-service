@@ -4,14 +4,20 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class AppInsights extends AbstractAppInsights {
 
     static final String SERVICE_BUS_DEPENDENCY = "ServiceBus";
     static final String SERVICE_BUS_MESSAGE_ACKNOWLEDGED = "MessageAcknowledged";
+
+    static final String LETTER_NOT_PRINTED = "LetterNotPrinted";
 
     public AppInsights(TelemetryClient telemetry) {
         super(telemetry);
@@ -41,6 +47,20 @@ public class AppInsights extends AbstractAppInsights {
             new Duration(duration.toMillis()),
             success
         );
+    }
+
+    public void trackNotPrintedLetter(StaleLetter staleLetter) {
+        LocalDateTime sentToPrint = staleLetter.getSentToPrintAt().toLocalDateTime();
+        Map<String, String> properties = new HashMap<>();
+
+        properties.put("letterId", staleLetter.getId().toString());
+        properties.put("messageId", staleLetter.getMessageId());
+        properties.put("service", staleLetter.getService());
+        properties.put("type", staleLetter.getType());
+        properties.put("weekday", sentToPrint.getDayOfWeek().name());
+        properties.put("sentToPrintAt", sentToPrint.toLocalTime().toString());
+
+        telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
 
     public void trackException(Exception exception) {
