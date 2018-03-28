@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
@@ -65,15 +66,17 @@ public class UploadLettersTask {
 
                 // remove pdf content, as it's no longer needed
                 letter.setPdf(null);
-            } catch (Exception e) {
-                letter.setState(LetterState.FailedToUpload);
+            } catch (FtpException exception) {
+                letter.setStatus(LetterStatus.FailedToUpload);
 
-                logger.error("Exception uploading letter {}", letter.getId(), e);
+                logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
+            } catch (IOException exception) {
+                logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
 
             repo.saveAndFlush(letter);
 
-            logger.debug("Marked letter {} as {}", letter.getId(), letter.getState());
+            logger.debug("Marked letter {} as {}", letter.getId(), letter.getStatus());
         });
     }
 
