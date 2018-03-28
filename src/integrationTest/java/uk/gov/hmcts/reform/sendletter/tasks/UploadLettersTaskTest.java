@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.DocumentZipException;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.UUID;
 import javax.persistence.EntityManager;
@@ -135,7 +135,7 @@ public class UploadLettersTaskTest {
             availabilityChecker
         );
 
-        doThrow(IOException.class).when(failingZipper).zip(anyString(), any(PdfDoc.class));
+        doThrow(DocumentZipException.class).when(failingZipper).zip(anyString(), any(PdfDoc.class));
 
         task.run();
 
