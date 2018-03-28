@@ -113,7 +113,7 @@ public class UploadLettersTaskTest {
             // Clear the JPA cache to force a read.
             entityManager.clear();
             Letter l = repository.findById(id).get();
-            assertThat(l.getState()).isEqualTo(LetterState.FailedToUpload);
+            assertThat(l.getStatus()).isEqualTo(LetterStatus.FailedToUpload);
             assertThat(l.getSentToPrintAt()).isNull();
             assertThat(l.getPdf()).isNotNull();
         }
@@ -141,7 +141,7 @@ public class UploadLettersTaskTest {
         // Clear the JPA cache to force a read.
         entityManager.clear();
         Letter l = repository.findById(id).get();
-        assertThat(l.getState()).isEqualTo(LetterState.Created);
+        assertThat(l.getStatus()).isEqualTo(LetterStatus.Created);
         assertThat(l.getSentToPrintAt()).isNull();
         assertThat(l.getPdf()).isNotNull();
         verify(ftpClient, never()).upload(any(LocalSourceFile.class), anyBoolean());
