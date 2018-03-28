@@ -66,18 +66,16 @@ public class UploadLettersTask {
 
                 // remove pdf content, as it's no longer needed
                 letter.setPdf(null);
-            } catch (FtpException exception) {
-                letter.setStatus(LetterStatus.FailedToUpload);
 
-                logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
-            } catch (IOException exception) {
-                logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
-            }
-
-            if (!letter.getStatus().equals(LetterStatus.Created)) {
                 repo.saveAndFlush(letter);
 
                 logger.debug("Marked letter {} as {}", letter.getId(), letter.getStatus());
+            } catch (FtpException exception) {
+                logger.error("Exception uploading letter {}", letter.getId());
+
+                throw exception;
+            } catch (IOException exception) {
+                logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
         });
     }

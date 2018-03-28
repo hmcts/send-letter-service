@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -104,7 +106,8 @@ public class UploadLettersTaskTest {
                 availabilityChecker
             );
 
-            task.run();
+            Throwable exception = catchThrowable(task::run);
+            assertThat(exception).isInstanceOf(FtpException.class);
 
             // file does not exist in SFTP site.
             File[] files = server.pdfFolder.listFiles();
@@ -113,7 +116,7 @@ public class UploadLettersTaskTest {
             // Clear the JPA cache to force a read.
             entityManager.clear();
             Letter l = repository.findById(id).get();
-            assertThat(l.getStatus()).isEqualTo(LetterStatus.FailedToUpload);
+            assertThat(l.getStatus()).isEqualTo(LetterStatus.Created);
             assertThat(l.getSentToPrintAt()).isNull();
             assertThat(l.getPdf()).isNotNull();
         }
