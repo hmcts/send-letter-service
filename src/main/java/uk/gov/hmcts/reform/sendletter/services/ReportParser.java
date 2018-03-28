@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services;
+package uk.gov.hmcts.reform.sendletter.services;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

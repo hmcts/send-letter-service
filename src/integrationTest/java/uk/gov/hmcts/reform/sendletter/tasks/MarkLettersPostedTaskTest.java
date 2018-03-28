@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
+import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.util.XeroxReportWriter;
-import uk.gov.hmcts.reform.slc.services.ReportParser;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
