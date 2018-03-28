@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.slc.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.InMemoryDownloadedFile;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.Report;
-import uk.gov.hmcts.reform.slc.services.steps.sftpupload.exceptions.FtpStepException;
+import uk.gov.hmcts.reform.sendletter.exception.FtpStepException;
 
 import java.io.IOException;
 import java.time.Duration;

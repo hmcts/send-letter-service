@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services.steps.sftpupload.exceptions;
+package uk.gov.hmcts.reform.sendletter.exception;
 
 public class FtpStepException extends RuntimeException {
     public FtpStepException(String message, Throwable cause) {
