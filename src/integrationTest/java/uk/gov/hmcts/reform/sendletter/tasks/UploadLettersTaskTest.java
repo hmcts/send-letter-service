@@ -57,7 +57,7 @@ public class UploadLettersTaskTest {
             UploadLettersTask task = new UploadLettersTask(
                 repository,
                 new Zipper(),
-                FtpHelper.getClient(server.port),
+                FtpHelper.getSuccessfulClient(LocalSftpServer.port),
                 availabilityChecker
             );
 
