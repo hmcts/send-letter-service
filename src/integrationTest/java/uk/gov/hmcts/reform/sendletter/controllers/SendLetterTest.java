@@ -73,7 +73,7 @@ public class SendLetterTest {
 
     @Test
     public void should_upload_letter_and_mark_posted() throws Exception {
-        MvcResult result = send(readResource("letter.json"))
+        send(readResource("letter.json"))
             .andExpect(status().isOk())
             .andReturn();
 

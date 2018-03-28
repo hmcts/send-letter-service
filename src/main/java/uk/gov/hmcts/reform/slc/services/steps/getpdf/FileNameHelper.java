@@ -14,8 +14,8 @@ public final class FileNameHelper {
     }
 
     public static String generateName(String type, String serviceName, UUID id, String extension) {
-        serviceName = serviceName.replace(SEPARATOR, "");
-        return type + SEPARATOR + serviceName + SEPARATOR + id + "." + extension;
+        String strippedService = serviceName.replace(SEPARATOR, "");
+        return type + SEPARATOR + strippedService + SEPARATOR + id + "." + extension;
     }
 
     public static UUID extractId(String fileName) {
