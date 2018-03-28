@@ -10,11 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FtpAvailabilityCheckerTest {
 
-    private static AbstractBooleanAssert<?> assertThatFtpCheck(String fromHour, String toHour, String now) {
-        FtpAvailabilityChecker checker = new FtpAvailabilityChecker(fromHour, toHour);
-        return assertThat(checker.isFtpAvailable(LocalTime.parse(now)));
-    }
-
     @Test
     public void ftp_is_available_before_downtime() {
         assertThatFtpCheck("16:00", "17:00", "15:00").isTrue();
@@ -68,5 +63,10 @@ public class FtpAvailabilityCheckerTest {
     @Test(expected = DateTimeParseException.class)
     public void throws_exception_if_to_hour_is_invalid() {
         new FtpAvailabilityChecker("01:00", "2:00");
+    }
+
+    private static AbstractBooleanAssert<?> assertThatFtpCheck(String fromHour, String toHour, String now) {
+        FtpAvailabilityChecker checker = new FtpAvailabilityChecker(fromHour, toHour);
+        return assertThat(checker.isFtpAvailable(LocalTime.parse(now)));
     }
 }
