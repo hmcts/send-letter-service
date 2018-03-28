@@ -81,7 +81,7 @@ public class SendLetterTest {
             FtpClient client = FtpHelper.getClient(LocalSftpServer.port);
 
             // Run the upload letters task
-            new UploadLettersTask(repository, new Zipper(), client).run();
+            new UploadLettersTask(repository, new Zipper(), client, checker).run();
 
             // Mimic Xerox and prepare a CSV report based on the PDFs that have been uploaded.
             Stream<UUID> letterIds = Arrays.stream(server.pdfFolder.list()).map(FileNameHelper::extractId);
