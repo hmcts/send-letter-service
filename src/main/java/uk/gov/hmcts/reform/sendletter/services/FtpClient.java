@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.slc.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.InMemoryDownloadedFile;
 import uk.gov.hmcts.reform.slc.services.steps.sftpupload.Report;
-import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 
 import java.io.IOException;
 import java.time.Duration;
