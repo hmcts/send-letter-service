@@ -29,12 +29,13 @@ public class UploadLettersTask {
     public static String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
     private final LetterRepository repo;
-    private final Zipper zipper = new Zipper();
+    private final Zipper zipper;
     private final FtpClient ftp;
 
     @Autowired
-    public UploadLettersTask(LetterRepository repo, FtpClient ftp) {
+    public UploadLettersTask(LetterRepository repo, Zipper zipper, FtpClient ftp) {
         this.repo = repo;
+        this.zipper = zipper;
         this.ftp = ftp;
     }
 

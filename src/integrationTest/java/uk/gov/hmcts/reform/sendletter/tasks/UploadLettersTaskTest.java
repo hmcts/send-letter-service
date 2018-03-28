@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
+import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.File;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class UploadLettersTaskTest {
 
         // Invoke the upload job.
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            UploadLettersTask task = new UploadLettersTask(repository, FtpHelper.getClient(server.port));
+            UploadLettersTask task = new UploadLettersTask(repository, new Zipper(), FtpHelper.getClient(server.port));
 
             task.run();
 

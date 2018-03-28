@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
+import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.sendletter.tasks.MarkLettersPostedTask;
 import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 import uk.gov.hmcts.reform.sendletter.util.XeroxReportWriter;
@@ -73,7 +74,7 @@ public class SendLetterTest {
             FtpClient client = FtpHelper.getClient(LocalSftpServer.port);
 
             // Run the upload letters task
-            new UploadLettersTask(repository, client).run();
+            new UploadLettersTask(repository, new Zipper(), client).run();
 
             // Mimic Xerox and prepare a CSV report based on the PDFs that have been uploaded.
             Stream<UUID> letterIds = Arrays.stream(server.pdfFolder.list()).map(FileNameHelper::extractId);
