@@ -15,9 +15,9 @@ public class FtpUploadTest {
 
     @Test
     public void connects_to_ftp() throws Exception {
-        LocalSftpServer server = LocalSftpServer.create();
-        FtpHelper.getSuccessfulClient(port).testConnection();
-        server.close();
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            FtpHelper.getSuccessfulClient(port).testConnection();
+        }
     }
 
     @Test
