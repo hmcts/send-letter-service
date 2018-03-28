@@ -63,16 +63,15 @@ public class UploadLettersTaskTest {
     public void uploads_file_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
         LetterService s = new LetterService(repository, new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
+        UploadLettersTask task = new UploadLettersTask(
+            repository,
+            new Zipper(),
+            FtpHelper.getSuccessfulClient(LocalSftpServer.port),
+            availabilityChecker
+        );
 
         // Invoke the upload job.
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            UploadLettersTask task = new UploadLettersTask(
-                repository,
-                new Zipper(),
-                FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-                availabilityChecker
-            );
-
             task.run();
 
             // file should exist in SFTP site.
@@ -96,16 +95,15 @@ public class UploadLettersTaskTest {
     public void should_fail_to_upload_to_sftp_and_throw_the_causing_exception() throws Exception {
         LetterService s = new LetterService(repository, new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
+        UploadLettersTask task = new UploadLettersTask(
+            repository,
+            new Zipper(),
+            FtpHelper.getFailingClient(LocalSftpServer.port),
+            availabilityChecker
+        );
 
         // Invoke the upload job.
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            UploadLettersTask task = new UploadLettersTask(
-                repository,
-                new Zipper(),
-                FtpHelper.getFailingClient(LocalSftpServer.port),
-                availabilityChecker
-            );
-
             Throwable exception = catchThrowable(task::run);
             assertThat(exception).isInstanceOf(FtpException.class);
 
