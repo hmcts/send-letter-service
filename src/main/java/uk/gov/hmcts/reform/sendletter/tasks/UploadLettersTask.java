@@ -74,9 +74,11 @@ public class UploadLettersTask {
                 logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
 
-            repo.saveAndFlush(letter);
+            if (!letter.getStatus().equals(LetterStatus.Created)) {
+                repo.saveAndFlush(letter);
 
-            logger.debug("Marked letter {} as {}", letter.getId(), letter.getStatus());
+                logger.debug("Marked letter {} as {}", letter.getId(), letter.getStatus());
+            }
         });
     }
 
