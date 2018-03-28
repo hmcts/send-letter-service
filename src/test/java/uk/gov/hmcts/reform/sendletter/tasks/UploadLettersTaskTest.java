@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,8 @@ import java.util.stream.Stream;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterState.Created;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
@@ -38,6 +41,11 @@ public class UploadLettersTaskTest {
         this.task = new UploadLettersTask(repo, zipper, ftpClient, availabilityChecker);
     }
 
+    @After
+    public void tearDown() {
+        reset(availabilityChecker, repo);
+    }
+
     @Test
     public void should_handle_smoke_test_letters() throws Exception {
         given(zipper.zip(any(), any())).willReturn(new ZippedDoc("hello.zip", "hello".getBytes()));
@@ -49,6 +57,16 @@ public class UploadLettersTaskTest {
         givenDbContains(letterOfType("not_" + SMOKE_TEST_LETTER_TYPE));
         task.run();
         verify(ftpClient).upload(any(), eq(false));
+    }
+
+    @Test
+    public void should_not_start_process_if_ftp_is_not_available() {
+        reset(availabilityChecker);
+        given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(false);
+
+        task.run();
+
+        verify(repo, never()).findByState(Created);
     }
 
     private Letter letterOfType(String type) {
