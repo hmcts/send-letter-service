@@ -118,10 +118,10 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn test, functional, integration
 sonarqube {
   properties {
-    property "sonar.projectName", "Reform :: Send Letter Producer"
+    property "sonar.projectName", "Reform :: Send Letter Service 2.0"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/integration.exec"
-    property 'sonar.coverage.exclusions', "**/src/main/java/uk/gov/hmcts/reform/sendletter/config/**"
+    property 'sonar.coverage.exclusions', "**/config/**"
   }
 }
 
@@ -206,6 +206,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: springBootVersion
   compile("org.springframework.boot:spring-boot-starter-data-jpa")
   compile group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.1.1'
+  compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.55'
+  compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.55'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
   testCompile group: 'com.google.guava', name: 'guava', version: '23.4-jre'
@@ -223,7 +225,7 @@ dependencies {
 }
 
 jar {
-  archiveName 'send-letter-producer-service.jar'
+  archiveName 'send-letter-service.jar'
 }
 
 task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {

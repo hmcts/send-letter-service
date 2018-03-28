@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterState;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
+import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
+import uk.gov.hmcts.reform.sendletter.services.zip.ZippedDoc;
+import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
-import uk.gov.hmcts.reform.slc.services.steps.zip.ZipFileNameHelper;
-import uk.gov.hmcts.reform.slc.services.steps.zip.ZippedDoc;
-import uk.gov.hmcts.reform.slc.services.steps.zip.Zipper;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -48,6 +48,10 @@ public class UploadLettersTask {
                 // Upload succeeded, mark the letter as Uploaded.
                 letter.setState(LetterState.Uploaded);
                 letter.setSentToPrintAt(Timestamp.from(Instant.now()));
+
+                // remove pdf content, as it's no longer needed
+                letter.setPdf(null);
+
                 repo.saveAndFlush(letter);
 
                 logger.debug("Marked letter {} as Uploaded", letter.getId());
