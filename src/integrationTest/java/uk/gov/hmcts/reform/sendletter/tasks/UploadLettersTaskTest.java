@@ -93,7 +93,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_fail_to_upload_to_sftp_and_set_letter_status_as_failed() throws Exception {
+    public void should_fail_to_upload_to_sftp_and_throw_the_causing_exception() throws Exception {
         LetterService s = new LetterService(repository, new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
 
