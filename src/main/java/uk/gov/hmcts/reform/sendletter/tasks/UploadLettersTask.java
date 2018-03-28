@@ -65,13 +65,15 @@ public class UploadLettersTask {
 
                 // remove pdf content, as it's no longer needed
                 letter.setPdf(null);
-
-                repo.saveAndFlush(letter);
-
-                logger.debug("Marked letter {} as Uploaded", letter.getId());
             } catch (Exception e) {
+                letter.setState(LetterState.FailedToUpload);
+
                 logger.error("Exception uploading letter {}", letter.getId(), e);
             }
+
+            repo.saveAndFlush(letter);
+
+            logger.debug("Marked letter {} as {}", letter.getId(), letter.getState());
         });
     }
 
