@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.util.XeroxReportWriter;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.stream.Stream;
+import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
