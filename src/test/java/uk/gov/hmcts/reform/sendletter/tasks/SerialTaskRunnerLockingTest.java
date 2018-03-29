@@ -15,6 +15,9 @@ import javax.sql.DataSource;
 import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +47,8 @@ public class SerialTaskRunnerLockingTest {
         unlockedWithSuccess();
 
         taskRunner.tryRun(1, task);
+
+        verify(task, only()).run();
     }
 
     @Test
@@ -52,6 +57,8 @@ public class SerialTaskRunnerLockingTest {
         unlockedWithFailure();
 
         taskRunner.tryRun(1, task);
+
+        verify(task, only()).run();
     }
 
     @Test
@@ -60,6 +67,8 @@ public class SerialTaskRunnerLockingTest {
         unlockedWithFailure();
 
         taskRunner.tryRun(1, task);
+
+        verify(task, never()).run();
     }
 
     @Test
@@ -68,6 +77,8 @@ public class SerialTaskRunnerLockingTest {
         unlockedWithSuccess();
 
         taskRunner.tryRun(1, task);
+
+        verify(task, never()).run();
     }
 
     @SuppressWarnings("unchecked")
@@ -76,6 +87,8 @@ public class SerialTaskRunnerLockingTest {
         when(source.getConnection()).thenThrow(SQLException.class);
 
         taskRunner.tryRun(1, task);
+
+        verify(task, never()).run();
     }
 
     @SuppressWarnings("unchecked")
@@ -84,6 +97,8 @@ public class SerialTaskRunnerLockingTest {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
         taskRunner.tryRun(1, task);
+
+        verify(task, never()).run();
     }
 
     @SuppressWarnings("unchecked")
