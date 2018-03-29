@@ -9,13 +9,14 @@ import uk.gov.hmcts.reform.sendletter.services.zip.ZippedDoc;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.sendletter.LocalSftpServer.port;
 
 public class FtpUploadTest {
 
     @Test
     public void connects_to_ftp() throws Exception {
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpHelper.getClient(server.port).testConnection();
+            FtpHelper.getSuccessfulClient(port).testConnection();
         }
     }
 
@@ -23,7 +24,7 @@ public class FtpUploadTest {
     public void uploads_file() throws Exception {
         ZippedDoc doc = new ZippedDoc("hello.zip", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpClient client = FtpHelper.getClient(server.port);
+            FtpClient client = FtpHelper.getSuccessfulClient(port);
             client.upload(doc, false);
             File[] files = server.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
