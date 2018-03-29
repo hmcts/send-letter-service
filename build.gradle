@@ -108,8 +108,11 @@ pmd {
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
-jacocoTestReport {
+jacoco {
   toolVersion = "0.8.1"
+}
+
+jacocoTestReport {
   executionData(test, integration)
   reports {
     xml.enabled = true
