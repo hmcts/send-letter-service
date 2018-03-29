@@ -13,6 +13,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import static org.mockito.Matchers.startsWith;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +26,8 @@ public class SerialTaskRunnerLockingTest {
     private Connection connection;
     @Mock
     private Statement statement;
+    @Mock
+    private Runnable task;
     private SerialTaskRunner taskRunner;
 
     @Before
@@ -40,8 +43,7 @@ public class SerialTaskRunnerLockingTest {
         lockedWithSuccess();
         unlockedWithSuccess();
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @Test
@@ -49,8 +51,7 @@ public class SerialTaskRunnerLockingTest {
         lockedWithSuccess();
         unlockedWithFailure();
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @Test
@@ -58,8 +59,7 @@ public class SerialTaskRunnerLockingTest {
         lockedWithFailure();
         unlockedWithFailure();
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @Test
@@ -67,8 +67,7 @@ public class SerialTaskRunnerLockingTest {
         lockedWithFailure();
         unlockedWithSuccess();
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,8 +75,7 @@ public class SerialTaskRunnerLockingTest {
     public void datasource_throws_connection_error() throws SQLException {
         when(source.getConnection()).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @SuppressWarnings("unchecked")
@@ -85,8 +83,7 @@ public class SerialTaskRunnerLockingTest {
     public void locking_throws_exception_successfully_unlocks() throws SQLException {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @SuppressWarnings("unchecked")
@@ -94,10 +91,9 @@ public class SerialTaskRunnerLockingTest {
     public void task_throws_exception_successfully_unlocks() throws SQLException {
         lockedWithSuccess();
         unlockedWithSuccess();
+        doThrow(RuntimeException.class).when(task).run();
 
-        taskRunner.tryRun(1, () -> {
-            throw new RuntimeException();
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @SuppressWarnings("unchecked")
@@ -105,10 +101,9 @@ public class SerialTaskRunnerLockingTest {
     public void task_throws_exception_fails_to_unlock() throws SQLException {
         lockedWithSuccess();
         unlockedWithFailure();
+        doThrow(RuntimeException.class).when(task).run();
 
-        taskRunner.tryRun(1, () -> {
-            throw new RuntimeException();
-        });
+        taskRunner.tryRun(1, task);
     }
 
     @SuppressWarnings("unchecked")
@@ -117,8 +112,7 @@ public class SerialTaskRunnerLockingTest {
         when(connection.createStatement()).thenThrow(SQLException.class);
         unlockedWithFailure();
 
-        taskRunner.tryRun(1, () -> {
-        });
+        taskRunner.tryRun(1, task);
     }
 
     private void unlockedWithSuccess() throws SQLException {
