@@ -56,10 +56,10 @@ public class UploadLettersTask {
             return;
         }
 
-        Iterator<Letter> letterIterator = repo.findByStatus(LetterStatus.Created);
+        Iterator<Letter> iterator = repo.findByStatus(LetterStatus.Created).iterator();
 
-        while (letterIterator.hasNext()) {
-            Letter letter = letterIterator.next();
+        while (iterator.hasNext()) {
+            Letter letter = iterator.next();
 
             try {
                 upload(letter);
