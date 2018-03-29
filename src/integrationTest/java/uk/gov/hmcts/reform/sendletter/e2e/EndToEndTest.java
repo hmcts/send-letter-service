@@ -17,8 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -32,8 +30,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @ComponentScan(basePackages = "...", lazyInit = true)
@@ -61,14 +62,19 @@ public class EndToEndTest {
     public void should_upload_letter_and_mark_posted() throws Exception {
         try (LocalSftpServer server = LocalSftpServer.create()) {
             send(readResource("letter.json"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andReturn();
 
-            // Report should be uploaded
-            await().atMost(60, SECONDS).until(() -> tryCreateXeroxReport(server));
+            // Wait for pdfs to be uploaded.
+            await().atMost(60, SECONDS).untilAsserted(
+                () -> assertThat(server.pdfFolder.listFiles()).as("No PDFs uploaded!").isNotEmpty());
 
-            // We should have a single Posted letter.
-            await().atMost(60, SECONDS).until(this::letterHasBeenPosted);
+            // Generate Xerox report.
+            createXeroxReport(server);
+
+            // The report should be processed and the letter marked posted.
+            await().atMost(60, SECONDS).untilAsserted(
+                () -> assertThat(letterHasBeenPosted()).as("Letter not posted").isTrue());
         }
     }
 
@@ -77,19 +83,14 @@ public class EndToEndTest {
         return letters.size() == 1 && letters.get(0).getStatus() == LetterStatus.Posted;
     }
 
-    private boolean tryCreateXeroxReport(LocalSftpServer server) throws IOException {
-        String[] fileNames = server.pdfFolder.list();
-        if (fileNames.length > 0) {
-            Stream<UUID> letterIds = Arrays.stream(fileNames).map(FileNameHelper::extractId);
-            XeroxReportWriter.writeReport(letterIds, server.reportFolder);
-            return true;
-        }
-        return false;
+    private void createXeroxReport(LocalSftpServer server) throws IOException {
+        Stream<UUID> letterIds = Arrays.stream(server.pdfFolder.list()).map(FileNameHelper::extractId);
+        XeroxReportWriter.writeReport(letterIds, server.reportFolder);
     }
 
     private ResultActions send(String content) throws Exception {
         MockHttpServletRequestBuilder request =
-            MockMvcRequestBuilders.post("/letters")
+            post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
