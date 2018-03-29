@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -82,63 +84,75 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = SQLException.class)
+    @Test
     public void does_not_run_task_when_obtaining_database_connection_fails() throws SQLException {
         when(source.getConnection()).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
 
+        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, never()).run();
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = SQLException.class)
+    @Test
     public void does_not_run_task_when_locking_throws_exception() throws SQLException {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
 
+        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, never()).run();
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = SQLException.class)
+    @Test
     public void runs_task_when_unlocking_throws_exception() throws SQLException {
         lockedWithSuccess();
         when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
 
+        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, only()).run();
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = RuntimeException.class)
+    @Test
     public void throws_exception_threw_by_task() throws SQLException {
         lockedWithSuccess();
         unlockedWithSuccess();
         doThrow(RuntimeException.class).when(task).run();
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        verify(task, only()).run();
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = RuntimeException.class)
+    @Test
     public void throws_exception_threw_by_task_when_unlocking_failed() throws SQLException {
         lockedWithSuccess();
         unlockedWithFailure();
         doThrow(RuntimeException.class).when(task).run();
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        verify(task, only()).run();
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = SQLException.class)
+    @Test
     public void throws_exception_when_fails_to_prepare_db_query() throws SQLException {
         when(connection.createStatement()).thenThrow(SQLException.class);
         unlockedWithFailure();
 
-        taskRunner.tryRun(1, task);
+        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+
+        assertThat(thrown).isInstanceOf(SQLException.class);
+        verify(task, never()).run();
     }
 
     private void unlockedWithSuccess() throws SQLException {
