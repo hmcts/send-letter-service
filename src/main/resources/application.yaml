@@ -60,6 +60,6 @@ ftp:
     to: ${FTP_DOWNTIME_TO:18:00}
 
 tasks:
-  uploadInterval: ${UPLOAD_LETTERS_INTERVAL:30000}
-  reports-cron: ${FTP_REPORTS_CRON:0 30 0 * * *}
+  upload-letters: ${UPLOAD_LETTERS_INTERVAL:30000}
+  mark-letters-posted: ${FTP_REPORTS_CRON:0 30 0 * * *}
 

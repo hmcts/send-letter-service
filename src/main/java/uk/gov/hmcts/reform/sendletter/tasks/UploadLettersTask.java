@@ -26,7 +26,7 @@ import java.util.Objects;
 import static java.time.LocalDateTime.now;
 
 @Component
-@ConditionalOnProperty(value = "scheduling.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
 
@@ -50,7 +50,7 @@ public class UploadLettersTask {
         this.availabilityChecker = availabilityChecker;
     }
 
-    @Scheduled(fixedDelayString = "${tasks.uploadInterval}")
+    @Scheduled(fixedDelayString = "${tasks.upload-letters}")
     @Transactional
     public void run() {
         if (!availabilityChecker.isFtpAvailable(now().toLocalTime())) {

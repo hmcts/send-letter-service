@@ -23,7 +23,7 @@ import java.util.Optional;
  * letters and sets posted letters as Posted in the database.
  */
 @Component
-@ConditionalOnProperty(value = "scheduling.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class MarkLettersPostedTask {
     private final LetterRepository repo;
     private final FtpClient ftpClient;
@@ -44,7 +44,7 @@ public class MarkLettersPostedTask {
     }
 
 
-    @Scheduled(cron = "${tasks.reports-cron}")
+    @Scheduled(cron = "${tasks.mark-letters-posted}")
     public void run() {
         run(LocalTime.now());
     }
