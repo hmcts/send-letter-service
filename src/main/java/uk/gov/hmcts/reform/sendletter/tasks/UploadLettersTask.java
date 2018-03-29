@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.DocumentZipException;
+import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
@@ -16,9 +18,9 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.Objects;
 
 import static java.time.LocalDateTime.now;
@@ -49,33 +51,54 @@ public class UploadLettersTask {
 
     @Transactional
     public void run() {
+        logger.info("Started letter upload job");
+
         if (!availabilityChecker.isFtpAvailable(now().toLocalTime())) {
-            logger.trace("FTP server not available, job cancelled");
+            logger.info("Not processing due to FTP downtime window");
             return;
         }
 
-        repo.findByStatus(LetterStatus.Created).forEach(letter -> {
+        Iterator<Letter> iterator = repo.findByStatus(LetterStatus.Created).iterator();
+
+        while (iterator.hasNext()) {
+            Letter letter = iterator.next();
+
             try {
-                upload(letter);
-                logger.debug("Successfully uploaded letter {}", letter.getId());
+                uploadLetter(letter);
+            } catch (FtpException exception) {
+                logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
 
-                // Upload succeeded, mark the letter as Uploaded.
-                letter.setStatus(LetterStatus.Uploaded);
-                letter.setSentToPrintAt(Timestamp.from(Instant.now()));
-
-                // remove pdf content, as it's no longer needed
-                letter.setPdf(null);
-
-                repo.saveAndFlush(letter);
-
-                logger.debug("Marked letter {} as Uploaded", letter.getId());
-            } catch (Exception e) {
-                logger.error("Exception uploading letter {}", letter.getId(), e);
+                break;
+            } catch (DocumentZipException exception) {
+                logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
-        });
+        }
+
+        logger.info("Completed letter upload job");
     }
 
-    private void upload(Letter letter) throws IOException {
+    private void uploadLetter(Letter letter) {
+        String uploadedFilename = uploadToFtp(letter);
+
+        logger.info(
+            "Successfully uploaded letter {}. File name: {}",
+            letter.getId(),
+            uploadedFilename
+        );
+
+        // Upload succeeded, mark the letter as Uploaded.
+        letter.setStatus(LetterStatus.Uploaded);
+        letter.setSentToPrintAt(Timestamp.from(Instant.now()));
+
+        // remove pdf content, as it's no longer needed
+        letter.setPdf(null);
+
+        repo.saveAndFlush(letter);
+
+        logger.info("Marked letter {} as {}", letter.getId(), letter.getStatus());
+    }
+
+    private String uploadToFtp(Letter letter) {
         PdfDoc pdfDoc = new PdfDoc(FileNameHelper.generateName(letter, "pdf"), letter.getPdf());
         ZippedDoc zippedDoc = zipper.zip(ZipFileNameHelper.generateName(letter, now()), pdfDoc);
 
@@ -88,6 +111,7 @@ public class UploadLettersTask {
         );
 
         ftp.upload(zippedDoc, isSmokeTest(letter));
+        return zippedDoc.filename;
     }
 
     private boolean isSmokeTest(Letter letter) {
