@@ -42,7 +42,7 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @Test
-    public void successfully_locks_and_unlocks() throws SQLException {
+    public void runs_task_after_successful_locking() throws SQLException {
         lockedWithSuccess();
         unlockedWithSuccess();
 
@@ -52,7 +52,7 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @Test
-    public void successfully_locks_and_fails_to_unlock() throws SQLException {
+    public void runs_task_after_failed_unlocking() throws SQLException {
         lockedWithSuccess();
         unlockedWithFailure();
 
@@ -62,7 +62,7 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @Test
-    public void fails_to_lock_and_unlock() throws SQLException {
+    public void does_not_run_task_after_failed_locking() throws SQLException {
         lockedWithFailure();
         unlockedWithFailure();
 
@@ -72,7 +72,7 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @Test
-    public void failure_to_release_lock() throws SQLException {
+    public void does_not_run_task_after_failed_locking_and_failed_unlocking() throws SQLException {
         lockedWithFailure();
         unlockedWithSuccess();
 
@@ -83,7 +83,7 @@ public class SerialTaskRunnerLockingTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = SQLException.class)
-    public void datasource_throws_connection_error() throws SQLException {
+    public void does_not_run_task_when_obtaining_database_connection_fails() throws SQLException {
         when(source.getConnection()).thenThrow(SQLException.class);
 
         taskRunner.tryRun(1, task);
@@ -93,7 +93,7 @@ public class SerialTaskRunnerLockingTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = SQLException.class)
-    public void locking_throws_exception_successfully_unlocks() throws SQLException {
+    public void does_not_run_task_when_locking_throws_exception() throws SQLException {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
         taskRunner.tryRun(1, task);
@@ -103,7 +103,7 @@ public class SerialTaskRunnerLockingTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = RuntimeException.class)
-    public void task_throws_exception_successfully_unlocks() throws SQLException {
+    public void throws_exception_threw_by_task() throws SQLException {
         lockedWithSuccess();
         unlockedWithSuccess();
         doThrow(RuntimeException.class).when(task).run();
@@ -113,7 +113,7 @@ public class SerialTaskRunnerLockingTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = RuntimeException.class)
-    public void task_throws_exception_fails_to_unlock() throws SQLException {
+    public void throws_exception_threw_by_task_when_unlocking_failed() throws SQLException {
         lockedWithSuccess();
         unlockedWithFailure();
         doThrow(RuntimeException.class).when(task).run();
@@ -123,7 +123,7 @@ public class SerialTaskRunnerLockingTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = SQLException.class)
-    public void executing_query_throws_exception() throws SQLException {
+    public void throws_exception_when_fails_to_prepare_db_query() throws SQLException {
         when(connection.createStatement()).thenThrow(SQLException.class);
         unlockedWithFailure();
 
