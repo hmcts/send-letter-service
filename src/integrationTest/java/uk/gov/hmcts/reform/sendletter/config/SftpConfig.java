@@ -11,6 +11,8 @@ public class SftpConfig {
 
     @Bean
     public Supplier<SSHClient> sshClient() {
+        // Provide clients that do not verify
+        // host name and key for local testing.
         return () -> {
             SSHClient client = new SSHClient();
             client.addHostKeyVerifier((a, b, c) -> true);
