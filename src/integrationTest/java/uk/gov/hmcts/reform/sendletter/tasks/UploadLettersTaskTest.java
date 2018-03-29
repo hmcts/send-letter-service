@@ -7,16 +7,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.SampleData;
+import uk.gov.hmcts.reform.sendletter.config.SpyOnJpaConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.DocumentZipException;
-import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
@@ -30,7 +31,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -43,6 +43,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
+@ImportAutoConfiguration(SpyOnJpaConfig.class)
 public class UploadLettersTaskTest {
 
     @Autowired
@@ -104,8 +105,10 @@ public class UploadLettersTaskTest {
 
         // Invoke the upload job.
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            Throwable exception = catchThrowable(task::run);
-            assertThat(exception).isInstanceOf(FtpException.class);
+            task.run();
+
+            // verify repository was never called
+            verify(repository, never()).saveAndFlush(any(Letter.class));
 
             // file does not exist in SFTP site.
             File[] files = server.pdfFolder.listFiles();

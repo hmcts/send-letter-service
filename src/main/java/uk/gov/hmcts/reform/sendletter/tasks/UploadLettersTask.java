@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Iterator;
 import java.util.Objects;
 
 import static java.time.LocalDateTime.now;
@@ -55,7 +56,11 @@ public class UploadLettersTask {
             return;
         }
 
-        repo.findByStatus(LetterStatus.Created).forEach(letter -> {
+        Iterator<Letter> iterator = repo.findByStatus(LetterStatus.Created).iterator();
+
+        while (iterator.hasNext()) {
+            Letter letter = iterator.next();
+
             try {
                 upload(letter);
                 logger.debug("Successfully uploaded letter {}", letter.getId());
@@ -71,13 +76,13 @@ public class UploadLettersTask {
 
                 logger.debug("Marked letter {} as {}", letter.getId(), letter.getStatus());
             } catch (FtpException exception) {
-                logger.error("Exception uploading letter {}", letter.getId());
+                logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
 
-                throw exception;
+                break;
             } catch (DocumentZipException exception) {
                 logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
-        });
+        }
     }
 
     private void upload(Letter letter) {
