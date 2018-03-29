@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -32,10 +31,13 @@ public class ReportParser {
             List<LetterPrintStatus> statuses =
                 stream(parser.spliterator(), false)
                     .map(this::toPrintStatus)
-                    .filter(Objects::nonNull)
                     .collect(toList());
 
-            return new ParsedReport(report.path, statuses);
+            return new ParsedReport(
+                report.path,
+                statuses.stream().filter(status -> status != null).collect(toList()),
+                statuses.stream().allMatch(status -> status != null)
+            );
 
         } catch (IOException exc) {
             throw new ReportParsingException(exc);
