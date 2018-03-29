@@ -102,6 +102,17 @@ public class SerialTaskRunnerLockingTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Test(expected = SQLException.class)
+    public void runs_task_when_unlocking_throws_exception() throws SQLException {
+        lockedWithSuccess();
+        when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenThrow(SQLException.class);
+
+        taskRunner.tryRun(1, task);
+
+        verify(task, only()).run();
+    }
+
+    @SuppressWarnings("unchecked")
     @Test(expected = RuntimeException.class)
     public void throws_exception_threw_by_task() throws SQLException {
         lockedWithSuccess();
