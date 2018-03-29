@@ -84,6 +84,9 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   classpath = sourceSets.integrationTest.runtimeClasspath
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  environment("FTP_PRIVATE_KEY", file('src/test/resources/keypair').text)
+  environment("FTP_PUBLIC_KEY", file('src/test/resources/keypair.pub').text)
+
 }
 
 task smoke(type: Test) {
