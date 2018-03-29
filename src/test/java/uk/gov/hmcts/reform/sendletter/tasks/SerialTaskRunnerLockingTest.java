@@ -162,14 +162,14 @@ public class SerialTaskRunnerLockingTest {
     }
 
     private void unlockWith(boolean value) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
+        ResultSet resultSet = mock(ResultSet.class); //NOPMD
         when(resultSet.next()).thenReturn(value);
         when(resultSet.getBoolean(1)).thenReturn(value);
         when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenReturn(resultSet);
     }
 
     private void lockWith(boolean value) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
+        ResultSet resultSet = mock(ResultSet.class); //NOPMD
         when(resultSet.next()).thenReturn(value);
         when(resultSet.getBoolean(1)).thenReturn(value);
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenReturn(resultSet);
