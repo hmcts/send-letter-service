@@ -73,16 +73,6 @@ public class SerialTaskRunnerLockingTest {
         verify(task, never()).run();
     }
 
-    @Test
-    public void does_not_run_task_after_failed_locking_and_failed_unlocking() throws SQLException {
-        setupFailedLocking();
-        setupSuccessfulUnlocking();
-
-        taskRunner.tryRun(1, task);
-
-        verify(task, never()).run();
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void does_not_run_task_when_obtaining_database_connection_fails() throws SQLException {
