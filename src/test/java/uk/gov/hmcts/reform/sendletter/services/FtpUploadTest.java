@@ -4,26 +4,27 @@ import com.google.common.io.Files;
 import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
-import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
+import uk.gov.hmcts.reform.sendletter.services.zip.ZippedDoc;
 
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.sendletter.LocalSftpServer.port;
 
 public class FtpUploadTest {
 
     @Test
     public void connects_to_ftp() throws Exception {
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpHelper.getClient(server.port).testConnection();
+            FtpHelper.getSuccessfulClient(port).testConnection();
         }
     }
 
     @Test
     public void uploads_file() throws Exception {
-        PdfDoc doc = new PdfDoc("hello.txt", "world".getBytes());
+        ZippedDoc doc = new ZippedDoc("hello.zip", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpClient client = FtpHelper.getClient(server.port);
+            FtpClient client = FtpHelper.getSuccessfulClient(port);
             client.upload(doc, false);
             File[] files = server.pdfFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
