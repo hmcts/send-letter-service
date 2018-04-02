@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -56,17 +57,11 @@ public class StaleLettersTaskTest {
 
     @Test
     public void should_do_nothing_when_there_are_no_unprinted_letters() {
-        // given
-        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
-
         // when
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(captor.capture());
-
-        // and
-        assertThat(captor.getAllValues()).isEmpty();
+        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
     }
 
     @Test
@@ -93,16 +88,11 @@ public class StaleLettersTaskTest {
         // given
         createLetter(cutOff);
 
-        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
-
         // when
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(captor.capture());
-
-        // and
-        assertThat(captor.getAllValues()).isEmpty();
+        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
     }
 
     @Test
@@ -110,16 +100,11 @@ public class StaleLettersTaskTest {
         // given
         createLetter(null);
 
-        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
-
         // when
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(captor.capture());
-
-        // and
-        assertThat(captor.getAllValues()).isEmpty();
+        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
     }
 
     @Test
@@ -129,17 +114,12 @@ public class StaleLettersTaskTest {
         letter.setStatus(LetterStatus.Posted);
         letter.setPrintedAt(Timestamp.from(Instant.now()));
 
-        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
-
         // when
         repository.save(letter);
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(captor.capture());
-
-        // and
-        assertThat(captor.getAllValues()).isEmpty();
+        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
     }
 
     private Letter createLetter(LocalTime withSentToPrintAt) {
