@@ -12,7 +12,10 @@ import javax.persistence.LockModeType;
 
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
-    String STALE_LETTERS_QUERY = "select l "
+    String STALE_LETTERS_QUERY = "select"
+        + "  new uk.gov.hmcts.reform.sendletter.entity.StaleLetter("
+        + "    l.id, l.messageId, l.service, l.type, l.sentToPrintAt"
+        + "  ) "
         + "from Letter l "
         + "where l.status = ?1"
         + "  and l.sentToPrintAt < ?2";

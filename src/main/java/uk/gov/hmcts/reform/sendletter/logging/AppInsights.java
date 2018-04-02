@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
 import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class AppInsights extends AbstractAppInsights {
     }
 
     public void trackStaleLetter(StaleLetter staleLetter) {
-        LocalDateTime sentToPrint = staleLetter.getSentToPrintAt().toLocalDateTime();
+        LocalDateTime sentToPrint = LocalDateTime.ofInstant(staleLetter.getSentToPrintAt().toInstant(), ZoneOffset.UTC);
         Map<String, String> properties = new HashMap<>();
 
         properties.put("letterId", staleLetter.getId().toString());

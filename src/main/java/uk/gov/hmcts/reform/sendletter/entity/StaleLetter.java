@@ -1,17 +1,51 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
-public interface StaleLetter {
+public class StaleLetter {
 
-    UUID getId();
+    private final UUID id;
 
-    String getMessageId();
+    private final String messageId;
 
-    String getService();
+    private final String service;
 
-    String getType();
+    private final String type;
 
-    Timestamp getSentToPrintAt();
+    private final Date sentToPrintAt;
+
+    public StaleLetter(
+        final UUID id,
+        final String messageId,
+        final String service,
+        final String type,
+        final Date sentToPrintAt
+    ) {
+        this.id = id;
+        this.messageId = messageId;
+        this.service = service;
+        this.type = type;
+        this.sentToPrintAt = sentToPrintAt;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Date getSentToPrintAt() {
+        return sentToPrintAt;
+    }
 }
