@@ -67,13 +67,12 @@ public class LetterService {
     private UUID saveNewLetterAndReturnId(LetterRequest letterRequest, String messageId, String serviceName) {
         UUID id = UUID.randomUUID();
 
-        byte[] pdfContent = pdfCreator.create(letterRequest);
-        PdfDoc pdfDoc = new PdfDoc(
-            FileNameHelper.generateName(letterRequest.type, serviceName, id,  "pdf"),
-            pdfContent
+        byte[] zipContent = zipper.zip(
+            new PdfDoc(
+                FileNameHelper.generateName(letterRequest.type, serviceName, id, "pdf"),
+                pdfCreator.create(letterRequest)
+            )
         );
-
-        byte[] zipContent = this.zipper.zip(pdfDoc);
 
         // TODO: encrypt zip content
 
