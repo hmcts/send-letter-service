@@ -17,10 +17,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import uk.gov.hmcts.reform.sendletter.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.util.XeroxReportWriter;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 

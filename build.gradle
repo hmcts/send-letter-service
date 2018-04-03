@@ -85,8 +85,8 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   classpath = sourceSets.integrationTest.runtimeClasspath
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  environment("FTP_PRIVATE_KEY", file('src/test/resources/keypair').text)
-  environment("FTP_PUBLIC_KEY", file('src/test/resources/keypair.pub').text)
+  environment("FTP_PRIVATE_KEY", file('src/integrationTest/resources/keypair').text)
+  environment("FTP_PUBLIC_KEY", file('src/integrationTest/resources/keypair.pub').text)
 
 }
 
@@ -109,6 +109,10 @@ pmd {
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
+}
+
+jacoco {
+  toolVersion = "0.8.1"
 }
 
 jacocoTestReport {
