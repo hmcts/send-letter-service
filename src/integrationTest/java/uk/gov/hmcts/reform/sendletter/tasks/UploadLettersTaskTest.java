@@ -102,7 +102,7 @@ public class UploadLettersTaskTest {
 
             // then
             // file does not exist in SFTP site.
-            assertThat(server.lettersFolder.listFiles().length).isEqualTo(0);
+            assertThat(server.lettersFolder.listFiles()).isEmpty();
 
             // Clear the JPA cache to force a read.
             entityManager.clear();
