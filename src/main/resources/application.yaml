@@ -49,7 +49,9 @@ ftp:
     from: ${FTP_DOWNTIME_FROM:16:00}
     to: ${FTP_DOWNTIME_TO:17:00}
 
-scheduling.enabled: true
+# Don't run scheduled tasks unless
+# explicitly turned on by tests.
+scheduling.enabled: false
 
 tasks:
   # Interval is in milliseconds.
