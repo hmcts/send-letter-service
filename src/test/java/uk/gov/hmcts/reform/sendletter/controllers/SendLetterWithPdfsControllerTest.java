@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.google.common.io.Resources;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -32,19 +32,19 @@ public class SendLetterWithPdfsControllerTest {
     @MockBean private LetterService letterService;
     @MockBean private AuthService authService;
 
+    private String validJson;
+
+    @Before
+    public void setUp() throws Exception {
+        this.validJson = Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8);
+    }
+
     @Test
     public void should_call_new_service_method() throws Exception {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
         // when
-        mockMvc
-            .perform(
-                post("/letters")
-                    .contentType(MediaTypes.LETTER_V2)
-                    .header("ServiceAuthorization", "auth-header-value")
-                    .content(Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8))
-            )
-            .andExpect(status().isOk());
+        sendLetter(validJson);
 
         // then
         verify(letterService).send(any(LetterWithPdfsRequest.class), anyString());
@@ -60,7 +60,7 @@ public class SendLetterWithPdfsControllerTest {
             post("/letters")
                 .contentType(MediaTypes.LETTER_V2)
                 .header("ServiceAuthorization", authHeader)
-                .content(Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8))
+                .content(validJson)
         );
 
         // then
