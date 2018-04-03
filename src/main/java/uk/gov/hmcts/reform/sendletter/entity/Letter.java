@@ -9,6 +9,7 @@ import org.hibernate.annotations.TypeDefs;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "letters")
@@ -43,6 +46,8 @@ public class Letter {
     private String type;
     @Enumerated(EnumType.STRING)
     private LetterStatus status = LetterStatus.Created;
+
+    @Basic(fetch = LAZY)
     private byte[] pdf;
 
     // For use by hibernate.
