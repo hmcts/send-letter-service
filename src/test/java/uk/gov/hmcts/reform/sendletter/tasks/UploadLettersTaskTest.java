@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 
 import java.time.LocalTime;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
@@ -66,7 +67,7 @@ public class UploadLettersTaskTest {
     }
 
     private Letter letterOfType(String type) {
-        return new Letter("msgId", "cmc", null, type, "hello".getBytes());
+        return new Letter(UUID.randomUUID(), "msgId", "cmc", null, type, "hello".getBytes());
     }
 
     private void givenDbContains(Letter letter) {

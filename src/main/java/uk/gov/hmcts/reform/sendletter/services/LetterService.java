@@ -65,7 +65,7 @@ public class LetterService {
     }
 
     private UUID saveNewLetterAndReturnId(LetterRequest letterRequest, String messageId, String serviceName) {
-        UUID letterId = UUID.randomUUID();
+        UUID id = UUID.randomUUID();
 
         byte[] pdfContent = pdfCreator.create(letterRequest);
         PdfDoc pdfDoc = new PdfDoc(
@@ -78,6 +78,7 @@ public class LetterService {
         // TODO: encrypt zip content
 
         Letter letter = new Letter(
+            id,
             messageId,
             serviceName,
             mapper.valueToTree(letterRequest.additionalData),
@@ -85,11 +86,11 @@ public class LetterService {
             zipContent
         );
 
-        letterRepository.save(letter).getId();
+        letterRepository.save(letter);
 
-        log.info("Created new letter {}", letterId);
+        log.info("Created new letter {}", id);
 
-        return letterId;
+        return id;
     }
 
     public LetterStatus getStatus(UUID id, String serviceName) {
