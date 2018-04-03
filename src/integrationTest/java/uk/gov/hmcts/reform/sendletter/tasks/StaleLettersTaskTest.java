@@ -84,9 +84,10 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_sent_to_print_happened_from_the_cutoff() {
+    public void should_not_pick_up_letter_if_sent_to_print_happened_at_the_cutoff_and_later() {
         // given
         createLetter(cutOff);
+        createLetter(cutOff.plusSeconds(1));
 
         // when
         task.run();
