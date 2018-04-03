@@ -10,7 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLettersOnly;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -56,7 +56,7 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        StaleLetter letter = mock(StaleLetter.class);
+        StaleLettersOnly letter = mock(StaleLettersOnly.class);
         UUID letterId = UUID.randomUUID();
         when(letter.getId()).thenReturn(letterId);
         when(letter.getMessageId()).thenReturn(MESSAGE_ID);

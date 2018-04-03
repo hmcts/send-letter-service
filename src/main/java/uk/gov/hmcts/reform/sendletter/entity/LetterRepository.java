@@ -18,7 +18,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     Stream<Letter> findByStatus(LetterStatus status);
 
     @Query(value = "select l from Letter l where l.status = ?1 and l.sentToPrintAt < ?2")
-    Stream<StaleLetter> findStaleLetters(LetterStatus state, Timestamp before);
+    Stream<StaleLettersOnly> findStaleLetters(LetterStatus state, Timestamp before);
 
     Optional<Letter> findByMessageIdAndStatusOrderByCreatedAtDesc(String messageId, LetterStatus status);
 

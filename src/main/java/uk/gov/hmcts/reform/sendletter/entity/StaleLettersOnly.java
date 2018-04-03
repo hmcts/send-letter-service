@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import java.util.Date;
 import java.util.UUID;
 
-public interface StaleLetter {
+public interface StaleLettersOnly {
 
     UUID getId();
 

@@ -4,7 +4,7 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
-import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLettersOnly;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,7 +29,7 @@ public class AppInsights extends AbstractAppInsights {
         );
     }
 
-    public void trackStaleLetter(StaleLetter staleLetter) {
+    public void trackStaleLetter(StaleLettersOnly staleLetter) {
         LocalDateTime sentToPrint = LocalDateTime.ofInstant(staleLetter.getSentToPrintAt().toInstant(), ZoneOffset.UTC);
         Map<String, String> properties = new HashMap<>();
 

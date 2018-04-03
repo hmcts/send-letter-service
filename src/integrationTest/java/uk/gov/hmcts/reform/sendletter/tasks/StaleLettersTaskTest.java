@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.entity.StaleLetter;
+import uk.gov.hmcts.reform.sendletter.entity.StaleLettersOnly;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
@@ -61,7 +61,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
+        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class StaleLettersTaskTest {
         // given
         Letter letter = createLetter(secondBeforeCutOff);
 
-        ArgumentCaptor<StaleLetter> captor = ArgumentCaptor.forClass(StaleLetter.class);
+        ArgumentCaptor<StaleLettersOnly> captor = ArgumentCaptor.forClass(StaleLettersOnly.class);
 
         // when
         task.run();
@@ -93,7 +93,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
+        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
+        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
+        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
     }
 
     private Letter createLetter(LocalTime sentToPrintAtTime) {
