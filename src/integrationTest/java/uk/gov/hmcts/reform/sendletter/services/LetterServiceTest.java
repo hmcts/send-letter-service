@@ -44,12 +44,12 @@ public class LetterServiceTest {
 
     private LetterService service;
 
-    @Autowired private LetterRepository letterRepository;
-    @Autowired private Zipper zipper;
+    @Autowired
+    private LetterRepository letterRepository;
 
     @Before
     public void setUp() {
-        service = new LetterService(letterRepository, zipper, new ObjectMapper());
+        service = new LetterService(letterRepository, new Zipper(), new ObjectMapper());
     }
 
     @After

@@ -39,9 +39,6 @@ public class UploadLettersTaskTest {
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
-    private Zipper zipper;
-
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
 
@@ -52,7 +49,7 @@ public class UploadLettersTaskTest {
 
     @Test
     public void uploads_file_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
-        LetterService s = new LetterService(repository, zipper, new ObjectMapper());
+        LetterService s = new LetterService(repository, new Zipper(), new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
         UploadLettersTask task = new UploadLettersTask(
             repository,
@@ -84,7 +81,7 @@ public class UploadLettersTaskTest {
     @Test
     public void should_fail_to_upload_to_sftp_and_stop_from_uploading_any_other_letters() throws Exception {
         // given
-        LetterService s = new LetterService(repository, zipper, new ObjectMapper());
+        LetterService s = new LetterService(repository, new Zipper(), new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
         // additional letter to verify upload loop broke and zipper was never called again
         s.send(SampleData.letter(), "service");
