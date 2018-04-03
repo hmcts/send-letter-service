@@ -76,7 +76,7 @@ public class AppInsightsTest {
             "messageId",
             "service",
             "type",
-            "weekday",
+            "sentToPrintDayOfWeek",
             "sentToPrintAt"
         );
     }
