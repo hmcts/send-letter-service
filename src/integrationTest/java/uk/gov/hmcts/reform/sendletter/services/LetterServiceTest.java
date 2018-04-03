@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.config.SpyOnJpaConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,12 +44,12 @@ public class LetterServiceTest {
 
     private LetterService service;
 
-    @Autowired
-    private LetterRepository letterRepository;
+    @Autowired private LetterRepository letterRepository;
+    @Autowired private Zipper zipper;
 
     @Before
     public void setUp() {
-        service = new LetterService(letterRepository, new ObjectMapper());
+        service = new LetterService(letterRepository, zipper, new ObjectMapper());
     }
 
     @After

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
+import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.File;
 import java.time.LocalTime;
@@ -38,6 +39,9 @@ public class UploadLettersTaskTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private Zipper zipper;
+
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
 
@@ -48,7 +52,7 @@ public class UploadLettersTaskTest {
 
     @Test
     public void uploads_file_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
-        LetterService s = new LetterService(repository, new ObjectMapper());
+        LetterService s = new LetterService(repository, zipper, new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
         UploadLettersTask task = new UploadLettersTask(
             repository,
@@ -61,7 +65,7 @@ public class UploadLettersTaskTest {
             task.run();
 
             // file should exist in SFTP site.
-            File[] files = server.pdfFolder.listFiles();
+            File[] files = server.lettersFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
 
             // Ensure the letter is marked as uploaded in the database.
@@ -80,7 +84,7 @@ public class UploadLettersTaskTest {
     @Test
     public void should_fail_to_upload_to_sftp_and_stop_from_uploading_any_other_letters() throws Exception {
         // given
-        LetterService s = new LetterService(repository, new ObjectMapper());
+        LetterService s = new LetterService(repository, zipper, new ObjectMapper());
         UUID id = s.send(SampleData.letter(), "service");
         // additional letter to verify upload loop broke and zipper was never called again
         s.send(SampleData.letter(), "service");
@@ -101,7 +105,7 @@ public class UploadLettersTaskTest {
 
             // then
             // file does not exist in SFTP site.
-            assertThat(server.pdfFolder.listFiles().length).isEqualTo(0);
+            assertThat(server.lettersFolder.listFiles().length).isEqualTo(0);
 
             // Clear the JPA cache to force a read.
             entityManager.clear();
