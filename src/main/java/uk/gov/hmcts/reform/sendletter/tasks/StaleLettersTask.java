@@ -34,14 +34,18 @@ public class StaleLettersTask {
     }
 
     public void run() {
-        logger.trace("Running job");
-
         Timestamp staleCutOff = Timestamp.valueOf(
             LocalDateTime.now()
                 .minusDays(1)
                 .with(staleCutOffTime)
         );
 
-        repo.findStaleLetters(LetterStatus.Uploaded, staleCutOff).forEach(insights::trackStaleLetter);
+        logger.info("Started stale letter report job with cut-off of {}", staleCutOff);
+
+        long staleLetters = repo.findStaleLetters(LetterStatus.Uploaded, staleCutOff)
+            .peek(insights::trackStaleLetter)
+            .count();
+
+        logger.info("Completed stale letter report job. Letters found: {}", staleLetters);
     }
 }
