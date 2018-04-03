@@ -122,15 +122,15 @@ public class StaleLettersTaskTest {
         verify(insights, never()).trackStaleLetter(any(StaleLetter.class));
     }
 
-    private Letter createLetter(LocalTime withSentToPrintAt) {
+    private Letter createLetter(LocalTime sentToPrintAtTime) {
         Letter letter = new Letter(MessageIdProvider.randomMessageId(), "service", null, "type", null);
 
-        if (withSentToPrintAt != null) {
+        if (sentToPrintAtTime != null) {
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(
                 Timestamp.valueOf(LocalDateTime.now()
                     .minusDays(1)
-                    .with(withSentToPrintAt)
+                    .with(sentToPrintAtTime)
                 )
             );
         }
