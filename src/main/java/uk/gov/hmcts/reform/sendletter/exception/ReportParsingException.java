@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.services;
+package uk.gov.hmcts.reform.sendletter.exception;
 
 import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
