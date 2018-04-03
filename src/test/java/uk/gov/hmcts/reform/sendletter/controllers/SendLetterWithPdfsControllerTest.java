@@ -37,12 +37,13 @@ public class SendLetterWithPdfsControllerTest {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
         // when
-        mockMvc.perform(
-            post("/letters")
-                .contentType(MediaTypes.LETTER_V2)
-                .header("ServiceAuthorization", "auth-header-value")
-                .content(Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8))
-        )
+        mockMvc
+            .perform(
+                post("/letters")
+                    .contentType(MediaTypes.LETTER_V2)
+                    .header("ServiceAuthorization", "auth-header-value")
+                    .content(Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8))
+            )
             .andExpect(status().isOk());
 
         // then
