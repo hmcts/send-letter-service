@@ -69,7 +69,7 @@ public class LetterService {
 
         byte[] pdfContent = pdfCreator.create(letterRequest);
         PdfDoc pdfDoc = new PdfDoc(
-            FileNameHelper.generateName(letterRequest.type, serviceName, letterId,  "pdf"),
+            FileNameHelper.generateName(letterRequest.type, serviceName, id,  "pdf"),
             pdfContent
         );
 
