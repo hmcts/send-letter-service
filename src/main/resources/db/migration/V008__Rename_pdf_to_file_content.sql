@@ -1,2 +1,2 @@
 ALTER TABLE letters
-RENAME COLUMN fileContent TO file_content;
+RENAME COLUMN pdf TO file_content;
