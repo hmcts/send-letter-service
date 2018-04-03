@@ -37,7 +37,7 @@ public class AppInsights extends AbstractAppInsights {
         properties.put("messageId", staleLetter.getMessageId());
         properties.put("service", staleLetter.getService());
         properties.put("type", staleLetter.getType());
-        properties.put("weekday", sentToPrint.getDayOfWeek().name());
+        properties.put("sentToPrintDayOfWeek", sentToPrint.getDayOfWeek().name());
         properties.put("sentToPrintAt", sentToPrint.toLocalTime().toString());
 
         telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
