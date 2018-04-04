@@ -10,7 +10,9 @@ import java.util.zip.ZipInputStream;
 
 public class PdfHelper {
 
-    // Validate that data is a zipped pdf or throw an exception.
+    /**
+     * Validate that data is a zipped pdf or throw an exception.
+     */
     public static void validateZippedPdf(byte[] data) throws IOException {
         ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(data));
         zip.getNextEntry(); //positions the stream at the beginning of the entry data
