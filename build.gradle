@@ -85,8 +85,10 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   classpath = sourceSets.integrationTest.runtimeClasspath
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  environment("FTP_PRIVATE_KEY", file('src/integrationTest/resources/keypair').text)
-  environment("FTP_PUBLIC_KEY", file('src/integrationTest/resources/keypair.pub').text)
+  def privateKey = file('src/integrationTest/resources/keypair')
+  environment("FTP_PRIVATE_KEY", privateKey.exists() ? privateKey.text : "")
+  def publicKey = file('src/integrationTest/resources/keypair.pub')
+  environment("FTP_PUBLIC_KEY", publicKey.exists() ? publicKey.text : "")
 
 }
 
