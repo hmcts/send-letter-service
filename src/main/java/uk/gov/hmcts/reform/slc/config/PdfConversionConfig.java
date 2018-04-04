@@ -10,7 +10,6 @@ public class PdfConversionConfig {
 
     @Bean
     public IHtmlToPdfConverter htmlToPdfConverter() {
-        HTMLToPDFConverter converter = new HTMLToPDFConverter();
-        return converter::convert;
+        return new HTMLToPDFConverter()::convert;
     }
 }
