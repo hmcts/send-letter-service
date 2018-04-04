@@ -41,8 +41,7 @@ public class PdfCreatorTest {
 
     @Test
     public void should_require_documents_to_not_be_null() {
-        List<Document> docs = null;
-        assertThatThrownBy(() -> pdfCreator.createFromTemplates(docs))
+        assertThatThrownBy(() -> pdfCreator.createFromTemplates(null))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("documents");
     }
