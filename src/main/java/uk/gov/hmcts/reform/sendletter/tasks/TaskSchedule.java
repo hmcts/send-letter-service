@@ -4,7 +4,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.sql.SQLException;
 import java.time.LocalTime;
 import javax.sql.DataSource;
 
@@ -29,21 +28,21 @@ public class TaskSchedule {
     }
 
     @Scheduled(fixedDelayString = "${tasks.upload-letters}")
-    public void uploadLetters() throws SQLException {
+    public void uploadLetters() {
         tryRun(Task.UploadLetters, upload::run);
     }
 
     @Scheduled(cron = "${tasks.mark-letters-posted}")
-    public void markPosted() throws SQLException {
+    public void markPosted() {
         tryRun(Task.MarkLettersPosted, () -> markPosted.run(LocalTime.now()));
     }
 
     @Scheduled(cron = "${tasks.stale-letters-report}")
-    public void staleLetters() throws SQLException {
+    public void staleLetters() {
         tryRun(Task.StaleLetters, staleReport::run);
     }
 
-    private void tryRun(Task task, Runnable runnable) throws SQLException {
+    private void tryRun(Task task, Runnable runnable) {
         SerialTaskRunner.get(dataSource).tryRun(task.getLockId(), runnable);
     }
 }

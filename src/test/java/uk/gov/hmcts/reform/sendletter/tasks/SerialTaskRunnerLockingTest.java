@@ -78,9 +78,8 @@ public class SerialTaskRunnerLockingTest {
     public void does_not_run_task_when_obtaining_database_connection_fails() throws SQLException {
         when(source.getConnection()).thenThrow(SQLException.class);
 
-        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+        taskRunner.tryRun(1, task);
 
-        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, never()).run();
     }
 
@@ -89,9 +88,8 @@ public class SerialTaskRunnerLockingTest {
     public void does_not_run_task_when_locking_throws_exception() throws SQLException {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
-        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+        taskRunner.tryRun(1, task);
 
-        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, never()).run();
     }
 
@@ -101,9 +99,8 @@ public class SerialTaskRunnerLockingTest {
         setupSuccessfulLocking();
         when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenThrow(SQLException.class);
 
-        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+        taskRunner.tryRun(1, task);
 
-        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, only()).run();
     }
 
@@ -139,9 +136,8 @@ public class SerialTaskRunnerLockingTest {
         when(connection.createStatement()).thenThrow(SQLException.class);
         setupFailedUnlocking();
 
-        Throwable thrown = catchThrowable(() -> taskRunner.tryRun(1, task));
+        taskRunner.tryRun(1, task);
 
-        assertThat(thrown).isInstanceOf(SQLException.class);
         verify(task, never()).run();
     }
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.reform.sendletter.exception.TaskRunnerException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,7 +35,7 @@ public final class SerialTaskRunner {
      * No error is thrown if such a task is already running, the
      * supplied Runnable is simply not executed.
      */
-    public void tryRun(int id, Runnable runnable) throws SQLException {
+    public void tryRun(int id, Runnable runnable) {
         log.info("Trying to lock {}", id);
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
@@ -55,6 +56,11 @@ public final class SerialTaskRunner {
                     }
                 }
             }
+        } catch (SQLException exception) {
+            log.error(
+                String.format("SQL error occurred during task %s run", Task.getTaskFromLockId(id)),
+                new TaskRunnerException(exception)
+            );
         }
     }
 
