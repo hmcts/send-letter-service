@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.slc.services.steps.getpdf;
 
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions.InvalidPdfException;
 
 import java.util.Base64;
 import java.util.List;
@@ -17,17 +15,18 @@ import static java.util.stream.Collectors.toList;
 public class PdfCreator {
 
     private final DuplexPreparator duplexPreparator;
-    private static HTMLToPDFConverter converter = new HTMLToPDFConverter();
+    private final IHtmlToPdfConverter converter;
 
-    public PdfCreator(DuplexPreparator duplexPreparator) {
+    public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
         this.duplexPreparator = duplexPreparator;
+        this.converter = converter;
     }
 
-    public byte[] create(LetterRequest letter) {
-        Asserts.notNull(letter, "letter");
+    public byte[] createFromTemplates(List<Document> documents) {
+        Asserts.notNull(documents, "documents");
 
         List<byte[]> docs =
-            letter.documents
+            documents
                 .stream()
                 .map(this::generatePdf)
                 .map(duplexPreparator::prepare)
@@ -36,14 +35,13 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(docs);
     }
 
-    public byte[] create(LetterWithPdfsRequest letter) {
-        Asserts.notNull(letter, "letter");
+    public byte[] createFromBase64Pdfs(List<String> base64encodedDocs) {
+        Asserts.notNull(base64encodedDocs, "base64encodedDocs");
 
         List<byte[]> docs =
-            letter
-                .documents
+            base64encodedDocs
                 .stream()
-                .map(d -> Base64.getDecoder().decode(d))
+                .map(this::decodePdf)
                 .map(duplexPreparator::prepare)
                 .collect(toList());
 
@@ -52,7 +50,15 @@ public class PdfCreator {
 
     private byte[] generatePdf(Document document) {
         synchronized (PdfCreator.class) {
-            return converter.convert(document.template.getBytes(), document.values);
+            return converter.apply(document.template.getBytes(), document.values);
+        }
+    }
+
+    private byte[] decodePdf(String base64encodedPdf) {
+        try {
+            return Base64.getDecoder().decode(base64encodedPdf);
+        } catch (IllegalArgumentException exc) {
+            throw new InvalidPdfException(exc);
         }
     }
 }
