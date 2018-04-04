@@ -69,10 +69,10 @@ public class LetterService {
                 log.info("Same message found already created. Returning letter id {} instead", id);
                 return id;
             })
-            .orElseGet(() -> saveNewLetterAndReturnId(letterInfo, pdfContentSupplier.get()));
+            .orElseGet(() -> saveNewLetter(letterInfo, pdfContentSupplier.get()));
     }
 
-    private UUID saveNewLetterAndReturnId(LetterInfo letterInfo, byte[] pdfContent) {
+    private UUID saveNewLetter(LetterInfo letterInfo, byte[] pdfContent) {
         UUID id = UUID.randomUUID();
 
         byte[] zipContent = zipper.zip(
