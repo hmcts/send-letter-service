@@ -74,7 +74,7 @@ public class UploadLettersTaskTest {
             task.run();
 
             // file should exist in SFTP site.
-            File[] files = server.pdfFolder.listFiles();
+            File[] files = server.lettersFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
 
             // Ensure the letter is marked as uploaded in the database.
@@ -86,7 +86,7 @@ public class UploadLettersTaskTest {
             assertThat(l.getPrintedAt()).isNull();
 
             // pdf content should be removed now
-            assertThat(l.getPdf()).isNull();
+            assertThat(l.getFileContent()).isNull();
         }
     }
 
@@ -121,7 +121,7 @@ public class UploadLettersTaskTest {
             verify(fakeZipper).zip(anyString(), any(PdfDoc.class));
 
             // file does not exist in SFTP site.
-            File[] files = server.pdfFolder.listFiles();
+            File[] files = server.lettersFolder.listFiles();
             assertThat(files.length).isEqualTo(0);
 
             // Clear the JPA cache to force a read.
@@ -129,7 +129,7 @@ public class UploadLettersTaskTest {
             Letter l = repository.findById(id).get();
             assertThat(l.getStatus()).isEqualTo(LetterStatus.Created);
             assertThat(l.getSentToPrintAt()).isNull();
-            assertThat(l.getPdf()).isNotNull();
+            assertThat(l.getFileContent()).isNotNull();
         }
     }
 
@@ -157,7 +157,7 @@ public class UploadLettersTaskTest {
         Letter l = repository.findById(id).get();
         assertThat(l.getStatus()).isEqualTo(LetterStatus.Created);
         assertThat(l.getSentToPrintAt()).isNull();
-        assertThat(l.getPdf()).isNotNull();
+        assertThat(l.getFileContent()).isNotNull();
         verify(ftpClient, never()).upload(any(LocalSourceFile.class), anyBoolean());
     }
 }

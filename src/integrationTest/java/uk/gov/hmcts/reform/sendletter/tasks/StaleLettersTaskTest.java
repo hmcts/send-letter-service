@@ -14,17 +14,18 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
-import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.sendletter.util.MessageIdProvider.randomMessageId;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -123,7 +124,7 @@ public class StaleLettersTaskTest {
     }
 
     private Letter createLetter(LocalTime sentToPrintAtTime) {
-        Letter letter = new Letter(MessageIdProvider.randomMessageId(), "service", null, "type", null);
+        Letter letter = new Letter(UUID.randomUUID(), randomMessageId(), "service", null, "type", null);
 
         if (sentToPrintAtTime != null) {
             letter.setStatus(LetterStatus.Uploaded);

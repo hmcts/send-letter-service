@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
 import java.sql.Timestamp;
@@ -58,8 +57,7 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        Letter letter = new Letter(MESSAGE_ID, SERVICE_NAME, null, TYPE, null);
-        ReflectionTestUtils.setField(letter, "id", UUID.randomUUID());
+        Letter letter = new Letter(UUID.randomUUID(), MESSAGE_ID, SERVICE_NAME, null, TYPE, null);
         ZonedDateTime sentToPrint = ZonedDateTime.now(ZoneOffset.UTC);
         letter.setSentToPrintAt(Timestamp.from(sentToPrint.toInstant()));
 

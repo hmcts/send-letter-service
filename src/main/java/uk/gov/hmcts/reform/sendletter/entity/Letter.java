@@ -9,17 +9,12 @@ import org.hibernate.annotations.TypeDefs;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "letters")
@@ -28,7 +23,6 @@ import static javax.persistence.FetchType.LAZY;
 })
 public class Letter {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     private String messageId;
@@ -46,26 +40,26 @@ public class Letter {
     private String type;
     @Enumerated(EnumType.STRING)
     private LetterStatus status = LetterStatus.Created;
-
-    @Basic(fetch = LAZY)
-    private byte[] pdf;
+    private byte[] fileContent;
 
     // For use by hibernate.
     private Letter() {
     }
 
     public Letter(
+        UUID id,
         String messageId,
         String service,
         JsonNode additionalData,
         String type,
-        byte[] pdf
+        byte[] fileContent
     ) {
+        this.id = id;
         this.messageId = messageId;
         this.service = service;
         this.additionalData = additionalData;
         this.type = type;
-        this.pdf = pdf;
+        this.fileContent = fileContent;
         this.isFailed = false;
     }
 
@@ -93,12 +87,12 @@ public class Letter {
         this.status = status;
     }
 
-    public byte[] getPdf() {
-        return pdf;
+    public byte[] getFileContent() {
+        return fileContent;
     }
 
-    public void setPdf(byte[] pdf) {
-        this.pdf = pdf;
+    public void setFileContent(byte[] fileContent) {
+        this.fileContent = fileContent;
     }
 
     public Timestamp getCreatedAt() {
