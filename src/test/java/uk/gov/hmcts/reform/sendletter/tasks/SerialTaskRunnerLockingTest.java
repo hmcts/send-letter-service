@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.sendletter.exception.TaskRunnerException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -79,8 +80,9 @@ public class SerialTaskRunnerLockingTest {
     public void does_not_run_task_when_obtaining_database_connection_fails() throws SQLException {
         when(source.getConnection()).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(MarkLettersPosted, task);
+        Throwable exception = catchThrowable(() -> taskRunner.tryRun(MarkLettersPosted, task));
 
+        assertThat(exception).isInstanceOf(TaskRunnerException.class);
         verify(task, never()).run();
     }
 
@@ -89,8 +91,9 @@ public class SerialTaskRunnerLockingTest {
     public void does_not_run_task_when_locking_throws_exception() throws SQLException {
         when(statement.executeQuery(startsWith("SELECT pg_try_advisory_lock"))).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(MarkLettersPosted, task);
+        Throwable exception = catchThrowable(() -> taskRunner.tryRun(MarkLettersPosted, task));
 
+        assertThat(exception).isInstanceOf(TaskRunnerException.class);
         verify(task, never()).run();
     }
 
@@ -100,8 +103,9 @@ public class SerialTaskRunnerLockingTest {
         setupSuccessfulLocking();
         when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenThrow(SQLException.class);
 
-        taskRunner.tryRun(MarkLettersPosted, task);
+        Throwable exception = catchThrowable(() -> taskRunner.tryRun(MarkLettersPosted, task));
 
+        assertThat(exception).isInstanceOf(TaskRunnerException.class);
         verify(task, only()).run();
     }
 
@@ -137,8 +141,9 @@ public class SerialTaskRunnerLockingTest {
         when(connection.createStatement()).thenThrow(SQLException.class);
         setupFailedUnlocking();
 
-        taskRunner.tryRun(MarkLettersPosted, task);
+        Throwable exception = catchThrowable(() -> taskRunner.tryRun(MarkLettersPosted, task));
 
+        assertThat(exception).isInstanceOf(TaskRunnerException.class);
         verify(task, never()).run();
     }
 

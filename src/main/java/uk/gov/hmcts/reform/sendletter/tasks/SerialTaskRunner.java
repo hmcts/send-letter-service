@@ -58,11 +58,12 @@ public final class SerialTaskRunner {
                     }
                 }
             }
-        } catch (SQLException exception) {
-            log.error(
-                String.format("SQL error occurred during task %s run", task.name()),
-                new TaskRunnerException(exception)
-            );
+        } catch (SQLException exc) {
+            TaskRunnerException exception = new TaskRunnerException(exc);
+
+            log.error(String.format("SQL error occurred during task %s run", task.name()), exception);
+
+            throw exception;
         }
     }
 
