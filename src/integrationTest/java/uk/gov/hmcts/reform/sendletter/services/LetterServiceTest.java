@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +23,6 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,15 +58,20 @@ public class LetterServiceTest {
     }
 
     @Test
-    public void generates_and_saves_zip_file() throws IOException {
+    public void generates_and_saves_zipped_pdf() throws IOException {
         UUID id = service.send(SampleData.letter(), SERVICE_NAME);
 
         Letter result = letterRepository.findOne(id);
 
         ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(result.getFileContent()));
-        ZipEntry zipEntry = zip.getNextEntry();
+        zip.getNextEntry(); //positions the stream at the beginning of the entry data
 
-        assertThat(zipEntry).isNotNull();
+        PreflightParser pdfParser = new PreflightParser(new ByteArrayDataSource(zip));
+        pdfParser.parse();
+        PreflightDocument document = pdfParser.getPreflightDocument();
+        // This will throw an exception if the file format is invalid,
+        // but ignores more minor errors such as missing metadata.
+        document.validate();
     }
 
     @Test
