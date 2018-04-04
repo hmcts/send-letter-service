@@ -68,7 +68,7 @@ public class StaleLettersTaskTest {
     @SuppressWarnings("VariableDeclarationUsageDistance")
     public void should_report_to_insights_when_there_is_an_unprinted_letter() {
         // given
-        Letter letter = createLetter(secondBeforeCutOff);
+        Letter letter = createLetterWithSentToPrintTime(secondBeforeCutOff);
 
         ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
@@ -86,8 +86,8 @@ public class StaleLettersTaskTest {
     @Test
     public void should_not_pick_up_letter_if_sent_to_print_happened_at_the_cutoff_and_later() {
         // given
-        createLetter(cutOff);
-        createLetter(cutOff.plusSeconds(1));
+        createLetterWithSentToPrintTime(cutOff);
+        createLetterWithSentToPrintTime(cutOff.plusSeconds(1));
 
         // when
         task.run();
@@ -99,7 +99,7 @@ public class StaleLettersTaskTest {
     @Test
     public void should_not_pick_up_letter_if_not_sent_to_print() {
         // given
-        createLetter(null);
+        createLetterWithSentToPrintTime(null);
 
         // when
         task.run();
@@ -111,7 +111,7 @@ public class StaleLettersTaskTest {
     @Test
     public void should_not_pick_up_letter_if_it_is_already_printed() {
         // given
-        Letter letter = createLetter(secondBeforeCutOff);
+        Letter letter = createLetterWithSentToPrintTime(secondBeforeCutOff);
         letter.setStatus(LetterStatus.Posted);
         letter.setPrintedAt(Timestamp.from(Instant.now()));
 
@@ -123,7 +123,7 @@ public class StaleLettersTaskTest {
         verify(insights, never()).trackStaleLetter(any(Letter.class));
     }
 
-    private Letter createLetter(LocalTime sentToPrintAtTime) {
+    private Letter createLetterWithSentToPrintTime(LocalTime sentToPrintAtTime) {
         Letter letter = new Letter(UUID.randomUUID(), randomMessageId(), "service", null, "type", null);
 
         if (sentToPrintAtTime != null) {
