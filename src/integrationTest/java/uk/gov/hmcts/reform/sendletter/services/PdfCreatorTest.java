@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions.InvalidPdfException;
 
 import java.util.Base64;
 
@@ -62,7 +63,9 @@ public class PdfCreatorTest {
         Throwable exc = catchThrowable(() -> pdfCreator.create(letter));
 
         // then
-        assertThat(exc).isNotNull();
+        assertThat(exc)
+            .isNotNull()
+            .isInstanceOf(InvalidPdfException.class);
     }
 
     @Test
@@ -82,7 +85,9 @@ public class PdfCreatorTest {
         Throwable exc = catchThrowable(() -> pdfCreator.create(letter));
 
         // then
-        assertThat(exc).isNotNull();
+        assertThat(exc)
+            .isNotNull()
+            .isInstanceOf(InvalidPdfException.class);
     }
 
     private String base64encode(byte[] bytes) {

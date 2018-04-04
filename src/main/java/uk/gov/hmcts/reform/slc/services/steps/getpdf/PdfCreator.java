@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions.InvalidPdfException;
 
 import java.util.Base64;
 import java.util.List;
@@ -42,7 +43,7 @@ public class PdfCreator {
         List<byte[]> docs =
             letter.documents
                 .stream()
-                .map(d -> Base64.getDecoder().decode(d))
+                .map(this::decodePdf)
                 .map(duplexPreparator::prepare)
                 .collect(toList());
 
@@ -52,6 +53,14 @@ public class PdfCreator {
     private byte[] generatePdf(Document document) {
         synchronized (PdfCreator.class) {
             return converter.apply(document.template.getBytes(), document.values);
+        }
+    }
+
+    private byte[] decodePdf(String base64encodedPdf) {
+        try {
+            return Base64.getDecoder().decode(base64encodedPdf);
+        } catch (IllegalArgumentException exc) {
+            throw new InvalidPdfException(exc);
         }
     }
 }
