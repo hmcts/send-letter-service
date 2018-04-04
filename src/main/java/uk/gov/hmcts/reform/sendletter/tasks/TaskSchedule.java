@@ -43,6 +43,6 @@ public class TaskSchedule {
     }
 
     private void tryRun(Task task, Runnable runnable) {
-        SerialTaskRunner.get(dataSource).tryRun(task.getLockId(), runnable);
+        SerialTaskRunner.get(dataSource).tryRun(task, runnable);
     }
 }

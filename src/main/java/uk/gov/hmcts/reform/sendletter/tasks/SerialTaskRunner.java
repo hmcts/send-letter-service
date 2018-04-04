@@ -35,8 +35,10 @@ public final class SerialTaskRunner {
      * No error is thrown if such a task is already running, the
      * supplied Runnable is simply not executed.
      */
-    void tryRun(int id, Runnable runnable) {
+    void tryRun(Task task, Runnable runnable) {
+        int id = task.getLockId();
         log.info("Trying to lock {}", id);
+
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
             try {
@@ -58,7 +60,7 @@ public final class SerialTaskRunner {
             }
         } catch (SQLException exception) {
             log.error(
-                String.format("SQL error occurred during task %s run", Task.getTaskFromLockId(id)),
+                String.format("SQL error occurred during task %s run", task.name()),
                 new TaskRunnerException(exception)
             );
         }
