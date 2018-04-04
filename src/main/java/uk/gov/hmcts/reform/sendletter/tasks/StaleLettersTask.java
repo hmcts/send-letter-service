@@ -42,7 +42,7 @@ public class StaleLettersTask {
 
         logger.info("Started stale letter report job with cut-off of {}", staleCutOff);
 
-        long staleLetters = repo.findStaleLetters(LetterStatus.Uploaded, staleCutOff)
+        long staleLetters = repo.findByStatusAndSentToPrintAtBefore(LetterStatus.Uploaded, staleCutOff)
             .peek(insights::trackStaleLetter)
             .count();
 

@@ -10,17 +10,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.sendletter.entity.StaleLettersOnly;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,29 +58,27 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        StaleLettersOnly letter = mock(StaleLettersOnly.class);
-        UUID letterId = UUID.randomUUID();
-        when(letter.getId()).thenReturn(letterId);
-        when(letter.getMessageId()).thenReturn(MESSAGE_ID);
-        when(letter.getService()).thenReturn(SERVICE_NAME);
-        when(letter.getType()).thenReturn(TYPE);
-        when(letter.getSentToPrintAt()).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
+        Letter letter = new Letter(MESSAGE_ID, SERVICE_NAME, null, TYPE, null);
+        ReflectionTestUtils.setField(letter, "id", UUID.randomUUID());
+        ZonedDateTime sentToPrint = ZonedDateTime.now(ZoneOffset.UTC);
+        letter.setSentToPrintAt(Timestamp.from(sentToPrint.toInstant()));
 
         insights.trackStaleLetter(letter);
+
+        Map<String, String> expectedProperties = new HashMap<>();
+        expectedProperties.put("letterId", letter.getId().toString());
+        expectedProperties.put("messageId", MESSAGE_ID);
+        expectedProperties.put("service", SERVICE_NAME);
+        expectedProperties.put("type", TYPE);
+        expectedProperties.put("sentToPrintDayOfWeek", sentToPrint.getDayOfWeek().name());
+        expectedProperties.put("sentToPrintAt", sentToPrint.format(AppInsights.TIME_FORMAT));
 
         verify(telemetry).trackEvent(
             eq(AppInsights.LETTER_NOT_PRINTED),
             properties.capture(),
             eq(null)
         );
-        assertThat(properties.getValue().keySet()).containsOnly(
-            "letterId",
-            "messageId",
-            "service",
-            "type",
-            "sentToPrintDayOfWeek",
-            "sentToPrintAt"
-        );
+        assertThat(properties.getValue()).containsAllEntriesOf(expectedProperties);
     }
 
     @Test

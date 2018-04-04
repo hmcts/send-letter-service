@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.entity.StaleLettersOnly;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
@@ -61,7 +60,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
+        verify(insights, never()).trackStaleLetter(any(Letter.class));
     }
 
     @Test
@@ -70,7 +69,7 @@ public class StaleLettersTaskTest {
         // given
         Letter letter = createLetter(secondBeforeCutOff);
 
-        ArgumentCaptor<StaleLettersOnly> captor = ArgumentCaptor.forClass(StaleLettersOnly.class);
+        ArgumentCaptor<Letter> captor = ArgumentCaptor.forClass(Letter.class);
 
         // when
         task.run();
@@ -93,7 +92,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
+        verify(insights, never()).trackStaleLetter(any(Letter.class));
     }
 
     @Test
@@ -105,7 +104,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
+        verify(insights, never()).trackStaleLetter(any(Letter.class));
     }
 
     @Test
@@ -120,7 +119,7 @@ public class StaleLettersTaskTest {
         task.run();
 
         // then
-        verify(insights, never()).trackStaleLetter(any(StaleLettersOnly.class));
+        verify(insights, never()).trackStaleLetter(any(Letter.class));
     }
 
     private Letter createLetter(LocalTime sentToPrintAtTime) {
