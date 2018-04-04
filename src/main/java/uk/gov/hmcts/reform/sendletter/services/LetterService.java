@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +56,7 @@ public class LetterService {
 
     @Transactional
     public UUID send(LetterWithPdfsRequest letter, String serviceName) {
-        return send(
-            new LetterInfo(generateChecksum(letter), serviceName, letter.type, letter.additionalData),
-            () -> pdfCreator.createFromBase64Pdfs(letter.documents)
-        );
+        throw new NotImplementedException();
     }
 
     private UUID send(LetterInfo letterInfo, Supplier<byte[]> pdfContentSupplier) {
