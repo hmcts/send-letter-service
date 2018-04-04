@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.sendletter.exception.TaskRunnerException;
 
 import java.time.LocalTime;
 import javax.sql.DataSource;
@@ -10,6 +13,9 @@ import javax.sql.DataSource;
 @Component
 @ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class TaskSchedule {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskSchedule.class);
+
     private final MarkLettersPostedTask markPosted;
     private final UploadLettersTask upload;
     private final StaleLettersTask staleReport;
@@ -43,6 +49,17 @@ public class TaskSchedule {
     }
 
     private void tryRun(Task task, Runnable runnable) {
-        SerialTaskRunner.get(dataSource).tryRun(task, runnable);
+        try {
+            SerialTaskRunner.get(dataSource).tryRun(task, runnable);
+        } catch (TaskRunnerException exception) {
+            log.error(
+                String.format(
+                    "Error occurred during task %s run. Cause message: %s",
+                    task.name(),
+                    exception.getCause().getMessage()
+                ),
+                exception
+            );
+        }
     }
 }
