@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
@@ -16,9 +14,6 @@ import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
 import uk.gov.hmcts.reform.sendletter.services.zip.ZippedDoc;
-import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
-import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
-import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -28,31 +23,26 @@ import java.util.Objects;
 import static java.time.LocalDateTime.now;
 
 @Component
-@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
 
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
     private final LetterRepository repo;
-    private final Zipper zipper;
     private final FtpClient ftp;
     private final FtpAvailabilityChecker availabilityChecker;
 
     @Autowired
     public UploadLettersTask(
         LetterRepository repo,
-        Zipper zipper,
         FtpClient ftp,
         FtpAvailabilityChecker availabilityChecker
     ) {
         this.repo = repo;
-        this.zipper = zipper;
         this.ftp = ftp;
         this.availabilityChecker = availabilityChecker;
     }
 
-    @Scheduled(fixedDelayString = "${tasks.upload-letters}")
     @Transactional
     public void run() {
         logger.info("Started letter upload job");
@@ -103,18 +93,21 @@ public class UploadLettersTask {
     }
 
     private String uploadToFtp(Letter letter) {
-        PdfDoc pdfDoc = new PdfDoc(FileNameHelper.generateName(letter, "pdf"), letter.getFileContent());
-        ZippedDoc zippedDoc = zipper.zip(ZipFileNameHelper.generateName(letter, now()), pdfDoc);
+
+        ZippedDoc zippedDoc = new ZippedDoc(
+            ZipFileNameHelper.generateName(letter, now()),
+            letter.getFileContent()
+        );
 
         logger.debug(
-            "Uploading letter id: {}, messageId: {}, pdf filename: {}, zip filename:",
+            "Uploading letter id: {}, messageId: {}, zip filename: {}",
             letter.getId(),
             letter.getMessageId(),
-            pdfDoc.filename,
             zippedDoc.filename
         );
 
         ftp.upload(zippedDoc, isSmokeTest(letter));
+
         return zippedDoc.filename;
     }
 
