@@ -49,7 +49,7 @@ public class LetterService {
     public UUID send(LetterRequest letter, String serviceName) {
         return send(
             new LetterInfo(generateChecksum(letter), serviceName, letter.type, letter.additionalData),
-            () -> pdfCreator.create(letter)
+            () -> pdfCreator.createFromTemplates(letter.documents)
         );
     }
 
@@ -57,7 +57,7 @@ public class LetterService {
     public UUID send(LetterWithPdfsRequest letter, String serviceName) {
         return send(
             new LetterInfo(generateChecksum(letter), serviceName, letter.type, letter.additionalData),
-            () -> pdfCreator.create(letter)
+            () -> pdfCreator.createFromBase64Pdfs(letter.documents)
         );
     }
 
