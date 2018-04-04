@@ -35,7 +35,7 @@ public final class SerialTaskRunner {
      * No error is thrown if such a task is already running, the
      * supplied Runnable is simply not executed.
      */
-    public void tryRun(int id, Runnable runnable) {
+    void tryRun(int id, Runnable runnable) {
         log.info("Trying to lock {}", id);
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
