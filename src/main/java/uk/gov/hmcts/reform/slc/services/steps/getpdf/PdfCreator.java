@@ -4,8 +4,10 @@ import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
+import java.util.Base64;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -28,6 +30,19 @@ public class PdfCreator {
             letter.documents
                 .stream()
                 .map(this::generatePdf)
+                .map(duplexPreparator::prepare)
+                .collect(toList());
+
+        return PdfMerger.mergeDocuments(docs);
+    }
+
+    public byte[] create(LetterWithPdfsRequest letter) {
+        Asserts.notNull(letter, "letter");
+
+        List<byte[]> docs =
+            letter.documents
+                .stream()
+                .map(d -> Base64.getDecoder().decode(d))
                 .map(duplexPreparator::prepare)
                 .collect(toList());
 

@@ -39,7 +39,8 @@ public class PdfCreatorTest {
 
     @Test
     public void should_require_letter_to_not_be_null() {
-        assertThatThrownBy(() -> pdfCreator.create(null))
+        LetterRequest letter = null;
+        assertThatThrownBy(() -> pdfCreator.create(letter))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("letter");
     }
