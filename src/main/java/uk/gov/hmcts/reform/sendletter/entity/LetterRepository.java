@@ -11,9 +11,6 @@ import javax.persistence.LockModeType;
 
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
-    // This lockmode locks the returned rows
-    // for both reading and writing.
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Stream<Letter> findByStatus(LetterStatus status);
 
     Stream<Letter> findByStatusAndSentToPrintAtBefore(LetterStatus status, Timestamp before);
