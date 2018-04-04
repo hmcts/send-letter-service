@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class PdfCreatorTest {
 
-    PdfCreator pdfCreator;
+    private PdfCreator pdfCreator;
 
     @Before
     public void setUp() {
