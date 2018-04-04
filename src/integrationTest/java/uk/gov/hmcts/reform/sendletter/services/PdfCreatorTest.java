@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
