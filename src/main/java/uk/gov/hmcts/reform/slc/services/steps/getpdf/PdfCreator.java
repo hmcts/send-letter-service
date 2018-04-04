@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.slc.services.steps.getpdf;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions.InvalidPdfException;
 
@@ -23,7 +22,7 @@ public class PdfCreator {
         this.converter = converter;
     }
 
-    public byte[] create(List<Document> documents) {
+    public byte[] createFromTemplates(List<Document> documents) {
         Asserts.notNull(documents, "documents");
 
         List<byte[]> docs =
@@ -36,11 +35,11 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(docs);
     }
 
-    public byte[] create(LetterWithPdfsRequest letter) {
-        Asserts.notNull(letter, "letter");
+    public byte[] createFromBase64Pdfs(List<String> base64encodedDocs) {
+        Asserts.notNull(base64encodedDocs, "base64encodedDocs");
 
         List<byte[]> docs =
-            letter.documents
+            base64encodedDocs
                 .stream()
                 .map(this::decodePdf)
                 .map(duplexPreparator::prepare)
