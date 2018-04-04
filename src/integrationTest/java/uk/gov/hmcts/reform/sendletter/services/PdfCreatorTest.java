@@ -86,8 +86,7 @@ public class PdfCreatorTest {
 
         // then
         assertThat(exc)
-            .isNotNull()
-            .isInstanceOf(InvalidPdfException.class);
+            .isNotNull();
     }
 
     private String base64encode(byte[] bytes) {
