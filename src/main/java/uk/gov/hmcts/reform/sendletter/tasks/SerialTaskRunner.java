@@ -37,31 +37,32 @@ public final class SerialTaskRunner {
      */
     void tryRun(Task task, Runnable runnable) {
         int id = task.getLockId();
-        log.info("Trying to lock {}", id);
+        String name = task.name();
+        log.info("Trying to lock {}", name);
 
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
             try {
                 if (tryLock(id, connection)) {
-                    log.info("Acquired lock {}", id);
+                    log.info("Acquired lock {}", name);
                     locked = true;
                     runnable.run();
                 } else {
-                    log.info("Failed to acquire lock {}", id);
+                    log.info("Failed to acquire lock {}", name);
                 }
             } finally {
                 if (locked) {
                     if (unlock(id, connection)) {
-                        log.info("Released lock {}", id);
+                        log.info("Released lock {}", name);
                     } else {
-                        log.warn("Failed to release lock {}", id);
+                        log.warn("Failed to release lock {}", name);
                     }
                 }
             }
         } catch (SQLException exc) {
             TaskRunnerException exception = new TaskRunnerException(exc);
 
-            log.error(String.format("SQL error occurred during task %s run", task.name()), exception);
+            log.error(String.format("SQL error occurred during task %s run", name), exception);
 
             throw exception;
         }
