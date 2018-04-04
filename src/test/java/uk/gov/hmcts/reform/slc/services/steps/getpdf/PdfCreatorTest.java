@@ -40,10 +40,10 @@ public class PdfCreatorTest {
     }
 
     @Test
-    public void should_require_letter_to_not_be_null() {
+    public void should_require_documents_to_not_be_null() {
         assertThatThrownBy(() -> pdfCreator.create(null))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("letter");
+            .hasMessageContaining("documents");
     }
 
     @Test
