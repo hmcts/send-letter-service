@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class PdfCreator {
 
     private final DuplexPreparator duplexPreparator;
-    private IHtmlToPdfConverter converter;
+    private final IHtmlToPdfConverter converter;
 
     public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
         this.duplexPreparator = duplexPreparator;
