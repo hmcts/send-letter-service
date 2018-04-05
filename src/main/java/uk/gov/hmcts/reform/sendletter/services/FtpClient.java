@@ -7,7 +7,6 @@ import net.schmizz.sshj.sftp.SFTPFileTransfer;
 import net.schmizz.sshj.xfer.LocalSourceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
@@ -32,7 +31,6 @@ public class FtpClient {
 
     private static final Logger logger = LoggerFactory.getLogger(FtpClient.class);
 
-    @Autowired
     private final AppInsights insights;
 
     private final FtpConfigProperties configProperties;
@@ -40,7 +38,6 @@ public class FtpClient {
     private final Supplier<SSHClient> sshClientSupplier;
 
     // region constructor
-    @Autowired
     public FtpClient(
         Supplier<SSHClient> sshClientSupplier,
         FtpConfigProperties configProperties,
