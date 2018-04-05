@@ -6,8 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +21,7 @@ import java.util.List;
 import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.toByteArray;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,6 +49,19 @@ public class PdfCreatorTest {
         assertThatThrownBy(() -> pdfCreator.createFromTemplates(null))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("documents");
+    }
+
+    @Test
+    public void generateFromLetter_should_call_appropriate_method_based_on_parameter_type() throws Exception {
+        PdfCreator spyCreator = Mockito.spy(pdfCreator);
+
+        LetterRequest l1 = SampleData.letterRequest();
+        spyCreator.createFromLetter(l1);
+        verify(spyCreator).createFromTemplates(l1.documents);
+
+        LetterWithPdfsRequest l2 = SampleData.letterWithPdfsRequest();
+        spyCreator.createFromLetter(l2);
+        verify(spyCreator).createFromBase64Pdfs(l2.documents);
     }
 
     @Test
