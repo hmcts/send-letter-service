@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -47,6 +50,21 @@ public class LetterService {
         this.letterRepository = letterRepository;
         this.zipper = zipper;
         this.mapper = mapper;
+    }
+
+    // TODO: remove
+    @Autowired
+    public LetterService(
+        LetterRepository letterRepository,
+        Zipper zipper,
+        ObjectMapper mapper
+    ) {
+        this(
+            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            letterRepository,
+            zipper,
+            mapper
+        );
     }
 
     @Transactional
