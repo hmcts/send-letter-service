@@ -11,13 +11,4 @@ public class UnauthenticatedException extends UnknownErrorCodeException {
     public UnauthenticatedException(String message) {
         super(AlertLevel.P3, message);
     }
-
-    /**
-     * Used to wrap InvalidTokenException thrown by authorisation library.
-     *
-     * @param cause Original InvalidTokenException
-     */
-    public UnauthenticatedException(Throwable cause) {
-        super(AlertLevel.P4, cause);
-    }
 }

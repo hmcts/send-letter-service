@@ -61,7 +61,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     protected ResponseEntity<Void> handleInvalidTokenException(InvalidTokenException exc) {
-        log.warn(exc.getMessage(), new UnauthenticatedException(exc));
+        log.warn(exc.getMessage(), exc);
         return status(UNAUTHORIZED).build();
     }
 
