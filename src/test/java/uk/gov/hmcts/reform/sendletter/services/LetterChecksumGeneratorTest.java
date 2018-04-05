@@ -72,7 +72,8 @@ public class LetterChecksumGeneratorTest {
                 "cmc-template",
                 ImmutableMap.of(
                     "key11", "value11",
-                    "key12", "value12")
+                    "key12", "value12"
+                )
             )),
             "print-job-1234",
             ImmutableMap.of(
@@ -86,7 +87,8 @@ public class LetterChecksumGeneratorTest {
                 "cmc-template",
                 ImmutableMap.of(
                     "key21", "key21",
-                    "key22", "value22")
+                    "key22", "value22"
+                )
             )),
             "print-job-1234",
             ImmutableMap.of(
