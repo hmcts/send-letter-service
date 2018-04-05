@@ -11,6 +11,8 @@ import javax.validation.constraints.Size;
 
 public class LetterWithPdfsRequest implements Serializable {
 
+    private static final long serialVersionUID = 5528476697055795883L;
+
     // TODO: validate pdfs are base64 encoded.
     /**
      * Base64 encoded pdfs.
