@@ -54,16 +54,16 @@ public class LetterService {
                 log.info("Same message found already created. Returning letter id {} instead", id);
                 return id;
             })
-            .orElseGet(() -> saveNewLetter(letter, messageId, serviceName, pdfCreator.createFromLetter(letter)));
+            .orElseGet(() -> saveNewLetter(letter, messageId, serviceName));
     }
 
-    private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, byte[] pdfContent) {
+    private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName) {
         UUID id = UUID.randomUUID();
 
         byte[] zipContent = zipper.zip(
             new PdfDoc(
                 FileNameHelper.generateName(letter.getType(), serviceName, id, "pdf"),
-                pdfContent
+                pdfCreator.createFromLetter(letter)
             )
         );
 
