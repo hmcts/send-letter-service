@@ -6,17 +6,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
 import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfDoc;
-import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -31,12 +32,18 @@ public class LetterService {
 
     private static final Logger log = LoggerFactory.getLogger(LetterService.class);
 
-    private final PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
+    private final PdfCreator pdfCreator;
     private final LetterRepository letterRepository;
     private final Zipper zipper;
     private final ObjectMapper mapper;
 
-    public LetterService(LetterRepository letterRepository, Zipper zipper, ObjectMapper mapper) {
+    public LetterService(
+        PdfCreator pdfCreator,
+        LetterRepository letterRepository,
+        Zipper zipper,
+        ObjectMapper mapper
+    ) {
+        this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
         this.zipper = zipper;
         this.mapper = mapper;
@@ -63,7 +70,7 @@ public class LetterService {
         byte[] zipContent = zipper.zip(
             new PdfDoc(
                 FileNameHelper.generateName(letter.getType(), serviceName, id, "pdf"),
-                pdfCreator.createFromLetter(letter)
+                getPdfContent(letter)
             )
         );
 
@@ -83,6 +90,16 @@ public class LetterService {
         log.info("Created new letter {}", id);
 
         return id;
+    }
+
+    private byte[] getPdfContent(ILetterRequest letter) {
+        if (letter instanceof LetterRequest) {
+            return pdfCreator.createFromTemplates(((LetterRequest) letter).documents);
+        } else if (letter instanceof LetterWithPdfsRequest) {
+            return pdfCreator.createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents);
+        } else {
+            throw new UnsupportedLetterRequestTypeException();
+        }
     }
 
     public LetterStatus getStatus(UUID id, String serviceName) {

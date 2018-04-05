@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.slc.services.steps.getpdf;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
-import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions.InvalidPdfException;
 
@@ -23,16 +20,6 @@ public class PdfCreator {
     public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
         this.duplexPreparator = duplexPreparator;
         this.converter = converter;
-    }
-
-    public byte[] createFromLetter(ILetterRequest letter) {
-        if (letter instanceof LetterRequest) {
-            return createFromTemplates(((LetterRequest) letter).documents);
-        } else if (letter instanceof LetterWithPdfsRequest) {
-            return createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents);
-        } else {
-            throw new RuntimeException("Unsupported letter request type");
-        }
     }
 
     public byte[] createFromTemplates(List<Document> documents) {

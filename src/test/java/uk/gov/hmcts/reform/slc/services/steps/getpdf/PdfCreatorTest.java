@@ -52,19 +52,6 @@ public class PdfCreatorTest {
     }
 
     @Test
-    public void generateFromLetter_should_call_appropriate_method_based_on_parameter_type() throws Exception {
-        PdfCreator spyCreator = Mockito.spy(pdfCreator);
-
-        LetterRequest l1 = SampleData.letterRequest();
-        spyCreator.createFromLetter(l1);
-        verify(spyCreator).createFromTemplates(l1.documents);
-
-        LetterWithPdfsRequest l2 = SampleData.letterWithPdfsRequest();
-        spyCreator.createFromLetter(l2);
-        verify(spyCreator).createFromBase64Pdfs(l2.documents);
-    }
-
-    @Test
     public void should_return_a_merged_pdf_when_multiple_documents_are_passed() throws Exception {
         byte[] test1Pdf = toByteArray(getResource("test1.pdf"));
         byte[] test2Pdf = toByteArray(getResource("test2.pdf"));

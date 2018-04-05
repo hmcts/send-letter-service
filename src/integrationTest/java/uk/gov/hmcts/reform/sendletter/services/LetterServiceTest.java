@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.config.SpyOnJpaConfig;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.PdfCreator;
+import uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex.DuplexPreparator;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -45,7 +48,12 @@ public class LetterServiceTest {
 
     @Before
     public void setUp() {
-        service = new LetterService(letterRepository, new Zipper(), new ObjectMapper());
+        service = new LetterService(
+            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            letterRepository,
+            new Zipper(),
+            new ObjectMapper()
+        );
     }
 
     @After
