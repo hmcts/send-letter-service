@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.controllers;
+package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
 import com.google.common.io.Resources;
 import org.junit.Before;
@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
