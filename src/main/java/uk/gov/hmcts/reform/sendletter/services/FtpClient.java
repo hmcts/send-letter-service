@@ -80,11 +80,13 @@ public class FtpClient {
      * Downloads ALL files from reports directory.
      */
     public List<Report> downloadReports() {
+        Instant start = Instant.now();
+
         return runWith(sftp -> {
             try {
                 SFTPFileTransfer transfer = sftp.getFileTransfer();
 
-                return sftp.ls(configProperties.getReportsFolder())
+                List<Report> reports = sftp.ls(configProperties.getReportsFolder())
                     .stream()
                     .filter(this::isReportFile)
                     .map(file -> {
@@ -98,18 +100,29 @@ public class FtpClient {
                     })
                     .collect(toList());
 
+                insights.trackFtpReportsDownload(Duration.between(start, Instant.now()), true);
+
+                return reports;
             } catch (IOException exc) {
+                insights.trackFtpReportsDownload(Duration.between(start, Instant.now()), false);
+
                 throw new FtpException("Error while downloading reports", exc);
             }
         });
     }
 
     public void deleteReport(String reportPath) {
+        Instant start = Instant.now();
+
         runWith(sftp -> {
             try {
                 sftp.rm(reportPath);
+                insights.trackFtpReportDelete(Duration.between(start, Instant.now()), true);
+
                 return null;
             } catch (Exception exc) {
+                insights.trackFtpReportDelete(Duration.between(start, Instant.now()), false);
+
                 throw new FtpException("Error while deleting report: " + reportPath, exc);
             }
         });
