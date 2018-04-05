@@ -8,7 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
-public class PdfHelper {
+public final class PdfHelper {
 
     /**
      * Validate that data is a zipped pdf or throw an exception.
