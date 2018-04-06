@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.microsoft.applicationinsights.TelemetryClient;
+import com.microsoft.applicationinsights.telemetry.Duration;
+import com.microsoft.applicationinsights.telemetry.TelemetryContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +13,6 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
-
-import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -34,18 +35,21 @@ public class AuthServiceTest {
     private AuthTokenValidator validator;
 
     @Mock
-    private AppInsights insights;
+    private TelemetryClient telemetry;
 
     private AuthService service;
 
     @Before
     public void setUp() {
-        service = new AuthService(validator, insights);
+        TelemetryContext context = new TelemetryContext();
+        context.setInstrumentationKey("some-key");
+        given(telemetry.getContext()).willReturn(context);
+        service = new AuthService(validator, new AppInsights(telemetry));
     }
 
     @After
     public void tearDown() {
-        reset(validator, insights);
+        reset(validator, telemetry);
     }
 
     @Test
@@ -60,7 +64,7 @@ public class AuthServiceTest {
 
         // and
         verify(validator, never()).getServiceName(anyString());
-        verify(insights, never()).trackServiceAuthentication(any(Duration.class), anyBoolean());
+        verify(telemetry, never()).trackDependency(anyString(), anyString(), any(Duration.class), anyBoolean());
     }
 
     @Test
@@ -75,7 +79,7 @@ public class AuthServiceTest {
         assertThat(exception).isInstanceOf(InvalidTokenException.class);
 
         // and
-        verify(insights).trackServiceAuthentication(any(Duration.class), eq(false));
+        verify(telemetry).trackDependency(anyString(), anyString(), any(Duration.class), eq(false));
     }
 
     @Test
@@ -90,6 +94,6 @@ public class AuthServiceTest {
         assertThat(serviceName).isEqualTo("some-service");
 
         // and
-        verify(insights).trackServiceAuthentication(any(Duration.class), eq(true));
+        verify(telemetry).trackDependency(anyString(), anyString(), any(Duration.class), eq(true));
     }
 }

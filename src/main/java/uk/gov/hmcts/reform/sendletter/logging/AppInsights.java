@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Component
 public class AppInsights extends AbstractAppInsights {
@@ -25,13 +27,38 @@ public class AppInsights extends AbstractAppInsights {
 
     // dependencies
 
-    public void trackServiceAuthentication(java.time.Duration duration, boolean success) {
-        telemetry.trackDependency(
-            AppDependency.AUTH_SERVICE,
-            AppDependencyCommand.AUTH_SERVICE_HEADER,
-            new Duration(duration.toMillis()),
-            success
-        );
+    private void trackDependency(String dependency, String command, Instant start, Instant end, boolean success) {
+        java.time.Duration duration = java.time.Duration.between(start, end);
+
+        telemetry.trackDependency(dependency, command, new Duration(duration.toMillis()), success);
+    }
+
+    public String trackServiceAuthentication(Supplier<String> serviceName) {
+        Instant start = Instant.now();
+
+        try {
+            String name = serviceName.get();
+
+            trackDependency(
+                AppDependency.AUTH_SERVICE,
+                AppDependencyCommand.AUTH_SERVICE_HEADER,
+                start,
+                Instant.now(),
+                true
+            );
+
+            return name;
+        } catch (Throwable exception) {
+            trackDependency(
+                AppDependency.AUTH_SERVICE,
+                AppDependencyCommand.AUTH_SERVICE_HEADER,
+                start,
+                Instant.now(),
+                false
+            );
+
+            throw exception;
+        }
     }
 
     public void trackFtpUpload(java.time.Duration duration, boolean success) {
