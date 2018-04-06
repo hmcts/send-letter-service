@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.encryption;
 
 import com.google.common.io.Resources;
+import org.assertj.core.api.Assertions;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,5 +76,15 @@ public class PgpEncryptionUtilTest {
 
         //then
         assertThat(inputZipFile).containsExactly(decryptedZip);
+    }
+
+    @Test
+    public void should_throw_io_exception_when_invalid_pubic_key_is_passed() {
+        Throwable exc = Assertions.catchThrowable(
+            () -> PgpEncryptionUtil.loadPublicKey("this is not public key".getBytes())
+        );
+
+        assertThat(exc)
+            .isInstanceOf(IOException.class);
     }
 }

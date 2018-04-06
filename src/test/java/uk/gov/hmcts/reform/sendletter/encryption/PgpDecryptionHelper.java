@@ -32,7 +32,7 @@ public final class PgpDecryptionHelper {
     /**
      * decrypt the passed in message stream.
      */
-    public static byte[] decryptFile(byte[] in, InputStream keyIn, char[] passwd) throws IOException, PGPException {
+    public static byte[] decryptFile(byte[] in, InputStream keyIn, char... passwd) throws IOException, PGPException {
         Security.addProvider(new BouncyCastleProvider());
 
         PGPObjectFactory objectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
@@ -115,7 +115,7 @@ public final class PgpDecryptionHelper {
         return findPrivateKey(pgpSec.getSecretKey(keyId), pass);
     }
 
-    private static PGPPrivateKey findPrivateKey(PGPSecretKey pgpSecKey, char[] pass)
+    private static PGPPrivateKey findPrivateKey(PGPSecretKey pgpSecKey, char... pass)
         throws PGPException {
         if (pgpSecKey == null) {
             return null;
