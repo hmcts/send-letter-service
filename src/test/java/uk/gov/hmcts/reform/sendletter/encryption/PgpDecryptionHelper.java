@@ -32,8 +32,7 @@ public final class PgpDecryptionHelper {
     /**
      * decrypt the passed in message stream.
      */
-    public static byte[] decryptFile(byte[] in, InputStream keyIn, char[] passwd)
-        throws Exception {
+    public static byte[] decryptFile(byte[] in, InputStream keyIn, char[] passwd) throws IOException, PGPException {
         Security.addProvider(new BouncyCastleProvider());
 
         PGPObjectFactory objectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
@@ -99,16 +98,14 @@ public final class PgpDecryptionHelper {
             throw new PGPException("Message is not a simple encrypted file - type unknown.");
         }
 
-        if (pbe.isIntegrityProtected()) {
-            if (!pbe.verify()) {
-                throw new PGPException("Message failed integrity check");
-            }
+        if (pbe.isIntegrityProtected() && !pbe.verify()) {
+            throw new PGPException("Message failed integrity check");
         }
 
         return byteArrayOutputStream.toByteArray();
     }
 
-    private static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyId, char[] pass)
+    private static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyId, char... pass)
         throws IOException, PGPException {
         PGPSecretKeyRingCollection pgpSec =
             new PGPSecretKeyRingCollection(
