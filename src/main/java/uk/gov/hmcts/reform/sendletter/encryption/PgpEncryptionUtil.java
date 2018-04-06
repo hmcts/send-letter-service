@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.encryption;
 
-import com.google.common.io.Resources;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
@@ -26,10 +25,13 @@ import java.security.Security;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static com.google.common.io.Resources.getResource;
 import static org.bouncycastle.openpgp.PGPUtil.getDecoderStream;
 
-final public class PgpEncryptionUtil {
+public final class PgpEncryptionUtil {
+
+    // Prevent instantiation.
+    private PgpEncryptionUtil() {
+    }
 
     public static byte[] encryptFile(
         byte[] inputFile,
@@ -40,11 +42,20 @@ final public class PgpEncryptionUtil {
     ) throws IOException, PGPException {
         Security.addProvider(new BouncyCastleProvider());
 
-        ByteArrayOutputStream bOut = compressAndWriteFileToLiteralData(inputFile, fileNamePrefix, fileNameSuffix);
+        ByteArrayOutputStream byteArrayOutputStream =
+            compressAndWriteFileToLiteralData(
+                inputFile,
+                fileNamePrefix,
+                fileNameSuffix
+            );
 
-        PGPEncryptedDataGenerator encryptedDataGenerator = prepareDataEncryptor(pgpPublicKey, withIntegrityCheck);
+        PGPEncryptedDataGenerator encryptedDataGenerator =
+            prepareDataEncryptor(
+                pgpPublicKey,
+                withIntegrityCheck
+            );
 
-        return writeEncryptedDataToOutputStream(bOut, encryptedDataGenerator);
+        return writeEncryptedDataToOutputStream(byteArrayOutputStream, encryptedDataGenerator);
     }
 
     /**
@@ -55,13 +66,12 @@ final public class PgpEncryptionUtil {
             new BcPGPPublicKeyRing(
                 getDecoderStream(new ByteArrayInputStream(data))
             )
-        ).orElse(null);
+        ).orElseThrow(() -> new UnableToLoadPgpPublicKeyException("PGP Public key object could be constructed"));
     }
 
     /**
      * Return appropriate key or subkey for given task from public key.
-     * <p>
-     * <p>Weirder older PGP public keys will actually have multiple keys. The main key will usually
+     * Weirder older PGP public keys will actually have multiple keys. The main key will usually
      * be sign-only in such situations. So you've gotta go digging in through the key packets and
      * make sure you get the one that's valid for encryption.
      */
@@ -77,10 +87,10 @@ final public class PgpEncryptionUtil {
     }
 
     private static byte[] writeEncryptedDataToOutputStream(
-        ByteArrayOutputStream bOut,
+        ByteArrayOutputStream bout,
         PGPEncryptedDataGenerator encryptedDataGenerator
     ) throws IOException, PGPException {
-        byte[] bytes = bOut.toByteArray();
+        byte[] bytes = bout.toByteArray();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -93,7 +103,10 @@ final public class PgpEncryptionUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private static PGPEncryptedDataGenerator prepareDataEncryptor(PGPPublicKey pgpPublicKey, boolean withIntegrityCheck) {
+    private static PGPEncryptedDataGenerator prepareDataEncryptor(
+        PGPPublicKey pgpPublicKey,
+        boolean withIntegrityCheck
+    ) {
         BcPGPDataEncryptorBuilder dataEncryptor = new BcPGPDataEncryptorBuilder(PGPEncryptedData.TRIPLE_DES);
         dataEncryptor.setWithIntegrityPacket(withIntegrityCheck);
         dataEncryptor.setSecureRandom(new SecureRandom());
@@ -110,9 +123,10 @@ final public class PgpEncryptionUtil {
     ) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        PGPCompressedDataGenerator pgpCompressedDataGenerator = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
+        PGPCompressedDataGenerator pgpCompressedDataGenerator =
+            new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
-        //Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name
+        //Creates an empty file in the default temporary-file directory
         File tempFile = createTempFile(inputFile, fileNamePrefix, fileNameSuffix);
 
         PGPUtil.writeFileToLiteralData(

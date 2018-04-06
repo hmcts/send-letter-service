@@ -24,54 +24,60 @@ import java.io.InputStream;
 import java.security.Security;
 import java.util.Iterator;
 
-final public class PgpDecryptionHelper {
+public final class PgpDecryptionHelper {
+    // Prevent instantiation.
+    private PgpDecryptionHelper() {
+    }
+
     /**
-     * decrypt the passed in message stream
+     * decrypt the passed in message stream.
      */
-    @SuppressWarnings("unchecked")
     public static byte[] decryptFile(byte[] in, InputStream keyIn, char[] passwd)
         throws Exception {
         Security.addProvider(new BouncyCastleProvider());
 
-        PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
+        PGPObjectFactory objectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
         PGPEncryptedDataList enc;
 
-        Object o = pgpF.nextObject();
-        //
+        Object o = objectFactory.nextObject();
+
         // the first object might be a PGP marker packet.
-        //
         if (o instanceof PGPEncryptedDataList) {
             enc = (PGPEncryptedDataList) o;
         } else {
-            enc = (PGPEncryptedDataList) pgpF.nextObject();
+            enc = (PGPEncryptedDataList) objectFactory.nextObject();
         }
 
         //
         // find the secret key
         //
         Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
-        PGPPrivateKey sKey = null;
+        PGPPrivateKey pgpPrivateKey = null;
         PGPPublicKeyEncryptedData pbe = null;
 
-        while (sKey == null && it.hasNext()) {
+        while (pgpPrivateKey == null && it.hasNext()) {
             pbe = it.next();
 
-            sKey = findPrivateKey(keyIn, pbe.getKeyID(), passwd);
+            pgpPrivateKey = findPrivateKey(keyIn, pbe.getKeyID(), passwd);
         }
 
-        if (sKey == null) {
+        if (pgpPrivateKey == null) {
             throw new IllegalArgumentException("Secret key for message not found.");
         }
 
-        InputStream clear = pbe.getDataStream(new BcPublicKeyDataDecryptorFactory(sKey));
+        InputStream clear = pbe.getDataStream(new BcPublicKeyDataDecryptorFactory(pgpPrivateKey));
 
         PGPObjectFactory plainFact = new PGPObjectFactory(clear, new JcaKeyFingerprintCalculator());
 
         Object message = plainFact.nextObject();
 
         if (message instanceof PGPCompressedData) {
-            PGPCompressedData cData = (PGPCompressedData) message;
-            PGPObjectFactory pgpFact = new PGPObjectFactory(cData.getDataStream(), new JcaKeyFingerprintCalculator());
+            PGPCompressedData compressedData = (PGPCompressedData) message;
+            PGPObjectFactory pgpFact =
+                new PGPObjectFactory(
+                    compressedData.getDataStream(),
+                    new JcaKeyFingerprintCalculator()
+                );
 
             message = pgpFact.nextObject();
         }
@@ -102,10 +108,14 @@ final public class PgpDecryptionHelper {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyID, char[] pass)
+    private static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyId, char[] pass)
         throws IOException, PGPException {
-        PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(keyIn), new JcaKeyFingerprintCalculator());
-        return findPrivateKey(pgpSec.getSecretKey(keyID), pass);
+        PGPSecretKeyRingCollection pgpSec =
+            new PGPSecretKeyRingCollection(
+                PGPUtil.getDecoderStream(keyIn),
+                new JcaKeyFingerprintCalculator()
+            );
+        return findPrivateKey(pgpSec.getSecretKey(keyId), pass);
     }
 
     private static PGPPrivateKey findPrivateKey(PGPSecretKey pgpSecKey, char[] pass)
@@ -114,7 +124,10 @@ final public class PgpDecryptionHelper {
             return null;
         }
 
-        PBESecretKeyDecryptor decryptor = new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider()).build(pass);
+        PBESecretKeyDecryptor decryptor =
+            new BcPBESecretKeyDecryptorBuilder(
+                new BcPGPDigestCalculatorProvider()
+            ).build(pass);
         return pgpSecKey.extractPrivateKey(decryptor);
     }
 }

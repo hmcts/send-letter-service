@@ -10,7 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PgpEncryptionUtilTest {
 
     @Test
-    public void should_pgp_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed() throws Exception {
+    public void should_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed()
+        throws Exception {
         //Given
         byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
 
@@ -42,7 +43,7 @@ public class PgpEncryptionUtilTest {
     }
 
     @Test
-    public void should_pgp_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed_and_without_integrity_check()
+    public void should_encrypt_and_create_pgp_encrypted_zip_file_when_integrity_packects_are_not_added()
         throws Exception {
         //Given
         byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
