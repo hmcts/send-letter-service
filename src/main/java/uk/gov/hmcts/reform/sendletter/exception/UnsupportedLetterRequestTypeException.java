@@ -5,6 +5,6 @@ import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
 
 public class UnsupportedLetterRequestTypeException extends UnknownErrorCodeException {
     public UnsupportedLetterRequestTypeException() {
-        super(AlertLevel.P1, "Unsupported lette request type");
+        super(AlertLevel.P1, "Unsupported letter request type");
     }
 }
