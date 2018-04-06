@@ -5,6 +5,9 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @Component
 public class AuthService {
 
@@ -20,7 +23,19 @@ public class AuthService {
         if (authHeader == null) {
             throw new UnauthenticatedException("Missing ServiceAuthorization header");
         } else {
-            return insights.trackServiceAuthentication(() -> authTokenValidator.getServiceName(authHeader));
+            Instant start = Instant.now();
+
+            try {
+                String serviceName = authTokenValidator.getServiceName(authHeader);
+
+                insights.trackServiceAuthentication(Duration.between(start, Instant.now()), true);
+
+                return serviceName;
+            } catch (Throwable exception) {
+                insights.trackServiceAuthentication(Duration.between(start, Instant.now()), false);
+
+                throw exception;
+            }
         }
     }
 }

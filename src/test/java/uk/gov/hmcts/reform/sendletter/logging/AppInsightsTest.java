@@ -11,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
 import java.sql.Timestamp;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
@@ -68,12 +66,9 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_service_authentication() {
-        insights.trackServiceAuthentication(() -> "service name");
-        Throwable exception = catchThrowable(() -> insights.trackServiceAuthentication(() -> {
-            throw new InvalidTokenException("dummy token", null);
-        }));
+        insights.trackServiceAuthentication(TIME_TOOK, true);
+        insights.trackServiceAuthentication(TIME_TOOK, false);
 
-        assertThat(exception).isInstanceOf(InvalidTokenException.class);
         verify(telemetry, times(2)).trackDependency(
             eq(AppDependency.AUTH_SERVICE),
             eq(AppDependencyCommand.AUTH_SERVICE_HEADER),
