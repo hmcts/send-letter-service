@@ -40,7 +40,7 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final Zipper zipper;
     private final ObjectMapper mapper;
-    private boolean isEncryptionEnabled;//NOPMD
+    private final boolean isEncryptionEnabled;//NOPMD
 
     public LetterService(
         PdfCreator pdfCreator,
