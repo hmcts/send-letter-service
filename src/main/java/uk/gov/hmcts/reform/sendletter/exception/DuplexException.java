@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services.steps.getpdf.duplex;
+package uk.gov.hmcts.reform.sendletter.exception;
 
 public class DuplexException extends RuntimeException {
     public DuplexException(Throwable cause) {

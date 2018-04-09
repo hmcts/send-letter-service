@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.slc.services.steps.getpdf.exceptions;
+package uk.gov.hmcts.reform.sendletter.exception;
 
 public class InvalidPdfException extends RuntimeException {
     public InvalidPdfException(Throwable cause) {
