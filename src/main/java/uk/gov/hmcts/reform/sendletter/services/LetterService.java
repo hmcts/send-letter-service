@@ -106,7 +106,7 @@ public class LetterService {
             mapper.valueToTree(letter.getAdditionalData()),
             letter.getType(),
             zipContent,
-            isEncryptionEnabled
+            false //Currently files are always unencrypted.When PGP encryption is in place this value will be dynamic.
         );
 
         letterRepository.save(dbLetter);
