@@ -85,14 +85,14 @@ public class EndToEndTest {
                 .andReturn();
 
             // Wait for letter to be uploaded.
-            await().atMost(60, SECONDS).untilAsserted(
+            await().atMost(15, SECONDS).untilAsserted(
                 () -> assertThat(server.lettersFolder.listFiles()).as("No letters uploaded!").isNotEmpty());
 
             // Generate Xerox report.
             createXeroxReport(server);
 
             // The report should be processed and the letter marked posted.
-            await().atMost(60, SECONDS).untilAsserted(
+            await().atMost(15, SECONDS).untilAsserted(
                 () -> assertThat(letterHasBeenPosted()).as("Letter not posted").isTrue());
         }
 
