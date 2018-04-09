@@ -99,11 +99,6 @@ public class LetterService {
         );
 
         // TODO: encrypt zip content
-        boolean isEncrypted = false;
-
-        if (isEncryptionEnabled) {
-            isEncrypted = true;
-        }
         Letter dbLetter = new Letter(
             id,
             messageId,
@@ -111,7 +106,7 @@ public class LetterService {
             mapper.valueToTree(letter.getAdditionalData()),
             letter.getType(),
             zipContent,
-            isEncrypted
+            isEncryptionEnabled
         );
 
         letterRepository.save(dbLetter);

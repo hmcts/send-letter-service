@@ -120,7 +120,7 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        Letter letter = new Letter(UUID.randomUUID(), MESSAGE_ID, SERVICE_NAME, null, TYPE, null,false);
+        Letter letter = new Letter(UUID.randomUUID(), MESSAGE_ID, SERVICE_NAME, null, TYPE, null, false);
         ZonedDateTime sentToPrint = ZonedDateTime.now(ZoneOffset.UTC);
         letter.setSentToPrintAt(Timestamp.from(sentToPrint.toInstant()));
 
