@@ -38,7 +38,6 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -121,17 +120,9 @@ public class EndToEndTest {
             .trackExternalDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
 
         List<ExternalDependency> dependencies = dependencyCaptor.getAllValues();
-        List<String> dependencyValues = dependencies
-            .stream()
-            .map(ExternalDependency::value)
-            .collect(Collectors.toList());
-        List<String> dependencyCommands = dependencies
-            .stream()
-            .map(ExternalDependency::command)
-            .collect(Collectors.toList());
 
-        assertThat(dependencyValues).contains(AppDependency.FTP_CLIENT);
-        assertThat(dependencyCommands).contains(
+        assertThat(dependencies).extractingResultOf("value").contains(AppDependency.FTP_CLIENT);
+        assertThat(dependencies).extractingResultOf("command").contains(
             AppDependencyCommand.FTP_DOWNLOAD_REPORTS,
             AppDependencyCommand.FTP_FILE_UPLOADED,
             AppDependencyCommand.FTP_REPORT_DELETE
