@@ -57,14 +57,14 @@ public class AppInsights extends AbstractAppInsights {
             );
 
             return proceed;
-        } catch (Throwable exception) {
+        } catch (Exception exception) {
             telemetry.trackDependency(
                 dependency.value(),
                 dependency.command(),
                 new Duration(MILLIS.between(start, Instant.now())),
                 false
             );
-            telemetry.trackException((Exception) exception);
+            telemetry.trackException(exception);
 
             throw exception;
         }
@@ -92,13 +92,13 @@ public class AppInsights extends AbstractAppInsights {
             );
 
             return proceed;
-        } catch (Throwable exception) {
+        } catch (Exception exception) {
             telemetry.trackEvent(
                 dependency.value(),
                 ImmutableMap.of("success", "false"),
                 ImmutableMap.of("timeTaken", (double) MILLIS.between(start, Instant.now()))
             );
-            telemetry.trackException((Exception) exception);
+            telemetry.trackException(exception);
 
             throw exception;
         }
