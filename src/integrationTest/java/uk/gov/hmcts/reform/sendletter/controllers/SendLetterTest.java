@@ -25,9 +25,12 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.logging.Dependency;
 
 import java.io.IOException;
+import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,12 +59,20 @@ public class SendLetterTest {
             .andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isNotNull();
-        verify(insights).trackDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
+        verify(insights, times(2)).trackDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
 
-        Dependency dependency = dependencyCaptor.getValue();
+        List<Dependency> dependencies = dependencyCaptor.getAllValues();
+        List<String> dependencyNames = dependencies.stream().map(Dependency::value).collect(toList());
+        List<String> dependencyCommands = dependencies.stream().map(Dependency::command).collect(toList());
 
-        assertThat(dependency.value()).isEqualTo(AppDependency.AUTH_SERVICE);
-        assertThat(dependency.command()).isEqualTo(AppDependencyCommand.AUTH_SERVICE_HEADER);
+        assertThat(dependencyNames).containsExactly(
+            AppDependency.AUTH_SERVICE,
+            AppDependency.PDF_CLIENT
+        );
+        assertThat(dependencyCommands).containsExactly(
+            AppDependencyCommand.AUTH_SERVICE_HEADER,
+            AppDependencyCommand.PDF_CREATE
+        );
     }
 
     @Test
