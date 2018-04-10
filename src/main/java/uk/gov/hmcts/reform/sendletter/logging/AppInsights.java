@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -62,6 +63,40 @@ public class AppInsights extends AbstractAppInsights {
                 dependency.command(),
                 new Duration(MILLIS.between(start, Instant.now())),
                 false
+            );
+            telemetry.trackException((Exception) exception);
+
+            throw exception;
+        }
+    }
+
+    @Pointcut("@annotation(dependency)")
+    public void internalDependencyPointCut(InternalDependency dependency) {
+        // point cut definition
+    }
+
+    @Around("internalDependencyPointCut(dependency)")
+    public Object trackInternalDependency(
+        ProceedingJoinPoint joinPoint,
+        InternalDependency dependency
+    ) throws Throwable {
+        Instant start = Instant.now();
+
+        try {
+            Object proceed = joinPoint.proceed();
+
+            telemetry.trackEvent(
+                dependency.value(),
+                ImmutableMap.of("success", "true"),
+                ImmutableMap.of("timeTook", ((double) MILLIS.between(start, Instant.now())) / 1000)
+            );
+
+            return proceed;
+        } catch (Throwable exception) {
+            telemetry.trackEvent(
+                dependency.value(),
+                ImmutableMap.of("success", "false"),
+                ImmutableMap.of("timeTook", ((double) MILLIS.between(start, Instant.now())) / 1000)
             );
             telemetry.trackException((Exception) exception);
 
