@@ -10,6 +10,11 @@ resource "azurerm_resource_group" "rg" {
   location = "${var.location_app}"
 }
 
+# read the microservice key for tests from Vault
+data "vault_generic_secret" "tests_s2s_secret" {
+  path = "secret/${var.vault_section}/ccidam/service-auth-provider/api/microservice-keys/send-letter-tests"
+}
+
 module "db" {
   source              = "git@github.com:hmcts/moj-module-postgres.git?ref=master"
   product             = "${var.product}-db"
@@ -90,6 +95,18 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 resource "azurerm_key_vault_secret" "smoke-test-s2s-url" {
   name      = "smoke-test-s2s-url"
   value     = "${var.s2s_url}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "smoke-test-s2s-name" {
+  name      = "smoke-test-s2s-name"
+  value     = "send_letter_tests"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "smoke-test-s2s-secret" {
+  name      = "smoke-test-s2s-secret"
+  value     = "${data.vault_generic_secret.tests_s2s_secret.data["value"]}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 # endregion
