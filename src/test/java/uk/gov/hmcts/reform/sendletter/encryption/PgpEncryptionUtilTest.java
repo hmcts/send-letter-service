@@ -16,7 +16,9 @@ public class PgpEncryptionUtilTest {
     public void should_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed()
         throws Exception {
         //Given
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+        String inputFileName = "unencrypted.zip";
+
+        byte[] inputZipFile = Resources.toByteArray(getResource(inputFileName));
 
         byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
         PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(pubKey);
@@ -24,7 +26,7 @@ public class PgpEncryptionUtilTest {
         //when
         byte[] pgpEncryptedZip = PgpEncryptionUtil.encryptFile(
             inputZipFile,
-            "encrypted.zip",
+            inputFileName,
             pgpPublicKey,
             true
         );
@@ -45,7 +47,9 @@ public class PgpEncryptionUtilTest {
     public void should_encrypt_and_create_pgp_encrypted_zip_file_when_integrity_packects_are_not_added()
         throws Exception {
         //Given
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+        String inputFileName = "unencrypted.zip";
+
+        byte[] inputZipFile = Resources.toByteArray(getResource(inputFileName));
 
         byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
         PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(pubKey);
@@ -53,7 +57,7 @@ public class PgpEncryptionUtilTest {
         //when
         byte[] pgpEncryptedZip = PgpEncryptionUtil.encryptFile(
             inputZipFile,
-            "encrypted.zip",
+            inputFileName,
             pgpPublicKey,
             false
         );
