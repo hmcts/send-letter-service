@@ -34,12 +34,15 @@ public class AppInsights extends AbstractAppInsights {
     // dependencies
 
     @Pointcut("@annotation(dependency)")
-    public void dependencyPointCut(Dependency dependency) {
+    public void externalDependencyPointCut(ExternalDependency dependency) {
         // point cut definition
     }
 
-    @Around("dependencyPointCut(dependency)")
-    public Object trackDependency(ProceedingJoinPoint joinPoint, Dependency dependency) throws Throwable {
+    @Around("externalDependencyPointCut(dependency)")
+    public Object trackExternalDependency(
+        ProceedingJoinPoint joinPoint,
+        ExternalDependency dependency
+    ) throws Throwable {
         Instant start = Instant.now();
 
         try {

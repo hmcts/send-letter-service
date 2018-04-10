@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependency;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependencyCommand;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
-import uk.gov.hmcts.reform.sendletter.logging.Dependency;
+import uk.gov.hmcts.reform.sendletter.logging.ExternalDependency;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 import uk.gov.hmcts.reform.sendletter.util.XeroxReportWriter;
@@ -96,7 +96,7 @@ public class EndToEndTest {
     }
 
     private void should_upload_letter_and_mark_posted(MockHttpServletRequestBuilder request) throws Throwable {
-        ArgumentCaptor<Dependency> dependencyCaptor = ArgumentCaptor.forClass(Dependency.class);
+        ArgumentCaptor<ExternalDependency> dependencyCaptor = ArgumentCaptor.forClass(ExternalDependency.class);
 
         try (LocalSftpServer server = LocalSftpServer.create()) {
             mvc.perform(request)
@@ -117,11 +117,18 @@ public class EndToEndTest {
             );
         }
 
-        verify(insights, atLeastOnce()).trackDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
+        verify(insights, atLeastOnce())
+            .trackExternalDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
 
-        List<Dependency> dependencies = dependencyCaptor.getAllValues();
-        List<String> dependencyValues = dependencies.stream().map(Dependency::value).collect(Collectors.toList());
-        List<String> dependencyCommands = dependencies.stream().map(Dependency::command).collect(Collectors.toList());
+        List<ExternalDependency> dependencies = dependencyCaptor.getAllValues();
+        List<String> dependencyValues = dependencies
+            .stream()
+            .map(ExternalDependency::value)
+            .collect(Collectors.toList());
+        List<String> dependencyCommands = dependencies
+            .stream()
+            .map(ExternalDependency::command)
+            .collect(Collectors.toList());
 
         assertThat(dependencyValues).contains(AppDependency.FTP_CLIENT);
         assertThat(dependencyCommands).contains(
