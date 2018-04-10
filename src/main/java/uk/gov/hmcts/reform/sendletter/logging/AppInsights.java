@@ -88,7 +88,7 @@ public class AppInsights extends AbstractAppInsights {
             telemetry.trackEvent(
                 dependency.value(),
                 ImmutableMap.of("success", "true"),
-                ImmutableMap.of("timeTook", ((double) MILLIS.between(start, Instant.now())) / 1000)
+                ImmutableMap.of("timeTaken", (double) MILLIS.between(start, Instant.now()))
             );
 
             return proceed;
@@ -96,7 +96,7 @@ public class AppInsights extends AbstractAppInsights {
             telemetry.trackEvent(
                 dependency.value(),
                 ImmutableMap.of("success", "false"),
-                ImmutableMap.of("timeTook", ((double) MILLIS.between(start, Instant.now())) / 1000)
+                ImmutableMap.of("timeTaken", (double) MILLIS.between(start, Instant.now()))
             );
             telemetry.trackException((Exception) exception);
 
