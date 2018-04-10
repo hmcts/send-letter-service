@@ -40,7 +40,7 @@ public final class PgpEncryptionUtil {
      *
      * @param inputFile          input file byte array
      * @param inputFileName      input file name to be encrypted
-     * @param pgpPublicKey       public key to encrypt
+     * @param pgpPublicKey       key used to encrypt file
      * @param withIntegrityCheck Sets whether or not the resulting encrypted data will be protected
      *                           using an integrity packet.
      * @return PGP encrypted byte array
