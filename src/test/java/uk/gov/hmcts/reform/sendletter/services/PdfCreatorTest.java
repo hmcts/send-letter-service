@@ -37,7 +37,7 @@ public class PdfCreatorTest {
 
     @Before
     public void setUp() {
-        pdfCreator = new PdfCreator(this.duplexPreparator, this.converter);
+        pdfCreator = new PdfCreator(this.duplexPreparator, new PdfConverter(this.converter));
     }
 
     @Test

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.exception.InvalidPdfException;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.services.util.DuplexPreparator;
-import uk.gov.hmcts.reform.sendletter.services.util.IHtmlToPdfConverter;
 
 import java.util.Base64;
 import java.util.List;
@@ -16,9 +15,9 @@ import static java.util.stream.Collectors.toList;
 public class PdfCreator {
 
     private final DuplexPreparator duplexPreparator;
-    private final IHtmlToPdfConverter converter;
+    private final PdfConverter converter;
 
-    public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
+    public PdfCreator(DuplexPreparator duplexPreparator, PdfConverter converter) {
         this.duplexPreparator = duplexPreparator;
         this.converter = converter;
     }
@@ -29,7 +28,7 @@ public class PdfCreator {
         List<byte[]> docs =
             documents
                 .stream()
-                .map(this::generatePdf)
+                .map(converter::generatePdf)
                 .map(duplexPreparator::prepare)
                 .collect(toList());
 
@@ -47,12 +46,6 @@ public class PdfCreator {
                 .collect(toList());
 
         return PdfMerger.mergeDocuments(docs);
-    }
-
-    private byte[] generatePdf(Document document) {
-        synchronized (PdfCreator.class) {
-            return converter.apply(document.template.getBytes(), document.values);
-        }
     }
 
     private byte[] decodePdf(String base64encodedPdf) {

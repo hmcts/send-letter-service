@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
+import uk.gov.hmcts.reform.sendletter.services.PdfConverter;
 import uk.gov.hmcts.reform.sendletter.services.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.util.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -51,7 +52,7 @@ public class UploadLettersTaskTest {
     public void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         this.letterService = new LetterService(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            new PdfCreator(new DuplexPreparator(), new PdfConverter(new HTMLToPDFConverter()::convert)),
             repository,
             new Zipper(),
             new ObjectMapper(),

@@ -48,7 +48,7 @@ public class LetterServiceTest {
     @Before
     public void setUp() {
         service = new LetterService(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            new PdfCreator(new DuplexPreparator(), new PdfConverter(new HTMLToPDFConverter()::convert)),
             letterRepository,
             new Zipper(),
             new ObjectMapper(),
