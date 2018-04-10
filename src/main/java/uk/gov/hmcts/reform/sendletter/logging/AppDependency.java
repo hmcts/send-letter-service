@@ -15,6 +15,11 @@ public final class AppDependency {
      */
     public static final String FTP_CLIENT = "FtpClient";
 
+    /**
+     * Pdf client.
+     */
+    public static final String PDF_CLIENT = "PdfClient";
+
     private AppDependency() {
         // utility class constructor
     }

@@ -21,7 +21,7 @@ public class PdfCreatorTest {
 
     @Before
     public void setUp() {
-        this.pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
+        this.pdfCreator = new PdfCreator(new DuplexPreparator(), new PdfConverter(new HTMLToPDFConverter()::convert));
     }
 
     @Test

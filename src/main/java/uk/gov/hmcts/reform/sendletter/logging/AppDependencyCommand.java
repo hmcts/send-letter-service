@@ -22,6 +22,11 @@ public final class AppDependencyCommand {
      */
     public static final String FTP_REPORT_DELETE = "FtpReportDeleted";
 
+    /**
+     * Created PDF from template and properties.
+     */
+    public static final String PDF_CREATE = "PdfCreated";
+
     private AppDependencyCommand() {
         // utility class constructor
     }

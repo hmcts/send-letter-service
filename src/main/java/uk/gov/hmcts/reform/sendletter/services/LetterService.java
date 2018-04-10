@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
@@ -18,7 +16,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.services.util.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import uk.gov.hmcts.reform.slc.services.steps.getpdf.FileNameHelper;
 
@@ -53,23 +50,6 @@ public class LetterService {
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
-    }
-
-    // TODO: remove
-    @Autowired
-    public LetterService(
-        LetterRepository letterRepository,
-        Zipper zipper,
-        ObjectMapper mapper,
-        @Value("${encryption.enabled}") Boolean isEncryptionEnabled
-    ) {
-        this(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
-            letterRepository,
-            zipper,
-            mapper,
-            isEncryptionEnabled
-        );
     }
 
     @Transactional
