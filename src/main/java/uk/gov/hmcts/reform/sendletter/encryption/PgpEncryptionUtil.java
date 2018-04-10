@@ -34,9 +34,24 @@ public final class PgpEncryptionUtil {
     private PgpEncryptionUtil() {
     }
 
+    /**
+     * Encrypts the given byte array using PGP encryption using Triple DES algorithm.
+     * This method assumes that the temporary volume is writable
+     *
+     * @param inputFile          input file byte array
+     * @param inputFileName      input file name to be encrypted
+     * @param pgpPublicKey       public key to encrypt
+     * @param withIntegrityCheck Sets whether or not the resulting encrypted data will be protected
+     *                           using an integrity packet.
+     * @return PGP encrypted byte array
+     * @throws IOException  if an error occurs writing stream header information to the provider
+     *                      output stream.
+     * @throws PGPException if an error occurs initialising PGP encryption for the configured
+     *                      encryption method.
+     */
     public static byte[] encryptFile(
         byte[] inputFile,
-        String fileName,
+        String inputFileName,
         PGPPublicKey pgpPublicKey,
         boolean withIntegrityCheck
     ) throws IOException, PGPException {
@@ -45,7 +60,7 @@ public final class PgpEncryptionUtil {
         ByteArrayOutputStream byteArrayOutputStream =
             compressAndWriteFileToLiteralData(
                 inputFile,
-                fileName
+                inputFileName
             );
 
         PGPEncryptedDataGenerator encryptedDataGenerator =
