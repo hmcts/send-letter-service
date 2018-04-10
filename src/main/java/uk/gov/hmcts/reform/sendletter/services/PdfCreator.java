@@ -22,7 +22,7 @@ public class PdfCreator {
         this.converter = converter;
     }
 
-    public byte[] createFromTemplates(List<Document> documents) {
+    byte[] createFromTemplates(List<Document> documents) {
         Asserts.notNull(documents, "documents");
 
         List<byte[]> docs =
@@ -35,7 +35,7 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(docs);
     }
 
-    public byte[] createFromBase64Pdfs(List<String> base64encodedDocs) {
+    byte[] createFromBase64Pdfs(List<String> base64encodedDocs) {
         Asserts.notNull(base64encodedDocs, "base64encodedDocs");
 
         List<byte[]> docs =
