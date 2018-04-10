@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.encryption;
 
+import com.google.common.io.Files;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
@@ -35,8 +36,7 @@ public final class PgpEncryptionUtil {
 
     public static byte[] encryptFile(
         byte[] inputFile,
-        String fileNamePrefix,
-        String fileNameSuffix,
+        String fileName,
         PGPPublicKey pgpPublicKey,
         boolean withIntegrityCheck
     ) throws IOException, PGPException {
@@ -45,8 +45,7 @@ public final class PgpEncryptionUtil {
         ByteArrayOutputStream byteArrayOutputStream =
             compressAndWriteFileToLiteralData(
                 inputFile,
-                fileNamePrefix,
-                fileNameSuffix
+                fileName
             );
 
         PGPEncryptedDataGenerator encryptedDataGenerator =
@@ -118,8 +117,7 @@ public final class PgpEncryptionUtil {
 
     private static ByteArrayOutputStream compressAndWriteFileToLiteralData(
         byte[] inputFile,
-        String fileNamePrefix,
-        String fileNameSuffix
+        String fileName
     ) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -127,7 +125,7 @@ public final class PgpEncryptionUtil {
             new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
         //Creates an empty file in the default temporary-file directory
-        File tempFile = createTempFile(inputFile, fileNamePrefix, fileNameSuffix);
+        File tempFile = createTempFile(inputFile, fileName);
 
         PGPUtil.writeFileToLiteralData(
             pgpCompressedDataGenerator.open(byteArrayOutputStream),
@@ -142,10 +140,9 @@ public final class PgpEncryptionUtil {
 
     private static File createTempFile(
         byte[] inputFile,
-        String fileNamePrefix,
-        String fileNameSuffix
+        String fileName
     ) throws IOException {
-        File tempFile = File.createTempFile(fileNamePrefix, fileNameSuffix);
+        File tempFile = new File(Files.createTempDir(), fileName);
         FileOutputStream fos = new FileOutputStream(tempFile);
         fos.write(inputFile);
         return tempFile;

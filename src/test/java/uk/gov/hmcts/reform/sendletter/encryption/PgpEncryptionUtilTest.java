@@ -21,14 +21,10 @@ public class PgpEncryptionUtilTest {
         byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
         PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(pubKey);
 
-        String fileNamePrefix = "encrypted";
-        String fileNameSuffix = "pgp";
-
         //when
         byte[] pgpEncryptedZip = PgpEncryptionUtil.encryptFile(
             inputZipFile,
-            fileNamePrefix,
-            fileNameSuffix,
+            "encrypted.zip",
             pgpPublicKey,
             true
         );
@@ -54,14 +50,10 @@ public class PgpEncryptionUtilTest {
         byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
         PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(pubKey);
 
-        String fileNamePrefix = "encrypted";
-        String fileNameSuffix = "pgp";
-
         //when
         byte[] pgpEncryptedZip = PgpEncryptionUtil.encryptFile(
             inputZipFile,
-            fileNamePrefix,
-            fileNameSuffix,
+            "encrypted.zip",
             pgpPublicKey,
             false
         );
