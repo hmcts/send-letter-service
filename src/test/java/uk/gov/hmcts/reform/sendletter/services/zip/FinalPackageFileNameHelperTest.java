@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,8 @@ public class FinalPackageFileNameHelperTest {
         Letter letter = new Letter(
             randomUUID(),
             randomUUID().toString(),
-            "cmc", null,
+            "cmc",
+            null,
             "type",
             null,
             false,
@@ -36,6 +38,22 @@ public class FinalPackageFileNameHelperTest {
                 + createdAt.format(FinalPackageFileNameHelper.dateTimeFormatter)
                 + "_"
                 + letter.getId()
+                + ".zip"
+        );
+    }
+
+    @Test
+    public void should_generate_expected_file_name_with_explicit_parameters_as_input() {
+        LocalDateTime createdAt = LocalDateTime.now();
+        UUID letterId = randomUUID();
+
+        String name = ZipFileNameHelper.generateName("type", "cmc", LocalDateTime.now(), letterId);
+
+        assertThat(name).isEqualTo(
+            "type_cmc_"
+                + createdAt.format(ZipFileNameHelper.dateTimeFormatter)
+                + "_"
+                + letterId
                 + ".zip"
         );
     }
