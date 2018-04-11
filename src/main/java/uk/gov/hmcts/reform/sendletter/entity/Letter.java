@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "letters")
-@TypeDefs( {
+@TypeDefs({
     @TypeDef(name = "json", typeClass = JsonBinaryType.class)
 })
 public class Letter {
