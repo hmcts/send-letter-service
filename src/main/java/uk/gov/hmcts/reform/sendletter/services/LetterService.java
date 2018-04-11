@@ -158,7 +158,7 @@ public class LetterService {
 
         } catch (IOException ioException) {
             log.error("Error occurred while loading public key for zip file {}", zipFileName, ioException);
-            throw new UnableToLoadPgpPublicKeyException("PGP Public key object could be constructed");
+            throw new UnableToLoadPgpPublicKeyException("PGP Public key object could be constructed", ioException);
         } catch (PGPException pgpException) {
             log.error("Error occurred during encrypting zip file {}", zipFileName, pgpException);
             throw new UnableToPgpEncryptZipFileException(pgpException);

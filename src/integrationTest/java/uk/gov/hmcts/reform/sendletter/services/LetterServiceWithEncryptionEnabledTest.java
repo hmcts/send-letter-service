@@ -36,8 +36,6 @@ public class LetterServiceWithEncryptionEnabledTest {
 
     private static final String SERVICE_NAME = "a_service";
 
-    private LetterService service;
-
     @Value("${encryption.enabled}")
     private Boolean isEncryptionEnabled;
 
@@ -58,7 +56,7 @@ public class LetterServiceWithEncryptionEnabledTest {
 
         PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
 
-        service = new LetterService(
+        LetterService service = new LetterService(
             pdfCreator,
             letterRepository,
             new Zipper(),
