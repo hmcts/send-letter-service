@@ -2,9 +2,9 @@
 @Library("Infrastructure") _
 
 List<LinkedHashMap<String, Object>> secrets = [
-  secret('smoke-test-s2s-name', 'SMOKE_TEST_S2S_NAME'),
-  secret('smoke-test-s2s-secret', 'SMOKE_TEST_S2S_SECRET'),
-  secret('smoke-test-s2s-url', 'SMOKE_TEST_S2S_URL')
+  secret('smoke-test-s2s-name', 'TEST_S2S_NAME'),
+  secret('smoke-test-s2s-secret', 'TEST_S2S_SECRET'),
+  secret('smoke-test-s2s-url', 'TEST_S2S_URL')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
