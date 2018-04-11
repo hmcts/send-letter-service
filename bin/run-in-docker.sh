@@ -26,6 +26,7 @@ print_help() {
     FTP_USER                            Defaults to 'user'
     LETTER_TRACKING_DB_PASSWORD         Defaults to 'password'
     S2S_URL                             Defaults to 'false' - disables health check
+    SCHEDULING_ENABLED                  Defaults to 'false'
   "
 }
 
@@ -41,6 +42,7 @@ FTP_PUBLIC_KEY="public"
 FTP_REPORTS_FOLDER="/reports/"
 FTP_TARGET_FOLDER="/target/"
 FTP_USER="user"
+SCHEDULING_ENABLED=false
 
 # environment variables
 APPINSIGHTS_INSTRUMENTATIONKEY="00000000-0000-0000-0000-000000000000"
@@ -75,6 +77,7 @@ execute_script() {
   export FTP_USER=${FTP_USER}
   export LETTER_TRACKING_DB_PASSWORD=${LETTER_TRACKING_DB_PASSWORD}
   export S2S_URL=${S2S_URL}
+  export SCHEDULING_ENABLED=${SCHEDULING_ENABLED}
 
   echo "Bringing up docker containers.."
 
@@ -105,6 +108,7 @@ while true ; do
         FTP_USER=*) FTP_USER="${2#*=}" ; shift 2 ;;
         LETTER_TRACKING_DB_PASSWORD=*) LETTER_TRACKING_DB_PASSWORD="${2#*=}" ; shift 2 ;;
         S2S_URL=*) S2S_URL="${2#*=}" ; shift 2 ;;
+        SCHEDULING_ENABLED=*) SCHEDULING_ENABLED="${2#*=}" ; shift 2 ;;
         *) shift 2 ;;
       esac ;;
     *) execute_script ; break ;;
