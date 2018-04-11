@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Dependency {
+public @interface ExternalDependency {
 
     /**
      * Name of the dependency which is presented as a block in the application map in Azure AppInsights.
@@ -22,7 +22,7 @@ public @interface Dependency {
     /**
      * Value which is presented in <code>Command</code> block in Azure AppInsights.
      *
-     * @return Dependency command
+     * @return ExternalDependency command
      */
     String command();
 }

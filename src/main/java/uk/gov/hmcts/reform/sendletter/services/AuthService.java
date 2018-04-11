@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependency;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependencyCommand;
-import uk.gov.hmcts.reform.sendletter.logging.Dependency;
+import uk.gov.hmcts.reform.sendletter.logging.ExternalDependency;
 
 @Component
 public class AuthService {
@@ -16,7 +16,7 @@ public class AuthService {
         this.authTokenValidator = authTokenValidator;
     }
 
-    @Dependency(value = AppDependency.AUTH_SERVICE, command = AppDependencyCommand.AUTH_SERVICE_HEADER)
+    @ExternalDependency(value = AppDependency.AUTH_SERVICE, command = AppDependencyCommand.AUTH_SERVICE_HEADER)
     public String authenticate(String authHeader) {
         if (authHeader == null) {
             throw new UnauthenticatedException("Missing ServiceAuthorization header");

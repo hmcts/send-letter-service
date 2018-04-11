@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependency;
 import uk.gov.hmcts.reform.sendletter.logging.AppDependencyCommand;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
-import uk.gov.hmcts.reform.sendletter.logging.Dependency;
+import uk.gov.hmcts.reform.sendletter.logging.ExternalDependency;
 
 import java.io.IOException;
 
@@ -49,16 +49,16 @@ public class SendLetterTest {
 
     @Test
     public void should_return_200_when_single_letter_is_sent() throws Throwable {
-        ArgumentCaptor<Dependency> dependencyCaptor = ArgumentCaptor.forClass(Dependency.class);
+        ArgumentCaptor<ExternalDependency> dependencyCaptor = ArgumentCaptor.forClass(ExternalDependency.class);
 
         MvcResult result = send(readResource("letter.json"))
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isNotNull();
-        verify(insights).trackDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
+        verify(insights).trackExternalDependency(any(ProceedingJoinPoint.class), dependencyCaptor.capture());
 
-        Dependency dependency = dependencyCaptor.getValue();
+        ExternalDependency dependency = dependencyCaptor.getValue();
 
         assertThat(dependency.value()).isEqualTo(AppDependency.AUTH_SERVICE);
         assertThat(dependency.command()).isEqualTo(AppDependencyCommand.AUTH_SERVICE_HEADER);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.logging;
 
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,12 +35,15 @@ public class AppInsights extends AbstractAppInsights {
     // dependencies
 
     @Pointcut("@annotation(dependency)")
-    public void dependencyPointCut(Dependency dependency) {
+    public void externalDependencyPointCut(ExternalDependency dependency) {
         // point cut definition
     }
 
-    @Around("dependencyPointCut(dependency)")
-    public Object trackDependency(ProceedingJoinPoint joinPoint, Dependency dependency) throws Throwable {
+    @Around("externalDependencyPointCut(dependency)")
+    public Object trackExternalDependency(
+        ProceedingJoinPoint joinPoint,
+        ExternalDependency dependency
+    ) throws Throwable {
         Instant start = Instant.now();
 
         try {
@@ -53,14 +57,48 @@ public class AppInsights extends AbstractAppInsights {
             );
 
             return proceed;
-        } catch (Throwable exception) {
+        } catch (Exception exception) {
             telemetry.trackDependency(
                 dependency.value(),
                 dependency.command(),
                 new Duration(MILLIS.between(start, Instant.now())),
                 false
             );
-            telemetry.trackException((Exception) exception);
+            telemetry.trackException(exception);
+
+            throw exception;
+        }
+    }
+
+    @Pointcut("@annotation(dependency)")
+    public void internalDependencyPointCut(InternalDependency dependency) {
+        // point cut definition
+    }
+
+    @Around("internalDependencyPointCut(dependency)")
+    public Object trackInternalDependency(
+        ProceedingJoinPoint joinPoint,
+        InternalDependency dependency
+    ) throws Throwable {
+        Instant start = Instant.now();
+
+        try {
+            Object proceed = joinPoint.proceed();
+
+            telemetry.trackEvent(
+                dependency.value(),
+                ImmutableMap.of("success", "true"),
+                ImmutableMap.of("timeTaken", (double) MILLIS.between(start, Instant.now()))
+            );
+
+            return proceed;
+        } catch (Exception exception) {
+            telemetry.trackEvent(
+                dependency.value(),
+                ImmutableMap.of("success", "false"),
+                ImmutableMap.of("timeTaken", (double) MILLIS.between(start, Instant.now()))
+            );
+            telemetry.trackException(exception);
 
             throw exception;
         }
