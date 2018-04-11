@@ -26,7 +26,7 @@ public final class XeroxReportWriter {
         List<List<String>> records = letterIds.map(x -> Lists.newArrayList(
             "01-01-2018",
             "10:30",
-            FileNameHelper.generateName("aType", "aService", x, "pdf")
+            FileNameHelper.generatePdfName("aType", "aService", x, "pdf")
         )).collect(Collectors.toList());
 
         File report = new File(reportFolder, UUID.randomUUID() + ".csv");
