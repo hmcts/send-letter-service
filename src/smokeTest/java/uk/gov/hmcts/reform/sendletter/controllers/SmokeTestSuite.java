@@ -17,7 +17,7 @@ public abstract class SmokeTestSuite {
     private static final String SYNTHETIC_SOURCE_HEADER = "SyntheticTest-Source";
     private static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
 
-    static final String SYNTHETIC_TEST_NAME = "SyntheticTest-TestName";
+    static final String SYNTHETIC_TEST_NAME_HEADER = "SyntheticTest-TestName";
 
     RequestSpecification getCommonRequestSpec() {
         return RestAssured.given()
