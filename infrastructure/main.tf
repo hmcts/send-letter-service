@@ -31,10 +31,15 @@ data "vault_generic_secret" "ftp_public_key" {
   path = "secret/${var.vault_section}/cc/send-letter-consumer/ftp-public-key"
 }
 
+data "vault_generic_secret" "encryption_public_key" {
+  path = "secret/${var.vault_section}/cc/send-letter/encryption-key"
+}
+
 locals {
-  ftp_private_key = "${replace(data.vault_generic_secret.ftp_private_key.data["value"], "\\n", "\n")}"
-  ftp_public_key  = "${replace(data.vault_generic_secret.ftp_public_key.data["value"], "\\n", "\n")}"
-  ftp_user        = "${data.vault_generic_secret.ftp_user.data["value"]}"
+  ftp_private_key        = "${replace(data.vault_generic_secret.ftp_private_key.data["value"], "\\n", "\n")}"
+  ftp_public_key         = "${replace(data.vault_generic_secret.ftp_public_key.data["value"], "\\n", "\n")}"
+  ftp_user               = "${data.vault_generic_secret.ftp_user.data["value"]}"
+  encryption_public_key  = "${replace(data.vault_generic_secret.encryption_public_key.data["value"], "\\n", "\n")}"
 }
 
 module "db" {
@@ -68,6 +73,7 @@ module "send-letter-service" {
     FLYWAY_PASSWORD                 = "${module.db.postgresql_password}"
     ENCRYPTION_ENABLED              = "${var.encyption_enabled}"
     SCHEDULING_ENABLED              = "${var.scheduling_enabled}"
+<<<<<<< HEAD
 
     // ftp
     FTP_HOSTNAME                    = "${var.ftp_hostname}"
@@ -80,6 +86,9 @@ module "send-letter-service" {
     FTP_USER                        = "${local.ftp_user}"
     FTP_PRIVATE_KEY                 = "${local.ftp_private_key}"
     FTP_PUBLIC_KEY                  = "${local.ftp_public_key}"
+=======
+    ENCRYPTION_PUBLIC_KEY           = "${local.encryption_public_key}"
+>>>>>>> Added encryption key to app settings
   }
 }
 
