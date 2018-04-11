@@ -2,12 +2,9 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import io.restassured.RestAssured;
-import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -27,11 +24,9 @@ public class UnauthorisedSmokeTest extends SmokeTestSuite {
     }
 
     @Test
-    public void must_have_authorisation_header_for_all_endpoints() {
-        RequestSpecification specification = RestAssured.given()
-            .baseUri(this.testUrl)
-            .relaxedHTTPSValidation()
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+    public void must_have_authorisation_header_for_letter_status_endpoint() {
+        RequestSpecification specification = getCommonRequestSpec()
+            .header(SYNTHETIC_TEST_NAME, getClass().getEnclosingMethod().getName())
             .when();
 
         specification.get("/letters/" + LETTER_ID).then().statusCode(SC_UNAUTHORIZED);
@@ -40,11 +35,9 @@ public class UnauthorisedSmokeTest extends SmokeTestSuite {
 
     @Test
     public void should_not_authorise_with_bad_authorisation_token() {
-        RequestSpecification specification = RestAssured.given()
-            .baseUri(this.testUrl)
-            .relaxedHTTPSValidation()
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .header(new Header("ServiceAuthorization", "invalid token"))
+        RequestSpecification specification = getCommonRequestSpec()
+            .header(SYNTHETIC_TEST_NAME, getClass().getEnclosingMethod().getName())
+            .header("ServiceAuthorization", "invalid token")
             .when();
 
         specification.get("/letters/" + LETTER_ID).then().statusCode(SC_UNAUTHORIZED);
