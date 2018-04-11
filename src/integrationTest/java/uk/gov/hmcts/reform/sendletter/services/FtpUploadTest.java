@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.sendletter.services;
 import com.google.common.io.Files;
 import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
 import java.io.File;
 

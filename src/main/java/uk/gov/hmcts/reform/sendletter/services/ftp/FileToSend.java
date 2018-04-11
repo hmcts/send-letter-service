@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.services;
+package uk.gov.hmcts.reform.sendletter.services.ftp;
 
 import net.schmizz.sshj.xfer.InMemorySourceFile;
 
