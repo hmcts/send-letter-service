@@ -92,20 +92,20 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 # endregion
 
 # region smoke test config
-resource "azurerm_key_vault_secret" "smoke-test-s2s-url" {
-  name      = "smoke-test-s2s-url"
+resource "azurerm_key_vault_secret" "test-s2s-url" {
+  name      = "test-s2s-url"
   value     = "${var.s2s_url}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "smoke-test-s2s-name" {
-  name      = "smoke-test-s2s-name"
+resource "azurerm_key_vault_secret" "test-s2s-name" {
+  name      = "test-s2s-name"
   value     = "send_letter_tests"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "smoke-test-s2s-secret" {
-  name      = "smoke-test-s2s-secret"
+resource "azurerm_key_vault_secret" "test-s2s-secret" {
+  name      = "test-s2s-secret"
   value     = "${data.vault_generic_secret.tests_s2s_secret.data["value"]}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
