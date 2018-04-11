@@ -27,11 +27,11 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
-import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -113,12 +113,14 @@ public class LetterService {
         );
 
         byte[] letterContent;
+        LocalDateTime createdAtTime = now();
 
         if (isEncryptionEnabled) {
-            letterContent = encryptZipContents(letter, serviceName, id, zipContent);
+            letterContent = encryptZipContents(letter, serviceName, id, zipContent, createdAtTime);
         } else {
             letterContent = zipContent;
         }
+
 
         Letter dbLetter = new Letter(
             id,
@@ -127,7 +129,8 @@ public class LetterService {
             mapper.valueToTree(letter.getAdditionalData()),
             letter.getType(),
             letterContent,
-            isEncryptionEnabled
+            isEncryptionEnabled,
+            Timestamp.valueOf(createdAtTime)
         );
 
         letterRepository.save(dbLetter);
@@ -137,7 +140,13 @@ public class LetterService {
         return id;
     }
 
-    private byte[] encryptZipContents(ILetterRequest letter, String serviceName, UUID id, byte[] zipContent) {
+    private byte[] encryptZipContents(
+        ILetterRequest letter,
+        String serviceName,
+        UUID id,
+        byte[] zipContent,
+        LocalDateTime createdAt
+    ) {
         Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
 
         String zipFileName = FinalPackageFileNameHelper.generateName(letter.getType(), serviceName, now(), id);
