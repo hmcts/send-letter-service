@@ -95,7 +95,7 @@ public class UploadLettersTask {
     private String uploadToFtp(Letter letter) {
 
         FileToSend zippedDoc = new FileToSend(
-            ZipFileNameHelper.generateName(letter, letter.getCreatedAt().toLocalDateTime()),
+            ZipFileNameHelper.generateName(letter),
             letter.getFileContent()
         );
 
