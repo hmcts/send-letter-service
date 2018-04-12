@@ -62,7 +62,7 @@ module "send-letter-service" {
     LETTER_TRACKING_DB_USER_NAME = "${module.db.user_name}"
     LETTER_TRACKING_DB_PASSWORD  = "${module.db.postgresql_password}"
     LETTER_TRACKING_DB_NAME      = "${module.db.postgresql_database}"
-    FLYWAY_URL                   = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}"
+    FLYWAY_URL                   = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}${local.db_connection_options}"
     FLYWAY_USER                  = "${module.db.user_name}"
     FLYWAY_PASSWORD              = "${module.db.postgresql_password}"
     ENCRYPTION_ENABLED           = "${var.encyption_enabled}"
@@ -77,7 +77,6 @@ module "send-letter-service" {
     FTP_REPORTS_FOLDER           = "${var.ftp_reports_folder}"
     FTP_REPORTS_CRON             = "${var.ftp_reports_cron}"
     FTP_USER                     = "${local.ftp_user}"
-    SEND_LETTER_PRODUCER_URL     = "http://send-letter-producer-${var.env}.service.${local.ase_name}.internal"
     FTP_PRIVATE_KEY              = "${local.ftp_private_key}"
     FTP_PUBLIC_KEY               = "${local.ftp_public_key}"
   }
