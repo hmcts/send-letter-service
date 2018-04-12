@@ -6,8 +6,13 @@ provider "vault" {
 
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.product}-${var.microservice}-${var.env}"
+  name     = "${var.product}-${var.component}-${var.env}"
   location = "${var.location_app}"
+}
+
+# read the microservice key for tests from Vault
+data "vault_generic_secret" "tests_s2s_secret" {
+  path = "secret/${var.vault_section}/ccidam/service-auth-provider/api/microservice-keys/send-letter-tests"
 }
 
 module "db" {
@@ -21,7 +26,7 @@ module "db" {
 
 module "send-letter-service" {
   source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
-  product             = "${var.product}-${var.microservice}"
+  product             = "${var.product}-${var.component}"
   location            = "${var.location_app}"
   env                 = "${var.env}"
   ilbIp               = "${var.ilbIp}"
@@ -56,40 +61,52 @@ module "key-vault" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name      = "${var.microservice}-POSTGRES-USER"
+  name      = "${var.component}-POSTGRES-USER"
   value     = "${module.db.user_name}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name      = "${var.microservice}-POSTGRES-PASS"
+  name      = "${var.component}-POSTGRES-PASS"
   value     = "${module.db.postgresql_password}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name      = "${var.microservice}-POSTGRES-HOST"
+  name      = "${var.component}-POSTGRES-HOST"
   value     = "${module.db.host_name}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name      = "${var.microservice}-POSTGRES-PORT"
+  name      = "${var.component}-POSTGRES-PORT"
   value     = "${module.db.postgresql_listen_port}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name      = "${var.microservice}-POSTGRES-DATABASE"
+  name      = "${var.component}-POSTGRES-DATABASE"
   value     = "${module.db.postgresql_database}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 # endregion
 
 # region smoke test config
-resource "azurerm_key_vault_secret" "smoke-test-s2s-url" {
-  name      = "smoke-test-s2s-url"
+resource "azurerm_key_vault_secret" "test-s2s-url" {
+  name      = "test-s2s-url"
   value     = "${var.s2s_url}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "test-s2s-name" {
+  name      = "test-s2s-name"
+  value     = "send_letter_tests"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "test-s2s-secret" {
+  name      = "test-s2s-secret"
+  value     = "${data.vault_generic_secret.tests_s2s_secret.data["value"]}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 # endregion

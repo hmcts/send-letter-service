@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.services;
+package uk.gov.hmcts.reform.sendletter.services.ftp;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
@@ -11,9 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
-import uk.gov.hmcts.reform.sendletter.logging.AppDependency;
-import uk.gov.hmcts.reform.sendletter.logging.AppDependencyCommand;
-import uk.gov.hmcts.reform.sendletter.logging.Dependency;
 import uk.gov.hmcts.reform.sendletter.model.InMemoryDownloadedFile;
 import uk.gov.hmcts.reform.sendletter.model.Report;
 
@@ -45,7 +42,6 @@ public class FtpClient {
     }
     // endregion
 
-    @Dependency(value = AppDependency.FTP_CLIENT, command = AppDependencyCommand.FTP_FILE_UPLOADED)
     public void upload(LocalSourceFile file, boolean isSmokeTestFile) {
         runWith(sftp -> {
             try {
@@ -66,7 +62,6 @@ public class FtpClient {
     /**
      * Downloads ALL files from reports directory.
      */
-    @Dependency(value = AppDependency.FTP_CLIENT, command = AppDependencyCommand.FTP_DOWNLOAD_REPORTS)
     public List<Report> downloadReports() {
         return runWith(sftp -> {
             try {
@@ -91,7 +86,6 @@ public class FtpClient {
         });
     }
 
-    @Dependency(value = AppDependency.FTP_CLIENT, command = AppDependencyCommand.FTP_REPORT_DELETE)
     public void deleteReport(String reportPath) {
         runWith(sftp -> {
             try {
@@ -104,7 +98,7 @@ public class FtpClient {
         });
     }
 
-    void testConnection() {
+    public void testConnection() {
         runWith(sftpClient -> null);
     }
 
