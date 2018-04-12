@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders.SYNTHETIC_TEST_TEST_NAME;
 
 public class UnauthorisedSmokeTest extends SmokeTestSuite {
 
@@ -26,7 +27,7 @@ public class UnauthorisedSmokeTest extends SmokeTestSuite {
     @Test
     public void must_have_authorisation_header_for_letter_status_endpoint() {
         RequestSpecification specification = getCommonRequestSpec()
-            .header(SYNTHETIC_TEST_NAME_HEADER, getClass().getEnclosingMethod().getName())
+            .header(SYNTHETIC_TEST_TEST_NAME, getClass().getEnclosingMethod().getName())
             .when();
 
         specification.get("/letters/" + LETTER_ID).then().statusCode(SC_UNAUTHORIZED);
@@ -36,7 +37,7 @@ public class UnauthorisedSmokeTest extends SmokeTestSuite {
     @Test
     public void should_not_authorise_with_bad_authorisation_token() {
         RequestSpecification specification = getCommonRequestSpec()
-            .header(SYNTHETIC_TEST_NAME_HEADER, getClass().getEnclosingMethod().getName())
+            .header(SYNTHETIC_TEST_TEST_NAME, getClass().getEnclosingMethod().getName())
             .header("ServiceAuthorization", "invalid token")
             .when();
 

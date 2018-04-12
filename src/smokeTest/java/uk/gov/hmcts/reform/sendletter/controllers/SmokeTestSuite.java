@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 @RunWith(SpringRunner.class)
 @SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
@@ -14,16 +15,13 @@ public abstract class SmokeTestSuite {
     @Value("${test-url:http://localhost:8485}")
     private String testUrl;
 
-    private static final String SYNTHETIC_SOURCE_HEADER = "SyntheticTest-Source";
     private static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
-
-    static final String SYNTHETIC_TEST_NAME_HEADER = "SyntheticTest-TestName";
 
     RequestSpecification getCommonRequestSpec() {
         return RestAssured.given()
             .baseUri(testUrl)
             .relaxedHTTPSValidation()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .header(SYNTHETIC_SOURCE_HEADER, SYNTHETIC_SOURCE_HEADER_VALUE);
+            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE);
     }
 }
