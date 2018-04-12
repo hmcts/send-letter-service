@@ -151,7 +151,13 @@ public class LetterService {
     ) {
         Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
 
-        String zipFileName = FinalPackageFileNameHelper.generateName(letter.getType(), serviceName, createdAt, id);
+        String zipFileName = FinalPackageFileNameHelper.generateName(
+            letter.getType(),
+            serviceName,
+            createdAt,
+            id,
+            true
+        );
 
         try {
             return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey, true);

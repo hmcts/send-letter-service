@@ -14,12 +14,12 @@ public final class FinalPackageFileNameHelper {
     public static final DateTimeFormatter dateTimeFormatter = ofPattern("ddMMyyyyHHmmss");
 
     public static String generateName(Letter letter) {
-
         return generateName(
             letter.getType(),
             letter.getService(),
             letter.getCreatedAt().toLocalDateTime(),
-            letter.getId()
+            letter.getId(),
+            letter.isEncrypted()
         );
     }
 
@@ -27,14 +27,16 @@ public final class FinalPackageFileNameHelper {
         String type,
         String service,
         LocalDateTime createdAtDateTime,
-        UUID id
+        UUID id,
+        Boolean isEncrypted
     ) {
         return String.format(
-            "%s_%s_%s_%s.zip",
+            "%s_%s_%s_%s.%s",
             type,
             service.replace("_", ""),
             createdAtDateTime.format(dateTimeFormatter),
-            id
+            id,
+            isEncrypted ? "pgp" : "zip"
         );
     }
 

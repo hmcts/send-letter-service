@@ -47,14 +47,14 @@ public class FinalPackageFileNameHelperTest {
         LocalDateTime createdAt = LocalDateTime.now();
         UUID letterId = randomUUID();
 
-        String name = FinalPackageFileNameHelper.generateName("type", "cmc", LocalDateTime.now(), letterId);
+        String name = FinalPackageFileNameHelper.generateName("type", "cmc", LocalDateTime.now(), letterId,true);
 
         assertThat(name).isEqualTo(
             "type_cmc_"
                 + createdAt.format(FinalPackageFileNameHelper.dateTimeFormatter)
                 + "_"
                 + letterId
-                + ".zip"
+                + ".pgp"
         );
     }
 
