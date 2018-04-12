@@ -50,7 +50,7 @@ public class BaseTest {
     private LetterRepository repository;
 
     @SpyBean
-    private AppInsights insights;
+    private AppInsights insights;//NOPMD
 
     @After
     public void cleanUp() {
