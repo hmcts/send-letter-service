@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
+// TODO: merge with `FileNameHelper`
 public final class FinalPackageFileNameHelper {
 
     public static final DateTimeFormatter dateTimeFormatter = ofPattern("ddMMyyyyHHmmss");
