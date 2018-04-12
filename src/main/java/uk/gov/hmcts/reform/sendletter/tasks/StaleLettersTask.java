@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -35,6 +36,7 @@ public class StaleLettersTask {
         this.staleCutOffTime = checker.getDowntimeStart();
     }
 
+    @Transactional
     public void run() {
         Timestamp staleCutOff = Timestamp.valueOf(
             LocalDateTime.now()

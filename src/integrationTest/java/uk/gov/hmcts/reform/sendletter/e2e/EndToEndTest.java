@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
+import uk.gov.hmcts.reform.sendletter.config.ThreadPoolConfig;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -99,6 +100,9 @@ public class EndToEndTest {
             await().atMost(15, SECONDS).untilAsserted(
                 () -> assertThat(letterHasBeenPosted()).as("Letter not posted").isTrue()
             );
+
+            assertThat(ThreadPoolConfig.getUnhandledTaskExceptionCount())
+                .as("Scheduled tasks encountered unhandled exceptions!").isZero();
         }
     }
 
