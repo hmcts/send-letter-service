@@ -4,6 +4,10 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
+locals {
+  db_connection_options = "?ssl=true"
+}
+
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
@@ -65,17 +69,17 @@ module "send-letter-service" {
     SCHEDULING_ENABLED            = "${var.scheduling_enabled}"
 
     // ftp
-    FTP_HOSTNAME              = "${var.ftp_hostname}"
-    FTP_PORT                  = "${var.ftp_port}"
-    FTP_FINGERPRINT           = "${var.ftp_fingerprint}"
-    FTP_TARGET_FOLDER         = "${var.ftp_target_folder}"
-    FTP_SMOKE_TEST_TARGET_FOLDER = "${var.ftp_smoke_test_target_folder}"
-    FTP_REPORTS_FOLDER        = "${var.ftp_reports_folder}"
-    FTP_REPORTS_CRON          = "${var.ftp_reports_cron}"
-    FTP_USER                  = "${local.ftp_user}"
-    SEND_LETTER_PRODUCER_URL  = "http://send-letter-producer-${var.env}.service.${local.ase_name}.internal"
-    FTP_PRIVATE_KEY           = "${local.ftp_private_key}"
-    FTP_PUBLIC_KEY            = "${local.ftp_public_key}"
+    FTP_HOSTNAME                  = "${var.ftp_hostname}"
+    FTP_PORT                      = "${var.ftp_port}"
+    FTP_FINGERPRINT               = "${var.ftp_fingerprint}"
+    FTP_TARGET_FOLDER             = "${var.ftp_target_folder}"
+    FTP_SMOKE_TEST_TARGET_FOLDER  = "${var.ftp_smoke_test_target_folder}"
+    FTP_REPORTS_FOLDER            = "${var.ftp_reports_folder}"
+    FTP_REPORTS_CRON              = "${var.ftp_reports_cron}"
+    FTP_USER                      = "${local.ftp_user}"
+    SEND_LETTER_PRODUCER_URL      = "http://send-letter-producer-${var.env}.service.${local.ase_name}.internal"
+    FTP_PRIVATE_KEY               = "${local.ftp_private_key}"
+    FTP_PUBLIC_KEY                = "${local.ftp_public_key}"
   }
 }
 
