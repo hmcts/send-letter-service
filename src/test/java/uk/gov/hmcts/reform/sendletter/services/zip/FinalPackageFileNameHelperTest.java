@@ -47,11 +47,11 @@ public class FinalPackageFileNameHelperTest {
         LocalDateTime createdAt = LocalDateTime.now();
         UUID letterId = randomUUID();
 
-        String name = ZipFileNameHelper.generateName("type", "cmc", LocalDateTime.now(), letterId);
+        String name = FinalPackageFileNameHelper.generateName("type", "cmc", LocalDateTime.now(), letterId);
 
         assertThat(name).isEqualTo(
             "type_cmc_"
-                + createdAt.format(ZipFileNameHelper.dateTimeFormatter)
+                + createdAt.format(FinalPackageFileNameHelper.dateTimeFormatter)
                 + "_"
                 + letterId
                 + ".zip"
