@@ -8,12 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.exception.DocumentZipException;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
-import uk.gov.hmcts.reform.sendletter.services.zip.ZipFileNameHelper;
+import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -61,10 +60,7 @@ public class UploadLettersTask {
                 uploadLetter(letter);
             } catch (FtpException exception) {
                 logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
-
                 break;
-            } catch (DocumentZipException exception) {
-                logger.error(String.format("Failed to zip document for letter %s", letter.getId()), exception);
             }
         }
 
@@ -72,13 +68,9 @@ public class UploadLettersTask {
     }
 
     private void uploadLetter(Letter letter) {
-        String uploadedFilename = uploadToFtp(letter);
+        uploadToFtp(letter);
 
-        logger.info(
-            "Successfully uploaded letter {}. File name: {}",
-            letter.getId(),
-            uploadedFilename
-        );
+        logger.info("Successfully uploaded letter {}", letter.getId());
 
         // Upload succeeded, mark the letter as Uploaded.
         letter.setStatus(LetterStatus.Uploaded);
@@ -92,23 +84,21 @@ public class UploadLettersTask {
         logger.info("Marked letter {} as {}", letter.getId(), letter.getStatus());
     }
 
-    private String uploadToFtp(Letter letter) {
+    private void uploadToFtp(Letter letter) {
 
-        FileToSend zippedDoc = new FileToSend(
-            ZipFileNameHelper.generateName(letter),
+        FileToSend file = new FileToSend(
+            FinalPackageFileNameHelper.generateName(letter),
             letter.getFileContent()
         );
 
         logger.debug(
-            "Uploading letter id: {}, messageId: {}, zip filename: {}",
+            "Uploading letter id: {}, messageId: {}, file name: {}",
             letter.getId(),
             letter.getMessageId(),
-            zippedDoc.filename
+            file.filename
         );
 
-        ftp.upload(zippedDoc, isSmokeTest(letter));
-
-        return zippedDoc.filename;
+        ftp.upload(file, isSmokeTest(letter));
     }
 
     private boolean isSmokeTest(Letter letter) {
