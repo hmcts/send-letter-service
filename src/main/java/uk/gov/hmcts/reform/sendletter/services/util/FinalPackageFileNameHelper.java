@@ -38,7 +38,6 @@ public final class FinalPackageFileNameHelper {
         );
     }
 
-
     private FinalPackageFileNameHelper() {
         // utility class constructor
     }

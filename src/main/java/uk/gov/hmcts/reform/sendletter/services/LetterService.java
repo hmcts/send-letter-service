@@ -51,6 +51,7 @@ public class LetterService {
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
     private final String encryptionPublicKey;
+    private final PGPPublicKey pgpPublicKey;
 
     public LetterService(
         PdfCreator pdfCreator,
@@ -66,6 +67,7 @@ public class LetterService {
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
         this.encryptionPublicKey = encryptionPublicKey;
+        this.pgpPublicKey = loadPgpPublicKey(encryptionPublicKey);
     }
 
     // TODO: remove
@@ -149,19 +151,16 @@ public class LetterService {
     ) {
         Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
 
-        String zipFileName = FinalPackageFileNameHelper.generateName(letter.getType(), serviceName, now(), id);
+        String zipFileName = FinalPackageFileNameHelper.generateName(letter.getType(), serviceName, createdAt, id);
 
         try {
-            PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(encryptionPublicKey.getBytes());
-
             return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey, true);
 
         } catch (IOException ioException) {
             log.error(
-                String.format("Error occurred while loading public key for zip file: %s", zipFileName),
+                "Error occurred while loading public key encryption",
                 ioException
             );
-
             throw new UnableToLoadPgpPublicKeyException("PGP Public key object could not be constructed", ioException);
         } catch (PGPException pgpException) {
             log.error(
@@ -170,6 +169,25 @@ public class LetterService {
             );
 
             throw new UnableToPgpEncryptZipFileException(pgpException);
+        }
+    }
+
+    private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
+        if (!isEncryptionEnabled) {
+            log.info("Encryption is not enabled hence not loading the public key");
+            return null;
+        }
+
+        Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
+
+        try {
+            return PgpEncryptionUtil.loadPublicKey(encryptionPublicKey.getBytes());
+        } catch (IOException ioException) {
+            log.error(
+                "Error occurred while loading public key encryption",
+                ioException
+            );
+            throw new UnableToLoadPgpPublicKeyException("PGP Public key object could not be constructed", ioException);
         }
     }
 

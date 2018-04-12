@@ -80,7 +80,7 @@ public final class PgpEncryptionUtil {
             new BcPGPPublicKeyRing(
                 getDecoderStream(new ByteArrayInputStream(data))
             )
-        ).orElseThrow(() -> new UnableToLoadPgpPublicKeyException("PGP Public key object could be constructed"));
+        ).orElseThrow(() -> new UnableToLoadPgpPublicKeyException("PGP Public key object could not be constructed"));
     }
 
     /**

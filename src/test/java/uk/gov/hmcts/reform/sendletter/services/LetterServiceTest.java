@@ -114,25 +114,15 @@ public class LetterServiceTest {
     }
 
     @Test
-    public void should_throw_unable_to_load_pgp_public_key_exception_when_enc_enabled_and_invalid_pub_key_is_passed()
-        throws Exception {
-        createLetterService(true, "This is not a proper pgp public key");
-
-        LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequest();
-
-        assertThatThrownBy(() -> service.send(letter, "some_service"))
+    public void should_throw_unable_to_load_pgp_pub_key_exc_on_init_when_enc_enabled_and_invalid_pub_key_is_passed() {
+        assertThatThrownBy(() -> createLetterService(true, "This is not a proper pgp public key"))
             .isInstanceOf(UnableToLoadPgpPublicKeyException.class)
             .hasMessage("PGP Public key object could not be constructed");
     }
 
     @Test
-    public void should_throw_assertion_error_when_encryption_enabled_and_public_key_is_null()
-        throws Exception {
-        createLetterService(true, null);
-
-        LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequest();
-
-        assertThatThrownBy(() -> service.send(letter, "some_service"))
+    public void should_throw_assertion_error_on_service_init_when_encryption_enabled_and_public_key_is_null() {
+        assertThatThrownBy(() -> createLetterService(true, null))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("encryptionPublicKey is null");
     }
