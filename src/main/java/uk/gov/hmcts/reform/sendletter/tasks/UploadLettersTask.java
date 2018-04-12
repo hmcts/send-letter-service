@@ -100,7 +100,7 @@ public class UploadLettersTask {
         );
 
         logger.debug(
-            "Uploading letter id: {}, messageId: {}, fil ename: {}",
+            "Uploading letter id: {}, messageId: {}, file name: {}",
             letter.getId(),
             letter.getMessageId(),
             file.filename
