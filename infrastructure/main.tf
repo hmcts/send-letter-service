@@ -38,18 +38,18 @@ module "send-letter-service" {
   subscription        = "${var.subscription}"
 
   app_settings = {
-    S2S_URL                       = "${var.s2s_url}"
-    LETTER_TRACKING_DB_HOST       = "${module.db.host_name}"
-    LETTER_TRACKING_DB_PORT       = "${module.db.postgresql_listen_port}"
-    LETTER_TRACKING_DB_USER_NAME  = "${module.db.user_name}"
-    LETTER_TRACKING_DB_PASSWORD   = "${module.db.postgresql_password}"
-    LETTER_TRACKING_DB_NAME       = "${module.db.postgresql_database}"
+    S2S_URL                         = "${var.s2s_url}"
+    LETTER_TRACKING_DB_HOST         = "${module.db.host_name}"
+    LETTER_TRACKING_DB_PORT         = "${module.db.postgresql_listen_port}"
+    LETTER_TRACKING_DB_USER_NAME    = "${module.db.user_name}"
+    LETTER_TRACKING_DB_PASSWORD     = "${module.db.postgresql_password}"
+    LETTER_TRACKING_DB_NAME         = "${module.db.postgresql_database}"
     LETTER_TRACKING_DB_CONN_OPTIONS = "${local.db_connection_options}"
-    FLYWAY_URL                    = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}${local.db_connection_options}"
-    FLYWAY_USER                   = "${module.db.user_name}"
-    FLYWAY_PASSWORD               = "${module.db.postgresql_password}"
-    ENCRYPTION_ENABLED            = "${var.encyption_enabled}"
-    SCHEDULING_ENABLED            = "${var.scheduling_enabled}"
+    FLYWAY_URL                      = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}${local.db_connection_options}"
+    FLYWAY_USER                     = "${module.db.user_name}"
+    FLYWAY_PASSWORD                 = "${module.db.postgresql_password}"
+    ENCRYPTION_ENABLED              = "${var.encyption_enabled}"
+    SCHEDULING_ENABLED              = "${var.scheduling_enabled}"
   }
 }
 
