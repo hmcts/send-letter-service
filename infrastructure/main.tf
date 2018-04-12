@@ -4,6 +4,10 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
+locals {
+  db_connection_options = "?ssl=true"
+}
+
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
@@ -40,7 +44,8 @@ module "send-letter-service" {
     LETTER_TRACKING_DB_USER_NAME  = "${module.db.user_name}"
     LETTER_TRACKING_DB_PASSWORD   = "${module.db.postgresql_password}"
     LETTER_TRACKING_DB_NAME       = "${module.db.postgresql_database}"
-    FLYWAY_URL                    = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}"
+    LETTER_TRACKING_DB_CONN_OPTIONS = "${local.db_connection_options}"
+    FLYWAY_URL                    = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}${local.db_connection_options}"
     FLYWAY_USER                   = "${module.db.user_name}"
     FLYWAY_PASSWORD               = "${module.db.postgresql_password}"
     ENCRYPTION_ENABLED            = "${var.encyption_enabled}"
