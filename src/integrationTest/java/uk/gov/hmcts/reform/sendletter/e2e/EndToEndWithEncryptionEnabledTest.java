@@ -126,7 +126,7 @@ public class EndToEndWithEncryptionEnabledTest {
         try {
             PgpDecryptionHelper.decryptFile(
                 Files.readAllBytes(file.toPath()),
-                getClass().getResourceAsStream("/privatekey.asc"),
+                getClass().getResourceAsStream("/encryption/privatekey.asc"),
                 "Password1".toCharArray()
             );
             return FileNameHelper.extractIdFromPdfName(file.getName());

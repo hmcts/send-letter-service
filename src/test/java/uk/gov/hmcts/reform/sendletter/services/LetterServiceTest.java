@@ -73,7 +73,7 @@ public class LetterServiceTest {
     public void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled()
         throws Exception {
         // given
-        byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
+        byte[] pubKey = Resources.toByteArray(getResource("encryption/pubkey.asc"));
 
         createLetterService(true, new String(pubKey));
 
@@ -95,7 +95,7 @@ public class LetterServiceTest {
     public void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed_and_encryption_enabled()
         throws Exception {
         // given
-        byte[] pubKey = Resources.toByteArray(getResource("pubkey.asc"));
+        byte[] pubKey = Resources.toByteArray(getResource("encryption/pubkey.asc"));
 
         createLetterService(true, new String(pubKey));
 
@@ -122,7 +122,7 @@ public class LetterServiceTest {
 
         assertThatThrownBy(() -> service.send(letter, "some_service"))
             .isInstanceOf(UnableToLoadPgpPublicKeyException.class)
-            .hasMessage("PGP Public key object could be constructed");
+            .hasMessage("PGP Public key object could not be constructed");
     }
 
     @Test

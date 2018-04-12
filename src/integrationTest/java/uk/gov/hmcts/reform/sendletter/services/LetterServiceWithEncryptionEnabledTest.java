@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
@@ -31,13 +30,9 @@ import static org.mockito.Mockito.reset;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 @ImportAutoConfiguration(SpyOnJpaConfig.class)
-@TestPropertySource(properties = "encryption.enabled=true")
 public class LetterServiceWithEncryptionEnabledTest {
 
     private static final String SERVICE_NAME = "a_service";
-
-    @Value("${encryption.enabled}")
-    private Boolean isEncryptionEnabled;
 
     @Value("${encryption.publicKey}")
     private String encryptionPublicKey;
@@ -61,19 +56,19 @@ public class LetterServiceWithEncryptionEnabledTest {
             letterRepository,
             new Zipper(),
             new ObjectMapper(),
-            isEncryptionEnabled,
+            true,
             encryptionPublicKey
         );
 
         UUID id = service.send(letterRequest, SERVICE_NAME);
 
-        Letter result = letterRepository.findOne(id);
+        Letter letterInDb = letterRepository.findOne(id);
 
-        byte[] encryptedZip = result.getFileContent();
+        byte[] encryptedZip = letterInDb.getFileContent();
 
         byte[] decryptedZip = PgpDecryptionHelper.decryptFile(
             encryptedZip,
-            getClass().getResourceAsStream("/privatekey.asc"),
+            getClass().getResourceAsStream("/encryption/privatekey.asc"),
             "Password1".toCharArray()
         );
         //then
