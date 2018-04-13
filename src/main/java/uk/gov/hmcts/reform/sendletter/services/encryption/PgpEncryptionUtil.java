@@ -14,6 +14,8 @@ import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.openpgp.bc.BcPGPPublicKeyRing;
 import org.bouncycastle.openpgp.operator.bc.BcPGPDataEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPublicKeyKeyEncryptionMethodGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +31,8 @@ import java.util.Optional;
 import static org.bouncycastle.openpgp.PGPUtil.getDecoderStream;
 
 public final class PgpEncryptionUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(PgpEncryptionUtil.class);
 
     // Prevent instantiation.
     private PgpEncryptionUtil() {
@@ -54,7 +58,7 @@ public final class PgpEncryptionUtil {
         String inputFileName,
         PGPPublicKey pgpPublicKey,
         boolean withIntegrityCheck
-    ) throws IOException, PGPException {
+    ) throws IOException {
         Security.addProvider(new BouncyCastleProvider());
 
         ByteArrayOutputStream byteArrayOutputStream =
@@ -69,7 +73,7 @@ public final class PgpEncryptionUtil {
                 withIntegrityCheck
             );
 
-        return writeEncryptedDataToOutputStream(byteArrayOutputStream, encryptedDataGenerator);
+        return writeEncryptedDataToOutputStream(byteArrayOutputStream, encryptedDataGenerator, inputFileName);
     }
 
     /**
@@ -102,13 +106,21 @@ public final class PgpEncryptionUtil {
 
     private static byte[] writeEncryptedDataToOutputStream(
         ByteArrayOutputStream bout,
-        PGPEncryptedDataGenerator encryptedDataGenerator
-    ) throws IOException, PGPException {
+        PGPEncryptedDataGenerator encryptedDataGenerator,
+        String inputFileName
+    ) throws IOException {
         byte[] bytes = bout.toByteArray();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (OutputStream outputStream = encryptedDataGenerator.open(byteArrayOutputStream, bytes.length)) {
             outputStream.write(bytes);
+        } catch (PGPException pgpException) {
+            log.error(
+                String.format("Error occurred during encrypting file: %s", inputFileName),
+                pgpException
+            );
+
+            throw new UnableToPgpEncryptZipFileException(pgpException);
         }
 
         return byteArrayOutputStream.toByteArray();
