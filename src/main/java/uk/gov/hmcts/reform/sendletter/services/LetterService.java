@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.util.Asserts;
-import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpEncryptionUtil;
 import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToLoadPgpPublicKeyException;
-import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToPgpEncryptZipFileException;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
@@ -164,13 +162,6 @@ public class LetterService {
                 ioException
             );
             throw new UnableToLoadPgpPublicKeyException("PGP Public key object could not be constructed", ioException);
-        } catch (PGPException pgpException) {
-            log.error(
-                String.format("Error occurred during encrypting zip file: %s", zipFileName),
-                pgpException
-            );
-
-            throw new UnableToPgpEncryptZipFileException(pgpException);
         }
     }
 
