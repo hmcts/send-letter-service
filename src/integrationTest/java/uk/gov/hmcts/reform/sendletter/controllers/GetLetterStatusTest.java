@@ -58,21 +58,20 @@ public class GetLetterStatusTest {
     }
 
     @Test
-    public void should_return_200_after_creating_single_letter_in_db() throws Exception {
+    public void should_return_200_when_matching_letter_found_in_db() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some-service");
 
         // and
         Letter letter = SampleData.letterEntity("some-service");
-
-        // when
         letterRepository.saveAndFlush(letter);
 
-        // then
+        // when
         MvcResult result = getLetterStatus(letter.getId())
             .andExpect(status().isOk())
             .andReturn();
 
+        // then
         String actualStatus = result.getResponse().getContentAsString();
         String expectedStatus = objectMapper.writeValueAsString(
             new LetterStatus(
