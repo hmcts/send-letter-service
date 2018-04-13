@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToLoadPgpPublicK
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import static com.google.common.io.Resources.getResource;
@@ -44,6 +43,7 @@ public class LetterServiceTest {
     @Test
     public void should_generate_final_pdf_from_template_when_old_model_is_passed() throws Exception {
         // given
+
         createLetterService(false, null);
 
         LetterRequest letter = SampleData.letterRequest();
@@ -73,7 +73,9 @@ public class LetterServiceTest {
     public void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled()
         throws Exception {
         // given
-        createLetterService(true, new String(loadPublicKey()));
+        byte[] pubKey = Resources.toByteArray(getResource("encryption/pubkey.asc"));
+
+        createLetterService(true, new String(pubKey));
 
         LetterRequest letter = SampleData.letterRequest();
 
@@ -93,7 +95,9 @@ public class LetterServiceTest {
     public void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed_and_encryption_enabled()
         throws Exception {
         // given
-        createLetterService(true, new String(loadPublicKey()));
+        byte[] pubKey = Resources.toByteArray(getResource("encryption/pubkey.asc"));
+
+        createLetterService(true, new String(pubKey));
 
         LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequest();
 
@@ -139,7 +143,4 @@ public class LetterServiceTest {
         );
     }
 
-    private byte[] loadPublicKey() throws IOException {
-        return Resources.toByteArray(getResource("encryption/pubkey.asc"));
-    }
 }
