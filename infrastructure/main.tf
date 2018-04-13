@@ -73,8 +73,6 @@ module "send-letter-service" {
     FLYWAY_PASSWORD                 = "${module.db.postgresql_password}"
     ENCRYPTION_ENABLED              = "${var.encyption_enabled}"
     SCHEDULING_ENABLED              = "${var.scheduling_enabled}"
-<<<<<<< HEAD
-
     // ftp
     FTP_HOSTNAME                    = "${var.ftp_hostname}"
     FTP_PORT                        = "${var.ftp_port}"
@@ -86,9 +84,7 @@ module "send-letter-service" {
     FTP_USER                        = "${local.ftp_user}"
     FTP_PRIVATE_KEY                 = "${local.ftp_private_key}"
     FTP_PUBLIC_KEY                  = "${local.ftp_public_key}"
-=======
     ENCRYPTION_PUBLIC_KEY           = "${local.encryption_public_key}"
->>>>>>> Added encryption key to app settings
   }
 }
 
