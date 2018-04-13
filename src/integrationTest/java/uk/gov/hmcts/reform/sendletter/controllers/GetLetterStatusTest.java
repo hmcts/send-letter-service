@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,15 +17,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
-import uk.gov.hmcts.reform.sendletter.data.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.data.model.DbLetter;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
-import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.util.MessageIdProvider;
+import uk.gov.hmcts.reform.sendletter.SampleData;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,13 +40,15 @@ public class GetLetterStatusTest {
     private MockMvc mvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private LetterRepository letterRepository;
 
     @MockBean
     private AuthTokenValidator tokenValidator;
 
-    @SpyBean
-    private LetterRepository letterRepository;
+    @After
+    public void tearDown() {
+        letterRepository.deleteAll();
+    }
 
     @Test
     public void should_return_200_after_creating_single_letter_in_db() throws Exception {
@@ -60,26 +56,20 @@ public class GetLetterStatusTest {
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some-service");
 
         // and
-        UUID letterId = UUID.randomUUID();
-        LetterRequest letter = new LetterRequest(Collections.emptyList(), "some-type", Collections.emptyMap());
-        DbLetter dbLetter = new DbLetter(letterId, "some-service", letter);
-        ZonedDateTime createdAt = ZonedDateTime.now(ZoneOffset.UTC);
-        String messageId = MessageIdProvider.randomMessageId();
+        Letter letter = SampleData.letterEntity("some-service");
 
         // when
-        letterRepository.save(dbLetter, createdAt.toInstant(), messageId);
+        letterRepository.saveAndFlush(letter);
 
         // then
-        MvcResult result = getLetterStatus(letterId)
+        MvcResult result = getLetterStatus(letter.getId())
             .andExpect(status().isOk())
             .andReturn();
 
         String actualStatus = result.getResponse().getContentAsString();
-        String expectedStatus = objectMapper.writeValueAsString(
-            new LetterStatus(letterId, messageId, createdAt, null, null, false)
-        );
 
-        assertThat(actualStatus).isEqualTo(expectedStatus);
+        assertThat(actualStatus).matches(".+id\":\"" + letter.getId() + ".+");
+        assertThat(actualStatus).matches(".+created_at\":\"[0-9]{4}.+");
     }
 
     @Test
