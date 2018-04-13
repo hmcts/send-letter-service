@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +42,9 @@ public class GetLetterStatusTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private LetterRepository letterRepository;
@@ -67,9 +74,18 @@ public class GetLetterStatusTest {
             .andReturn();
 
         String actualStatus = result.getResponse().getContentAsString();
+        String expectedStatus = objectMapper.writeValueAsString(
+            new LetterStatus(
+                letter.getId(),
+                letter.getMessageId(),
+                ZonedDateTime.ofInstant(letter.getCreatedAt().toInstant(), ZoneOffset.UTC),
+                null,
+                null,
+                false
+            )
+        );
 
-        assertThat(actualStatus).matches(".+id\":\"" + letter.getId() + ".+");
-        assertThat(actualStatus).matches(".+created_at\":\"[0-9]{4}.+");
+        assertThat(actualStatus).isEqualTo(expectedStatus);
     }
 
     @Test
