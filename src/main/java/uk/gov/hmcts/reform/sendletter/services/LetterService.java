@@ -114,15 +114,7 @@ public class LetterService {
             )
         );
 
-        byte[] letterContent;
         LocalDateTime createdAtTime = now();
-
-        if (isEncryptionEnabled) {
-            letterContent = encryptZipContents(letter, serviceName, id, zipContent, createdAtTime);
-        } else {
-            letterContent = zipContent;
-        }
-
 
         Letter dbLetter = new Letter(
             id,
@@ -130,10 +122,14 @@ public class LetterService {
             serviceName,
             mapper.valueToTree(letter.getAdditionalData()),
             letter.getType(),
-            letterContent,
+            zipContent,
             isEncryptionEnabled,
             Timestamp.valueOf(createdAtTime)
         );
+
+        if (isEncryptionEnabled) {
+            dbLetter.setFileContent(encryptZipContents(letter, serviceName, id, zipContent, createdAtTime));
+        }
 
         letterRepository.save(dbLetter);
 
