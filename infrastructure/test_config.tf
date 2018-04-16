@@ -17,12 +17,6 @@ resource "azurerm_key_vault_secret" "test-s2s-secret" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "test-send-letter-url" {
-  name      = "test-send-letter-url"
-  value     = "${local.send_letter_url}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
 resource "azurerm_key_vault_secret" "test-ftp-hostname" {
   name      = "test-ftp-hostname"
   value     = "${var.ftp_hostname}"
