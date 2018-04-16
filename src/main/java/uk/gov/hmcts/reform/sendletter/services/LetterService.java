@@ -188,6 +188,7 @@ public class LetterService {
 
         return new LetterStatus(
             id,
+            letter.getStatus().name(),
             letter.getMessageId(),
             toDateTime(letter.getCreatedAt()),
             toDateTime(letter.getSentToPrintAt()),
