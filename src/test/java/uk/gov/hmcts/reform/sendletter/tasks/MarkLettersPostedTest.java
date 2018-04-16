@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.Report;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -35,13 +36,14 @@ public class MarkLettersPostedTest {
     @Mock FtpClient ftpClient;
     @Mock FtpAvailabilityChecker availabilityChecker;
     @Mock ReportParser parser;
+    @Mock AppInsights insights;
 
     private MarkLettersPostedTask task;
 
     @Before
     public void setup() {
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
-        task = new MarkLettersPostedTask(repo, ftpClient, availabilityChecker, parser);
+        task = new MarkLettersPostedTask(repo, ftpClient, availabilityChecker, parser, insights);
     }
 
     @Test
