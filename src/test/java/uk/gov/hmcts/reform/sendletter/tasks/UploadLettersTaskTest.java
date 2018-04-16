@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
@@ -32,13 +33,14 @@ public class UploadLettersTaskTest {
     @Mock private LetterRepository repo;
     @Mock private FtpClient ftpClient;
     @Mock private FtpAvailabilityChecker availabilityChecker;
+    @Mock private AppInsights insights;
 
     private UploadLettersTask task;
 
     @Before
     public void setUp() throws Exception {
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
-        this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker);
+        this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker, insights);
     }
 
     @After
