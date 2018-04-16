@@ -6,10 +6,13 @@ import com.google.common.io.Resources;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 import java.io.IOException;
 import java.util.Map;
@@ -34,6 +37,8 @@ public abstract class SmokeTestSuite {
 
     @Value("${s2s-secret}")
     protected String s2sSecret;
+
+    private static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
 
     /**
      * Sign in to s2s.
@@ -64,5 +69,14 @@ public abstract class SmokeTestSuite {
 
     protected String sampleLetterJson(String fileName) throws IOException {
         return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+    }
+
+    protected RequestSpecification getCommonRequestSpec() {
+        return RestAssured
+            .given()
+            .baseUri(testUrl)
+            .relaxedHTTPSValidation()
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE);
     }
 }

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
-import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -124,7 +124,16 @@ public class StaleLettersTaskTest {
     }
 
     private Letter createLetterWithSentToPrintTime(LocalTime sentToPrintAtTime) {
-        Letter letter = new Letter(UUID.randomUUID(), randomMessageId(), "service", null, "type", null, false);
+        Letter letter = new Letter(
+            UUID.randomUUID(),
+            randomMessageId(),
+            "service",
+            null,
+            "type",
+            null,
+            false,
+            Timestamp.valueOf(LocalDateTime.now())
+        );
 
         if (sentToPrintAtTime != null) {
             letter.setStatus(LetterStatus.Uploaded);

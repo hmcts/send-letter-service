@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.encryption;
+package uk.gov.hmcts.reform.sendletter.services.encryption;
 
 import com.google.common.io.Files;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -35,7 +35,7 @@ public final class PgpEncryptionUtil {
     }
 
     /**
-     * Encrypts the given byte array using PGP encryption using Triple DES algorithm.
+     * Encrypts the given byte array using PGP encryption using AES 256 algorithm.
      * This method assumes that the temporary volume is writable
      *
      * @param inputFile          input file byte array
@@ -80,7 +80,7 @@ public final class PgpEncryptionUtil {
             new BcPGPPublicKeyRing(
                 getDecoderStream(new ByteArrayInputStream(data))
             )
-        ).orElseThrow(() -> new UnableToLoadPgpPublicKeyException("PGP Public key object could be constructed"));
+        ).orElseThrow(() -> new UnableToLoadPgpPublicKeyException("PGP Public key object could not be constructed"));
     }
 
     /**
@@ -89,7 +89,7 @@ public final class PgpEncryptionUtil {
      * be sign-only in such situations. So you've gotta go digging in through the key packets and
      * make sure you get the one that's valid for encryption.
      */
-    public static Optional<PGPPublicKey> lookupPublicSubkey(PGPPublicKeyRing ring) {
+    private static Optional<PGPPublicKey> lookupPublicSubkey(PGPPublicKeyRing ring) {
         Iterator<PGPPublicKey> keys = ring.getPublicKeys();
         while (keys.hasNext()) {
             PGPPublicKey key = keys.next();
@@ -107,12 +107,9 @@ public final class PgpEncryptionUtil {
         byte[] bytes = bout.toByteArray();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        OutputStream outputStream = encryptedDataGenerator.open(byteArrayOutputStream, bytes.length);
-        outputStream.write(bytes);
-        outputStream.close();
-
-        byteArrayOutputStream.close();
+        try (OutputStream outputStream = encryptedDataGenerator.open(byteArrayOutputStream, bytes.length)) {
+            outputStream.write(bytes);
+        }
 
         return byteArrayOutputStream.toByteArray();
     }
@@ -121,7 +118,7 @@ public final class PgpEncryptionUtil {
         PGPPublicKey pgpPublicKey,
         boolean withIntegrityCheck
     ) {
-        BcPGPDataEncryptorBuilder dataEncryptor = new BcPGPDataEncryptorBuilder(PGPEncryptedData.TRIPLE_DES);
+        BcPGPDataEncryptorBuilder dataEncryptor = new BcPGPDataEncryptorBuilder(PGPEncryptedData.AES_256);
         dataEncryptor.setWithIntegrityPacket(withIntegrityCheck);
         dataEncryptor.setSecureRandom(new SecureRandom());
 
@@ -142,13 +139,13 @@ public final class PgpEncryptionUtil {
         //Creates an empty file in the default temporary-file directory
         File tempFile = createTempFile(inputFile, fileName);
 
-        PGPUtil.writeFileToLiteralData(
-            pgpCompressedDataGenerator.open(byteArrayOutputStream),
-            PGPLiteralData.BINARY,
-            tempFile
-        );
-
-        pgpCompressedDataGenerator.close();
+        try (OutputStream out = pgpCompressedDataGenerator.open(byteArrayOutputStream)) {
+            PGPUtil.writeFileToLiteralData(
+                out,
+                PGPLiteralData.BINARY,
+                tempFile
+            );
+        }
 
         return byteArrayOutputStream;
     }
@@ -158,8 +155,9 @@ public final class PgpEncryptionUtil {
         String fileName
     ) throws IOException {
         File tempFile = new File(Files.createTempDir(), fileName);
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        fos.write(inputFile);
-        return tempFile;
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            fos.write(inputFile);
+            return tempFile;
+        }
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Test;
 import uk.gov.hmcts.reform.sendletter.exception.PdfMergeException;
+import uk.gov.hmcts.reform.sendletter.services.pdf.PdfMerger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +36,11 @@ public class PdfMergerTest {
 
         assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
         assertThat(actualPdfPage2).hasSameContentAs(expectedPdfPage2);
+
+        actualPdfPage1.close();
+        actualPdfPage2.close();
+        expectedPdfPage1.close();
+        expectedPdfPage2.close();
     }
 
     @Test

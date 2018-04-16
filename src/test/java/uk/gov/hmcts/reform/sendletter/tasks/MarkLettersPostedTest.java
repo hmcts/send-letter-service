@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.Report;
-import uk.gov.hmcts.reform.sendletter.services.FtpAvailabilityChecker;
-import uk.gov.hmcts.reform.sendletter.services.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
 import java.io.IOException;
 import java.time.LocalTime;

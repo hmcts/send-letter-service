@@ -13,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -61,7 +61,17 @@ public class AppInsightsTest {
 
     @Test
     public void should_track_event_of_not_printed_letter() {
-        Letter letter = new Letter(UUID.randomUUID(), MESSAGE_ID, SERVICE_NAME, null, TYPE, null, false);
+        Letter letter = new Letter(
+            UUID.randomUUID(),
+            MESSAGE_ID,
+            SERVICE_NAME,
+            null,
+            TYPE,
+            null,
+            false,
+            Timestamp.valueOf(LocalDateTime.now())
+        );
+
         ZonedDateTime sentToPrint = ZonedDateTime.now(ZoneOffset.UTC);
         letter.setSentToPrintAt(Timestamp.from(sentToPrint.toInstant()));
 
@@ -81,12 +91,5 @@ public class AppInsightsTest {
             eq(null)
         );
         assertThat(properties.getValue()).containsAllEntriesOf(expectedProperties);
-    }
-
-    @Test
-    public void should_track_exception() {
-        insights.trackException(new NullPointerException("Some null"));
-
-        verify(telemetry).trackException(any(NullPointerException.class));
     }
 }

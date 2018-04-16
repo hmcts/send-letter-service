@@ -3,9 +3,8 @@ variable "product" {
   default = "send-letter-2"
 }
 
-variable "microservice" {
+variable "component" {
   type = "string"
-  default = "service"
 }
 
 variable "location_app" {
@@ -25,7 +24,7 @@ variable "env" {
 variable "vault_section" {
   type = "string"
   description = "Name of the environment-specific section in Vault key path, i.e. secret/{vault_section}/..."
-  default = "dev"
+  default = "test"
 }
 
 variable "ilbIp" {}
@@ -53,4 +52,32 @@ variable encyption_enabled {
 
 variable scheduling_enabled {
   default = "true"
+}
+
+variable "ftp_hostname" {
+  default = "cmseft.services.xerox.com"
+}
+
+variable "ftp_port" {
+  default = "22"
+}
+
+variable "ftp_fingerprint" {
+  default = "SHA256:gYzreAtWAraVRFsOrcP9SPJq9atn7QxXh9pAauKud2U"
+}
+
+variable "ftp_target_folder" {
+  default = "TO_XEROX"
+}
+
+variable "ftp_smoke_test_target_folder" {
+  default = "SMOKE_TEST"
+}
+
+variable "ftp_reports_folder" {
+  default = "FROM_XEROX"
+}
+
+variable "ftp_reports_cron" {
+  default = "0 30 0 * * *"
 }

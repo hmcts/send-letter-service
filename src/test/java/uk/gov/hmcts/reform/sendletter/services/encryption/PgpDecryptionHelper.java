@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.encryption;
+package uk.gov.hmcts.reform.sendletter.services.encryption;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
@@ -32,6 +32,7 @@ public final class PgpDecryptionHelper {
     /**
      * decrypt the passed in message stream.
      */
+    @SuppressWarnings("unchecked")
     public static byte[] decryptFile(byte[] in, InputStream keyIn, char... passwd) throws IOException, PGPException {
         Security.addProvider(new BouncyCastleProvider());
 
