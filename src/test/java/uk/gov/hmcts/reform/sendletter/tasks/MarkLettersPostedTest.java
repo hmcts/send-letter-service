@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,7 +46,7 @@ public class MarkLettersPostedTest {
     }
 
     @Test
-    public void continues_processing_if_letter_not_found() throws IOException {
+    public void continues_processing_if_letter_not_found() {
         String filePath = "a.csv";
         UUID known = UUID.randomUUID();
         UUID unknown = UUID.randomUUID();

@@ -38,7 +38,7 @@ public class UploadLettersTaskTest {
     private UploadLettersTask task;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
         this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker, insights);
     }
@@ -49,7 +49,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_handle_smoke_test_letters() throws Exception {
+    public void should_handle_smoke_test_letters() {
 
         givenDbContains(letterOfType(SMOKE_TEST_LETTER_TYPE));
         task.run();
