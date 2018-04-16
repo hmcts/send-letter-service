@@ -42,7 +42,6 @@ locals {
   ftp_user               = "${data.vault_generic_secret.ftp_user.data["value"]}"
   encryption_public_key  = "${replace(data.vault_generic_secret.encryption_public_key.data["value"], "\\n", "\n")}"
   s2s_url                = "http://rpe-service-auth-provider-${var.env}.service.${local.ase_name}.internal"
-  send_letter_url        = "http://send-letter-service-${var.env}.service.${local.ase_name}.internal"
 }
 
 module "db" {
