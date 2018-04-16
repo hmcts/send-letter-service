@@ -18,8 +18,5 @@
             <Method name="markPosted" reportCaughtExceptions="true" reportExecutionTime="true"/>
             <Method name="staleLetters" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
-        <Class name="uk.gov.hmcts.reform.sendletter.services.LetterService">
-            <Method name="send" reportCaughtExceptions="true" reportExecutionTime="true"/>
-        </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
