@@ -5,6 +5,7 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 public class CreateLetterSmokeTest extends SmokeTestSuite {
 
@@ -38,6 +39,7 @@ public class CreateLetterSmokeTest extends SmokeTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(this.testUrl)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE)
             .header("ServiceAuthorization", "Bearer " + jwt);
     }
 }

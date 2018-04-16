@@ -38,7 +38,7 @@ public abstract class SmokeTestSuite {
     @Value("${s2s-secret}")
     protected String s2sSecret;
 
-    private static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
+    protected static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
 
     /**
      * Sign in to s2s.
