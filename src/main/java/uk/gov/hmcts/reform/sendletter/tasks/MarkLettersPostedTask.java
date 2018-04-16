@@ -76,7 +76,7 @@ public class MarkLettersPostedTask {
                 letter.setPrintedAt(Timestamp.from(letterPrintStatus.printedAt.toInstant()));
                 letter.setStatus(LetterStatus.Posted);
                 repo.save(letter);
-                logger.info("Marking letter {} as Posted", letter.getId());
+                logger.info("Marking letter {} as {}", letter.getId(), LetterStatus.Posted);
             } else {
                 logger.info(
                     "Skipping processing of letter {} with status {}",
