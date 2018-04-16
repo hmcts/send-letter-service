@@ -3,6 +3,7 @@
     <AgentLogger>INFO</AgentLogger>
     <Instrumentation>
         <BuiltIn enabled="true">
+            <HIBERNATE enabled="true"/>
             <HTTP enabled="true"/>
         </BuiltIn>
         <Class name="uk.gov.hmcts.reform.sendletter.services.LetterService">
