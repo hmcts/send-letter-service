@@ -85,7 +85,7 @@ public class MarkLettersPostedTask {
                 );
             }
         } else {
-            logger.error(
+            logger.warn(
                 "Failed to update printing date for letter {} - unknown letter",
                 letterPrintStatus.id
             );
