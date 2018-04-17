@@ -77,6 +77,12 @@ public class BaseTest {
                 () -> assertThat(letterHasBeenPosted()).as("Letter not posted").isTrue()
             );
 
+            // Wait for the Xerox report to be deleted so that we don't stop the FTP server before the send letters
+            // task has finished using it.
+            await().atMost(15, SECONDS).untilAsserted(
+                () -> assertThat(server.reportFolder.listFiles()).as("Xerox reports not deleted!").isEmpty()
+            );
+
             assertThat(ThreadPoolConfig.getUnhandledTaskExceptionCount())
                 .as("Scheduled tasks encountered unhandled exceptions!").isZero();
         }
