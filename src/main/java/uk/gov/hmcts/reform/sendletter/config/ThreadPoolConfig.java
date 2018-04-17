@@ -12,7 +12,6 @@ import org.springframework.util.ErrorHandler;
  * Adds custom error handler to Scheduled Tasks.
  */
 @Configuration
-@ComponentScan
 public class ThreadPoolConfig {
 
     static int errorCount;
