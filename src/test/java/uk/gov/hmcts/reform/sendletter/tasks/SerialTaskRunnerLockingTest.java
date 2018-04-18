@@ -103,9 +103,8 @@ public class SerialTaskRunnerLockingTest {
         setupSuccessfulLocking();
         when(statement.executeQuery(startsWith("SELECT pg_advisory_unlock"))).thenThrow(SQLException.class);
 
-        Throwable exception = catchThrowable(() -> taskRunner.tryRun(MarkLettersPosted, task));
-
-        assertThat(exception).isInstanceOf(TaskRunnerException.class);
+        // Should not throw a SQLException.
+        taskRunner.tryRun(MarkLettersPosted, task);
         verify(task, only()).run();
     }
 
