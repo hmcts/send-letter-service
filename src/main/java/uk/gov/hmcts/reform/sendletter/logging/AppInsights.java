@@ -19,7 +19,7 @@ public class AppInsights extends AbstractAppInsights {
 
     static final String LETTER_NOT_PRINTED = "LetterNotPrinted";
 
-    static final String LETTER_PRINT_REPORT = "LetterPrintReport";
+    static final String LETTER_PRINT_REPORT = "LetterPrintReportReceived";
 
     static final String LETTER_UPLOAD_FOR_PRINT = "LetterUploadedForPrint";
 
