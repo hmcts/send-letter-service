@@ -51,7 +51,7 @@ public class MarkLettersPostedTask {
                 .stream()
                 .map(parser::parse)
                 .forEach(parsedReport -> {
-                    insights.trackPrintReport(parsedReport);
+                    insights.trackPrintReportReceived(parsedReport);
                     parsedReport.statuses.forEach(this::updatePrintedAt);
 
                     if (parsedReport.allRowsParsed) {

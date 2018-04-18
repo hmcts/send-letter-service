@@ -108,9 +108,9 @@ public class AppInsightsTest {
         ParsedReport partiallyParsedReport = new ParsedReport("/path/to/report", statuses, false);
         ParsedReport emptyReport = new ParsedReport("/path/to/report", Collections.emptyList(), true);
 
-        insights.trackPrintReport(fullyParsedReport);
-        insights.trackPrintReport(partiallyParsedReport);
-        insights.trackPrintReport(emptyReport);
+        insights.trackPrintReportReceived(fullyParsedReport);
+        insights.trackPrintReportReceived(partiallyParsedReport);
+        insights.trackPrintReportReceived(emptyReport);
 
         verify(telemetry).trackEvent(
             AppInsights.LETTER_PRINT_REPORT,

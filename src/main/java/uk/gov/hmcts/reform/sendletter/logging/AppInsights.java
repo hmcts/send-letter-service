@@ -46,7 +46,7 @@ public class AppInsights extends AbstractAppInsights {
         telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
 
-    public void trackPrintReport(ParsedReport report) {
+    public void trackPrintReportReceived(ParsedReport report) {
         telemetry.trackEvent(
             LETTER_PRINT_REPORT,
             ImmutableMap.of("isReportParsedFully", BooleanUtils.toStringYesNo(report.allRowsParsed)),
