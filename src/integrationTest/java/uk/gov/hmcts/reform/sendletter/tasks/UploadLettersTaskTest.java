@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
@@ -24,10 +25,13 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.File;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -104,12 +108,14 @@ public class UploadLettersTaskTest {
             availabilityChecker
         );
 
+
         // and
-        assertThat(repository.findByStatus(LetterStatus.Created).count()).isEqualTo(2);
+        List<LetterStatus> statuses = repository.findAll().stream().map(Letter::getStatus).collect(Collectors.toList());
+        assertThat(statuses).containsOnly(LetterStatus.Created);
 
         // when
         try (LocalSftpServer server = LocalSftpServer.create()) {
-            task.run();
+            assertThat(catchThrowable(task::run)).isInstanceOf(FtpException.class);
 
             // then
             // file does not exist in SFTP site.

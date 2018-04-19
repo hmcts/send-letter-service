@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.sql.Timestamp;
@@ -9,7 +11,7 @@ import java.util.stream.Stream;
 
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
-    Stream<Letter> findByStatus(LetterStatus status);
+    Page<Letter> findByStatus(LetterStatus status, Pageable pageable);
 
     Stream<Letter> findByStatusAndSentToPrintAtBefore(LetterStatus status, Timestamp before);
 

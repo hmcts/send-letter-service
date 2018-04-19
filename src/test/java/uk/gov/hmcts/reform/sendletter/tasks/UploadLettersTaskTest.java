@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.PageImpl;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -15,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -65,7 +66,7 @@ public class UploadLettersTaskTest {
 
         task.run();
 
-        verify(repo, never()).findByStatus(Created);
+        verify(repo, never()).findByStatus(eq(Created), any());
     }
 
     private Letter letterOfType(String type) {
@@ -81,9 +82,11 @@ public class UploadLettersTaskTest {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private void givenDbContains(Letter letter) {
-        given(repo.findByStatus(Created))
-            .willReturn(Stream.of(letter));
+        PageImpl<Letter> page = new PageImpl(Lists.newArrayList(letter));
+        given(repo.findByStatus(eq(Created), any()))
+            .willReturn(page);
     }
 
 }

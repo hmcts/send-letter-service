@@ -2,12 +2,13 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -15,15 +16,14 @@ import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Iterator;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 
 @Component
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
+    private static final int BATCH_SIZE = 25;
 
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
@@ -41,7 +41,6 @@ public class UploadLettersTask {
         this.availabilityChecker = availabilityChecker;
     }
 
-    @Transactional
     public void run() {
         logger.info("Started letter upload job");
 
@@ -50,21 +49,17 @@ public class UploadLettersTask {
             return;
         }
 
-        try (Stream<Letter> stream = repo.findByStatus(LetterStatus.Created)) {
-            Iterator<Letter> iterator = stream.iterator();
-            while (iterator.hasNext()) {
-                Letter letter = iterator.next();
+        Pageable pageRequest = new PageRequest(0, BATCH_SIZE);
+        while (true) {
+            Page<Letter> page = repo.findByStatus(LetterStatus.Created, pageRequest);
+            page.forEach(this::uploadLetter);
 
-                try {
-                    uploadLetter(letter);
-                } catch (FtpException exception) {
-                    logger.error(String.format("Exception uploading letter %s", letter.getId()), exception);
-                    break;
-                }
+            if (page.isLast()) {
+                break;
             }
-
-            logger.info("Completed letter upload job");
+            pageRequest = page.nextPageable();
         }
+        logger.info("Completed letter upload job");
     }
 
     private void uploadLetter(Letter letter) {
