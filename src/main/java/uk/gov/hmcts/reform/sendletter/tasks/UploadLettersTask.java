@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -16,6 +13,7 @@ import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 import static java.time.LocalDateTime.now;
@@ -23,8 +21,6 @@ import static java.time.LocalDateTime.now;
 @Component
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
-    public static final int BATCH_SIZE = 10;
-
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
     private final LetterRepository repo;
@@ -50,14 +46,12 @@ public class UploadLettersTask {
         }
 
         // Upload the letters in batches.
-        // We always process the first page since each batch
-        // changes the number of letters remaining in the Created state.
-        Pageable firstPage = new PageRequest(0, BATCH_SIZE);
-        Page<Letter> page;
+        // With each batch we mark them Uploaded so they no longer appear in the query.
+        List<Letter> letters;
         do {
-            page = repo.findByStatus(LetterStatus.Created, firstPage);
-            page.forEach(this::uploadLetter);
-        } while (page.hasNext());
+            letters = repo.findFirst10ByStatus(LetterStatus.Created);
+            letters.forEach(this::uploadLetter);
+        } while (!letters.isEmpty());
         logger.info("Completed letter upload job");
     }
 

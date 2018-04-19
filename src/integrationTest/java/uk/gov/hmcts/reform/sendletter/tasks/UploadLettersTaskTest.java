@@ -129,7 +129,8 @@ public class UploadLettersTaskTest {
 
     @Test
     public void should_process_all_letter_batches() throws Exception {
-        int letterCount = UploadLettersTask.BATCH_SIZE * 2;
+        // Twice the batch size.
+        int letterCount = 20;
         IntStream.rangeClosed(1, letterCount).forEach(
             x -> letterService.send(SampleData.letterRequest(), "service"));
 

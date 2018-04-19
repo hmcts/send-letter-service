@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.data.domain.PageImpl;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -66,7 +65,7 @@ public class UploadLettersTaskTest {
 
         task.run();
 
-        verify(repo, never()).findByStatus(eq(Created), any());
+        verify(repo, never()).findByStatus(eq(Created));
     }
 
     private Letter letterOfType(String type) {
@@ -84,9 +83,8 @@ public class UploadLettersTaskTest {
 
     @SuppressWarnings("unchecked")
     private void givenDbContains(Letter letter) {
-        PageImpl<Letter> page = new PageImpl(Lists.newArrayList(letter));
-        given(repo.findByStatus(eq(Created), any()))
-            .willReturn(page);
+        // Return letter on first call, then empty list.
+        given(repo.findFirst10ByStatus(eq(Created)))
+            .willReturn(Lists.newArrayList(letter)).willReturn(Lists.newArrayList());
     }
-
 }
