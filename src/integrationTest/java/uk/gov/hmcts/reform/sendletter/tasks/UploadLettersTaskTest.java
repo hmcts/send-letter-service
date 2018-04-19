@@ -133,7 +133,6 @@ public class UploadLettersTaskTest {
         IntStream.rangeClosed(1, letterCount).forEach(
             x -> letterService.send(SampleData.letterRequest(), "service"));
 
-        // and
         UploadLettersTask task = new UploadLettersTask(
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
