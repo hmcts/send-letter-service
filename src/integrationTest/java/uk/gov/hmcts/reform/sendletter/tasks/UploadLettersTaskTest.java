@@ -129,7 +129,7 @@ public class UploadLettersTaskTest {
 
     @Test
     public void should_process_all_letter_batches() throws Exception {
-        IntStream.rangeClosed(1, 20).forEach(
+        IntStream.rangeClosed(1, UploadLettersTask.BATCH_SIZE * 2).forEach(
             x -> letterService.send(SampleData.letterRequest(), "service"));
 
         // and

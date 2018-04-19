@@ -23,7 +23,7 @@ import static java.time.LocalDateTime.now;
 @Component
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
-    private static final int BATCH_SIZE = 10;
+    public static final int BATCH_SIZE = 10;
 
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
