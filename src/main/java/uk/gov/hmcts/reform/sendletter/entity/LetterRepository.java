@@ -13,6 +13,8 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     Page<Letter> findByStatus(LetterStatus status, Pageable pageable);
 
+    Stream<Letter> findByStatus(LetterStatus status);
+
     Stream<Letter> findByStatusAndSentToPrintAtBefore(LetterStatus status, Timestamp before);
 
     Optional<Letter> findByMessageIdAndStatusOrderByCreatedAtDesc(String messageId, LetterStatus status);

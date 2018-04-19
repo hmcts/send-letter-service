@@ -25,9 +25,8 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.File;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,10 +107,8 @@ public class UploadLettersTaskTest {
             availabilityChecker
         );
 
-
         // and
-        List<LetterStatus> statuses = repository.findAll().stream().map(Letter::getStatus).collect(Collectors.toList());
-        assertThat(statuses).containsOnly(LetterStatus.Created);
+        assertThat(repository.findByStatus(LetterStatus.Created).count()).isEqualTo(2);
 
         // when
         try (LocalSftpServer server = LocalSftpServer.create()) {
@@ -128,5 +125,24 @@ public class UploadLettersTaskTest {
             assertThat(l.getSentToPrintAt()).isNull();
             assertThat(l.getFileContent()).isNotNull();
         }
+    }
+
+    @Test
+    public void should_process_all_letter_batches() throws Exception {
+        IntStream.rangeClosed(1, 20).forEach(
+            x -> letterService.send(SampleData.letterRequest(), "service"));
+
+        // and
+        UploadLettersTask task = new UploadLettersTask(
+            repository,
+            FtpHelper.getSuccessfulClient(LocalSftpServer.port),
+            availabilityChecker
+        );
+
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            task.run();
+        }
+        entityManager.clear();
+        assertThat(repository.findByStatus(LetterStatus.Uploaded).count()).isEqualTo(20);
     }
 }

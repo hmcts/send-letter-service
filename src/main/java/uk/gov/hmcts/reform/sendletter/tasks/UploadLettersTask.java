@@ -23,7 +23,7 @@ import static java.time.LocalDateTime.now;
 @Component
 public class UploadLettersTask {
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
-    private static final int BATCH_SIZE = 25;
+    private static final int BATCH_SIZE = 10;
 
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
@@ -49,16 +49,15 @@ public class UploadLettersTask {
             return;
         }
 
-        Pageable pageRequest = new PageRequest(0, BATCH_SIZE);
-        while (true) {
-            Page<Letter> page = repo.findByStatus(LetterStatus.Created, pageRequest);
+        // Upload the letters in batches.
+        // We always process the first page since each batch
+        // changes the number of letters remaining in the Created state.
+        Pageable firstPage = new PageRequest(0, BATCH_SIZE);
+        Page<Letter> page;
+        do {
+            page = repo.findByStatus(LetterStatus.Created, firstPage);
             page.forEach(this::uploadLetter);
-
-            if (page.isLast()) {
-                break;
-            }
-            pageRequest = page.nextPageable();
-        }
+        } while (page.hasNext());
         logger.info("Completed letter upload job");
     }
 
