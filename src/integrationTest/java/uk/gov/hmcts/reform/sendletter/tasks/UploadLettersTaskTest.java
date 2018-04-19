@@ -129,7 +129,8 @@ public class UploadLettersTaskTest {
 
     @Test
     public void should_process_all_letter_batches() throws Exception {
-        IntStream.rangeClosed(1, UploadLettersTask.BATCH_SIZE * 2).forEach(
+        int letterCount = UploadLettersTask.BATCH_SIZE * 2;
+        IntStream.rangeClosed(1, letterCount).forEach(
             x -> letterService.send(SampleData.letterRequest(), "service"));
 
         // and
@@ -143,6 +144,6 @@ public class UploadLettersTaskTest {
             task.run();
         }
         entityManager.clear();
-        assertThat(repository.findByStatus(LetterStatus.Uploaded).count()).isEqualTo(20);
+        assertThat(repository.findByStatus(LetterStatus.Uploaded).count()).isEqualTo(letterCount);
     }
 }
