@@ -143,7 +143,6 @@ public class UploadLettersTaskTest {
         try (LocalSftpServer server = LocalSftpServer.create()) {
             task.run();
         }
-        entityManager.clear();
         assertThat(repository.findByStatus(LetterStatus.Uploaded).count()).isEqualTo(letterCount);
     }
 }
