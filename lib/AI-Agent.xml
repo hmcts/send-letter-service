@@ -9,6 +9,11 @@
         <Class name="uk.gov.hmcts.reform.sendletter.services.encryption.PgpEncryptionUtil">
             <Method name="encryptFile" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient">
+            <Method name="upload" reportCaughtExceptions="true" reportExecutionTime="true"/>
+            <Method name="downloadReports" reportCaughtExceptions="true" reportExecutionTime="true"/>
+            <Method name="deleteReport" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
         <Class name="uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator">
             <Method name="createFromTemplates" reportCaughtExceptions="true" reportExecutionTime="true"/>
             <Method name="createFromBase64Pdfs" reportCaughtExceptions="true" reportExecutionTime="true"/>
