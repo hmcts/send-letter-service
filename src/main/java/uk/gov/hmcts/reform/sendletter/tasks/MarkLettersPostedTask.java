@@ -43,27 +43,28 @@ public class MarkLettersPostedTask {
     }
 
     public void run(LocalTime now) {
+        if (!ftpAvailabilityChecker.isFtpAvailable(now)) {
+            logger.info("Not processing due to FTP downtime window");
+            return;
+        }
+
         logger.info("Started report processing job");
 
-        if (ftpAvailabilityChecker.isFtpAvailable(now)) {
-            ftpClient
-                .downloadReports()
-                .stream()
-                .map(parser::parse)
-                .forEach(parsedReport -> {
-                    insights.trackPrintReportReceived(parsedReport);
-                    parsedReport.statuses.forEach(this::updatePrintedAt);
+        ftpClient
+            .downloadReports()
+            .stream()
+            .map(parser::parse)
+            .forEach(parsedReport -> {
+                insights.trackPrintReportReceived(parsedReport);
+                parsedReport.statuses.forEach(this::updatePrintedAt);
 
-                    if (parsedReport.allRowsParsed) {
-                        logger.info("Report {} successfully parsed, deleting", parsedReport.path);
-                        ftpClient.deleteReport(parsedReport.path);
-                    } else {
-                        logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
-                    }
-                });
-        } else {
-            logger.info("Not processing due to FTP downtime window");
-        }
+                if (parsedReport.allRowsParsed) {
+                    logger.info("Report {} successfully parsed, deleting", parsedReport.path);
+                    ftpClient.deleteReport(parsedReport.path);
+                } else {
+                    logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
+                }
+            });
 
         logger.info("Completed report processing job");
     }

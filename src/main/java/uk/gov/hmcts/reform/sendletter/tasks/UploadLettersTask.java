@@ -42,12 +42,12 @@ public class UploadLettersTask {
     }
 
     public void run() {
-        logger.info("Started letter upload job");
-
         if (!availabilityChecker.isFtpAvailable(now().toLocalTime())) {
             logger.info("Not processing due to FTP downtime window");
             return;
         }
+
+        logger.info("Started letter upload job");
 
         // Upload the letters in batches.
         // With each batch we mark them Uploaded so they no longer appear in the query.
