@@ -43,30 +43,29 @@ public class MarkLettersPostedTask {
     }
 
     public void run(LocalTime now) {
-        if (!ftpAvailabilityChecker.isFtpAvailable(now)) {
+        if (ftpAvailabilityChecker.isFtpAvailable(now)) {
+            logger.info("Started report processing job");
+
+            ftpClient
+                .downloadReports()
+                .stream()
+                .map(parser::parse)
+                .forEach(parsedReport -> {
+                    insights.trackPrintReportReceived(parsedReport);
+                    parsedReport.statuses.forEach(this::updatePrintedAt);
+
+                    if (parsedReport.allRowsParsed) {
+                        logger.info("Report {} successfully parsed, deleting", parsedReport.path);
+                        ftpClient.deleteReport(parsedReport.path);
+                    } else {
+                        logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
+                    }
+                });
+
+            logger.info("Completed report processing job");
+        } else {
             logger.info("Not processing '{}' task due to FTP downtime window", Task.MarkLettersPosted);
-            return;
         }
-
-        logger.info("Started report processing job");
-
-        ftpClient
-            .downloadReports()
-            .stream()
-            .map(parser::parse)
-            .forEach(parsedReport -> {
-                insights.trackPrintReportReceived(parsedReport);
-                parsedReport.statuses.forEach(this::updatePrintedAt);
-
-                if (parsedReport.allRowsParsed) {
-                    logger.info("Report {} successfully parsed, deleting", parsedReport.path);
-                    ftpClient.deleteReport(parsedReport.path);
-                } else {
-                    logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
-                }
-            });
-
-        logger.info("Completed report processing job");
     }
 
     private void updatePrintedAt(LetterPrintStatus letterPrintStatus) {
