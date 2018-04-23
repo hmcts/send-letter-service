@@ -16,6 +16,8 @@ import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.sendletter.tasks.Task.MarkLettersPosted;
+
 /**
  * Fetches reports from Xerox SFTP concerning posted
  * letters and sets posted letters as Posted in the database.
@@ -44,7 +46,7 @@ public class MarkLettersPostedTask {
 
     public void run(LocalTime now) {
         if (ftpAvailabilityChecker.isFtpAvailable(now)) {
-            logger.info("Started report processing job");
+            logger.info("Started '{}' task", MarkLettersPosted);
 
             ftpClient
                 .downloadReports()
@@ -62,9 +64,9 @@ public class MarkLettersPostedTask {
                     }
                 });
 
-            logger.info("Completed report processing job");
+            logger.info("Completed '{}' task", MarkLettersPosted);
         } else {
-            logger.info("Not processing '{}' task due to FTP downtime window", Task.MarkLettersPosted);
+            logger.info("Not processing '{}' task due to FTP downtime window", MarkLettersPosted);
         }
     }
 
