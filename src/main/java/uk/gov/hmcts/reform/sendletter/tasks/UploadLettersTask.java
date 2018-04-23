@@ -43,7 +43,7 @@ public class UploadLettersTask {
 
     public void run() {
         if (!availabilityChecker.isFtpAvailable(now().toLocalTime())) {
-            logger.info("Not processing upload letter task due to FTP downtime window");
+            logger.info("Not processing '{}' task due to FTP downtime window", Task.UploadLetters);
             return;
         }
 

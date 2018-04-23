@@ -44,7 +44,7 @@ public class MarkLettersPostedTask {
 
     public void run(LocalTime now) {
         if (!ftpAvailabilityChecker.isFtpAvailable(now)) {
-            logger.info("Not processing letter postage report due to FTP downtime window");
+            logger.info("Not processing '{}' task due to FTP downtime window", Task.MarkLettersPosted);
             return;
         }
 
