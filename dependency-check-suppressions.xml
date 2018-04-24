@@ -38,11 +38,6 @@ Programming error in the processing of HTTPS requests in the Apache Tomcat servl
         <cve>CVE-2017-6056</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[only relates to ssl]]></notes>
-        <gav regex="true">.*$</gav>
-        <cve>CVE-2016-4970</cve>
-    </suppress>
-    <suppress>
         <notes><![CDATA[temp disable for prod release, spring boot 2 to the rescue]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-7489</cve>
