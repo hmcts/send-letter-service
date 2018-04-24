@@ -173,7 +173,8 @@ repositories {
 def versions = [
   springfoxSwagger: '2.7.0',
   reformLogging: '2.2.1',
-  logback: '1.2.3'
+  logback: '1.2.3',
+  hystrix: '1.4.0.RELEASE'
 ]
 
 dependencies {
@@ -200,8 +201,8 @@ dependencies {
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.0.RELEASE'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.0.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: versions.hystrix
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: versions.hystrix
 
   compile group: 'com.hierynomus', name: 'sshj', version: '0.23.0'
   compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.8'
