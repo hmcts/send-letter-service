@@ -17,16 +17,6 @@ Allow remote attackers to bypass the httpOnly flag on cookies and obtain sensiti
         <cve>CVE-2015-2156</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[waiting for spring to upgrade to it, file name: jackson-databind-2.8.10.jar]]></notes>
-        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
-        <cve>CVE-2017-17485</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[waiting for spring to upgrade to it, file name: jackson-databind-2.8.10.jar]]></notes>
-        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
-        <cve>CVE-2018-5968</cve>
-    </suppress>
-    <suppress>
         <notes>
             <![CDATA[only applies when tomcat is run as a service, file name: tomcat-annotations-api-8.5.27.jar]]></notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>

@@ -149,6 +149,14 @@ dependencyManagement {
       entry 'rxnetty-contexts'
       entry 'rxnetty-servo'
     }
+    // we are already basing our work for jackson 2.9.4.
+    // spring boot dependency management plugin downgrades
+    // hystrix related libraries use 2.4.3 and not clear if plan to upgrade
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.4') {
+      entry 'jackson-annotations'
+      entry 'jackson-core'
+      entry 'jackson-databind'
+    }
   }
 }
 
@@ -165,7 +173,6 @@ repositories {
 def versions = [
   springfoxSwagger: '2.7.0',
   reformLogging: '2.2.1',
-  jackson: dependencyManagement.importedProperties['jackson.version'],
   logback: '1.2.3'
 ]
 
@@ -174,8 +181,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
 
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.0.7'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.1'
