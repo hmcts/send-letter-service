@@ -138,6 +138,20 @@ dependencyCheck {
   suppressionFile = 'dependency-check-suppressions.xml'
 }
 
+dependencyManagement {
+  dependencies {
+    // openfeign imports 0.4.9 which imports io.netty 4.0.27.
+    // reactivex 0.4.20 follows the release compatibility but still falls under owasp risk factor.
+    // reactivex 0.4.20 uses io.netty 4.1.5 which is OK with owasp.
+    // latest (1.4.4) spring cloud starter feign library does not update either of those
+    dependencySet(group: 'io.reactivex', version: '0.4.20') {
+      entry 'rxnetty'
+      entry 'rxnetty-contexts'
+      entry 'rxnetty-servo'
+    }
+  }
+}
+
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 
 repositories {

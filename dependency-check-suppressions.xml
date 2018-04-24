@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
-        <notes><![CDATA[only relates to cookies, which we don't do at the java level]]></notes>
-        <gav regex="true">.*</gav>
+        <notes>
+<![CDATA[
+## CVE-2014-3488
+
+The SslHandler in Netty before 3.9.2 allows remote attackers to cause a denial of service (infinite loop and CPU consumption) via a crafted SSLv2Hello message.
+
+## CVE-2015-2156
+
+Allow remote attackers to bypass the httpOnly flag on cookies and obtain sensitive information by leveraging improper validation of cookie name and value characters.
+]]>
+        </notes>
+        <gav regex="true">io\.reactivex:rxnetty(-)?(contexts|servo)?:0\.4\.20</gav>
+        <cve>CVE-2014-3488</cve>
         <cve>CVE-2015-2156</cve>
     </suppress>
     <suppress>
@@ -14,11 +25,6 @@
         <notes><![CDATA[waiting for spring to upgrade to it, file name: jackson-databind-2.8.10.jar]]></notes>
         <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
         <cve>CVE-2018-5968</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[only relates to ssl which we don't do at the java app level]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2014-3488</cve>
     </suppress>
     <suppress>
         <notes>
