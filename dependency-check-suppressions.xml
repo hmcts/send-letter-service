@@ -64,18 +64,24 @@ The URL pattern of "" (the empty string) which exactly maps to the context root 
         <cve>CVE-2016-6497</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[ASCII Armor parser in Windows PGP 7.0.3 and earlier allows attackers to create files in arbitrary locations via a malformed ASCII armored file]]></notes>
-        <gav regex="true">.*</gav>
+        <notes>
+<![CDATA[
+## CVE-2001-0265
+
+ASCII Armor parser in Windows PGP 7.0.3 and earlier allows attackers to create files in arbitrary locations via a malformed ASCII armored file.
+
+## CVE-2001-0381
+
+The OpenPGP PGP standard allows an attacker to determine the private signature key via a cryptanalytic attack in which the attacker alters the encrypted private key file and captures a single message signed with the signature key.
+
+## CVE-2005-0366
+
+The integrity check feature in OpenPGP, when handling a message that was encrypted using cipher feedback (CFB) mode, allows remote attackers to recover part of the plaintext via a chosen-ciphertext attack when the first 2 bytes of a message block are known, and an oracle or other mechanism is available to determine whether an integrity check failed.
+]]>
+        </notes>
+        <gav regex="true">org\.bouncycastle:bcpg-jdk15on:1\.59</gav>
         <cve>CVE-2001-0265</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[The OpenPGP PGP standard allows an attacker to determine the private signature key via a cryptanalytic attack in which the attacker alters the encrypted private key file and captures a single message signed with the signature key]]></notes>
-        <gav regex="true">.*</gav>
         <cve>CVE-2001-0381</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[The integrity check feature in OpenPGP, when handling a message that was encrypted using cipher feedback (CFB) mode, allows remote attackers to recover part of the plaintext via a chosen-ciphertext attack when the first 2 bytes of a message block are known, and an oracle or other mechanism is available to determine whether an integrity check failed]]></notes>
-        <gav regex="true">.*</gav>
         <cve>CVE-2005-0366</cve>
     </suppress>
 </suppressions>
