@@ -18,25 +18,29 @@ Allow remote attackers to bypass the httpOnly flag on cookies and obtain sensiti
     </suppress>
     <suppress>
         <notes>
-            <![CDATA[only applies when tomcat is run as a service, file name: tomcat-annotations-api-8.5.27.jar]]></notes>
-        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+<![CDATA[
+## CVE-2016-5425
+
+The Tomcat package on Red Hat Enterprise Linux (RHEL) 7, Fedora, CentOS, Oracle Linux, and possibly other Linux distributions uses weak permissions for /usr/lib/tmpfiles.d/tomcat.conf, which allows local users to gain root privileges by leveraging membership in the tomcat group.
+
+## CVE-2016-6325
+
+The Tomcat package on Red Hat Enterprise Linux (RHEL) 5 through 7, JBoss Web Server 3.0, and JBoss EWS 2 uses weak permissions for (1) /etc/sysconfig/tomcat and (2) /etc/tomcat/tomcat.conf, which allows local users to gain privileges by leveraging membership in the tomcat group.
+
+## CVE-2017-6056
+
+Programming error in the processing of HTTPS requests in the Apache Tomcat servlet and JSP engine may result in denial of service via an infinite loop. The denial of service is easily achievable as a consequence of backporting a CVE-2016-6816 fix but not backporting the fix for Tomcat bug 57544. Distributions affected by this backporting issue include Debian (before 7.0.56-3+deb8u8 and 8.0.14-1+deb8u7 in jessie) and Ubuntu.
+]]>
+        </notes>
+        <gav regex="true">org\.apache\.tomcat:tomcat-annotations-api:8\.5\.27</gav>
+        <cve>CVE-2016-5425</cve>
         <cve>CVE-2016-6325</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[only relates to ssl, file name: tomcat-annotations-api-8.5.27.jar]]></notes>
-        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
         <cve>CVE-2017-6056</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[only relates to ssl]]></notes>
         <gav regex="true">.*$</gav>
         <cve>CVE-2016-4970</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            <![CDATA[only applies when it is run as a service, file name: tomcat-annotations-api-8.5.27.jar]]></notes>
-        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
-        <cve>CVE-2016-5425</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[temp disable for prod release, spring boot 2 to the rescue]]></notes>
