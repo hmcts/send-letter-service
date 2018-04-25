@@ -1,0 +1,50 @@
+#!groovy
+
+@Library("Infrastructure")
+
+def channel = '#rpe-build-notices'
+
+List<LinkedHashMap<String, Object>> secrets = [
+  secret('test-s2s-name', 'TEST_S2S_NAME'),
+  secret('test-s2s-secret', 'TEST_S2S_SECRET'),
+  secret('test-s2s-url', 'TEST_S2S_URL'),
+  secret('test-ftp-hostname', 'TEST_FTP_HOSTNAME'),
+  secret('test-ftp-port', 'TEST_FTP_PORT'),
+  secret('test-ftp-fingerprint', 'TEST_FTP_FINGERPRINT'),
+  secret('test-ftp-target-folder', 'TEST_FTP_TARGET_FOLDER'),
+  secret('test-ftp-user', 'TEST_FTP_USER'),
+  secret('test-ftp-private-key', 'TEST_FTP_PRIVATE_KEY'),
+  secret('test-ftp-public-key', 'TEST_FTP_PUBLIC_KEY'),
+  secret('test-encryption-enabled', 'TEST_ENCRYPTION_ENABLED')
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    version: '',
+    envVariable: envVar
+  ]
+}
+
+properties([
+  parameters([
+    string(name: 'PRODUCT_NAME', defaultValue: 'send-letter', description: ''),
+    string(name: 'APP', defaultValue: 'service', description: ''),
+    string(name: 'TYPE', defaultValue: 'java', description: ''),
+    string(name: 'ENVIRONMENT', defaultValue: 'sandbox', description: 'Environment where code should be build and deployed'),
+    choice(name: 'SUBSCRIPTION', choices: 'sandbox', description: 'Azure subscriptions available to build in')
+  ]),
+  [$class: 'GithubProjectProperty', projectUrlStr: 'github.com/hmcts/send-letter-service'],
+  pipelineTriggers([[$class: 'GitHubPushTrigger']])
+])
+
+withPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
+   after('test') {
+        sh './gradlew integration'
+   }
+
+  enableDbMigration()
+  enableSlackNotifications(channel)
+  loadVaultSecrets(secrets)
+}
