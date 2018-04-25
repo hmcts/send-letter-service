@@ -2,6 +2,10 @@
 
 @Library("Infrastructure")
 
+def type = "java"
+def product = "rpe"
+def component = "send-letter-service"
+
 def channel = '#rpe-build-notices'
 
 List<LinkedHashMap<String, Object>> secrets = [
@@ -27,19 +31,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
-properties([
-  parameters([
-    string(name: 'PRODUCT_NAME', defaultValue: 'send-letter', description: ''),
-    string(name: 'APP', defaultValue: 'service', description: ''),
-    string(name: 'TYPE', defaultValue: 'java', description: ''),
-    string(name: 'ENVIRONMENT', defaultValue: 'sandbox', description: 'Environment where code should be build and deployed'),
-    choice(name: 'SUBSCRIPTION', choices: 'sandbox', description: 'Azure subscriptions available to build in')
-  ]),
-  [$class: 'GithubProjectProperty', projectUrlStr: 'github.com/hmcts/send-letter-service'],
-  pipelineTriggers([[$class: 'GitHubPushTrigger']])
-])
-
-withPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
+withPipeline(type , product, component)
    after('test') {
         sh './gradlew integration'
    }
