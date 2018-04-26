@@ -87,6 +87,8 @@ module "send-letter-service" {
     FTP_PRIVATE_KEY                 = "${local.ftp_private_key}"
     FTP_PUBLIC_KEY                  = "${local.ftp_public_key}"
     ENCRYPTION_PUBLIC_KEY           = "${local.encryption_public_key}"
+    // Azure feature
+    WEBSITE_LOCAL_CACHE_OPTION      = "${var.local_cache}"
   }
 }
 
