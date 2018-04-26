@@ -83,7 +83,7 @@ public class MarkLettersPostedTask {
                 repo.save(letter);
                 logger.info("Marked letter {} as posted", letter.getId());
             } else {
-                logger.info(
+                logger.warn(
                     "Failed to mark letter as posted {} - unexpected status: {}",
                     letter.getId(),
                     letter.getStatus()
