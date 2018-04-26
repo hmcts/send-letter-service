@@ -81,5 +81,5 @@ variable "ftp_reports_cron" {
 variable "local_cache" {
   type = "string"
   description = "Feature alleviates a majority of the infrastructure induced site recycles."
-  default = "Off"
+  default = "Always"
 }
