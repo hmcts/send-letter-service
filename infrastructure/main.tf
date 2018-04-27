@@ -50,7 +50,7 @@ locals {
   vaultName              = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 
   nonPreviewVaultUri     = "${module.send-letter-key-vault.key_vault_uri}"
-  previewVaultUri        = "https://send-letter-service-aat.vault.azure.net/"
+  previewVaultUri        = "https://rpe-send-letter-aat.vault.azure.net/"
   vaultUri               = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultUri : local.nonPreviewVaultUri}"
 
   db_connection_options  = "?ssl=true"
