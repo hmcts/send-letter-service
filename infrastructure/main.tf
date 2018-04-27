@@ -49,8 +49,6 @@ locals {
   nonPreviewVaultName    = "${var.product}-send-letter-${var.env}"
   vaultName              = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 
-  vaultUri               = "${module.send-letter-key-vault.key_vault_uri}"
-
   db_connection_options  = "?ssl=true"
 }
 
