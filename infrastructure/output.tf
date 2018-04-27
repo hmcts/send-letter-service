@@ -1,9 +1,9 @@
 output "vaultUri" {
-  value = "${module.key-vault.key_vault_uri}"
+  value = "${local.vaultUri}"
 }
 
 output "vaultName" {
-  value = "${module.key-vault.key_vault_name}"
+  value = "${local.vaultName}"
 }
 
 output "microserviceName" {
