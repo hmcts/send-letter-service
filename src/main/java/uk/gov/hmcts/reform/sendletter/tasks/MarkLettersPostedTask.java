@@ -51,6 +51,7 @@ public class MarkLettersPostedTask {
     public void run(LocalTime now) {
         if (!ftpAvailabilityChecker.isFtpAvailable(now)) {
             logger.info("Not processing '{}' task due to FTP downtime window", MarkLettersPosted);
+            return;
         }
 
         logger.info("Started '{}' task", MarkLettersPosted);
