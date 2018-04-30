@@ -74,7 +74,8 @@ public class BaseTest {
 
             // Wait for letter to be uploaded.
             await().atMost(15, SECONDS).untilAsserted(
-                () -> assertThat(validLettersUploaded(server.lettersFolder, isEncryptionEnabled)).as("No letters uploaded!").isTrue()
+                () -> assertThat(validLettersUploaded(server.lettersFolder, isEncryptionEnabled))
+                      .as("No letters uploaded!").isTrue()
             );
 
             // Generate Xerox report.
@@ -138,7 +139,7 @@ public class BaseTest {
                 );
             }
             PdfHelper.validateZippedPdf(content);
-        } catch (IOException|PGPException e) {
+        } catch (IOException | PGPException e) {
             // File may still be being written to disk by FTP server.
             return false;
         }
