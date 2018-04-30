@@ -60,7 +60,7 @@ public class LetterService {
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
         this.encryptionPublicKey = encryptionPublicKey;
-        this.pgpPublicKey = loadPgpPudblicKey(encryptionPublicKey);
+        this.pgpPublicKey = loadPgpPublicKey(encryptionPublicKey);
     }
 
     @Transactional
@@ -132,7 +132,7 @@ public class LetterService {
         return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey, true);
     }
 
-    private PGPPublicKey loadPgpPudblicKey(String encryptionPublicKey) {
+    private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
         if (!isEncryptionEnabled) {
             log.info("Encryption is not enabled hence not loading the public key");
             return null;
