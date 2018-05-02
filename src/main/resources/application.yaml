@@ -36,10 +36,6 @@ spring:
         log-abandoned: true
         abandon-when-percentage-full: 0
 
-  jackson:
-    serialization:
-      write_dates_as_timestamps: false
-
 ftp:
   hostname: ${FTP_HOSTNAME}
   port: ${FTP_PORT}
