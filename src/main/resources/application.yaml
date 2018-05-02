@@ -1,10 +1,6 @@
 server:
   port: 8485
 
-management:
-  security:
-    enabled: ${MANAGEMENT_SECURITY_ENABLED:true}
-
 idam:
   s2s-auth:
     url: ${S2S_URL}
