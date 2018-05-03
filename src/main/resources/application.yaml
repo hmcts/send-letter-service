@@ -35,6 +35,13 @@ spring:
         remove-abandoned-timeout: 7200
         log-abandoned: true
         abandon-when-percentage-full: 0
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            # silence the 'wall-of-text' - unnecessary exception throw about blob types
+            non_contextual_creation: true
 
 ftp:
   hostname: ${FTP_HOSTNAME}

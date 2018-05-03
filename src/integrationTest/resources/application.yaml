@@ -18,6 +18,13 @@ spring:
       abandonWhenPercentageFull: 0
       testOnBorrow: true
       validationQuery: SELECT 1
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            # silence the 'wall-of-text' - unnecessary exception throw about blob types
+            non_contextual_creation: true
 
 ftp:
   hostname: localhost
