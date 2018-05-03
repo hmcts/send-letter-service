@@ -41,6 +41,7 @@ public class PgpEncryptionUtilTest {
 
         //then
         assertThat(inputZipFile).containsExactly(decryptedZip.content);
+        assertThat(decryptedZip.filename).isEqualTo(inputFileName);
     }
 
     @Test
