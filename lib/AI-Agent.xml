@@ -19,18 +19,18 @@
             <Method name="encryptFile"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient">
-            <Method name="upload"/>
+            <Method name="upload" signature="(Lnet/schmizz/sshj/xfer/LocalSourceFile;Z)V"/>
             <Method name="downloadReports"/>
-            <Method name="deleteReport"/>
+            <Method name="deleteReport" signature="(Ljava/lang/String)V"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator">
             <Method name="createFromTemplates"/>
             <Method name="createFromBase64Pdfs"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.sendletter.tasks.TaskSchedule">
-            <Method name="uploadLetters"/>
-            <Method name="markPosted"/>
-            <Method name="staleLetters"/>
+            <Method name="uploadLetters" signature="()V"/>
+            <Method name="markPosted" signature="()V"/>
+            <Method name="staleLetters" signature="()V"/>
         </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
