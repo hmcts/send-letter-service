@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -26,7 +27,7 @@ public class LetterStatusInfoContributor implements InfoContributor {
             Stream.of(LetterStatus.values())
                 .collect(
                     toMap(
-                        s -> s.name().toLowerCase(),
+                        s -> s.name().toLowerCase(Locale.ENGLISH),
                         s -> repo.countByStatus(s)
                     )
                 )
