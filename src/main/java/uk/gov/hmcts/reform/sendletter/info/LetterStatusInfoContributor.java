@@ -26,7 +26,7 @@ public class LetterStatusInfoContributor implements InfoContributor {
             Stream.of(LetterStatus.values())
                 .collect(
                     toMap(
-                        s -> s,
+                        s -> s.name().toLowerCase(),
                         s -> repo.countByStatus(s)
                     )
                 )
