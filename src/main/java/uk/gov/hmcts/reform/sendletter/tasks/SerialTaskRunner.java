@@ -36,23 +36,23 @@ public final class SerialTaskRunner {
      * supplied Runnable is simply not executed.
      */
     void tryRun(Task task, Runnable runnable) {
-        log.info("Trying to lock {}", task);
+        log.debug("Trying to lock {}", task);
 
         try (Connection connection = source.getConnection()) {
             boolean locked = false;
             try {
                 if (tryLock(task, connection)) {
-                    log.info("Acquired lock {}", task);
+                    log.debug("Acquired lock {}", task);
                     locked = true;
                     runnable.run();
                 } else {
-                    log.info("Failed to acquire lock {}", task);
+                    log.debug("Failed to acquire lock {}", task);
                 }
             } finally {
                 if (locked) {
                     try {
                         if (unlock(task, connection)) {
-                            log.info("Released lock {}", task);
+                            log.debug("Released lock {}", task);
                         } else {
                             log.warn("Failed to release lock {}", task);
                         }
