@@ -53,7 +53,7 @@ public class FtpClient {
         Instant now = Instant.now();
 
         runWith(sftp -> {
-            boolean success = false;
+            boolean isSuccess = false;
 
             try {
                 String folder = isSmokeTestFile
@@ -63,13 +63,13 @@ public class FtpClient {
                 String path = String.join("/", folder, file.getName());
                 sftp.getFileTransfer().upload(file, path);
 
-                success = true;
+                isSuccess = true;
 
                 return null;
             } catch (IOException exc) {
                 throw new FtpException("Unable to upload file.", exc);
             } finally {
-                insights.trackFtpUpload(Duration.between(now, Instant.now()), success);
+                insights.trackFtpUpload(Duration.between(now, Instant.now()), isSuccess);
             }
         });
     }
@@ -81,7 +81,7 @@ public class FtpClient {
         Instant now = Instant.now();
 
         return runWith(sftp -> {
-            boolean success = false;
+            boolean isSuccess = false;
 
             try {
                 SFTPFileTransfer transfer = sftp.getFileTransfer();
@@ -100,13 +100,13 @@ public class FtpClient {
                     })
                     .collect(toList());
 
-                success = true;
+                isSuccess = true;
 
                 return reports;
             } catch (IOException exc) {
                 throw new FtpException("Error while downloading reports", exc);
             } finally {
-                insights.trackFtpReportDownload(Duration.between(now, Instant.now()), success);
+                insights.trackFtpReportDownload(Duration.between(now, Instant.now()), isSuccess);
             }
         });
     }
@@ -115,18 +115,18 @@ public class FtpClient {
         Instant now = Instant.now();
 
         runWith(sftp -> {
-            boolean success = false;
+            boolean isSuccess = false;
 
             try {
                 sftp.rm(reportPath);
 
-                success = true;
+                isSuccess = true;
 
                 return null;
             } catch (Exception exc) {
                 throw new FtpException("Error while deleting report: " + reportPath, exc);
             } finally {
-                insights.trackFtpReportDeletion(Duration.between(now, Instant.now()), success);
+                insights.trackFtpReportDeletion(Duration.between(now, Instant.now()), isSuccess);
             }
         });
     }
