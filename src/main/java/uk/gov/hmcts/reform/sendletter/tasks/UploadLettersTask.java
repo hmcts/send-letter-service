@@ -80,7 +80,7 @@ public class UploadLettersTask {
 
         ftp.upload(file, isSmokeTest(letter));
 
-        logger.debug(
+        logger.info(
             "Uploaded letter id: {}, messageId: {}, file name: {}, additional data: {}",
             letter.getId(),
             letter.getMessageId(),
