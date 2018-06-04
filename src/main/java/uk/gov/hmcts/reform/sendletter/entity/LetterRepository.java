@@ -20,7 +20,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     @Query("select l from Letter l where l.status = :status and l.type <> '"
         + UploadLettersTask.SMOKE_TEST_LETTER_TYPE
         + "' and l.sentToPrintAt < :before")
-    Stream<Letter> findStaleLetters(
+    Stream<Letter> findByStatusAndSentToPrintAtBefore(
         @Param("status") LetterStatus status,
         @Param("before") Timestamp before
     );

@@ -48,7 +48,7 @@ public class StaleLettersTask {
 
         logger.info("Started '{}' task with cut-off of {}", StaleLetters, staleCutOff);
 
-        try (Stream<Letter> letters = repo.findStaleLetters(LetterStatus.Uploaded, staleCutOff)) {
+        try (Stream<Letter> letters = repo.findByStatusAndSentToPrintAtBefore(LetterStatus.Uploaded, staleCutOff)) {
             long count = letters.peek(insights::trackStaleLetter).count();
             logger.info("Completed '{}' task. Letters found: {}", StaleLetters, count);
         }
