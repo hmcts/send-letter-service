@@ -16,7 +16,6 @@ import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.sendletter.tasks.Task.StaleLetters;
-import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
 /**
  * Task to run report on unprinted letters and report them to AppInsights.
@@ -49,11 +48,7 @@ public class StaleLettersTask {
 
         logger.info("Started '{}' task with cut-off of {}", StaleLetters, staleCutOff);
 
-        try (Stream<Letter> letters = repo.findStaleLetters(
-            LetterStatus.Uploaded,
-            SMOKE_TEST_LETTER_TYPE,
-            staleCutOff
-        )) {
+        try (Stream<Letter> letters = repo.findStaleLetters(LetterStatus.Uploaded, staleCutOff)) {
             long count = letters.peek(insights::trackStaleLetter).count();
             logger.info("Completed '{}' task. Letters found: {}", StaleLetters, count);
         }

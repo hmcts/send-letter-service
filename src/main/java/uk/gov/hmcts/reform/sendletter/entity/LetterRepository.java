@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -16,10 +17,11 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     Stream<Letter> findByStatus(LetterStatus status);
 
-    @Query("select l from Letter l where l.status = :status and l.type <> :type and l.sentToPrintAt < :before")
+    @Query("select l from Letter l where l.status = :status and l.type <> '"
+        + UploadLettersTask.SMOKE_TEST_LETTER_TYPE
+        + "' and l.sentToPrintAt < :before")
     Stream<Letter> findStaleLetters(
         @Param("status") LetterStatus status,
-        @Param("type") String type,
         @Param("before") Timestamp before
     );
 
