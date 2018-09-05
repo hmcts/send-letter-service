@@ -163,8 +163,6 @@ def versions = [
 ]
 
 dependencies {
-  runtime("org.springframework.boot:spring-boot-properties-migrator")
-
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
