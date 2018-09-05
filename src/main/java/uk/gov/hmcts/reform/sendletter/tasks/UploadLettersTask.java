@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,6 +46,7 @@ public class UploadLettersTask {
         this.insights = insights;
     }
 
+    @SchedulerLock(name = "UploadLetters")
     @Scheduled(fixedDelayString = "${tasks.upload-letters-interval-ms}")
     public void run() {
         if (!availabilityChecker.isFtpAvailable(now().toLocalTime())) {

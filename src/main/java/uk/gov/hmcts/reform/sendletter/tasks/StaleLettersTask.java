@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,6 +43,7 @@ public class StaleLettersTask {
     }
 
     @Transactional
+    @SchedulerLock(name = "StaleLetters")
     @Scheduled(cron = "${tasks.stale-letters-report}")
     public void run() {
         Timestamp staleCutOff = Timestamp.valueOf(

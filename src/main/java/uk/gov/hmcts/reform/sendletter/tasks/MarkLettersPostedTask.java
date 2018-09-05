@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -51,6 +52,7 @@ public class MarkLettersPostedTask {
         this.insights = insights;
     }
 
+    @SchedulerLock(name = "MarkLettersPosted")
     @Scheduled(cron = "${tasks.mark-letters-posted}")
     public void run() {
         if (!ftpAvailabilityChecker.isFtpAvailable(LocalTime.now())) {
