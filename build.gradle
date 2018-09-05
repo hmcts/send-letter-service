@@ -147,36 +147,6 @@ dependencyCheck {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = 'Finchley.M9'
-
-dependencyManagement {
-  dependencies {
-    dependencySet(group: 'com.google.guava', version: '20.0') {
-      entry 'guava'
-    }
-    // openfeign imports 0.4.9 which imports io.netty 4.0.27
-    // reactivex 0.4.20 follows the release compatibility but still falls under owasp risk factor
-    // reactivex 0.4.20 uses io.netty 4.1.5 which is OK with owasp
-    // latest (1.4.4) spring cloud starter feign library does not update either of those
-    dependencySet(group: 'io.reactivex', version: '0.4.20') {
-      entry 'rxnetty'
-      entry 'rxnetty-contexts'
-      entry 'rxnetty-servo'
-    }
-    // spring boot dependency management plugin downgrades
-    // hystrix related libraries use 2.4.3 and not clear if plan to upgrade
-    // bump to 2.9.5 because of https://nvd.nist.gov/vuln/detail/CVE-2018-7489
-    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.5') {
-      entry 'jackson-annotations'
-      entry 'jackson-core'
-      entry 'jackson-databind'
-    }
-  }
-  imports {
-    mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-  }
-}
 
 repositories {
   jcenter()
@@ -184,16 +154,12 @@ repositories {
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
-  maven {
-    url "https://repo.spring.io/libs-milestone"
-  }
   mavenLocal()
 }
 
 def versions = [
   springfoxSwagger: '2.9.0',
-  reformLogging: '3.0.1',
-  hystrix: '1.4.4.RELEASE'
+  reformLogging: '3.0.1'
 ]
 
 dependencies {
@@ -216,8 +182,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.hystrix
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix-dashboard', version: versions.hystrix
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.1.RELEASE'
 
   compile group: 'com.hierynomus', name: 'sshj', version: '0.26.0'
   compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.11'
