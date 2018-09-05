@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -24,6 +26,7 @@ import static uk.gov.hmcts.reform.sendletter.tasks.Task.MarkLettersPosted;
  * letters and sets posted letters as Posted in the database.
  */
 @Component
+@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class MarkLettersPostedTask {
 
     private final LetterRepository repo;
@@ -48,8 +51,9 @@ public class MarkLettersPostedTask {
         this.insights = insights;
     }
 
-    public void run(LocalTime now) {
-        if (!ftpAvailabilityChecker.isFtpAvailable(now)) {
+    @Scheduled(cron = "${tasks.mark-letters-posted}")
+    public void run() {
+        if (!ftpAvailabilityChecker.isFtpAvailable(LocalTime.now())) {
             logger.info("Not processing '{}' task due to FTP downtime window", MarkLettersPosted);
             return;
         }
