@@ -42,7 +42,11 @@ ftp:
 
 # Don't run scheduled tasks unless
 # explicitly turned on by tests.
-scheduling.enabled: false
+scheduling:
+  enabled: ${SCHEDULING_ENABLED:false}
+  pool: ${SCHEDULING_POOL:10}
+  lock_at_most_for: ${SCHEDULING_LOCK_AT_MOST_FOR:PT10M} # 10 minutes in ISO-8601
+
 
 tasks:
   upload-letters-interval-ms: ${UPLOAD_LETTERS_INTERVAL:1000}
