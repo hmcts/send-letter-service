@@ -196,20 +196,20 @@ dependencies {
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
   testCompile group: 'org.apache.sshd', name: 'sshd-core', version: '1.7.0'
-  testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
-  testCompile group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.8'
+  testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
+  testCompile group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.11'
 
   integrationTestCompile sourceSets.main.runtimeClasspath
   integrationTestCompile sourceSets.test.runtimeClasspath
-  integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.6.0'
-  integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.0'
+  integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.8.3'
+  integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.2'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
-  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.1'
   smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 
   functionalTestCompile sourceSets.main.runtimeClasspath
-  functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.1'
   functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 }
 
