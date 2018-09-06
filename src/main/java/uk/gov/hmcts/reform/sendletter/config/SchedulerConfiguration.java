@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.time.Duration;
 import javax.sql.DataSource;
@@ -25,19 +24,6 @@ public class SchedulerConfiguration {
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
         return new JdbcTemplateLockProvider(dataSource);
-    }
-
-    @Bean
-    public TaskScheduler threadPoolTaskScheduler(
-        @Value("${scheduling.pool}") int poolSize
-    ) {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-
-        scheduler.setPoolSize(poolSize);
-        scheduler.setThreadNamePrefix("SL-");
-        scheduler.initialize();
-
-        return scheduler;
     }
 
     @Bean
