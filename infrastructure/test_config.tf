@@ -13,7 +13,7 @@ resource "azurerm_key_vault_secret" "test-s2s-name" {
 
 resource "azurerm_key_vault_secret" "test-s2s-secret" {
   name      = "test-s2s-secret"
-  value     = "${data.vault_generic_secret.tests_s2s_secret.data["value"]}"
+  value     = "${data.azurerm_key_vault_secret.test_s2s_secret.value}"
   vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
 }
 
