@@ -13,11 +13,11 @@ resource "azurerm_resource_group" "rg" {
 locals {
   ase_name               = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 
-  ftp_private_key        = "${replace(data.azurerm_key_vault_secret.ftp_private_key.value, "\\n", "\n")}"
-  ftp_public_key         = "${replace(data.azurerm_key_vault_secret.ftp_public_key.value, "\\n", "\n")}"
+  ftp_private_key        = "${data.azurerm_key_vault_secret.ftp_private_key.value}"
+  ftp_public_key         = "${data.azurerm_key_vault_secret.ftp_public_key.value}"
   ftp_user               = "${data.azurerm_key_vault_secret.ftp_user.value}"
 
-  encryption_public_key  = "${replace(data.azurerm_key_vault_secret.encryption_public_key.value, "\\n", "\n")}"
+  encryption_public_key  = "${data.azurerm_key_vault_secret.encryption_public_key.value}"
 
   local_env              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
@@ -36,11 +36,6 @@ locals {
   db_connection_options  = "?ssl=true"
 
   sku_size = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"}"
-}
-
-data "azurerm_key_vault_secret" "test_s2s_secret" {
-  name      = "microservicekey-send-letter-tests"
-  vault_uri = "${local.s2s_vault_url}"
 }
 
 data "azurerm_key_vault_secret" "ftp_user" {
