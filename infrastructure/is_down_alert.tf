@@ -1,10 +1,11 @@
 module "send-letter-up-alert" {
-  source = "git@github.com:hmcts/cnp-module-metric-alert"
-  location = "${azurerm_application_insights.appinsights.location}"
+  source            = "git@github.com:hmcts/cnp-module-metric-alert"
+  location          = "${azurerm_application_insights.appinsights.location}"
   app_insights_name = "${azurerm_application_insights.appinsights.name}"
 
   alert_name = "Send Letter is DOWN - RPE"
   alert_desc = "Triggers when send letter service looks like being down within a 15 minutes timeframe."
+
   app_insights_query = <<EOF
 union (dependencies
  | where data == 'FtpFileUploaded' and success =~ 'true'
@@ -19,12 +20,13 @@ union (dependencies
  | project ['is_operational'] = iif(received > 0 and downtime > 0, true, iif(received > 0, uploaded > 0, true))
  | where is_operational == false
 EOF
-  frequency_in_minutes = 10
-  time_window_in_minutes = 15
-  severity_level = "2"
-  action_group_name = "${module.is-down-action-group.action_group_name}"
-  custom_email_subject = "Send Letter is DOWN"
+
+  frequency_in_minutes       = 10
+  time_window_in_minutes     = 15
+  severity_level             = "2"
+  action_group_name          = "${module.is-down-action-group.action_group_name}"
+  custom_email_subject       = "Send Letter is DOWN"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold = 0
-  resourcegroup_name = "${azurerm_resource_group.rg.name}"
+  trigger_threshold          = 0
+  resourcegroup_name         = "${azurerm_resource_group.rg.name}"
 }

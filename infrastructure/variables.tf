@@ -17,14 +17,14 @@ variable "location_db" {
 }
 
 variable "appinsights_location" {
-  type = "string"
-  default = "West Europe"
+  type        = "string"
+  default     = "West Europe"
   description = "Location for Application Insights"
 }
 
 variable "application_type" {
-  type = "string"
-  default = "Web"
+  type        = "string"
+  default     = "Web"
   description = "Type of Application Insights (Web/Other)"
 }
 
