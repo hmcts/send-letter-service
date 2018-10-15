@@ -27,7 +27,7 @@
     </suppress>
 
     <suppress>
-        <notes><![CDATA[ Used by testcontainers suppressed above ]]></notes>
+        <notes><![CDATA[ Used by testcontainers supressed above ]]></notes>
         <gav regex="true">^org\.jetbrains:annotations:.*$</gav>
         <cve>CVE-2017-8316</cve>
     </suppress>
