@@ -170,7 +170,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: springBootVersion
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.4'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.4'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
   compile group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: versions.shedlock
   compile group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: versions.shedlock
@@ -184,7 +184,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.1.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.2.RELEASE'
 
   compile group: 'com.hierynomus', name: 'sshj', version: '0.26.0'
   compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.12'
@@ -209,7 +209,7 @@ dependencies {
   integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.2'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
-  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.1'
+  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.2.0'
   smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 
   functionalTestCompile sourceSets.main.runtimeClasspath
