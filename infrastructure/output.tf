@@ -40,4 +40,8 @@ output "test_encryption_enabled" {
   value = "${var.encyption_enabled}"
 }
 
+output "test_failure_email" {
+  value = "ignore@failure.email"
+}
+
 #endregion
