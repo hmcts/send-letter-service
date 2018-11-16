@@ -163,6 +163,15 @@ def versions = [
   springfoxSwagger: '2.9.2'
 ]
 
+dependencyManagement {
+  dependencies {
+    // CVE-2018-10237 - Unbounded memory allocation
+    dependencySet(group: 'com.google.guava', version: '24.1.1-jre') {
+      entry 'guava'
+    }
+  }
+}
+
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
