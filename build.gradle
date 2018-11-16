@@ -158,7 +158,7 @@ repositories {
 }
 
 def versions = [
-  reformLogging: '3.0.1',
+  reformLogging: '3.0.4',
   shedlock: '1.1.0',
   springfoxSwagger: '2.9.2'
 ]
