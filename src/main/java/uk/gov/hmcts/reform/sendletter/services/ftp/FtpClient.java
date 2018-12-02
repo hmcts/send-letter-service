@@ -5,12 +5,14 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
 import net.schmizz.sshj.xfer.LocalSourceFile;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.InMemoryDownloadedFile;
 import uk.gov.hmcts.reform.sendletter.model.Report;
@@ -49,18 +51,22 @@ public class FtpClient {
     }
     // endregion
 
-    public void upload(LocalSourceFile file, boolean isSmokeTestFile) {
+    public void upload(LocalSourceFile file, boolean isSmokeTestFile, String service) {
         Instant now = Instant.now();
+
+        isServiceConfigured(service);
 
         runWith(sftp -> {
             boolean isSuccess = false;
 
             try {
+                String serviceFolder = configProperties.getServiceFolders().get(service);
+
                 String folder = isSmokeTestFile
                     ? configProperties.getSmokeTestTargetFolder()
                     : configProperties.getTargetFolder();
 
-                String path = String.join("/", folder, file.getName());
+                String path = String.join("/", folder, serviceFolder, file.getName());
                 sftp.getFileTransfer().upload(file, path);
 
                 isSuccess = true;
@@ -172,5 +178,15 @@ public class FtpClient {
     private boolean isReportFile(RemoteResourceInfo resourceInfo) {
         return resourceInfo.isRegularFile()
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");
+    }
+
+    private void isServiceConfigured(String service) {
+        if (configProperties.getServiceFolders() == null
+            || StringUtils.isEmpty(configProperties.getServiceFolders().get(service))
+        ) {
+            throw new ServiceNotConfiguredException(
+                String.format("Service %s is not configured to use bulk-print", service)
+            );
+        }
     }
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.Files;
 import org.junit.Test;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -24,11 +25,20 @@ public class FtpUploadTest {
         FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
-            client.upload(doc, false);
+            client.upload(doc, false, "bulkprint");
             File[] files = server.lettersFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
             String content = new String(Files.toByteArray(files[0]));
             assertThat(content).isEqualTo("world");
+        }
+    }
+
+    @Test(expected = ServiceNotConfiguredException.class)
+    public void should_not_upload_file_when_service_is_not_configured() throws Exception {
+        FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
+            client.upload(doc, false, "test-service");
         }
     }
 }

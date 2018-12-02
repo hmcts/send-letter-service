@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
+                import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ public class EndToEndWithEncryptionEnabledTest extends BaseTest {
     private static final Boolean IS_ENCRYPTION_ENABLED = true;
 
     @Test
+    @Ignore
     public void should_handle_old_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
@@ -33,6 +35,7 @@ public class EndToEndWithEncryptionEnabledTest extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void should_handle_new_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
