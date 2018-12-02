@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static org.mockito.Mockito.mock;
@@ -49,6 +51,9 @@ public final class FtpHelper {
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
         p.setTargetFolder(LocalSftpServer.LETTERS_FOLDER_NAME);
         p.setReportsFolder(LocalSftpServer.REPORT_FOLDER_NAME);
+        Map<String, String>  folderMapping = new HashMap<>();
+        folderMapping.put("bulkprint", "BULKPRINT");
+        p.setServiceFolders(folderMapping);
         return p;
     }
 }

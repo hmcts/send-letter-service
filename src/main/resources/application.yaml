@@ -58,6 +58,10 @@ ftp:
   downtime:
     from: ${FTP_DOWNTIME_FROM:16:00}
     to: ${FTP_DOWNTIME_TO:17:00}
+  serviceFolders:
+    divorce-frontend: DIV
+    cmc: CMC
+    bulkprint: BULKPRINT
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
