@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
-    import org.junit.Ignore;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
