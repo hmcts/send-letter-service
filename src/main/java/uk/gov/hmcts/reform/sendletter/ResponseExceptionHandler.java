@@ -79,6 +79,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplexException.class)
     protected ResponseEntity<String> handleInvalidPdfException() {
+        // only then pdf is actually checked hence invalid pdf message
         return status(BAD_REQUEST).body("Invalid pdf");
     }
 
