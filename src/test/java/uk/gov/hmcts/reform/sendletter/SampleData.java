@@ -46,7 +46,7 @@ public final class SampleData {
         }
     }
 
-    public static LetterWithPdfsRequest letterWithPdfsRequest() throws IOException {
+    public static LetterWithPdfsRequest letterWithPdfsRequest() {
         return new LetterWithPdfsRequest(
             singletonList(
                 Base64.getEncoder().encode("hello world".getBytes())

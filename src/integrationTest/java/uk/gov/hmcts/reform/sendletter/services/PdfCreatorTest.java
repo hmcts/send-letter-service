@@ -42,7 +42,7 @@ public class PdfCreatorTest {
     }
 
     @Test
-    public void should_throw_an_exception_if_bytes_do_not_represent_pdf() throws Exception {
+    public void should_throw_an_exception_if_bytes_do_not_represent_pdf() {
         // given
         List<byte[]> pdfs = asList(
             "clearly not a pdf".getBytes()
