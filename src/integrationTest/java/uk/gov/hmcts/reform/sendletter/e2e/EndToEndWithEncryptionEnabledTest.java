@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
@@ -16,14 +15,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
     "scheduling.enabled=true",
     "tasks.upload-letters-interval-ms=1000",
     "tasks.mark-letters-posted=*/1 * * * * *",
-    "tasks.stale-letters-report=*/1 * * * * *"
+    "tasks.stale-letters-report=*/1 * * * * *",
+    "ftp.serviceFolders.some_service_name=BULKPRINT"
 })
 public class EndToEndWithEncryptionEnabledTest extends BaseTest {
 
     private static final Boolean IS_ENCRYPTION_ENABLED = true;
 
     @Test
-    @Ignore
     public void should_handle_old_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
@@ -35,7 +34,6 @@ public class EndToEndWithEncryptionEnabledTest extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void should_handle_new_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
