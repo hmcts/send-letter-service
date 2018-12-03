@@ -18,5 +18,5 @@
       "claimantFullName": "Foo Bar"
     }
   }],
-  "type": "smoke_test"
+  "type": "BPS001"
 }

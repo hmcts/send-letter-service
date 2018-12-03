@@ -66,7 +66,13 @@ public class FtpClient {
                     ? configProperties.getSmokeTestTargetFolder()
                     : configProperties.getTargetFolder();
 
-                String path = String.join("/", folder, serviceFolder, file.getName());
+                String path = String.join(
+                    "/",
+                    folder,
+                    isSmokeTestFile ? "" : serviceFolder,
+                    file.getName()
+                );
+
                 sftp.getFileTransfer().upload(file, path);
 
                 isSuccess = true;
