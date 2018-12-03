@@ -49,7 +49,7 @@ public final class SampleData {
     public static LetterWithPdfsRequest letterWithPdfsRequest() throws IOException {
         return new LetterWithPdfsRequest(
             singletonList(
-                Base64.getEncoder().encodeToString("hello world".getBytes())
+                Base64.getEncoder().encode("hello world".getBytes())
             ),
             "someType",
             Maps.newHashMap()
