@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
+import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -116,8 +117,14 @@ public abstract class FunctionalTestSuite {
             .get("letter_id");
     }
 
-    protected String sampleLetterRequestJson(String fileName) throws IOException {
-        return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+    protected String sampleLetterRequestJson(
+        String requestBodyFilename,
+        String templateFilename
+    ) throws IOException {
+        String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
+        String template = Resources.toString(getResource(templateFilename), Charsets.UTF_8);
+
+        return requestBody.replace("{{template}}", template.replace("\"", "\\\""));
     }
 
     protected SFTPClient getSftpClient() throws IOException {
