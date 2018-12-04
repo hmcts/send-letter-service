@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.sendletter.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "ftp")
 public class FtpConfigProperties {
@@ -25,7 +25,40 @@ public class FtpConfigProperties {
 
     private String reportsFolder;
 
-    private Map<String, String> serviceFolders;
+    private List<Mapping> serviceFolders;
+
+    public static class Mapping {
+
+        private String service;
+        private String folder;
+
+        // region constructor, getters and setters
+        public Mapping(String service, String folder) {
+            this.service = service;
+            this.folder = folder;
+        }
+
+        public Mapping() {
+            // Spring needs it.
+        }
+
+        public String getService() {
+            return service;
+        }
+
+        public void setService(String service) {
+            this.service = service;
+        }
+
+        public String getFolder() {
+            return folder;
+        }
+
+        public void setFolder(String folder) {
+            this.folder = folder;
+        }
+        // endregion
+    }
 
     public String getHostname() {
         return hostname;
@@ -99,11 +132,11 @@ public class FtpConfigProperties {
         this.reportsFolder = reportsFolder;
     }
 
-    public Map<String, String> getServiceFolders() {
+    public List<Mapping> getServiceFolders() {
         return serviceFolders;
     }
 
-    public void setServiceFolders(Map<String, String> serviceFolders) {
+    public void setServiceFolders(List<Mapping> serviceFolders) {
         this.serviceFolders = serviceFolders;
     }
 }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.Mapping;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -54,25 +55,17 @@ public class FtpClient {
     public void upload(LocalSourceFile file, boolean isSmokeTestFile, String service) {
         Instant now = Instant.now();
 
-        isServiceConfigured(service);
-
         runWith(sftp -> {
             boolean isSuccess = false;
 
             try {
-                String serviceFolder = configProperties.getServiceFolders().get(service);
+                String serviceFolder = getServiceFolderMapping(service);
 
                 String folder = isSmokeTestFile
                     ? configProperties.getSmokeTestTargetFolder()
-                    : configProperties.getTargetFolder();
+                    : String.join("/", configProperties.getTargetFolder(), serviceFolder);
 
-                String path = String.join(
-                    "/",
-                    folder,
-                    isSmokeTestFile ? "" : serviceFolder,
-                    file.getName()
-                );
-
+                String path = String.join("/", folder, file.getName());
                 sftp.getFileTransfer().upload(file, path);
 
                 isSuccess = true;
@@ -186,13 +179,19 @@ public class FtpClient {
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");
     }
 
-    private void isServiceConfigured(String service) {
-        if (configProperties.getServiceFolders() == null
-            || StringUtils.isEmpty(configProperties.getServiceFolders().get(service))
-        ) {
+    private String getServiceFolderMapping(String service) {
+        Mapping serviceFolderMapping = configProperties.getServiceFolders()
+            .stream()
+            .filter(mapping -> service.equals(mapping.getService()))
+            .findAny()
+            .orElse(null);
+
+        if (serviceFolderMapping == null || StringUtils.isEmpty(serviceFolderMapping.getFolder())) {
             throw new ServiceNotConfiguredException(
                 String.format("Service %s is not configured to use bulk-print", service)
             );
         }
+
+        return serviceFolderMapping.getFolder();
     }
 }

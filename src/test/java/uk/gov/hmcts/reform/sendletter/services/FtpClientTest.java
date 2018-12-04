@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.Mapping;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -19,10 +20,9 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -89,9 +89,8 @@ public class FtpClientTest {
         given(ftpProps.getSmokeTestTargetFolder()).willReturn("smoke");
         given(ftpProps.getTargetFolder()).willReturn("regular");
 
-        Map<String, String> serviceFolderMappings = new HashMap<>();
-        serviceFolderMappings.put("cmc", "CMC");
-        given(ftpProps.getServiceFolders()).willReturn(serviceFolderMappings);
+        Mapping mapping = new Mapping("cmc", "CMC");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
 
         // when
         client.upload(new FileToSend("hello.zip", "hello".getBytes()), true, "cmc");
@@ -117,8 +116,7 @@ public class FtpClientTest {
     @Test
     public void should_track_failure_when_uploading_file_for_unconfigured_service() {
         //given
-        Map<String, String> serviceFolderMappings = new HashMap<>();
-        given(ftpProps.getServiceFolders()).willReturn(serviceFolderMappings);
+        given(ftpProps.getServiceFolders()).willReturn(emptyList());
 
         // when
         Throwable exception = catchThrowable(() ->
@@ -132,9 +130,8 @@ public class FtpClientTest {
     @Test
     public void should_track_failure_when_uploading_file_for_service_configured_with_empty_folder_name() {
         //given
-        Map<String, String> serviceFolderMappings = new HashMap<>();
-        serviceFolderMappings.put("unconfigured-service", "");
-        given(ftpProps.getServiceFolders()).willReturn(serviceFolderMappings);
+        Mapping mapping = new Mapping("unconfigured-service", "");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
 
         // when
         Throwable exception = catchThrowable(() ->
@@ -148,9 +145,8 @@ public class FtpClientTest {
     @Test
     public void should_track_failure_when_trying_to_upload_new_file() throws IOException {
         // given
-        Map<String, String> serviceFolderMappings = new HashMap<>();
-        serviceFolderMappings.put("cmc", "CMC");
-        given(ftpProps.getServiceFolders()).willReturn(serviceFolderMappings);
+        Mapping mapping = new Mapping("cmc", "CMC");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
 
         willThrow(IOException.class).given(sftpFileTransfer).upload(any(LocalSourceFile.class), anyString());
 
