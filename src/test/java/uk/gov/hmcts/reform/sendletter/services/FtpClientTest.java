@@ -122,7 +122,7 @@ public class FtpClientTest {
 
         // when
         Throwable exception = catchThrowable(() ->
-            client.upload(new FileToSend("goodbye.zip", "goodbye".getBytes()), false, "test-service")
+            client.upload(new FileToSend("goodbye.zip", "goodbye".getBytes()), false, "unconfigured-service")
         );
 
         // then
@@ -133,12 +133,12 @@ public class FtpClientTest {
     public void should_track_failure_when_uploading_file_for_service_configured_with_empty_folder_name() {
         //given
         Map<String, String> serviceFolderMappings = new HashMap<>();
-        serviceFolderMappings.put("test-service", "");
+        serviceFolderMappings.put("unconfigured-service", "");
         given(ftpProps.getServiceFolders()).willReturn(serviceFolderMappings);
 
         // when
         Throwable exception = catchThrowable(() ->
-            client.upload(new FileToSend("goodbye.zip", "goodbye".getBytes()), false, "test-service")
+            client.upload(new FileToSend("goodbye.zip", "goodbye".getBytes()), false, "unconfigured-service")
         );
 
         // then

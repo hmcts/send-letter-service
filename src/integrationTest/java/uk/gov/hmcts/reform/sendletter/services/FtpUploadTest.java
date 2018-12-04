@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class FtpUploadTest {
 
@@ -33,12 +34,17 @@ public class FtpUploadTest {
         }
     }
 
-    @Test(expected = ServiceNotConfiguredException.class)
+    @Test
     public void should_not_upload_file_when_service_is_not_configured() throws Exception {
+        //given
         FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
-        try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
-            client.upload(doc, false, "test-service");
-        }
+        LocalSftpServer server = LocalSftpServer.create();
+        FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
+
+        //when
+        Throwable thrown = catchThrowable(() -> client.upload(doc, false, "unconfigured-service"));
+
+        //then
+        assertThat(thrown).isInstanceOf(ServiceNotConfiguredException.class);
     }
 }
