@@ -38,13 +38,14 @@ public class FtpUploadTest {
     public void should_not_upload_file_when_service_is_not_configured() throws Exception {
         //given
         FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
-        LocalSftpServer server = LocalSftpServer.create();
-        FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
 
-        //when
-        Throwable thrown = catchThrowable(() -> client.upload(doc, false, "unconfigured-service"));
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
 
-        //then
-        assertThat(thrown).isInstanceOf(ServiceNotConfiguredException.class);
+            Throwable thrown = catchThrowable(() -> client.upload(doc, false, "unconfigured-service"));
+
+            //then
+            assertThat(thrown).isInstanceOf(ServiceNotConfiguredException.class);
+        }
     }
 }
