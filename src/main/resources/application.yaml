@@ -61,6 +61,8 @@ ftp:
   service-folders:
     - service: cmc_claim_store
       folder: CMC
+    - service: send_letter_tests
+      folder: BULKPRINT
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
