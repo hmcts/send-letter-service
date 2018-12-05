@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -181,13 +182,22 @@ public class FtpClient {
 
     private String getServiceFolderMapping(String service) {
         logger.info("service to folders mappings loaded {}",
-            configProperties.getServiceFolders() == null ? null
+            configProperties.getServiceFolders() == null ? "null"
                 : configProperties.getServiceFolders().size());
+
+        if (!configProperties.getServiceFolders().isEmpty()) {
+            logger.info("service to folders mappings {}",
+                configProperties.getServiceFolders()
+                    .stream()
+                    .map(x -> x.getService().concat("->").concat(x.getFolder()))
+                    .collect(Collectors.joining(", "))
+            );
+        }
 
         Mapping serviceFolderMapping = configProperties.getServiceFolders()
             .stream()
             .filter(mapping -> service.equals(mapping.getService()))
-            .findAny()
+            .findFirst()
             .orElse(null);
 
         if (serviceFolderMapping == null || StringUtils.isEmpty(serviceFolderMapping.getFolder())) {
