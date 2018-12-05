@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.Mapping;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -89,8 +89,8 @@ public class FtpClientTest {
         given(ftpProps.getSmokeTestTargetFolder()).willReturn("smoke");
         given(ftpProps.getTargetFolder()).willReturn("regular");
 
-        Mapping mapping = new Mapping("cmc", "CMC");
-        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
+        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping("cmc", "CMC");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(serviceFolderMapping));
 
         // when
         client.upload(new FileToSend("hello.zip", "hello".getBytes()), true, "cmc");
@@ -130,8 +130,8 @@ public class FtpClientTest {
     @Test
     public void should_track_failure_when_uploading_file_for_service_configured_with_empty_folder_name() {
         //given
-        Mapping mapping = new Mapping("unconfigured-service", "");
-        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
+        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping("unconfigured-service", "");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(serviceFolderMapping));
 
         // when
         Throwable exception = catchThrowable(() ->
@@ -145,8 +145,8 @@ public class FtpClientTest {
     @Test
     public void should_track_failure_when_trying_to_upload_new_file() throws IOException {
         // given
-        Mapping mapping = new Mapping("cmc", "CMC");
-        given(ftpProps.getServiceFolders()).willReturn(singletonList(mapping));
+        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping("cmc", "CMC");
+        given(ftpProps.getServiceFolders()).willReturn(singletonList(serviceFolderMapping));
 
         willThrow(IOException.class).given(sftpFileTransfer).upload(any(LocalSourceFile.class), anyString());
 

@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import net.schmizz.sshj.SSHClient;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.Mapping;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -51,8 +51,8 @@ public final class FtpHelper {
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
         p.setTargetFolder(LocalSftpServer.LETTERS_FOLDER_NAME);
         p.setReportsFolder(LocalSftpServer.REPORT_FOLDER_NAME);
-        Mapping mapping = new Mapping("bulkprint", "BULKPRINT");
-        p.setServiceFolders(singletonList(mapping));
+        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping("bulkprint", "BULKPRINT");
+        p.setServiceFolders(singletonList(serviceFolderMapping));
         return p;
     }
 }

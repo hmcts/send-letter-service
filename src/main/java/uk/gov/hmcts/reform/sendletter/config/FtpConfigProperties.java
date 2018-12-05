@@ -25,20 +25,20 @@ public class FtpConfigProperties {
 
     private String reportsFolder;
 
-    private List<Mapping> serviceFolders;
+    private List<ServiceFolderMapping> serviceFolders;
 
-    public static class Mapping {
+    public static class ServiceFolderMapping {
 
         private String service;
         private String folder;
 
         // region constructor, getters and setters
-        public Mapping(String service, String folder) {
+        public ServiceFolderMapping(String service, String folder) {
             this.service = service;
             this.folder = folder;
         }
 
-        public Mapping() {
+        public ServiceFolderMapping() {
             // Spring needs it.
         }
 
@@ -132,11 +132,11 @@ public class FtpConfigProperties {
         this.reportsFolder = reportsFolder;
     }
 
-    public List<Mapping> getServiceFolders() {
+    public List<ServiceFolderMapping> getServiceFolders() {
         return serviceFolders;
     }
 
-    public void setServiceFolders(List<Mapping> serviceFolders) {
+    public void setServiceFolders(List<ServiceFolderMapping> serviceFolders) {
         this.serviceFolders = serviceFolders;
     }
 }

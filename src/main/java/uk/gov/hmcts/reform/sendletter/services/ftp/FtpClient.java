@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.Mapping;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -185,8 +185,8 @@ public class FtpClient {
             configProperties.getServiceFolders() == null ? "null"
                 : configProperties.getServiceFolders().size());
 
-        if (!configProperties.getServiceFolders().isEmpty()) {
-            logger.info("service to folders mappings {}",
+        if (configProperties.getServiceFolders() != null) {
+            logger.info("serviceFoldersMappings {}",
                 configProperties.getServiceFolders()
                     .stream()
                     .map(x -> x.getService().concat("->").concat(x.getFolder()))
@@ -194,7 +194,7 @@ public class FtpClient {
             );
         }
 
-        Mapping serviceFolderMapping = configProperties.getServiceFolders()
+        ServiceFolderMapping serviceFolderMapping = configProperties.getServiceFolders()
             .stream()
             .filter(mapping -> service.equals(mapping.getService()))
             .findFirst()
