@@ -185,15 +185,6 @@ public class FtpClient {
             configProperties.getServiceFolders() == null ? "null"
                 : configProperties.getServiceFolders().size());
 
-        if (configProperties.getServiceFolders() != null) {
-            logger.info("serviceFoldersMappings {}",
-                configProperties.getServiceFolders()
-                    .stream()
-                    .map(x -> x.getService().concat("->").concat(x.getFolder()))
-                    .collect(Collectors.joining(", "))
-            );
-        }
-
         ServiceFolderMapping serviceFolderMapping = configProperties.getServiceFolders()
             .stream()
             .filter(mapping -> service.equals(mapping.getService()))
