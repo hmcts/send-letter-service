@@ -180,19 +180,15 @@ public class FtpClient {
     }
 
     private String getServiceFolderMapping(String service) {
-        logger.debug("service to folders mappings loaded {}", configProperties.getServiceFolders().size());
+        logger.info("service to folders mappings loaded {}",
+            configProperties.getServiceFolders() == null ? null
+                : configProperties.getServiceFolders().size());
 
         Mapping serviceFolderMapping = configProperties.getServiceFolders()
             .stream()
             .filter(mapping -> service.equals(mapping.getService()))
             .findAny()
             .orElse(null);
-
-        logger.debug("serviceFolder mappings for {} - {} {}",
-            service,
-            serviceFolderMapping.getService(),
-            serviceFolderMapping.getFolder()
-        );
 
         if (serviceFolderMapping == null || StringUtils.isEmpty(serviceFolderMapping.getFolder())) {
             throw new ServiceNotConfiguredException(
