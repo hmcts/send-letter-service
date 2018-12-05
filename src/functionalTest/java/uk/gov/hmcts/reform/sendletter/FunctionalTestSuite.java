@@ -31,7 +31,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RunWith(SpringRunner.class)
-@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 @TestPropertySource("classpath:application.properties")
 public abstract class FunctionalTestSuite {
 
@@ -107,7 +106,7 @@ public abstract class FunctionalTestSuite {
             .given()
             .relaxedHTTPSValidation()
             .header("ServiceAuthorization", "Bearer " + jwt)
-            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(CONTENT_TYPE, getContentType())
             .baseUri(sendLetterServiceUrl)
             .body(jsonBody)
             .when()
@@ -191,4 +190,6 @@ public abstract class FunctionalTestSuite {
             Pattern.quote(letterId)
         );
     }
+
+    abstract String getContentType();
 }

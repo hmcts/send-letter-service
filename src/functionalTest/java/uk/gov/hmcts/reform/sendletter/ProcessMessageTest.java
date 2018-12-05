@@ -5,6 +5,7 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Test;
+import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 
 import java.io.IOException;
 import java.util.Date;
@@ -146,6 +147,11 @@ public class ProcessMessageTest extends FunctionalTestSuite {
 
             return new PdfFile(pdfName, pdfContent);
         }
+    }
+
+    @Override
+    String getContentType() {
+        return MediaTypes.LETTER_V1;
     }
 
     private static class PdfFile {
