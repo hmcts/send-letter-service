@@ -9,6 +9,9 @@ import io.restassured.response.Response;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.SFTPClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
@@ -120,11 +123,17 @@ public abstract class FunctionalTestSuite {
     protected String sampleLetterRequestJson(
         String requestBodyFilename,
         String templateFilename
-    ) throws IOException {
+    ) throws IOException, JSONException {
         String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
         String template = Resources.toString(getResource(templateFilename), Charsets.UTF_8);
+        JSONObject object = new JSONObject(requestBody);
+        JSONArray documents = object.getJSONArray("documents");
 
-        return requestBody.replace("{{template}}", template.replace("\"", "\\\""));
+        for (int i = 0; i < documents.length(); i++) {
+            documents.getJSONObject(i).put("template", template);
+        }
+
+        return object.toString();
     }
 
     protected SFTPClient getSftpClient() throws IOException {
