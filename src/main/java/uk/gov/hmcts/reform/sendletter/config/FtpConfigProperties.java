@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
 @ConfigurationProperties(prefix = "ftp")
 public class FtpConfigProperties {
-
-    private static final Logger logger = LoggerFactory.getLogger(FtpConfigProperties.class);
 
     private String hostname;
 
@@ -141,7 +137,6 @@ public class FtpConfigProperties {
     }
 
     public void setServiceFolders(List<ServiceFolderMapping> serviceFolders) {
-        serviceFolders.forEach(x -> logger.info("ServiceToFolderMapping: {}->{}", x.getFolder(), x.getService()));
         this.serviceFolders = serviceFolders;
     }
 }
