@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
-import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -180,18 +179,13 @@ public class FtpClient {
     }
 
     private String getServiceFolderMapping(String service) {
-        ServiceFolderMapping serviceFolderMapping = configProperties.getServiceFolders()
-            .stream()
-            .filter(mapping -> service.equals(mapping.getService()))
-            .findFirst()
-            .orElse(null);
+        String serviceFolder = configProperties.getServiceFolders().getOrDefault(service, null);
 
-        if (serviceFolderMapping == null || StringUtils.isEmpty(serviceFolderMapping.getFolder())) {
+        if (StringUtils.isEmpty(serviceFolder)) {
             throw new ServiceNotConfiguredException(
                 String.format("Service %s is not configured to use bulk-print", service)
             );
         }
-
-        return serviceFolderMapping.getFolder();
+        return serviceFolder;
     }
 }

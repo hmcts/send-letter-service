@@ -51,7 +51,9 @@ public final class FtpHelper {
         p.setFingerprint("SHA1:2Fo8c/96zv32xc8GZWbOGYOlRak=");
         p.setTargetFolder(LocalSftpServer.LETTERS_FOLDER_NAME);
         p.setReportsFolder(LocalSftpServer.REPORT_FOLDER_NAME);
-        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping("bulkprint", "BULKPRINT");
+        ServiceFolderMapping serviceFolderMapping = new ServiceFolderMapping();
+        serviceFolderMapping.setService("bulkprint");
+        serviceFolderMapping.setFolder("BULKPRINT");
         p.setServiceFolders(singletonList(serviceFolderMapping));
         return p;
     }
