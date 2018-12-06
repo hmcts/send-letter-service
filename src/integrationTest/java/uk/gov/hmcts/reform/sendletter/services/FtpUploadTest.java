@@ -45,7 +45,9 @@ public class FtpUploadTest {
             Throwable thrown = catchThrowable(() -> client.upload(doc, false, "unconfigured-service"));
 
             //then
-            assertThat(thrown).isInstanceOf(ServiceNotConfiguredException.class);
+            assertThat(thrown)
+                .isInstanceOf(ServiceNotConfiguredException.class)
+                .hasMessage("Service unconfigured-service is not configured to use bulk-print");
         }
     }
 }

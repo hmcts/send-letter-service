@@ -124,7 +124,9 @@ public class FtpClientTest {
         );
 
         // then
-        assertThat(exception).isInstanceOf(ServiceNotConfiguredException.class);
+        assertThat(exception)
+            .isInstanceOf(ServiceNotConfiguredException.class)
+            .hasMessage("Service unconfigured-service is not configured to use bulk-print");
     }
 
     @Test
@@ -139,7 +141,9 @@ public class FtpClientTest {
         );
 
         // then
-        assertThat(exception).isInstanceOf(ServiceNotConfiguredException.class);
+        assertThat(exception)
+            .isInstanceOf(ServiceNotConfiguredException.class)
+            .hasMessage("Service unconfigured-service is not configured to use bulk-print");
     }
 
     @Test

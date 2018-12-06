@@ -92,7 +92,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ServiceNotConfiguredException.class)
-    protected ResponseEntity<String> handleUnprocessableEntityException(UnauthenticatedException exc) {
+    protected ResponseEntity<String> handleUnprocessableEntityException(ServiceNotConfiguredException exc) {
         log.warn(exc.getMessage(), exc);
         return status(FORBIDDEN).build();
     }
