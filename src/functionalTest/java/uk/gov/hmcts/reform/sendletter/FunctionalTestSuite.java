@@ -110,7 +110,7 @@ public abstract class FunctionalTestSuite {
             .header("ServiceAuthorization", "Bearer " + jwt)
             .header(CONTENT_TYPE, getContentType())
             .baseUri(sendLetterServiceUrl)
-            .body(jsonBody)
+            .body(jsonBody.getBytes())
             .when()
             .post("/letters")
             .then()
