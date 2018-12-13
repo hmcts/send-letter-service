@@ -67,7 +67,7 @@ module "db" {
 }
 
 module "send-letter-service" {
-  source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source              = "git@github.com:hmcts/cnp-module-webapp?ref=test-new-api-version"
   product             = "${var.product}-${var.component}"
   location            = "${var.location_app}"
   env                 = "${var.env}"
