@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -48,6 +49,9 @@ public class UploadLettersTaskTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private ServiceFolderMapping serviceFolderMapping;
+
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
 
@@ -65,7 +69,8 @@ public class UploadLettersTaskTest {
             new Zipper(),
             new ObjectMapper(),
             false,
-            null
+            null,
+            serviceFolderMapping
         );
     }
 

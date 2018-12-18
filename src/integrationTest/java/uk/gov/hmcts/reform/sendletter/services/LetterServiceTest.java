@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.config.SpyOnJpaConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -46,6 +47,9 @@ public class LetterServiceTest {
     @Autowired
     private LetterRepository letterRepository;
 
+    @Autowired
+    private ServiceFolderMapping serviceFolderMapping;
+
     @Before
     public void setUp() {
         service = new LetterService(
@@ -54,7 +58,8 @@ public class LetterServiceTest {
             new Zipper(),
             new ObjectMapper(),
             false,
-            null
+            null,
+            serviceFolderMapping
         );
     }
 

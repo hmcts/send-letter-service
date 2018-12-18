@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
+import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -40,6 +41,9 @@ public class LetterServiceWithEncryptionEnabledTest {
     @Autowired
     private LetterRepository letterRepository;
 
+    @Autowired
+    private ServiceFolderMapping serviceFolderMapping;
+
     @After
     public void tearDown() {
         reset(letterRepository);
@@ -57,7 +61,8 @@ public class LetterServiceWithEncryptionEnabledTest {
             new Zipper(),
             new ObjectMapper(),
             true,
-            encryptionPublicKey
+            encryptionPublicKey,
+            serviceFolderMapping
         );
 
         UUID id = service.send(letterRequest, SERVICE_NAME);
