@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -22,10 +23,13 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -41,7 +45,7 @@ public class LetterServiceWithEncryptionEnabledTest {
     @Autowired
     private LetterRepository letterRepository;
 
-    @Autowired
+    @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
     @After
@@ -51,6 +55,8 @@ public class LetterServiceWithEncryptionEnabledTest {
 
     @Test
     public void generates_and_saves_encrypted_zip_when_encryption_is_enabled() throws Exception {
+        when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of("some_folder"));
+
         LetterRequest letterRequest = SampleData.letterRequest();
 
         PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
