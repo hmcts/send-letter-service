@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -84,15 +85,25 @@ public class UploadLettersTask {
             letter.getFileContent()
         );
 
-        ftp.upload(file, isSmokeTest(letter), letter.getService());
-
-        logger.info(
-            "Uploaded letter id: {}, messageId: {}, file name: {}, additional data: {}",
-            letter.getId(),
-            letter.getMessageId(),
-            file.filename,
-            letter.getAdditionalData()
-        );
+        try {
+            ftp.upload(file, isSmokeTest(letter), letter.getService());
+            logger.info(
+                "Uploaded letter id: {}, messageId: {}, file name: {}, additional data: {}",
+                letter.getId(),
+                letter.getMessageId(),
+                file.filename,
+                letter.getAdditionalData()
+            );
+        } catch (ServiceNotConfiguredException exc) {
+            logger.error(
+                "Service not configured[{}] letter id: {}, messageId: {}, file name: {}, additional data: {}",
+                exc.getMessage(),
+                letter.getId(),
+                letter.getMessageId(),
+                file.filename,
+                letter.getAdditionalData()
+            );
+        }
     }
 
     private void markAsUploaded(Letter letter) {

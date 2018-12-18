@@ -24,11 +24,11 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.time.LocalTime;
 import java.util.UUID;
 import java.util.stream.IntStream;
-import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -158,5 +158,30 @@ public class UploadLettersTaskTest {
         }
         assertThat(repository.findByStatus(LetterStatus.Uploaded).count()).isEqualTo(letterCount);
         verify(insights).trackUploadedLetters(letterCount);
+    }
+
+    @Test
+    public void should_fail_and_continue_for_any_invalid_services() throws Exception {
+        UUID goodId1 = letterService.send(SampleData.letterRequest(), "bulkprint");
+        UUID badId = letterService.send(SampleData.letterRequest(), "invalidserviceName");
+        UUID goodId2 = letterService.send(SampleData.letterRequest(), "bulkprint");
+
+        UploadLettersTask task = new UploadLettersTask(
+            repository,
+            FtpHelper.getSuccessfulClient(LocalSftpServer.port),
+            availabilityChecker,
+            insights
+        );
+
+        // Invoke the upload job.
+        try (LocalSftpServer server = LocalSftpServer.create()) {
+            task.run();
+
+            // file should exist in SFTP site.
+            File[] files = server.lettersFolder.listFiles();
+            assertThat(files.length).isEqualTo(2);
+        }
+
+        verify(insights).trackUploadedLetters(3);
     }
 }
