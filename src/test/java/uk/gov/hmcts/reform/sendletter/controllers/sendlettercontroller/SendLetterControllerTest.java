@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
@@ -51,14 +52,14 @@ public class SendLetterControllerTest {
         UUID letterId = UUID.randomUUID();
 
         given(authService.authenticate("auth-header-value")).willReturn("service-name");
-        given(letterService.send(any(LetterRequest.class), anyString())).willReturn(letterId);
+        given(letterService.save(any(LetterRequest.class), anyString())).willReturn(letterId);
 
         sendLetter(readResource("controller/letter/v1/letter.json"))
             .andExpect(status().isOk())
             .andExpect(content().json("{\"letter_id\":" + letterId + "}"));
 
         verify(authService).authenticate("auth-header-value");
-        verify(letterService).send(any(LetterRequest.class), eq("service-name"));
+        verify(letterService).save(any(LetterRequest.class), eq("service-name"));
         verifyNoMoreInteractions(authService, letterService);
     }
 
@@ -66,7 +67,7 @@ public class SendLetterControllerTest {
     public void should_return_400_client_error_when_invalid_letter_is_sent() throws Exception {
         sendLetter("").andExpect(status().isBadRequest());
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -76,7 +77,7 @@ public class SendLetterControllerTest {
             .andExpect(content()
                 .json("{\"errors\":[{\"field_name\":\"documents\",\"message\":\"size must be between 1 and 10\"}]}"));
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -86,7 +87,7 @@ public class SendLetterControllerTest {
             .andExpect(content()
                 .json("{\"errors\":[{\"field_name\":\"type\",\"message\":\"must not be empty\"}]}"));
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -96,7 +97,7 @@ public class SendLetterControllerTest {
             .andExpect(content()
                 .json("{\"errors\":[{\"field_name\":\"documents[0].template\",\"message\":\"must not be empty\"}]}"));
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -107,7 +108,7 @@ public class SendLetterControllerTest {
             .andExpect(content()
                 .json("{\"errors\":[{\"field_name\":\"documents[0].values\",\"message\":\"must not be empty\"}]}"));
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class SendLetterControllerTest {
             .andExpect(content()
                 .json("{\"errors\":[{\"field_name\":\"documents\",\"message\":\"size must be between 1 and 10\"}]}"));
 
-        verify(letterService, never()).send(any(LetterRequest.class), anyString());
+        verify(letterService, never()).save(any(LetterRequest.class), anyString());
     }
 
     @Test
@@ -128,6 +129,15 @@ public class SendLetterControllerTest {
         MvcResult result = sendLetterWithoutAuthHeader(readResource("controller/letter/v1/letter.json")).andReturn();
 
         assertThat(result.getResponse().getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void should_return_403_if_service_throws_ServiceNotConfiguredException() throws Exception {
+        given(authService.authenticate("auth-header-value")).willReturn("service-name");
+        given(letterService.save(any(), any())).willThrow(new ServiceNotConfiguredException("invalid service"));
+
+        sendLetter(readResource("controller/letter/v1/letter.json"))
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -151,7 +161,7 @@ public class SendLetterControllerTest {
         }
 
         verify(letterService, times(supportedContentTypes.size()))
-            .send(any(LetterRequest.class), anyString());
+            .save(any(LetterRequest.class), anyString());
     }
 
     private ResultActions sendLetter(String json) throws Exception {
