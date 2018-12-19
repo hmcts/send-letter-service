@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.Files;
 import org.junit.Test;
-import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class FtpUploadTest {
 
