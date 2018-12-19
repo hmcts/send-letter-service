@@ -33,21 +33,4 @@ public class FtpUploadTest {
             assertThat(content).isEqualTo("world");
         }
     }
-
-    @Test
-    public void should_not_upload_file_when_service_is_not_configured() throws Exception {
-        //given
-        FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
-
-        try (LocalSftpServer server = LocalSftpServer.create()) {
-            FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
-
-            Throwable thrown = catchThrowable(() -> client.upload(doc, false, "unconfigured-service"));
-
-            //then
-            assertThat(thrown)
-                .isInstanceOf(ServiceNotConfiguredException.class)
-                .hasMessage("Service unconfigured-service is not configured to use bulk-print");
-        }
-    }
 }
