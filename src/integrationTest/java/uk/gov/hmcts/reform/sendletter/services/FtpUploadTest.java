@@ -24,7 +24,7 @@ public class FtpUploadTest {
         FileToSend doc = new FileToSend("hello.zip", "world".getBytes());
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
-            client.upload(doc, false, "bulkprint");
+            client.upload(doc, false, LocalSftpServer.SERVICE_FOLDER);
             File[] files = server.lettersFolder.listFiles();
             assertThat(files.length).isEqualTo(1);
             String content = new String(Files.toByteArray(files[0]));
