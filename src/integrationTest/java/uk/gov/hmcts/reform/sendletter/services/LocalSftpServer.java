@@ -24,6 +24,7 @@ public final class LocalSftpServer implements AutoCloseable {
     // These determine where our pdfs and xerox reports are stored.
     public static final String LETTERS_FOLDER_NAME = "letters";
     public static final String REPORT_FOLDER_NAME = "reports";
+    public static final String SERVICE_FOLDER = "BULKPRINT";
 
     public final File rootFolder;
 
@@ -47,9 +48,11 @@ public final class LocalSftpServer implements AutoCloseable {
         File root = tmp.getRoot();
         File workingDirectory = new File(root, LETTERS_FOLDER_NAME);
         workingDirectory.mkdir();
-        File reportDirectory = new File(root, "reports");
+        File reportDirectory = new File(root, REPORT_FOLDER_NAME);
         reportDirectory.mkdir();
-        return new LocalSftpServer(root, workingDirectory, reportDirectory);
+        File lettersFolder = new File(workingDirectory, SERVICE_FOLDER);
+        lettersFolder.mkdir();
+        return new LocalSftpServer(root, lettersFolder, reportDirectory);
     }
 
     private LocalSftpServer(File root, File lettersFolder, File reportFolder) throws IOException {

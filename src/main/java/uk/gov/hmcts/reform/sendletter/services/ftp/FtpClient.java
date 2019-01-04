@@ -49,7 +49,7 @@ public class FtpClient {
     }
     // endregion
 
-    public void upload(LocalSourceFile file, boolean isSmokeTestFile) {
+    public void upload(LocalSourceFile file, boolean isSmokeTestFile, String serviceFolder) {
         Instant now = Instant.now();
 
         runWith(sftp -> {
@@ -58,7 +58,7 @@ public class FtpClient {
             try {
                 String folder = isSmokeTestFile
                     ? configProperties.getSmokeTestTargetFolder()
-                    : configProperties.getTargetFolder();
+                    : String.join("/", configProperties.getTargetFolder(), serviceFolder);
 
                 String path = String.join("/", folder, file.getName());
                 sftp.getFileTransfer().upload(file, path);
@@ -173,4 +173,5 @@ public class FtpClient {
         return resourceInfo.isRegularFile()
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");
     }
+
 }

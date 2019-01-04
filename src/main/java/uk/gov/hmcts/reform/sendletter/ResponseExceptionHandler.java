@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
-import uk.gov.hmcts.reform.logging.exception.AbstractLoggingException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
-import uk.gov.hmcts.reform.sendletter.exception.InternalServerException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.FieldError;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.ModelValidationError;
@@ -26,6 +25,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -89,15 +89,15 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return status(UNAUTHORIZED).build();
     }
 
+    @ExceptionHandler(ServiceNotConfiguredException.class)
+    protected ResponseEntity<String> handleServiceNotConfiguredException(ServiceNotConfiguredException exc) {
+        log.warn(exc.getMessage(), exc);
+        return status(FORBIDDEN).body("Service not configured");
+    }
+
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Void> handleInternalException(Exception exc) {
-        Throwable exception = exc;
-
-        if (!(exc instanceof AbstractLoggingException)) {
-            exception = new InternalServerException(exc);
-        }
-
-        log.error(exc.getMessage(), exception);
+        log.error(exc.getMessage(), exc);
         return status(INTERNAL_SERVER_ERROR).build();
     }
 }
