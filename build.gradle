@@ -160,6 +160,7 @@ repositories {
 def versions = [
   flywayV: plugins.getPlugin('org.flywaydb.flyway').class.package.implementationVersion,
   reformLogging: '4.0.0',
+  restAssured: '3.3.0',
   shedlock: '1.1.0',
   springfoxSwagger: '2.9.2'
 ]
@@ -219,11 +220,11 @@ dependencies {
   integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.5'
 
   smokeTestCompile sourceSets.main.runtimeClasspath
-  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 
   functionalTestCompile sourceSets.main.runtimeClasspath
-  functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+  functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 }
 
