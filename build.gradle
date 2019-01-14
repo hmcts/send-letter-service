@@ -146,8 +146,6 @@ dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
 }
 
-def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-
 repositories {
   jcenter()
   // until new projects get to jcenter
@@ -162,6 +160,7 @@ def versions = [
   reformLogging: '4.0.0',
   restAssured: '3.3.0',
   shedlock: '1.1.0',
+  springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion,
   springfoxSwagger: '2.9.2'
 ]
 
@@ -175,10 +174,10 @@ dependencyManagement {
 }
 
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: springBootVersion
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flywayV
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
@@ -201,13 +200,13 @@ dependencies {
   compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.13'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
   compile group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.4.0'
   compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
   compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.60'
   compile group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: '1.60'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'org.apache.sshd', name: 'sshd-core', version: '2.1.0'
   testCompile group: 'org.apache.sshd', name: 'sshd-scp', version: '2.1.0'
   testCompile group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.1.0'
@@ -221,11 +220,11 @@ dependencies {
 
   smokeTestCompile sourceSets.main.runtimeClasspath
   smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
-  smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
   functionalTestCompile sourceSets.main.runtimeClasspath
   functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
-  functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 }
 
 mainClassName = 'uk.gov.hmcts.reform.sendletter.Application'
