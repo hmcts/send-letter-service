@@ -158,6 +158,7 @@ repositories {
 }
 
 def versions = [
+  flywayV: plugins.getPlugin('org.flywaydb.flyway').class.package.implementationVersion,
   reformLogging: '4.0.0',
   shedlock: '1.1.0',
   springfoxSwagger: '2.9.2'
@@ -178,7 +179,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: springBootVersion
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flywayV
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
   compile group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: versions.shedlock
