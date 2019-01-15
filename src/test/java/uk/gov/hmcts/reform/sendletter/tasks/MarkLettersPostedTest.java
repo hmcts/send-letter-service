@@ -115,6 +115,7 @@ public class MarkLettersPostedTest {
         // when
         task.run();
 
+        // then
         verify(ftpClient, never()).downloadReports();
     }
 }
