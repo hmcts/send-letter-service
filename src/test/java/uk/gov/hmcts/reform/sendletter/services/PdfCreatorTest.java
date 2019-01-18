@@ -78,6 +78,12 @@ public class PdfCreatorTest {
         assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
         assertThat(actualPdfPage2).hasSameContentAs(expectedPdfPage2);
 
+        actualPdfPage1.close();
+        actualPdfPage2.close();
+        expectedPdfPage1.close();
+        expectedPdfPage2.close();
+
+        // and
         verify(duplexPreparator, times(2)).prepare(any(byte[].class));
     }
 
