@@ -69,19 +69,16 @@ public class PdfCreatorTest {
         byte[] pdfContent = pdfCreator.createFromTemplates(docs);
 
         // then
-        InputStream actualPdfPage1 = getPdfPageContents(pdfContent, 0);
-        InputStream actualPdfPage2 = getPdfPageContents(pdfContent, 1);
+        try (
+            InputStream actualPdfPage1 = getPdfPageContents(pdfContent, 0);
+            InputStream actualPdfPage2 = getPdfPageContents(pdfContent, 1);
 
-        InputStream expectedPdfPage1 = getPdfPageContents(expectedMergedPdf, 0);
-        InputStream expectedPdfPage2 = getPdfPageContents(expectedMergedPdf, 1);
-
-        assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
-        assertThat(actualPdfPage2).hasSameContentAs(expectedPdfPage2);
-
-        actualPdfPage1.close();
-        actualPdfPage2.close();
-        expectedPdfPage1.close();
-        expectedPdfPage2.close();
+            InputStream expectedPdfPage1 = getPdfPageContents(expectedMergedPdf, 0);
+            InputStream expectedPdfPage2 = getPdfPageContents(expectedMergedPdf, 1)
+        ) {
+            assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
+            assertThat(actualPdfPage2).hasSameContentAs(expectedPdfPage2);
+        }
 
         // and
         verify(duplexPreparator, times(2)).prepare(any(byte[].class));
