@@ -104,6 +104,10 @@ public class FtpConfigProperties {
     public void setPrivateKey(String privateKey) {
         String wrapper = "-----";
 
+        // this is done so private key is loaded to library without throwing an exception
+        // causing application to crash.
+        // origin: platform specific. noticed only when building aks dockerised platform
+        // by definition private key must be wrapped with newlines
         this.privateKey = privateKey == null ? privateKey : privateKey
             .replace(wrapper + " ", wrapper + "\n")
             .replace(" " + wrapper, "\n" + wrapper);
