@@ -1,0 +1,37 @@
+java:
+  applicationPort: "8485"
+  environment:
+    # logging
+    APPINSIGHTS_INSTRUMENTATIONKEY: "00000000-0000-0000-0000-000000000000"
+    # db - do not modify
+    LETTER_TRACKING_DB_NAME: hmcts
+    LETTER_TRACKING_DB_HOST: ${SERVICE_NAME}-postgresql
+    LETTER_TRACKING_DB_USER_NAME: hmcts
+    LETTER_TRACKING_DB_PASSWORD: hmcts
+    # auth
+    S2S_NAME: send_letter_tests
+    # ftp
+    FTP_HOSTNAME: "cmseft.services.xerox.com"
+    FTP_PORT: "22"
+    FTP_FINGERPRINT: "SHA256:gYzreAtWAraVRFsOrcP9SPJq9atn7QxXh9pAauKud2U"
+    FTP_TARGET_FOLDER: "TO_XEROX"
+    FTP_USER: ${TEST_FTP_USER}
+    FTP_PRIVATE_KEY: "${TEST_FTP_PRIVATE_KEY}"
+    FTP_PUBLIC_KEY: "${TEST_FTP_PUBLIC_KEY}"
+    FTP_REPORTS_FOLDER: "FROM_XEROX"
+    # encryption
+    ENCRYPTION_ENABLED: "false"
+    ENCRYPTION_PUBLIC_KEY: ""
+    # schedules
+    SCHEDULING_ENABLED: "true"
+
+  # Don't modify below here
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+
+postgresql:
+  postgresqlUsername: hmcts
+  postgresqlPassword: hmcts
+  postgresqlDatabase: hmcts
+  persistence:
+    enabled: false

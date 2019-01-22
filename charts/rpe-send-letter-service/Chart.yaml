@@ -1,0 +1,6 @@
+name: rpe-send-letter-service
+home: https://github.com/hmcts/send-letter-service
+version: 0.0.2
+description: Send Letter Service
+maintainers:
+  - name: HMCTS Bulk Scan & Print team
