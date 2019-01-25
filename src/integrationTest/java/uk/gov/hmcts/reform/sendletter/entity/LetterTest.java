@@ -59,10 +59,10 @@ public class LetterTest {
 
         // when
         repository.save(letter);
-        Letter inDB = repository.findById(letter.getId()).get();
+        Letter inDb = repository.findById(letter.getId()).get();
 
         // then
-        assertThat(inDB.getMessageId()).isEqualTo("messageId_aka_checksum");
-        assertThat(inDB.getChecksum()).isEqualTo("messageId_aka_checksum");
+        assertThat(inDb.getMessageId()).isEqualTo("messageId_aka_checksum");
+        assertThat(inDb.getChecksum()).isEqualTo("messageId_aka_checksum");
     }
 }
