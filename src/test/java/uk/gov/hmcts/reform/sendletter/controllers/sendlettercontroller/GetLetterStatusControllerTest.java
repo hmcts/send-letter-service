@@ -58,10 +58,6 @@ public class GetLetterStatusControllerTest {
         given(authService.authenticate("auth-header-value")).willReturn("service-name");
         given(service.getStatus(letterStatus.id, "service-name")).willReturn(letterStatus);
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
-        String format = DateTimeFormatter.ISO_INSTANT.format(timestamp.toInstant());
-
         getLetter(letterStatus.id)
             .andExpect(status().isOk())
             .andExpect(content().json(
