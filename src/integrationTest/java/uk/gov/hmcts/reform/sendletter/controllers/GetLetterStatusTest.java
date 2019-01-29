@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +18,8 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 
+import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
@@ -36,9 +37,6 @@ public class GetLetterStatusTest {
 
     @Autowired
     private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private LetterRepository letterRepository;
@@ -65,7 +63,7 @@ public class GetLetterStatusTest {
             .andExpect(jsonPath("$.id").value(letter.getId().toString()))
             .andExpect(jsonPath("$.status").value(letter.getStatus().name()))
             .andExpect(jsonPath("$.checksum").value(letter.getChecksum()))
-            .andExpect(jsonPath("$.created_at").value(letter.getStatus().name()))
+            .andExpect(jsonPath("$.created_at").value(toIso(letter.getCreatedAt())))
             .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
             .andExpect(jsonPath("$.printed_at").isEmpty())
             .andExpect(jsonPath("$.has_failed").value(false));
@@ -77,10 +75,13 @@ public class GetLetterStatusTest {
     }
 
     private ResultActions getLetterStatus(UUID letterId) throws Exception {
-        return mvc
-            .perform(
-                get("/letters/" + letterId.toString())
-                    .header("ServiceAuthorization", "auth-header-value")
-            );
+        return mvc.perform(
+            get("/letters/" + letterId.toString())
+                .header("ServiceAuthorization", "auth-header-value")
+        );
+    }
+
+    private String toIso(Timestamp timestamp) {
+        return DateTimeFormatter.ISO_INSTANT.format(timestamp.toInstant());
     }
 }

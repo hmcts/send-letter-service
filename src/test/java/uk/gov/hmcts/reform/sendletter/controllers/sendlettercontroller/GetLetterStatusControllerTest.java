@@ -16,8 +16,12 @@ import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,13 +58,17 @@ public class GetLetterStatusControllerTest {
         given(authService.authenticate("auth-header-value")).willReturn("service-name");
         given(service.getStatus(letterStatus.id, "service-name")).willReturn(letterStatus);
 
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
+        String format = DateTimeFormatter.ISO_INSTANT.format(timestamp.toInstant());
+
         getLetter(letterStatus.id)
             .andExpect(status().isOk())
             .andExpect(content().json(
                 "{"
                     + "\"id\":\"" + letterStatus.id.toString() + "\","
                     + "\"message_id\":\"" + letterStatus.messageId + "\","
-                    + "\"checksum\":\"" + letterStatus.messageId + "\","
+                    + "\"checksum\":\"" + letterStatus.checksum + "\","
                     + "\"created_at\":\"2000-02-12T01:02:03.123Z\","
                     + "\"sent_to_print_at\":\"2000-02-12T01:02:03.123Z\","
                     + "\"printed_at\":\"2000-02-12T01:02:03.123Z\","
