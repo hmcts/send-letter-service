@@ -16,7 +16,7 @@ public class LetterStatus {
     @JsonProperty("message_id")
     public final String messageId;
 
-    @JsonProperty("message_id")
+    @JsonProperty("checksum")
     public final String checksum;
 
     @JsonProperty("created_at")
