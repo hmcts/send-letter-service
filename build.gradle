@@ -159,7 +159,7 @@ def versions = [
   flywayV: plugins.getPlugin('org.flywaydb.flyway').class.package.implementationVersion,
   reformLogging: '4.0.1',
   restAssured: '3.3.0',
-  shedlock: '2.2.1',
+  shedlock: '2.3.0',
   springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion,
   springfoxSwagger: '2.9.2'
 ]
