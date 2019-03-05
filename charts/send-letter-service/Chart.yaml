@@ -1,4 +1,4 @@
-name: send-letter
+name: send-letter-service
 home: https://github.com/hmcts/send-letter-service
 version: 0.0.1
 description: HMCTS Send letter service
