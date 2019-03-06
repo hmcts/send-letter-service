@@ -1,5 +1,7 @@
 java:
   applicationPort: 8485
+  readinessPath: '/health'
+  livenessPath: '/health'
   environment:
     POSTGRES_DB: letter_tracking
     POSTGRES_USER: letterservice
