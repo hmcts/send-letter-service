@@ -19,6 +19,8 @@ import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,6 +49,8 @@ public class DeleteOldFilesTaskTest {
 
         // then
         verify(ftp).deleteFile("old.zip");
+        verify(ftp, never()).deleteFile("new.zip");
+        verify(ftp, never()).deleteFile("almostOld.zip");
     }
 
     @Test
