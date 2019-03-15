@@ -24,7 +24,6 @@ public class DeleteOldFilesTaskTest {
     @Test
     public void should_delete_files() throws Exception {
         try (LocalSftpServer server = LocalSftpServer.create()) {
-
             // given
             given(serviceFolderMapping.getFolders())
                 .willReturn(ImmutableSet.of(LocalSftpServer.SERVICE_FOLDER));
@@ -37,10 +36,10 @@ public class DeleteOldFilesTaskTest {
                 LocalSftpServer.SERVICE_FOLDER
             );
 
-            DeleteOldFilesTask task = new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO);
+            assertThat(ftp.listLetters(LocalSftpServer.SERVICE_FOLDER)).hasSize(1); // sanity check
 
             // when
-            task.run();
+            new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
 
             //then
             assertThat(ftp.listLetters(LocalSftpServer.SERVICE_FOLDER)).isEmpty();
