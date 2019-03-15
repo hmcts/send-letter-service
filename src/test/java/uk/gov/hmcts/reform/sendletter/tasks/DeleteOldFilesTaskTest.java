@@ -20,7 +20,6 @@ import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,8 +61,8 @@ public class DeleteOldFilesTaskTest {
                 "B"
             ));
 
-        given(ftp.listLetters("A")).willReturn(ImmutableList.of(new FileInfo("a.zip", aSecondAgo())));
-        given(ftp.listLetters("B")).willReturn(ImmutableList.of(new FileInfo("b.zip", aSecondAgo())));
+        given(ftp.listLetters("A")).willReturn(ImmutableList.of(new FileInfo("a.zip", secondAgo())));
+        given(ftp.listLetters("B")).willReturn(ImmutableList.of(new FileInfo("b.zip", secondAgo())));
 
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
@@ -80,10 +79,10 @@ public class DeleteOldFilesTaskTest {
             .willReturn(ImmutableSet.of("SERVICE"));
 
         List<FileInfo> files = asList(
-            new FileInfo("error1.zip", aSecondAgo()),
-            new FileInfo("error2.zip", aSecondAgo()),
-            new FileInfo("ok1.zip", aSecondAgo()),
-            new FileInfo("ok2.zip", aSecondAgo())
+            new FileInfo("error1.zip", secondAgo()),
+            new FileInfo("error2.zip", secondAgo()),
+            new FileInfo("ok1.zip", secondAgo()),
+            new FileInfo("ok2.zip", secondAgo())
         );
 
         given(ftp.listLetters("SERVICE")).willReturn(files);
@@ -98,7 +97,7 @@ public class DeleteOldFilesTaskTest {
         files.forEach(file -> verify(ftp).deleteFile(file.path));
     }
 
-    private Instant aSecondAgo() {
+    private Instant secondAgo() {
         return now().minusSeconds(1);
     }
 }

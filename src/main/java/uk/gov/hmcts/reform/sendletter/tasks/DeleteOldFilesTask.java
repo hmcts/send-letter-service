@@ -14,7 +14,7 @@ import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Deletes old files from SFTP
+ * Deletes old files from SFTP.
  */
 public class DeleteOldFilesTask {
 
