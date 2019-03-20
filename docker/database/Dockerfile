@@ -1,7 +1,7 @@
-FROM postgres:9.6   
+FROM postgres:9-alpine
 
-COPY init-db.sh /docker-entrypoint-initdb.d    
+COPY init-db.sh /docker-entrypoint-initdb.d
 
-HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD psql -c 'select 1' -d letter_tracking -U letterservice   
+HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD psql -c 'select 1' -d letter_tracking -U letterservice
 
 EXPOSE 5432
