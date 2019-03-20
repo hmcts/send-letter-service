@@ -33,7 +33,7 @@ $ docker run -d -i -t --name bsp-send-letter-database --hostname send-letter-dat
 Important note: `--hostname send-letter-database` will be used to link it to service `run` command and also used with default value provided in application config.
 There is no need to provide full `--env-file` for the DB container. Only `LETTER_TRACKING_DB_PASSWORD=password` is required
 
-Launch the service from image hosted in Azure:
+Launch the service from image hosted in Azure Container Registry:
 
 ```bash
 $ docker run -t -i --name bsp-send-letter-service -p 8485:8485 --link bsp-send-letter-database --env-file ./docker/env.list hmcts/send-letter-service
