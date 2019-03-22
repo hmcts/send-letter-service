@@ -115,7 +115,7 @@ module "send-letter-service" {
 
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
-  source              = "git@github.com:hmcts/moj-module-key-vault?ref=REVERT-TO-COMMON-TAGS-COMMIT"
+  source              = "git@github.com:hmcts/moj-module-key-vault?ref=master"
   name                = "${local.vaultName}"
   product             = "${var.product}"
   env                 = "${var.env}"
