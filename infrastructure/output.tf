@@ -2,7 +2,7 @@ output "vaultUri" {
   value = "${module.send-letter-key-vault.key_vault_uri}"
 }
 
-output "vault_name" {
+output "vaultName" {
   value = "${module.send-letter-key-vault.key_vault_name}"
 }
 
@@ -10,13 +10,6 @@ output "microserviceName" {
   value = "${var.component}"
 }
 
-output "resource_group_name" {
-  value = "${azurerm_resource_group.rg.name}"
-}
-
-output "key_vault_id" {
-  value = "${module.send-letter-key-vault.key_vault_id}"
-}
 #region Data for tests
 
 output "test_s2s_url" {
