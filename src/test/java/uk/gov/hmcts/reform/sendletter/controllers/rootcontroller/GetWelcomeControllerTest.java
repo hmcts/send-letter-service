@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class GetWelcomeControllerTest {
+class GetWelcomeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -25,7 +25,7 @@ public class GetWelcomeControllerTest {
     private AuthService authService; // NOPMD we only need context to load
 
     @Test
-    public void should_welcome_upon_root_request_with_200_response_code() throws Exception {
+    void should_welcome_upon_root_request_with_200_response_code() throws Exception {
         mockMvc.perform(get("/"))
             .andExpect(status().isOk())
             .andExpect(content().string("Welcome to Send Letter Service"));

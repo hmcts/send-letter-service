@@ -13,10 +13,10 @@ import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DbMigrationFilesTest {
+class DbMigrationFilesTest {
 
     @Test
-    public void should_have_unique_migrations() throws IOException {
+    void should_have_unique_migrations() throws IOException {
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
         for (Location location : Flyway.configure().getLocations()) {

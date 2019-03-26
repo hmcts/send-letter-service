@@ -12,10 +12,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LetterChecksumGeneratorTest {
+class LetterChecksumGeneratorTest {
 
     @Test
-    public void should_return_same_md5_checksum_hex_for_same_letter_objects() {
+    void should_return_same_md5_checksum_hex_for_same_letter_objects() {
 
         Supplier<LetterRequest> letterSupplier =
             () -> new LetterRequest(
@@ -43,7 +43,7 @@ public class LetterChecksumGeneratorTest {
     }
 
     @Test
-    public void should_return_same_md5_checksum_hex_for_same_letter_with_pdfs_objects() {
+    void should_return_same_md5_checksum_hex_for_same_letter_with_pdfs_objects() {
 
         Supplier<LetterWithPdfsRequest> letterSupplier =
             () -> new LetterWithPdfsRequest(
@@ -66,7 +66,7 @@ public class LetterChecksumGeneratorTest {
     }
 
     @Test
-    public void should_return_different_md5_checksum_hex_for_different_letter_objects() {
+    void should_return_different_md5_checksum_hex_for_different_letter_objects() {
 
         LetterRequest letter1 = new LetterRequest(
             singletonList(new Document(
@@ -103,7 +103,7 @@ public class LetterChecksumGeneratorTest {
     }
 
     @Test
-    public void should_return_different_md5_checksum_hex_for_different_letter_with_pdf_objects() {
+    void should_return_different_md5_checksum_hex_for_different_letter_with_pdf_objects() {
 
         LetterWithPdfsRequest letter1 = new LetterWithPdfsRequest(
             asList(

@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
 @ExtendWith(MockitoExtension.class)
-public class UploadLettersTaskTest {
+class UploadLettersTaskTest {
 
     @Mock
     private LetterRepository repo;
@@ -47,18 +47,18 @@ public class UploadLettersTaskTest {
     private UploadLettersTask task;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
         this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker, serviceFolderMapping, insights);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         reset(availabilityChecker, repo);
     }
 
     @Test
-    public void should_handle_smoke_test_letters() {
+    void should_handle_smoke_test_letters() {
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
         givenDbContains(letterOfType(SMOKE_TEST_LETTER_TYPE));
         task.run();
@@ -70,7 +70,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_not_start_process_if_ftp_is_not_available() {
+    void should_not_start_process_if_ftp_is_not_available() {
         reset(availabilityChecker);
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(false);
 
@@ -80,7 +80,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_skip_letter_if_folder_for_its_service_is_not_configured() {
+    void should_skip_letter_if_folder_for_its_service_is_not_configured() {
         givenDbContains(
             letterForService("service_A"),
             letterForService("service_B"),

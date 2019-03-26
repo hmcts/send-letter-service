@@ -23,13 +23,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteOldFilesTaskTest {
+class DeleteOldFilesTaskTest {
 
     @Mock private FtpClient ftp;
     @Mock private ServiceFolderMapping serviceFolderMapping;
 
     @Test
-    public void should_remove_only_files_that_are_old_enough() throws Exception {
+    void should_remove_only_files_that_are_old_enough() throws Exception {
         // given
         Duration ttl = Duration.ofMinutes(1);
 
@@ -53,7 +53,7 @@ public class DeleteOldFilesTaskTest {
     }
 
     @Test
-    public void should_delete_files_for_all_known_services() throws Exception {
+    void should_delete_files_for_all_known_services() throws Exception {
         // given
         given(serviceFolderMapping.getFolders())
             .willReturn(ImmutableSet.of(
@@ -73,7 +73,7 @@ public class DeleteOldFilesTaskTest {
     }
 
     @Test
-    public void should_try_to_delete_next_file_if_previous_failed() throws Exception {
+    void should_try_to_delete_next_file_if_previous_failed() throws Exception {
         // given
         given(serviceFolderMapping.getFolders())
             .willReturn(ImmutableSet.of("SERVICE"));

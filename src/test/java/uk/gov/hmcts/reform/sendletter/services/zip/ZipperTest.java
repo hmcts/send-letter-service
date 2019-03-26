@@ -10,10 +10,10 @@ import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ZipperTest {
+class ZipperTest {
 
     @Test
-    public void should_zip_file() throws Exception {
+    void should_zip_file() throws Exception {
         byte[] fileContent = toByteArray(getResource("hello.pdf"));
         byte[] expectedZipFileContent = toByteArray(getResource("hello.zip"));
 

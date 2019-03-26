@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class PdfCreatorTest {
+class PdfCreatorTest {
 
     @Mock private DuplexPreparator duplexPreparator;
     @Mock private IHtmlToPdfConverter converter;
@@ -37,19 +37,19 @@ public class PdfCreatorTest {
     private PdfCreator pdfCreator;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         pdfCreator = new PdfCreator(this.duplexPreparator, this.converter);
     }
 
     @Test
-    public void should_require_documents_to_not_be_null() {
+    void should_require_documents_to_not_be_null() {
         assertThatThrownBy(() -> pdfCreator.createFromTemplates(null))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("documents");
     }
 
     @Test
-    public void should_return_a_merged_pdf_when_multiple_documents_are_passed() throws Exception {
+    void should_return_a_merged_pdf_when_multiple_documents_are_passed() throws Exception {
         byte[] test1Pdf = toByteArray(getResource("test1.pdf"));
         byte[] test2Pdf = toByteArray(getResource("test2.pdf"));
         byte[] expectedMergedPdf = toByteArray(getResource("merged.pdf"));

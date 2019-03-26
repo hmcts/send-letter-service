@@ -28,7 +28,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class MarkLettersPostedTest {
+class MarkLettersPostedTest {
 
     @Mock LetterRepository repo;
     @Mock FtpClient ftpClient;
@@ -39,12 +39,12 @@ public class MarkLettersPostedTest {
     private MarkLettersPostedTask task;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         task = new MarkLettersPostedTask(repo, ftpClient, availabilityChecker, parser, insights);
     }
 
     @Test
-    public void continues_processing_if_letter_not_found() {
+    void continues_processing_if_letter_not_found() {
         String filePath = "a.csv";
         UUID known = UUID.randomUUID();
         UUID unknown = UUID.randomUUID();
@@ -67,7 +67,7 @@ public class MarkLettersPostedTest {
     }
 
     @Test
-    public void should_delete_report_if_all_records_were_successfully_parsed() {
+    void should_delete_report_if_all_records_were_successfully_parsed() {
         final String reportName = "report.csv";
         final boolean allParsed = true;
 
@@ -88,7 +88,7 @@ public class MarkLettersPostedTest {
     }
 
     @Test
-    public void should_not_delete_report_if_some_records_were_not_successfully_parsed() {
+    void should_not_delete_report_if_some_records_were_not_successfully_parsed() {
         final String reportName = "report.csv";
         final boolean allParsed = false;
 
@@ -109,7 +109,7 @@ public class MarkLettersPostedTest {
     }
 
     @Test
-    public void should_not_attempt_to_download_reports_during_ftp_downtime() {
+    void should_not_attempt_to_download_reports_during_ftp_downtime() {
         given(availabilityChecker.isFtpAvailable(any())).willReturn(false);
 
         // when

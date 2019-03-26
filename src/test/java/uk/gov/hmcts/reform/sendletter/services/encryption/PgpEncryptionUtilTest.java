@@ -11,10 +11,10 @@ import java.io.InputStream;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PgpEncryptionUtilTest {
+class PgpEncryptionUtilTest {
 
     @Test
-    public void should_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed()
+    void should_encrypt_and_create_pgp_encrypted_zip_file_when_valid_public_key_is_passed()
         throws Exception {
         //Given
         String inputFileName = "unencrypted.zip";
@@ -44,7 +44,7 @@ public class PgpEncryptionUtilTest {
     }
 
     @Test
-    public void should_throw_custom_exception_when_invalid_pubic_key_is_passed() {
+    void should_throw_custom_exception_when_invalid_pubic_key_is_passed() {
         Throwable exc = Assertions.catchThrowable(
             () -> PgpEncryptionUtil.loadPublicKey("this is not public key".getBytes())
         );

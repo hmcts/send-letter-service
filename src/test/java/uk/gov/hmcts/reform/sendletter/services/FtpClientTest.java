@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class FtpClientTest {
+class FtpClientTest {
 
     private FtpClient client;
 
@@ -45,14 +45,14 @@ public class FtpClientTest {
     @Mock private AppInsights insights;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         given(sshClient.newSFTPClient()).willReturn(sftpClient);
 
         client = new FtpClient(() -> sshClient, ftpProps, insights);
     }
 
     @Test
-    public void download_should_not_include_non_csv_files() throws Exception {
+    void download_should_not_include_non_csv_files() throws Exception {
         // given
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         RemoteResourceInfo nonCsvFile = mock(RemoteResourceInfo.class);
@@ -70,7 +70,7 @@ public class FtpClientTest {
     }
 
     @Test
-    public void should_track_failure_when_trying_to_download_report() throws IOException {
+    void should_track_failure_when_trying_to_download_report() throws IOException {
         // given
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         willThrow(IOException.class).given(sftpClient).ls(eq(null));
@@ -83,7 +83,7 @@ public class FtpClientTest {
     }
 
     @Test
-    public void should_upload_file_to_correct_folder_based_on_whether_its_a_smoke_test_or_not() throws Exception {
+    void should_upload_file_to_correct_folder_based_on_whether_its_a_smoke_test_or_not() throws Exception {
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         given(ftpProps.getSmokeTestTargetFolder()).willReturn("smoke");
         given(ftpProps.getTargetFolder()).willReturn("regular");
@@ -110,7 +110,7 @@ public class FtpClientTest {
     }
 
     @Test
-    public void should_track_failure_when_trying_to_upload_new_file() throws IOException {
+    void should_track_failure_when_trying_to_upload_new_file() throws IOException {
         // given
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         willThrow(IOException.class).given(sftpFileTransfer).upload(any(LocalSourceFile.class), anyString());
@@ -125,7 +125,7 @@ public class FtpClientTest {
     }
 
     @Test
-    public void should_delete_report_from_ftp() throws IOException {
+    void should_delete_report_from_ftp() throws IOException {
         // given
         doNothing().when(sftpClient).rm(anyString());
 
@@ -137,7 +137,7 @@ public class FtpClientTest {
     }
 
     @Test
-    public void should_track_failure_when_trying_to_delete_report_from_ftp() throws IOException {
+    void should_track_failure_when_trying_to_delete_report_from_ftp() throws IOException {
         // given
         willThrow(IOException.class).given(sftpClient).rm(anyString());
 
