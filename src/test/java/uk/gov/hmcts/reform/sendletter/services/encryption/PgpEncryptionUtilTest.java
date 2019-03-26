@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.sendletter.services.encryption;
 import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
 import org.bouncycastle.openpgp.PGPPublicKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;

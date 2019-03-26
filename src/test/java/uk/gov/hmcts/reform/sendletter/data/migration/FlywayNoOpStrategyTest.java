@@ -4,11 +4,11 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationInfoService;
 import org.flywaydb.core.api.MigrationState;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import uk.gov.hmcts.reform.sendletter.exception.PendingMigrationScriptException;
 
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.reset;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FlywayNoOpStrategyTest {
 
     @Mock
@@ -31,7 +31,7 @@ public class FlywayNoOpStrategyTest {
 
     private final FlywayMigrationStrategy strategy = new FlywayNoOpStrategy();
 
-    @After
+    @AfterEach
     public void tearUp() {
         reset(flyway, infoService, info);
     }

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
 import org.assertj.core.util.Lists;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UploadLettersTaskTest {
 
     @Mock
@@ -46,21 +46,20 @@ public class UploadLettersTaskTest {
 
     private UploadLettersTask task;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
         this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker, serviceFolderMapping, insights);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         reset(availabilityChecker, repo);
     }
 
     @Test
     public void should_handle_smoke_test_letters() {
-
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
         givenDbContains(letterOfType(SMOKE_TEST_LETTER_TYPE));
         task.run();
         verify(ftpClient).upload(any(), eq(true), any());
@@ -82,8 +81,6 @@ public class UploadLettersTaskTest {
 
     @Test
     public void should_skip_letter_if_folder_for_its_service_is_not_configured() {
-        reset(serviceFolderMapping);
-
         givenDbContains(
             letterForService("service_A"),
             letterForService("service_B"),

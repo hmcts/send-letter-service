@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.exception.ReportParsingException;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;

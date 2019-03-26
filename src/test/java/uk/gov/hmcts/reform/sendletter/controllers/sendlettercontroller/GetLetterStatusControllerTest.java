@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
@@ -31,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest
 public class GetLetterStatusControllerTest {
 
@@ -42,7 +39,7 @@ public class GetLetterStatusControllerTest {
 
     private LetterStatus letterStatus;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
         letterStatus = new LetterStatus(UUID.randomUUID(), "Created", "some-message-id", now, now, now, false);

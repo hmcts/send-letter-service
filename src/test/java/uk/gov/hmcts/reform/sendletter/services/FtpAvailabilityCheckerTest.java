@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FtpAvailabilityCheckerTest {
 
@@ -56,14 +57,14 @@ public class FtpAvailabilityCheckerTest {
         assertThatFtpCheck("01:00", "01:00", "01:00:29").isFalse();
     }
 
-    @Test(expected = DateTimeParseException.class)
+    @Test
     public void throws_exception_if_from_hour_is_invalid() {
-        new FtpAvailabilityChecker("1:00", "02:00");
+        assertThrows(DateTimeParseException.class, () -> new FtpAvailabilityChecker("1:00", "02:00"));
     }
 
-    @Test(expected = DateTimeParseException.class)
+    @Test
     public void throws_exception_if_to_hour_is_invalid() {
-        new FtpAvailabilityChecker("01:00", "2:00");
+        assertThrows(DateTimeParseException.class, () -> new FtpAvailabilityChecker("01:00", "2:00"));
     }
 
     private static AbstractBooleanAssert<?> assertThatFtpCheck(String fromHour, String toHour, String now) {

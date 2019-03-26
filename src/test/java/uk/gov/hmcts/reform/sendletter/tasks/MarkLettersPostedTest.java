@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -27,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MarkLettersPostedTest {
 
     @Mock LetterRepository repo;
@@ -38,7 +38,7 @@ public class MarkLettersPostedTest {
 
     private MarkLettersPostedTask task;
 
-    @Before
+    @BeforeEach
     public void setup() {
         task = new MarkLettersPostedTask(repo, ftpClient, availabilityChecker, parser, insights);
     }

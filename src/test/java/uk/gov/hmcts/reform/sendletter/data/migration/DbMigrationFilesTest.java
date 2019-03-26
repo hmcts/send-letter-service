@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.sendletter.data.migration;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;

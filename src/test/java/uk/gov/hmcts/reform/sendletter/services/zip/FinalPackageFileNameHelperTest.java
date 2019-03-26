@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.zip;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 

@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.ByteStreams;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.IHtmlToPdfConverter;
@@ -28,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PdfCreatorTest {
 
     @Mock private DuplexPreparator duplexPreparator;
@@ -36,7 +36,7 @@ public class PdfCreatorTest {
 
     private PdfCreator pdfCreator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         pdfCreator = new PdfCreator(this.duplexPreparator, this.converter);
     }

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.zip;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.model.PdfDoc;
 
 import java.io.ByteArrayInputStream;

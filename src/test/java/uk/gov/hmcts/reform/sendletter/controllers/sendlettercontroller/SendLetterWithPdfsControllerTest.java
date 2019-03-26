@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
 import com.google.common.io.Resources;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
@@ -26,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest
 public class SendLetterWithPdfsControllerTest {
 
@@ -37,7 +34,7 @@ public class SendLetterWithPdfsControllerTest {
 
     private String validJson;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.validJson = Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8);
     }
