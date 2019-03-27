@@ -21,11 +21,10 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.util.DateUtil.now;
 
 @ExtendWith(SpringExtension.class)
-public class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
+class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document()
-        throws Exception {
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
             samplePdfLetterRequestJson("letter-with-single-pdf.json")
@@ -43,8 +42,7 @@ public class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document()
-        throws Exception {
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
             samplePdfLetterRequestJson("letter-with-two-pdfs.json")

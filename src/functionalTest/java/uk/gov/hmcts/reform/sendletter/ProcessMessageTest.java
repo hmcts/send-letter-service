@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.util.DateUtil.now;
 
 @ExtendWith(SpringExtension.class)
-public class ProcessMessageTest extends FunctionalTestSuite {
+class ProcessMessageTest extends FunctionalTestSuite {
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_even_pages()
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_even_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
@@ -43,7 +43,7 @@ public class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_odd_pages()
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_odd_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
@@ -62,7 +62,7 @@ public class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_documents_with_even_pages()
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_documents_with_even_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
@@ -81,7 +81,7 @@ public class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
-    public void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_documents_with_odd_pages()
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_documents_with_odd_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
