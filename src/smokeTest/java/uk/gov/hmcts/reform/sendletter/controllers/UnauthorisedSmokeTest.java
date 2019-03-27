@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import io.restassured.specification.RequestSpecification;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -12,13 +14,14 @@ import java.util.UUID;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders.SYNTHETIC_TEST_TEST_NAME;
 
+@ExtendWith(SpringExtension.class)
 public class UnauthorisedSmokeTest extends SmokeTestSuite {
 
     private static final String LETTER_ID = UUID.randomUUID().toString();
 
     private String createLetterBody;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
 
         createLetterBody = Resources.toString(Resources.getResource("letter.json"), Charsets.UTF_8);
