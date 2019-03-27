@@ -17,13 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ApplicationTest {
+class ApplicationTest {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void should_generate_swagger_docs() throws Exception {
+    void should_generate_swagger_docs() throws Exception {
         byte[] specs = mvc.perform(get("/v2/api-docs"))
             .andExpect(status().isOk())
             .andReturn()

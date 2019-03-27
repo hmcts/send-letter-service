@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.sendletter.util.MessageIdProvider.randomMessag
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class StaleLettersTaskTest {
+class StaleLettersTaskTest {
 
     @Autowired
     private LetterRepository repository;
@@ -40,7 +40,7 @@ public class StaleLettersTaskTest {
     private StaleLettersTask task;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         FtpAvailabilityChecker checker = new FtpAvailabilityChecker("13:00", "14:00");
         task = new StaleLettersTask(repository, insights, checker);
         cutOff = checker.getDowntimeStart();
@@ -51,7 +51,7 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_do_nothing_when_there_are_no_unprinted_letters() {
+    void should_do_nothing_when_there_are_no_unprinted_letters() {
         // when
         task.run();
 
@@ -61,7 +61,7 @@ public class StaleLettersTaskTest {
 
     @Test
     @SuppressWarnings("VariableDeclarationUsageDistance")
-    public void should_report_to_insights_when_there_is_an_unprinted_letter() {
+    void should_report_to_insights_when_there_is_an_unprinted_letter() {
         // given
         Letter letter = createLetterWithSentToPrintTime(secondBeforeCutOff);
 
@@ -79,7 +79,7 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_not_report_to_insights_when_there_is_an_unprinted_letter_generated_during_smoke_test() {
+    void should_not_report_to_insights_when_there_is_an_unprinted_letter_generated_during_smoke_test() {
         // given
         createLetterWithSentToPrintTime(secondBeforeCutOff, UploadLettersTask.SMOKE_TEST_LETTER_TYPE);
 
@@ -91,7 +91,7 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_sent_to_print_happened_at_the_cutoff_and_later() {
+    void should_not_pick_up_letter_if_sent_to_print_happened_at_the_cutoff_and_later() {
         // given
         createLetterWithSentToPrintTime(cutOff);
         createLetterWithSentToPrintTime(cutOff.plusSeconds(1));
@@ -104,7 +104,7 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_not_sent_to_print() {
+    void should_not_pick_up_letter_if_not_sent_to_print() {
         // given
         createLetterWithSentToPrintTime(null);
 
@@ -116,7 +116,7 @@ public class StaleLettersTaskTest {
     }
 
     @Test
-    public void should_not_pick_up_letter_if_it_is_already_printed() {
+    void should_not_pick_up_letter_if_it_is_already_printed() {
         // given
         Letter letter = createLetterWithSentToPrintTime(secondBeforeCutOff);
         letter.setStatus(LetterStatus.Posted);

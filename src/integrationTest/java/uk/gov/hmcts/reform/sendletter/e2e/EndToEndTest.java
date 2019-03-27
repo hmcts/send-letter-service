@@ -17,12 +17,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
     "ftp.service-folders[0].service=some_service_name",
     "ftp.service-folders[0].folder=BULKPRINT"
 })
-public class EndToEndTest extends BaseTest {
+class EndToEndTest extends BaseTest {
 
     private static final Boolean IS_ENCRYPTION_ENABLED = false;
 
     @Test
-    public void should_handle_old_letter_model() throws Throwable {
+    void should_handle_old_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
@@ -33,7 +33,7 @@ public class EndToEndTest extends BaseTest {
     }
 
     @Test
-    public void should_handle_new_letter_model() throws Throwable {
+    void should_handle_new_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")

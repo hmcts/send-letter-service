@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest
 @Transactional
-public class SendLetterTest {
+class SendLetterTest {
 
     @Autowired
     private MockMvc mvc;
@@ -38,7 +38,7 @@ public class SendLetterTest {
     private AppInsights insights;
 
     @Test
-    public void should_return_200_when_single_letter_is_sent() throws Throwable {
+    void should_return_200_when_single_letter_is_sent() throws Throwable {
         MvcResult result = send(readResource("letter.json"))
             .andExpect(status().isOk())
             .andReturn();
@@ -47,7 +47,7 @@ public class SendLetterTest {
     }
 
     @Test
-    public void should_return_400_when_bad_letter_is_sent() throws Exception {
+    void should_return_400_when_bad_letter_is_sent() throws Exception {
         send("").andExpect(status().isBadRequest());
 
         verifyNoMoreInteractions(insights);

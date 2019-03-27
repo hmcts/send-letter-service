@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest
 @Transactional
-public class GetLetterStatusTest {
+class GetLetterStatusTest {
 
     @Autowired
     private MockMvc mvc;
@@ -43,12 +43,12 @@ public class GetLetterStatusTest {
     private AuthTokenValidator tokenValidator;
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         letterRepository.deleteAll();
     }
 
     @Test
-    public void should_return_200_when_matching_letter_found_in_db() throws Exception {
+    void should_return_200_when_matching_letter_found_in_db() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some-service");
 
@@ -68,7 +68,7 @@ public class GetLetterStatusTest {
     }
 
     @Test
-    public void should_return_404_when_letter_is_not_found() throws Exception {
+    void should_return_404_when_letter_is_not_found() throws Exception {
         getLetterStatus(UUID.randomUUID()).andExpect(status().isNotFound());
     }
 

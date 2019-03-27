@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest
 @Transactional
-public class InfoTest {
+class InfoTest {
 
     @Autowired
     private MockMvc mvc;
@@ -32,7 +32,7 @@ public class InfoTest {
     private LetterRepository letterRepository;
 
     @Test
-    public void should_return_status_breakdown() throws Exception {
+    void should_return_status_breakdown() throws Exception {
 
         insert(LetterStatus.Created);
         insert(LetterStatus.Posted);

@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class LetterTest {
+class LetterTest {
 
     @Autowired
     private LetterRepository repository;
 
     @Test
-    public void should_successfully_save_report_in_db() {
+    void should_successfully_save_report_in_db() {
         repository.save(SampleData.letterEntity("a.service"));
         List<Letter> letters = Lists.newArrayList(repository.findAll());
         assertThat(letters.size()).isEqualTo(1);
@@ -27,7 +27,7 @@ public class LetterTest {
     }
 
     @Test
-    public void finds_letters_by_id_and_service() {
+    void finds_letters_by_id_and_service() {
         repository.save(SampleData.letterEntity("a.service"));
         Letter second = SampleData.letterEntity("different");
         repository.save(second);

@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ComponentScan(basePackages = "...", lazyInit = true)
 @ContextConfiguration
 @DirtiesContext
-public class BaseTest {
+class BaseTest {
 
     @Autowired
     private MockMvc mvc;
@@ -57,7 +57,7 @@ public class BaseTest {
         repository.deleteAll();
     }
 
-    protected void should_upload_letter_and_mark_posted(
+    void should_upload_letter_and_mark_posted(
         MockHttpServletRequestBuilder request,
         Boolean isEncryptionEnabled
     ) throws Throwable {
@@ -95,7 +95,7 @@ public class BaseTest {
         }
     }
 
-    protected String readResource(final String fileName) throws IOException {
+    String readResource(final String fileName) throws IOException {
         return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
     }
 

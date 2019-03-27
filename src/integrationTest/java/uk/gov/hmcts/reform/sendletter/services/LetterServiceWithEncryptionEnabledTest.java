@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 @ImportAutoConfiguration(SpyOnJpaConfig.class)
-public class LetterServiceWithEncryptionEnabledTest {
+class LetterServiceWithEncryptionEnabledTest {
 
     private static final String SERVICE_NAME = "a_service";
 
@@ -46,12 +46,12 @@ public class LetterServiceWithEncryptionEnabledTest {
     private ServiceFolderMapping serviceFolderMapping;
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         reset(letterRepository);
     }
 
     @Test
-    public void generates_and_saves_encrypted_zip_when_encryption_is_enabled() throws Exception {
+    void generates_and_saves_encrypted_zip_when_encryption_is_enabled() throws Exception {
         when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of("some_folder"));
 
         LetterRequest letterRequest = SampleData.letterRequest();

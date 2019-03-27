@@ -20,13 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @SpringBootTest
 @Transactional
-public class SendLetterWithPdfTest {
+class SendLetterWithPdfTest {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void should_return_200_when_valid_json_is_sent() throws Exception {
+    void should_return_200_when_valid_json_is_sent() throws Exception {
         String json = Resources.toString(getResource("letter-with-pdf.json"), UTF_8);
 
         mvc
@@ -42,7 +42,7 @@ public class SendLetterWithPdfTest {
     }
 
     @Test
-    public void should_return_400_when_invalid_pdf_field_is_sent() throws Exception {
+    void should_return_400_when_invalid_pdf_field_is_sent() throws Exception {
         String json = Resources.toString(getResource("letter-with-invalid-pdf.json"), UTF_8);
 
         mvc
@@ -58,7 +58,7 @@ public class SendLetterWithPdfTest {
     }
 
     @Test
-    public void should_return_400_when_not_pdf_field_is_sent() throws Exception {
+    void should_return_400_when_not_pdf_field_is_sent() throws Exception {
         String json = Resources.toString(getResource("letter-with-not-pdf.json"), UTF_8);
 
         mvc

@@ -17,12 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
-public class DeleteOldFilesTaskTest {
+class DeleteOldFilesTaskTest {
 
     @Mock ServiceFolderMapping serviceFolderMapping;
 
     @Test
-    public void should_delete_files() throws Exception {
+    void should_delete_files() throws Exception {
         try (LocalSftpServer server = LocalSftpServer.create()) {
             // given
             given(serviceFolderMapping.getFolders())

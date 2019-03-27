@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class MarkLettersPostedTaskTest {
+class MarkLettersPostedTaskTest {
 
     @Autowired
     LetterRepository repository;
@@ -42,7 +42,7 @@ public class MarkLettersPostedTaskTest {
     AppInsights insights = mock(AppInsights.class);
 
     @Test
-    public void marks_uploaded_letters_as_posted() throws Exception {
+    void marks_uploaded_letters_as_posted() throws Exception {
         // Create a letter in the Uploaded state.
         Letter letter = SampleData.letterEntity("bulkprint");
         letter.setStatus(LetterStatus.Uploaded);

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class UploadLettersTaskTest {
+class UploadLettersTaskTest {
 
     @Autowired
     LetterRepository repository;
@@ -58,7 +58,7 @@ public class UploadLettersTaskTest {
     private LetterService letterService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of(LocalSftpServer.SERVICE_FOLDER));
 
@@ -74,7 +74,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void uploads_file_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
+    void uploads_file_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
         UUID id = letterService.save(SampleData.letterRequest(), "bulkprint");
         UploadLettersTask task = new UploadLettersTask(
             repository,
@@ -108,7 +108,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_fail_to_upload_to_sftp_and_stop_from_uploading_any_other_letters() throws Exception {
+    void should_fail_to_upload_to_sftp_and_stop_from_uploading_any_other_letters() throws Exception {
         // given
         UUID id = letterService.save(SampleData.letterRequest(), "bulkprint");
         // additional letter to verify upload loop broke and zipper was never called again
@@ -146,7 +146,7 @@ public class UploadLettersTaskTest {
     }
 
     @Test
-    public void should_process_all_letter_batches() throws Exception {
+    void should_process_all_letter_batches() throws Exception {
         // Twice the batch size.
         int letterCount = 20;
         IntStream.rangeClosed(1, letterCount).forEach(

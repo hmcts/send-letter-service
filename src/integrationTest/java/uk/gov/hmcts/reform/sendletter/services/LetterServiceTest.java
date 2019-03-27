@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 @ImportAutoConfiguration(SpyOnJpaConfig.class)
-public class LetterServiceTest {
+class LetterServiceTest {
 
     private static final String SERVICE_NAME = "bulkprint";
 
@@ -48,7 +48,7 @@ public class LetterServiceTest {
     private LetterRepository letterRepository;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ServiceFolderMapping serviceFolderMapping = mock(ServiceFolderMapping.class);
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
 
@@ -64,12 +64,12 @@ public class LetterServiceTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         reset(letterRepository);
     }
 
     @Test
-    public void generates_and_saves_zipped_pdf() throws IOException {
+    void generates_and_saves_zipped_pdf() throws IOException {
         UUID id = service.save(SampleData.letterRequest(), SERVICE_NAME);
 
         Letter result = letterRepository.findById(id).get();
@@ -77,7 +77,7 @@ public class LetterServiceTest {
     }
 
     @Test
-    public void returns_same_id_on_resubmit() throws IOException {
+    void returns_same_id_on_resubmit() throws IOException {
         // given
         LetterRequest sampleRequest = SampleData.letterRequest();
         UUID id1 = service.save(sampleRequest, SERVICE_NAME);
@@ -97,7 +97,7 @@ public class LetterServiceTest {
     }
 
     @Test
-    public void saves_an_new_letter_if_previous_one_has_been_sent_to_print() throws IOException {
+    void saves_an_new_letter_if_previous_one_has_been_sent_to_print() throws IOException {
         // given
         LetterRequest sampleRequest = SampleData.letterRequest();
         UUID id1 = service.save(sampleRequest, SERVICE_NAME);
@@ -119,19 +119,19 @@ public class LetterServiceTest {
     }
 
     @Test
-    public void should_not_allow_null_service_name() {
+    void should_not_allow_null_service_name() {
         assertThatThrownBy(() -> service.save(SampleData.letterRequest(), null))
             .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void should_not_allow_empty_service_name() {
+    void should_not_allow_empty_service_name() {
         assertThatThrownBy(() -> service.save(SampleData.letterRequest(), ""))
             .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void handles_null_timestamps() {
+    void handles_null_timestamps() {
         assertThat(LetterService.toDateTime(null)).isNull();
     }
 }
