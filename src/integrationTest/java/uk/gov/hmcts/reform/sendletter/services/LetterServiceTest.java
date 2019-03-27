@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
@@ -37,7 +35,6 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
-@RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 @ImportAutoConfiguration(SpyOnJpaConfig.class)
@@ -50,7 +47,7 @@ public class LetterServiceTest {
     @Autowired
     private LetterRepository letterRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ServiceFolderMapping serviceFolderMapping = mock(ServiceFolderMapping.class);
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
@@ -66,7 +63,7 @@ public class LetterServiceTest {
         );
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         reset(letterRepository);
     }

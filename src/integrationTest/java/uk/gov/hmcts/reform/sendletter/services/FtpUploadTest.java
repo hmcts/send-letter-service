@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.Files;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;

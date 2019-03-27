@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
@@ -39,7 +37,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 public class UploadLettersTaskTest {
@@ -60,7 +57,7 @@ public class UploadLettersTaskTest {
 
     private LetterService letterService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of(LocalSftpServer.SERVICE_FOLDER));

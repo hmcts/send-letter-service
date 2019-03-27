@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @TestPropertySource(properties = {
     "encryption.enabled=true",
     "scheduling.enabled=true",

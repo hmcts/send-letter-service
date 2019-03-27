@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
@@ -25,7 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.sendletter.util.MessageIdProvider.randomMessageId;
 
-@RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 public class StaleLettersTaskTest {
@@ -42,7 +39,7 @@ public class StaleLettersTaskTest {
 
     private StaleLettersTask task;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         FtpAvailabilityChecker checker = new FtpAvailabilityChecker("13:00", "14:00");
         task = new StaleLettersTask(repository, insights, checker);

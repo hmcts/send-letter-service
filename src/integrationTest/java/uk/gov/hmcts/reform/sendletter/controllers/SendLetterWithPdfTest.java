@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.google.common.io.Resources;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ComponentScan(basePackages = "...", lazyInit = true)
 @ContextConfiguration
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 public class SendLetterWithPdfTest {

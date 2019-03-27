@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
@@ -19,7 +19,7 @@ public class PdfCreatorTest {
 
     private PdfCreator pdfCreator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
     }
