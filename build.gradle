@@ -68,6 +68,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
 
+  useJUnitPlatform()
+
   testLogging {
     exceptionFormat = 'full'
   }
@@ -241,6 +243,7 @@ dependencies {
   functionalTestCompile sourceSets.main.runtimeClasspath
   functionalTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 }
 
 mainClassName = 'uk.gov.hmcts.reform.sendletter.Application'
