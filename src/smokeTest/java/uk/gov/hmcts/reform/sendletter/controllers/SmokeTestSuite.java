@@ -22,30 +22,29 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RunWith(SpringRunner.class)
-@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 @TestPropertySource("classpath:application.properties")
-public abstract class SmokeTestSuite {
+class SmokeTestSuite {
 
     @Value("${test-url}")
-    protected String testUrl;
+    String testUrl;
 
     @Value("${s2s-url}")
-    protected String s2sUrl;
+    private String s2sUrl;
 
     @Value("${s2s-name}")
-    protected String s2sName;
+    private String s2sName;
 
     @Value("${s2s-secret}")
-    protected String s2sSecret;
+    private String s2sSecret;
 
-    protected static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
+    static final String SYNTHETIC_SOURCE_HEADER_VALUE = "Send Letter Service smoke test";
 
     /**
      * Sign in to s2s.
      *
      * @return s2s JWT token.
      */
-    protected String signIn() {
+    String signIn() {
         Map<String, Object> params = ImmutableMap.of(
             "microservice", this.s2sName,
             "oneTimePassword", new GoogleAuthenticator().getTotpPassword(this.s2sSecret)
@@ -67,11 +66,11 @@ public abstract class SmokeTestSuite {
             .print();
     }
 
-    protected String sampleLetterJson(String fileName) throws IOException {
+    String sampleLetterJson(String fileName) throws IOException {
         return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
     }
 
-    protected RequestSpecification getCommonRequestSpec() {
+    RequestSpecification getCommonRequestSpec() {
         return RestAssured
             .given()
             .baseUri(testUrl)
