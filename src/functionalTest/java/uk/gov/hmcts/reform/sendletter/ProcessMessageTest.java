@@ -158,14 +158,4 @@ class ProcessMessageTest extends FunctionalTestSuite {
     String getContentType() {
         return MediaTypes.LETTER_V1;
     }
-
-    private static class PdfFile {
-        public final String name;
-        public final byte[] content;
-
-        public PdfFile(String name, byte[] content) {
-            this.name = name;
-            this.content = content;
-        }
-    }
 }

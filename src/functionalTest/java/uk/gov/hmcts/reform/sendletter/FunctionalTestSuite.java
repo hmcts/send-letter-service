@@ -197,5 +197,15 @@ abstract class FunctionalTestSuite {
         );
     }
 
+    static class PdfFile {
+        final String name;
+        final byte[] content;
+
+        PdfFile(String name, byte[] content) {
+            this.name = name;
+            this.content = content;
+        }
+    }
+
     abstract String getContentType();
 }
