@@ -61,18 +61,11 @@ tasks.withType(JavaCompile) {
 
 test {
   failFast = true
-  useJUnitPlatform()
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
-
-  useJUnitPlatform()
-
-  testLogging {
-    exceptionFormat = 'full'
-  }
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
@@ -85,19 +78,20 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   environment("ENCRYPTION_PUBLIC_KEY", file('src/integrationTest/resources/encryption/pubkey.asc').text)
 
   failFast = true
-  useJUnitPlatform()
-
-  testLogging {
-    exceptionFormat = 'full'
-  }
 }
 
 task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+}
 
+tasks.withType(Test) {
   useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 checkstyle {
