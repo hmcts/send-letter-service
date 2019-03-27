@@ -77,7 +77,7 @@ class LetterServiceTest {
     }
 
     @Test
-    void returns_same_id_on_resubmit() throws IOException {
+    void returns_same_id_on_resubmit() {
         // given
         LetterRequest sampleRequest = SampleData.letterRequest();
         UUID id1 = service.save(sampleRequest, SERVICE_NAME);
@@ -97,7 +97,7 @@ class LetterServiceTest {
     }
 
     @Test
-    void saves_an_new_letter_if_previous_one_has_been_sent_to_print() throws IOException {
+    void saves_an_new_letter_if_previous_one_has_been_sent_to_print() {
         // given
         LetterRequest sampleRequest = SampleData.letterRequest();
         UUID id1 = service.save(sampleRequest, SERVICE_NAME);
