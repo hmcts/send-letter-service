@@ -10,10 +10,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 @ExtendWith(SpringExtension.class)
-public class CreateLetterSmokeTest extends SmokeTestSuite {
+class CreateLetterSmokeTest extends SmokeTestSuite {
 
     @Test
-    public void should_create_letter_successfully() throws Exception {
+    void should_create_letter_successfully() throws Exception {
 
         String jwt = signIn();
 

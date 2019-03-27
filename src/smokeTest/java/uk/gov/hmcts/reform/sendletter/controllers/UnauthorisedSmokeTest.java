@@ -15,20 +15,20 @@ import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders.SYNTHETIC_TEST_TEST_NAME;
 
 @ExtendWith(SpringExtension.class)
-public class UnauthorisedSmokeTest extends SmokeTestSuite {
+class UnauthorisedSmokeTest extends SmokeTestSuite {
 
     private static final String LETTER_ID = UUID.randomUUID().toString();
 
     private String createLetterBody;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
 
         createLetterBody = Resources.toString(Resources.getResource("letter.json"), Charsets.UTF_8);
     }
 
     @Test
-    public void must_have_authorisation_header_for_letter_status_endpoint() {
+    void must_have_authorisation_header_for_letter_status_endpoint() {
         RequestSpecification specification = getCommonRequestSpec()
             .header(SYNTHETIC_TEST_TEST_NAME, "must_have_authorisation_header_for_letter_status_endpoint")
             .when();
@@ -38,7 +38,7 @@ public class UnauthorisedSmokeTest extends SmokeTestSuite {
     }
 
     @Test
-    public void should_not_authorise_with_bad_authorisation_token() {
+    void should_not_authorise_with_bad_authorisation_token() {
         RequestSpecification specification = getCommonRequestSpec()
             .header(SYNTHETIC_TEST_TEST_NAME, "should_not_authorise_with_bad_authorisation_token")
             .header("ServiceAuthorization", "invalid token")
