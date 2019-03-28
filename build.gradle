@@ -122,6 +122,13 @@ jacocoTestReport {
     xml.enabled = true
     csv.enabled = false
   }
+  afterEvaluate {
+    classDirectories = files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: [
+        'uk/gov/hmcts/reform/sendletter/config/**'
+      ])
+    })
+  }
 }
 
 project.tasks['sonarqube'].dependsOn test, integration
