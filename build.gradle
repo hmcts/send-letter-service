@@ -122,6 +122,13 @@ jacocoTestReport {
     xml.enabled = true
     csv.enabled = false
   }
+  afterEvaluate {
+    classDirectories = files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: [
+        'uk/gov/hmcts/reform/sendletter/config/**'
+      ])
+    })
+  }
 }
 
 project.tasks['sonarqube'].dependsOn test, integration
@@ -229,7 +236,9 @@ dependencies {
   compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   compile group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
+    exclude group: 'junit', module: 'junit'
+  }
   testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
   testCompile group: 'org.apache.pdfbox', name: 'preflight', version: versions.pdfbox
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockitoJupiter
