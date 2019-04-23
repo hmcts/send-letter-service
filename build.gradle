@@ -141,6 +141,10 @@ sonarqube {
   }
 }
 
+pitest {
+  pitestVersion = '1.4.7'
+}
+
 dependencyUpdates.resolutionStrategy = {
   componentSelection { rules ->
     rules.all { ComponentSelection selection ->
