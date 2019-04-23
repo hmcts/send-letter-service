@@ -123,10 +123,11 @@ jacocoTestReport {
     csv.enabled = false
   }
   afterEvaluate {
-    getClassDirectories().from(getClassDirectories().files.collect {
+    getClassDirectories().from = getClassDirectories().files.collect {
       fileTree(dir: it, exclude: [
-      'uk/gov/hmcts/reform/sendletter/config/**'
-    ])})
+        'uk/gov/hmcts/reform/sendletter/config/**'
+      ])
+    }
   }
 }
 
