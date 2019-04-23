@@ -275,7 +275,9 @@ dependencies {
 mainClassName = 'uk.gov.hmcts.reform.sendletter.Application'
 
 bootJar {
-  archiveName = 'send-letter-service.jar'
+  getArchiveFileName().set(provider {
+    'send-letter-service.jar'
+  })
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
