@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 /**
  * Class to manage {@link SSHClient} with current state of service.
- *
  * For backwards compatibility the overridden {@link SshClient#close()}
  * is written to mimic previous pseudo-complex usage in {@link FtpClient#runWith(Function)}
  */
