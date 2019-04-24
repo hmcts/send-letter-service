@@ -31,6 +31,7 @@ import static org.mockito.BDDMockito.doNothing;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +80,9 @@ class FtpClientTest {
         Throwable exception = catchThrowable(() -> client.downloadReports());
 
         // then
-        assertThat(exception).isInstanceOf(FtpException.class);
+        assertThat(exception)
+            .isInstanceOf(FtpException.class)
+            .hasMessage("Error while downloading reports");
     }
 
     @Test
@@ -121,7 +124,9 @@ class FtpClientTest {
         );
 
         // then
-        assertThat(exception).isInstanceOf(FtpException.class);
+        assertThat(exception)
+            .isInstanceOf(FtpException.class)
+            .hasMessage("Unable to upload file.");
     }
 
     @Test
@@ -145,6 +150,23 @@ class FtpClientTest {
         Throwable exception = catchThrowable(() -> client.deleteReport("some/report"));
 
         // then
-        assertThat(exception).isInstanceOf(FtpException.class);
+        assertThat(exception)
+            .isInstanceOf(FtpException.class)
+            .hasMessage("Error while deleting report: some/report");
+    }
+
+    @Test
+    void should_not_apply_action_if_IoException_is_during_sftp_setup() throws IOException {
+        // given
+        reset(sshClient);
+        willThrow(new IOException("oh no")).given(sshClient).newSFTPClient();
+
+        // when
+        Throwable exception = catchThrowable(() -> client.testConnection());
+
+        // then
+        assertThat(exception)
+            .isInstanceOf(FtpException.class)
+            .hasMessage("Unable to execute command testConnection.");
     }
 }

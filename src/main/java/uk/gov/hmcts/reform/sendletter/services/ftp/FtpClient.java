@@ -4,8 +4,6 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
@@ -17,6 +15,7 @@ import uk.gov.hmcts.reform.sendletter.model.Report;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -27,8 +26,6 @@ import static java.util.stream.Collectors.toList;
 @Component
 @EnableConfigurationProperties(FtpConfigProperties.class)
 public class FtpClient {
-
-    private static final Logger logger = LoggerFactory.getLogger(FtpClient.class);
 
     private final FtpConfigProperties configProperties;
 
@@ -165,11 +162,7 @@ public class FtpClient {
     }
 
     private <T> T runWith(Function<SFTPClient, T> action) {
-        SSHClient ssh = null;
-
-        try {
-            ssh = sshClientSupplier.get();
-
+        try (SSHClient ssh = sshClientSupplier.get()) {
             ssh.addHostKeyVerifier(configProperties.getFingerprint());
             ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
@@ -186,15 +179,10 @@ public class FtpClient {
                 return action.apply(sftp);
             }
         } catch (IOException exc) {
-            throw new FtpException("Unable to upload file.", exc);
-        } finally {
-            try {
-                if (ssh != null) {
-                    ssh.disconnect();
-                }
-            } catch (IOException e) {
-                logger.warn("Error closing ssh connection.", e);
-            }
+            throw new FtpException(
+                String.format("Unable to execute command %s.", getCallerName(exc)),
+                exc
+            );
         }
     }
 
@@ -203,4 +191,11 @@ public class FtpClient {
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");
     }
 
+    private String getCallerName(Exception exception) {
+        return Arrays.stream(exception.getStackTrace())
+            .skip(1) // first one should be `runWith`
+            .findFirst()
+            .map(StackTraceElement::getMethodName)
+            .orElse("UnknownMethodName");
+    }
 }
