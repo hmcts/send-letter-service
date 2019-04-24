@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.sendletter.helper.FakeFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.services.ftp.SshClient;
 
 import java.util.function.Supplier;
 
@@ -18,7 +19,7 @@ public class SftpConfig {
         // Provide clients that do not verify
         // host name and key for local testing.
         return () -> {
-            SSHClient client = new SSHClient();
+            SSHClient client = new SshClient();
             client.addHostKeyVerifier((a, b, c) -> true);
             return client;
         };

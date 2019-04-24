@@ -161,7 +161,7 @@ public class FtpClient {
         runWith(sftpClient -> null);
     }
 
-    private <T> T runWith(Function<SFTPClient, T> action) {
+    <T> T runWith(Function<SFTPClient, T> action) {
         try (SSHClient ssh = sshClientSupplier.get()) {
             ssh.addHostKeyVerifier(configProperties.getFingerprint());
             ssh.connect(configProperties.getHostname(), configProperties.getPort());

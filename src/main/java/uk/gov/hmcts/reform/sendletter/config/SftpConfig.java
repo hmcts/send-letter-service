@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.services.ftp.SshClient;
 
 import java.util.function.Supplier;
 
@@ -14,7 +15,7 @@ public class SftpConfig {
 
     @Bean
     public Supplier<SSHClient> sshClient() {
-        return SSHClient::new;
+        return SshClient::new;
     }
 
     @Bean
