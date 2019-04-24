@@ -167,6 +167,6 @@ class FtpClientTest {
         // then
         assertThat(exception)
             .isInstanceOf(FtpException.class)
-            .hasMessage("Unable to execute command testConnection.");
+            .hasMessage("Unable to execute command");
     }
 }

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.sendletter.model.Report;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -179,23 +178,12 @@ public class FtpClient {
                 return action.apply(sftp);
             }
         } catch (IOException exc) {
-            throw new FtpException(
-                String.format("Unable to execute command %s.", getCallerName(exc)),
-                exc
-            );
+            throw new FtpException("Unable to execute command", exc);
         }
     }
 
     private boolean isReportFile(RemoteResourceInfo resourceInfo) {
         return resourceInfo.isRegularFile()
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");
-    }
-
-    private String getCallerName(Exception exception) {
-        return Arrays.stream(exception.getStackTrace())
-            .skip(1) // first one should be `runWith`
-            .findFirst()
-            .map(StackTraceElement::getMethodName)
-            .orElse("UnknownMethodName");
     }
 }
