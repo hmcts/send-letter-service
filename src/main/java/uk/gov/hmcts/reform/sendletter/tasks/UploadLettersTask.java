@@ -90,11 +90,12 @@ public class UploadLettersTask {
         if (serviceFolder.isPresent()) {
             FileToSend file = new FileToSend(
                 FinalPackageFileNameHelper.generateName(letter),
-                letter.getFileContent()
+                letter.getFileContent(),
+                isSmokeTest(letter)
             );
 
             LocalDateTime start = now();
-            ftp.upload(file, isSmokeTest(letter), serviceFolder.get());
+            ftp.upload(file, serviceFolder.get());
             LocalDateTime end = now();
 
             logger.info(
