@@ -16,9 +16,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -94,18 +92,14 @@ public class UploadLettersTask {
                 isSmokeTest(letter)
             );
 
-            LocalDateTime start = now();
             ftp.upload(file, serviceFolder.get());
-            LocalDateTime end = now();
 
             logger.info(
-                "Uploaded letter id: {}, checksum: {}, file name: {}, additional data: {}, upload time: {}, size: {}",
+                "Uploaded letter id: {}, checksum: {}, file name: {}, additional data: {}",
                 letter.getId(),
                 letter.getChecksum(),
                 file.filename,
-                letter.getAdditionalData(),
-                ChronoUnit.MILLIS.between(start, end) + "ms",
-                letter.getFileContent().length / 1024 + "KB"
+                letter.getAdditionalData()
             );
         } else {
             logger.error("Folder for service {} not found. Skipping letter {}", letter.getService(), letter.getId());
