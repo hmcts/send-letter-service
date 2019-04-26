@@ -61,19 +61,21 @@ public class FtpClient {
         try {
             sftpClient.getFileTransfer().upload(file, path);
 
-            logger.info(
-                "File uploaded: {}, Time: {}, Size: {}, Destination: {}",
-                isSuccess ? "Yes" : "No",
-                ChronoUnit.MILLIS.between(start, Instant.now()) + "ms",
-                file.content.length / 1024 + "KB",
-                path
-            );
-
             isSuccess = true;
         } catch (IOException exc) {
             throw new FtpException("Unable to upload file.", exc);
         } finally {
-            insights.trackFtpUpload(Duration.between(start, Instant.now()), isSuccess);
+            Instant finish = Instant.now();
+
+            insights.trackFtpUpload(Duration.between(start, finish), isSuccess);
+
+            logger.info(
+                "File uploaded: {}, Time: {}, Size: {}, Destination: {}",
+                isSuccess ? "Yes" : "No",
+                ChronoUnit.MILLIS.between(start, finish) + "ms",
+                file.content.length / 1024 + "KB",
+                path
+            );
         }
     }
 
