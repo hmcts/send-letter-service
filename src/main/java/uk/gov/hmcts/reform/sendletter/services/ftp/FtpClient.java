@@ -62,10 +62,11 @@ public class FtpClient {
             sftpClient.getFileTransfer().upload(file, path);
 
             logger.info(
-                "File uploaded. Time: {}, Size: {}, Folder: {}",
+                "File uploaded: {}, Time: {}, Size: {}, Destination: {}",
+                isSuccess ? "Yes" : "No",
                 ChronoUnit.MILLIS.between(start, Instant.now()) + "ms",
                 file.content.length / 1024 + "KB",
-                serviceFolder
+                path
             );
 
             isSuccess = true;
