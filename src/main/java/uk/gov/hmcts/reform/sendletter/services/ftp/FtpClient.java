@@ -50,15 +50,15 @@ public class FtpClient {
     // endregion
 
     public void upload(FileToSend file, String serviceFolder, SFTPClient sftpClient) {
+        String folder = file.isSmokeTest
+            ? configProperties.getSmokeTestTargetFolder()
+            : String.join("/", configProperties.getTargetFolder(), serviceFolder);
+
+        String path = String.join("/", folder, file.getName());
         Instant start = Instant.now();
         boolean isSuccess = false;
 
         try {
-            String folder = file.isSmokeTest
-                ? configProperties.getSmokeTestTargetFolder()
-                : String.join("/", configProperties.getTargetFolder(), serviceFolder);
-
-            String path = String.join("/", folder, file.getName());
             sftpClient.getFileTransfer().upload(file, path);
 
             logger.info(
