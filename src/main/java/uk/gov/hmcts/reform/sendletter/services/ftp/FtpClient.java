@@ -65,14 +65,14 @@ public class FtpClient {
         } catch (IOException exc) {
             throw new FtpException("Unable to upload file.", exc);
         } finally {
-            Instant finish = Instant.now();
+            long millis = ChronoUnit.MILLIS.between(start, Instant.now());
 
-            insights.trackFtpUpload(Duration.between(start, finish), isSuccess);
+            insights.trackFtpUpload(Duration.ofMillis(millis), isSuccess);
 
             logger.info(
                 "File uploaded: {}, Time: {}, Size: {}, Destination: {}",
                 isSuccess ? "Yes" : "No",
-                ChronoUnit.MILLIS.between(start, finish) + "ms",
+                millis + "ms",
                 file.content.length / 1024 + "KB",
                 path
             );
