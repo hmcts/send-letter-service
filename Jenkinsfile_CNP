@@ -40,7 +40,7 @@ withPipeline(type , product, component) {
       env.FTP_TARGET_FOLDER = 'TO_XEROX'
       env.TEST_FTP_REPORTS_FOLDER = 'FROM_XEROX'
       env.TEST_ENCRYPTION_ENABLED = false
-      env.RESOURCE_GROUP = "${product}-${component}-aks"
+//      env.RESOURCE_GROUP = "${product}-${component}-aks"
     }
   }
 
