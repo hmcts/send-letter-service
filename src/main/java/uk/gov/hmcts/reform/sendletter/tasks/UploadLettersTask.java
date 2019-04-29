@@ -68,20 +68,12 @@ public class UploadLettersTask {
 
         if (!lettersToUpload.isEmpty()) {
             int counter = ftp.runWith(sftpClient -> {
-                lettersToUpload.forEach(letter -> {
-                    uploadToFtp(letter, sftpClient);
-                    markAsUploaded(letter);
-                });
-                int uploaded = lettersToUpload.size();
+                int uploaded = uploadLetters(lettersToUpload, sftpClient);
                 List<Letter> letters;
 
                 do {
                     letters = repo.findFirst10ByStatus(LetterStatus.Created);
-                    letters.forEach(letter -> {
-                        uploadToFtp(letter, sftpClient);
-                        markAsUploaded(letter);
-                    });
-                    uploaded += letters.size();
+                    uploaded += uploadLetters(letters, sftpClient);
                 } while (!letters.isEmpty());
 
                 return uploaded;
@@ -93,6 +85,15 @@ public class UploadLettersTask {
         }
 
         logger.info("Completed '{}' task", TASK_NAME);
+    }
+
+    private int uploadLetters(List<Letter> lettersToUpload, SFTPClient sftpClient) {
+        lettersToUpload.forEach(letter -> {
+            uploadToFtp(letter, sftpClient);
+            markAsUploaded(letter);
+        });
+
+        return lettersToUpload.size();
     }
 
     private void uploadToFtp(Letter letter, SFTPClient sftpClient) {
