@@ -65,10 +65,9 @@ public class UploadLettersTask {
         // Upload the letters in batches.
         // With each batch we mark them Uploaded so they no longer appear in the query.
         List<Letter> lettersToUpload = repo.findFirst10ByStatus(LetterStatus.Created);
-        int counter = 0;
 
         if (!lettersToUpload.isEmpty()) {
-            counter += ftp.runWith(sftpClient -> {
+            int counter = ftp.runWith(sftpClient -> {
                 lettersToUpload.forEach(letter -> {
                     uploadToFtp(letter, sftpClient);
                     markAsUploaded(letter);
@@ -87,10 +86,10 @@ public class UploadLettersTask {
 
                 return uploaded;
             });
-        }
 
-        if (counter > 0) {
-            insights.trackUploadedLetters(counter);
+            if (counter > 0) {
+                insights.trackUploadedLetters(counter);
+            }
         }
 
         logger.info("Completed '{}' task", TASK_NAME);
