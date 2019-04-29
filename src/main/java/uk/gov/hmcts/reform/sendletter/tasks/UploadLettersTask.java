@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -63,24 +64,30 @@ public class UploadLettersTask {
 
         // Upload the letters in batches.
         // With each batch we mark them Uploaded so they no longer appear in the query.
+        List<Letter> lettersToUpload = repo.findFirst10ByStatus(LetterStatus.Created);
         int counter = 0;
-        int uploaded;
 
-        do {
-            uploaded = counter;
-            // applying single connection per single loop run.
-            // should be a significant speed improvement already reported
-            counter += ftp.runWith(sftpClient ->
-                repo.findFirst10ByStatus(LetterStatus.Created)
-                    .stream()
-                    .mapToInt(letter -> {
+        if (!lettersToUpload.isEmpty()) {
+            counter += ftp.runWith(sftpClient -> {
+                lettersToUpload.forEach(letter -> {
+                    uploadToFtp(letter, sftpClient);
+                    markAsUploaded(letter);
+                });
+                int uploaded = lettersToUpload.size();
+                List<Letter> letters;
+
+                do {
+                    letters = repo.findFirst10ByStatus(LetterStatus.Created);
+                    letters.forEach(letter -> {
                         uploadToFtp(letter, sftpClient);
                         markAsUploaded(letter);
+                    });
+                    uploaded += letters.size();
+                } while (!letters.isEmpty());
 
-                        return 1;
-                    }).sum()
-            );
-        } while (uploaded < counter);
+                return uploaded;
+            });
+        }
 
         if (counter > 0) {
             insights.trackUploadedLetters(counter);
