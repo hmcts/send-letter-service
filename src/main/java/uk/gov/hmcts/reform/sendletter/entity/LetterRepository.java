@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@Repository
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     List<Letter> findFirst10ByStatus(LetterStatus status);
