@@ -63,7 +63,7 @@ public class FtpClient {
 
             isSuccess = true;
         } catch (IOException exc) {
-            throw new FtpException("Unable to upload file.", exc);
+            throw new FtpException("Unable to upload file to " + path, exc);
         } finally {
             long millis = ChronoUnit.MILLIS.between(start, Instant.now());
 
