@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class LettersCountSummaryRepositoryTest {
+class LettersCountSummaryRepositoryTest {
 
     @Autowired
     private LettersCountSummaryRepository repository;
