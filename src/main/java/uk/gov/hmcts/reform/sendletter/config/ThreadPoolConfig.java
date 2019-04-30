@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -25,7 +26,7 @@ import java.util.function.Supplier;
 @EnableScheduling
 public class ThreadPoolConfig implements SchedulingConfigurer {
 
-    private static int errorCount;
+    private static AtomicInteger errorCount = new AtomicInteger(0);
     private static final Logger log = LoggerFactory.getLogger(ThreadPoolConfig.class);
 
     private static final Supplier<Long> CURRENT_MILLIS_SUPPLIER = () -> LocalDateTime
@@ -37,17 +38,13 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
     private static final Supplier<RequestTelemetryContext> REQUEST_CONTEXT_SUPPLIER = () ->
         new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get(), null);
 
-    public static int getUnhandledTaskExceptionCount() {
-        return errorCount;
-    }
-
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         ThreadPoolTaskScheduler taskScheduler = new SendLetterTaskScheduler();
         taskScheduler.setThreadNamePrefix("SendLetterTask-");
         taskScheduler.setErrorHandler(t -> {
             log.error("Unhandled exception during task. {}: {}", t.getClass(), t.getMessage(), t);
-            errorCount++;
+            errorCount.incrementAndGet();
         });
         taskScheduler.initialize();
 
