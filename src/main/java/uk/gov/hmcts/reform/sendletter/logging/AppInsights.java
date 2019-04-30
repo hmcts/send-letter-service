@@ -31,24 +31,20 @@ public class AppInsights {
 
     // dependencies
 
-    public void trackDependency(String dependency, String command, java.time.Duration duration, boolean success) {
-        telemetry.trackDependency(dependency, command, new Duration(duration.toMillis()), success);
-    }
-
-    private void trackFtpDependency(String command, java.time.Duration duration, boolean success) {
-        trackDependency(AppDependency.FTP_CLIENT, command, duration, success);
+    private void trackDependency(String command, java.time.Duration duration, boolean success) {
+        telemetry.trackDependency(AppDependency.FTP_CLIENT, command, new Duration(duration.toMillis()), success);
     }
 
     public void trackFtpUpload(java.time.Duration duration, boolean success) {
-        trackFtpDependency(AppDependencyCommand.FTP_FILE_UPLOADED, duration, success);
+        trackDependency(AppDependencyCommand.FTP_FILE_UPLOADED, duration, success);
     }
 
     public void trackFtpReportDeletion(java.time.Duration duration, boolean success) {
-        trackFtpDependency(AppDependencyCommand.FTP_REPORT_DELETED, duration, success);
+        trackDependency(AppDependencyCommand.FTP_REPORT_DELETED, duration, success);
     }
 
     public void trackFtpReportDownload(java.time.Duration duration, boolean success) {
-        trackFtpDependency(AppDependencyCommand.FTP_REPORT_DOWNLOADED, duration, success);
+        trackDependency(AppDependencyCommand.FTP_REPORT_DOWNLOADED, duration, success);
     }
 
     // events
