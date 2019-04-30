@@ -70,8 +70,8 @@ public class FtpClient {
             insights.trackFtpUpload(Duration.ofMillis(millis), isSuccess);
 
             logger.info(
-                "File uploaded: {}, Time: {}, Size: {}, Destination: {}",
-                isSuccess ? "Yes" : "No",
+                "{}., Time: {}, Size: {}, Destination: {}",
+                isSuccess ? "File uploaded" : "Error when uploading file",
                 millis + "ms",
                 file.content.length / 1024 + "KB",
                 path
