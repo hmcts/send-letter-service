@@ -15,10 +15,5 @@
             <Method name="createFromTemplates"/>
             <Method name="createFromBase64Pdfs"/>
         </Class>
-        <Class name="uk.gov.hmcts.reform.sendletter.tasks.TaskSchedule">
-            <Method name="uploadLetters"/>
-            <Method name="markPosted"/>
-            <Method name="staleLetters"/>
-        </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
