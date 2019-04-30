@@ -78,7 +78,7 @@ public class StaleLetterSearchTest {
         LocalDateTime cutOffDate = LocalDateTime.now().minusDays(2);
 
         Letter smokeTestLetter = storeLetter(cutOffDate.minusDays(1), LetterStatus.Created, SMOKE_TEST_LETTER_TYPE);
-        storeLetter(cutOffDate.minusDays(1), LetterStatus.Created,"not-smoke-test");
+        storeLetter(cutOffDate.minusDays(1), LetterStatus.Created, "not-smoke-test");
 
         // when
         List<Letter> letters = repository.findStaleLetters(cutOffDate).collect(toList());
