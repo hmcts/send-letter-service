@@ -70,7 +70,7 @@ class UploadLettersTaskTest {
     @BeforeEach
     void setUp() {
         given(availabilityChecker.isFtpAvailable(any(LocalTime.class))).willReturn(true);
-        given(ftpClient.runWith(any())).willReturn(0);// otherwise you'll face infinite loop
+        given(ftpClient.runWith(any())).willReturn(0);// value is a counter of uploaded letters
 
         this.task = new UploadLettersTask(repo, ftpClient, availabilityChecker, serviceFolderMapping, insights);
     }
