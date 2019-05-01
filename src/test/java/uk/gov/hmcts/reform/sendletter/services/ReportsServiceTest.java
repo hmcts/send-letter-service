@@ -37,13 +37,13 @@ class ReportsServiceTest {
     private ZeroRowFiller zeroRowFiller;
 
     @Mock
-    ServiceFolderMapping serviceFolderMapping;
+    private ServiceFolderMapping serviceFolderMapping;
 
     private ReportsService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new ReportsService(this.repository, serviceFolderMapping, zeroRowFiller);
+        this.service = new ReportsService(this.repository, serviceFolderMapping, zeroRowFiller, "17:00", "16:00");
 
         when(this.zeroRowFiller.fill(any()))
             .thenAnswer(invocation -> invocation.getArgument(0)); // return data unchanged

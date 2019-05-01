@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
@@ -28,19 +29,27 @@ public class ReportsService {
 
     private final ZeroRowFiller zeroRowFiller;
 
+    private final String downtimeFromHour;
+
+    private final String downtimeToHour;
+
     public ReportsService(
         LettersCountSummaryRepository repo,
         ServiceFolderMapping serviceFolderMapping,
-        ZeroRowFiller zeroRowFiller
+        ZeroRowFiller zeroRowFiller,
+        @Value("${ftp.downtime.from}") String downtimeFromHour,
+        @Value("${ftp.downtime.to}") String downtimeToHour
     ) {
         this.repo = repo;
         this.serviceFolderMapping = serviceFolderMapping;
         this.zeroRowFiller = zeroRowFiller;
+        this.downtimeFromHour = downtimeFromHour;
+        this.downtimeToHour = downtimeToHour;
     }
 
     public List<LettersCountSummary> getCountFor(LocalDate date) {
-        LocalDateTime dateTimeFrom = formatDateTime(date.minusDays(1), LocalTime.of(17, 0, 0));
-        LocalDateTime dateTimeTo = formatDateTime(date, LocalTime.of(16, 0, 0));
+        LocalDateTime dateTimeFrom = formatDateTime(date.minusDays(1), LocalTime.parse(downtimeFromHour));
+        LocalDateTime dateTimeTo = formatDateTime(date, LocalTime.parse(downtimeToHour));
 
         return zeroRowFiller.fill(
             repo.countByDate(dateTimeFrom, dateTimeTo).stream().map(this::fromDb).collect(toList()))
