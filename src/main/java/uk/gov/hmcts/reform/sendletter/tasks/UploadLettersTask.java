@@ -79,10 +79,10 @@ public class UploadLettersTask {
 
                 return uploaded;
             });
+        }
 
-            if (counter > 0) {
-                insights.trackUploadedLetters(counter);
-            }
+        if (counter > 0) {
+            insights.trackUploadedLetters(counter);
         }
 
         logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, counter);
