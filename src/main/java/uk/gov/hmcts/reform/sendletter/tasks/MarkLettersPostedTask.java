@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -63,6 +64,7 @@ public class MarkLettersPostedTask {
 
         logger.info("Started '{}' task", TASK_NAME);
         try {
+            insights.trackFtpReportDownload(Duration.ofMillis(123L), true);
             ftpClient
                 .downloadReports()
                 .stream()

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +67,7 @@ public class UploadLettersTask {
         // With each batch we mark them Uploaded so they no longer appear in the query.
         List<Letter> lettersToUpload = repo.findFirst10ByStatus(LetterStatus.Created);
         int counter = 0;
+        insights.trackFtpUpload(Duration.ofMillis(123L), true);
 
         if (!lettersToUpload.isEmpty()) {
             counter = ftp.runWith(sftpClient -> {
