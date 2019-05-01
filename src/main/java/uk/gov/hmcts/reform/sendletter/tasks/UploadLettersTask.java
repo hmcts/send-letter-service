@@ -84,7 +84,7 @@ public class UploadLettersTask {
             }
         }
 
-        logger.info("Completed '{}' task", TASK_NAME);
+        logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, counter);
     }
 
     private int uploadLetters(List<Letter> lettersToUpload, SFTPClient sftpClient) {
