@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DateServiceTest {
+public class DateCalculatorTest {
 
-    private final DateService dateService = new DateService();
+    private final DateCalculator dateCalculator = new DateCalculator();
 
     @ParameterizedTest
     @MethodSource("provideTestCaseData")
@@ -21,7 +21,7 @@ public class DateServiceTest {
         String expectResult
     ) {
         ZonedDateTime dateTime = ZonedDateTime.parse(baseDate);
-        ZonedDateTime result = dateService.subtractBusinessDays(dateTime, daysToSubtract);
+        ZonedDateTime result = dateCalculator.subtractBusinessDays(dateTime, daysToSubtract);
         assertThat(result).isEqualTo(expectResult);
     }
 

@@ -2,10 +2,11 @@ package uk.gov.hmcts.reform.sendletter.services.date;
 
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 
 @Service
-public class DateService {
+public class DateCalculator {
 
     public ZonedDateTime subtractBusinessDays(ZonedDateTime dateTime, int numberOfBusinessDays) {
         int daysSubtracted = 0;
@@ -22,6 +23,6 @@ public class DateService {
     }
 
     private boolean isBusinessDay(ZonedDateTime dateTime) {
-        return dateTime.getDayOfWeek().getValue() < 6;
+        return dateTime.getDayOfWeek().getValue() < DayOfWeek.SATURDAY.getValue();
     }
 }
