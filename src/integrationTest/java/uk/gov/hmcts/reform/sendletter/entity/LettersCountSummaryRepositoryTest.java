@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
@@ -38,7 +39,7 @@ class LettersCountSummaryRepositoryTest {
         assertThat(letters.size()).isEqualTo(4);
 
         //when
-        List<ServiceLettersCountSummary> result = repository.countByDate(
+        Stream<ServiceLettersCountSummary> result = repository.countByDate(
             LocalDateTime.parse("2019-04-23T17:00:00"),
             LocalDateTime.parse("2019-04-24T16:00:00")
         );
@@ -67,7 +68,7 @@ class LettersCountSummaryRepositoryTest {
         assertThat(letters.size()).isEqualTo(2);
 
         //when
-        List<ServiceLettersCountSummary> result = repository.countByDate(
+        Stream<ServiceLettersCountSummary> result = repository.countByDate(
             formatDateTimeWithZoneId("2019-04-23T17:00:00"),
             formatDateTimeWithZoneId("2019-04-24T16:00:00")
         );
