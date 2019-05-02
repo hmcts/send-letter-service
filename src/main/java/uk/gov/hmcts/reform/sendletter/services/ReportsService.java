@@ -11,12 +11,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Service
 public class ReportsService {
@@ -29,9 +29,9 @@ public class ReportsService {
 
     private final ZeroRowFiller zeroRowFiller;
 
-    private final String downtimeFromHour;
+    private final String timeFromHour;
 
-    private final String downtimeToHour;
+    private final String timeToHour;
 
     public ReportsService(
         LettersCountSummaryRepository repo,
@@ -43,19 +43,21 @@ public class ReportsService {
         this.repo = repo;
         this.serviceFolderMapping = serviceFolderMapping;
         this.zeroRowFiller = zeroRowFiller;
-        this.downtimeFromHour = downtimeFromHour;
-        this.downtimeToHour = downtimeToHour;
+        this.timeFromHour = downtimeToHour;
+        this.timeToHour = downtimeFromHour;
     }
 
     public List<LettersCountSummary> getCountFor(LocalDate date) {
-        LocalDateTime dateTimeFrom = formatDateTime(date.minusDays(1), LocalTime.parse(downtimeFromHour));
-        LocalDateTime dateTimeTo = formatDateTime(date, LocalTime.parse(downtimeToHour));
+        LocalDateTime dateTimeFrom = formatDateTime(date.minusDays(1), LocalTime.parse(timeFromHour));
+        LocalDateTime dateTimeTo = formatDateTime(date, LocalTime.parse(timeToHour));
 
         return zeroRowFiller.fill(
             repo.countByDate(dateTimeFrom, dateTimeTo).stream().map(this::fromDb).collect(toList()))
             .stream()
-            .filter(summary -> !summary.service.equals(TEST_SERVICE))
-            .collect(toList()); //exclude test service
+            .filter(
+                summary -> isNotBlank(summary.service) && !summary.service.equals(TEST_SERVICE)
+            ) //excludes nulls, empty values and test service
+            .collect(toList());
     }
 
     private LettersCountSummary fromDb(ServiceLettersCountSummary dbSummary) {
@@ -65,8 +67,7 @@ public class ReportsService {
     }
 
     private LocalDateTime formatDateTime(LocalDate date, LocalTime time) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.of(EUROPE_LONDON));
-        String formattedDateTime = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        return LocalDateTime.parse(formattedDateTime);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.from(ZoneOffset.UTC));
+        return zonedDateTime.toLocalDateTime();
     }
 }

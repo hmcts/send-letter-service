@@ -18,10 +18,7 @@ public class ZeroRowFiller {
 
     private final List<String> serviceFolders;
 
-    private final ServiceFolderMapping serviceFolderMapping;
-
     public ZeroRowFiller(ServiceFolderMapping serviceFolderMapping) {
-        this.serviceFolderMapping = serviceFolderMapping;
         this.serviceFolders = Lists.newArrayList(serviceFolderMapping.getFolders());
     }
 
