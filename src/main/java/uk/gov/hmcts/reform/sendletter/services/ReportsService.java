@@ -10,13 +10,11 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static uk.gov.hmcts.reform.sendletter.util.TimeZones.localDateTimeWithUtc;
 
 @Service
 public class ReportsService {
@@ -48,8 +46,8 @@ public class ReportsService {
     }
 
     public List<LettersCountSummary> getCountFor(LocalDate date) {
-        LocalDateTime dateTimeFrom = formatDateTime(date.minusDays(1), LocalTime.parse(timeFromHour));
-        LocalDateTime dateTimeTo = formatDateTime(date, LocalTime.parse(timeToHour));
+        LocalDateTime dateTimeFrom = localDateTimeWithUtc(date.minusDays(1), LocalTime.parse(timeFromHour));
+        LocalDateTime dateTimeTo = localDateTimeWithUtc(date, LocalTime.parse(timeToHour));
 
         return zeroRowFiller.fill(
             repo.countByDate(dateTimeFrom, dateTimeTo).stream().map(this::fromDb).collect(toList()))
@@ -64,10 +62,5 @@ public class ReportsService {
         return new LettersCountSummary(
             serviceFolderMapping.getFolderFor(dbSummary.getService()).orElse(null),
             dbSummary.getUploaded());
-    }
-
-    private LocalDateTime formatDateTime(LocalDate date, LocalTime time) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.from(ZoneOffset.UTC));
-        return zonedDateTime.toLocalDateTime();
     }
 }
