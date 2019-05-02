@@ -1,0 +1,27 @@
+package uk.gov.hmcts.reform.sendletter.services.date;
+
+import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
+
+@Service
+public class DateService {
+
+    public ZonedDateTime subtractBusinessDays(ZonedDateTime dateTime, int numberOfBusinessDays) {
+        int daysSubtracted = 0;
+        ZonedDateTime adjustedDateTime = dateTime;
+
+        while (daysSubtracted < numberOfBusinessDays) {
+            adjustedDateTime = adjustedDateTime.minusDays(1);
+            if (isBusinessDay(adjustedDateTime)) {
+                daysSubtracted++;
+            }
+        }
+
+        return adjustedDateTime;
+    }
+
+    private boolean isBusinessDay(ZonedDateTime dateTime) {
+        return dateTime.getDayOfWeek().getValue() < 6;
+    }
+}
