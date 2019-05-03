@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
-import uk.gov.hmcts.reform.sendletter.exception.CsvReportGenerationException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
@@ -71,12 +70,6 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Void> handleLetterNotFoundException(LetterNotFoundException exc) {
         log.warn(exc.getMessage(), exc);
         return status(NOT_FOUND).build();
-    }
-
-    @ExceptionHandler(CsvReportGenerationException.class)
-    protected ResponseEntity<Void> handleCsvReportGenerationException(CsvReportGenerationException exc) {
-        log.warn(exc.getMessage(), exc);
-        return status(INTERNAL_SERVER_ERROR).build();
     }
 
     @ExceptionHandler(JsonProcessingException.class)

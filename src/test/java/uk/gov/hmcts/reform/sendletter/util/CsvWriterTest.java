@@ -45,7 +45,7 @@ class CsvWriterTest {
     }
 
     @Test
-    public void should_return_csv_file_with_only_headers_when_the_data_is_empty() throws IOException {
+    void should_return_csv_file_with_only_headers_when_the_data_is_empty() throws IOException {
         //when
         File csvFile = CsvWriter.writeLettersCountSummaryToCsv(emptyList());
 

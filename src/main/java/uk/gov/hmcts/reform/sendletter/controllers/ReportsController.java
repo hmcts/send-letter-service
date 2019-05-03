@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.sendletter.services.ReportsService;
 import uk.gov.hmcts.reform.sendletter.util.CsvWriter;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
@@ -44,15 +43,14 @@ public class ReportsController {
     public ResponseEntity<byte[]> getCountSummary(
         @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date
     ) {
-        List<LettersCountSummary> countSummary = reportsService.getCountFor(date);
-
         try {
+            List<LettersCountSummary> countSummary = reportsService.getCountFor(date);
             File csvFile = CsvWriter.writeLettersCountSummaryToCsv(countSummary);
             return ResponseEntity
                 .ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=letters-count-summary.csv")
                 .body(Files.readAllBytes(csvFile.toPath()));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CsvReportGenerationException(e);
         }
     }

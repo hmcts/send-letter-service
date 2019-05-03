@@ -76,4 +76,13 @@ class ReportsControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
             .andExpect(content().string(expectedContent));
     }
+
+    @Test
+    void should_return_server_error_when_exception_is_thrown() throws Exception {
+        given(reportsService.getCountFor(LocalDate.of(2019, 5, 26))).willThrow(RuntimeException.class);
+
+        mockMvc
+            .perform(get("/reports/count-summary?date=2019-05-26"))
+            .andExpect(status().is5xxServerError());
+    }
 }
