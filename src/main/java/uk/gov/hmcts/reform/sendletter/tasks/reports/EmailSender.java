@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class EmailSender {
             }
 
             mailSender.send(message);
-        } catch (MessagingException exc) {
+        } catch (MessagingException | MailException exc) {
             log.error("Error sending report", exc);
         }
     }

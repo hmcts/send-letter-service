@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import uk.gov.hmcts.reform.sendletter.jupiter.GreenMailExtension;
 
@@ -14,8 +16,14 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.activation.DataSource;
 import javax.mail.Address;
+import javax.mail.internet.MimeMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmailSenderTest {
@@ -92,6 +100,21 @@ class EmailSenderTest {
             .hasSize(2)
             .extracting(DataSource::getName)
             .containsOnly(ATTACHMENT_1.filename, ATTACHMENT_2.filename);
+    }
+
+    @Test
+    void should_not_fail_in_case_sending_threw_an_exception() {
+        // given
+        JavaMailSender mailSender = mock(JavaMailSender.class);
+        EmailSender emailSender = new EmailSender(mailSender, TEST_LOGIN);
+        given(mailSender.createMimeMessage()).willReturn(new JavaMailSenderImpl().createMimeMessage());
+        willThrow(new MailException("oh no") {}).given(mailSender).send(any(MimeMessage.class));
+
+        // when
+        emailSender.send(SUBJECT, new String[] {});
+
+        // then make verification assuring that previous statement did not throw an error
+        verify(mailSender).send(any(MimeMessage.class));
     }
 
     private EmailSender getEmailSender() {
