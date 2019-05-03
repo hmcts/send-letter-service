@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -86,7 +86,7 @@ class LettersCountSummaryRepositoryTest {
     private LocalDateTime formatDateTimeWithZoneId(String dateString) {
         return LocalDateTime.parse(
             dateString,
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.of(EUROPE_LONDON))
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.from(UTC))
         );
     }
 }
