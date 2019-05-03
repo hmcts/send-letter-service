@@ -33,7 +33,7 @@ public class ReportsController {
 
     @GetMapping(path = "/count-summary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ApiOperation("Retrieves uploaded letters count summary report")
-    public ResponseEntity getCountSummary(
+    public ResponseEntity<byte[]> getCountSummary(
         @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date
     ) throws IOException {
         List<LettersCountSummary> countSummary = reportsService.getCountFor(date);
