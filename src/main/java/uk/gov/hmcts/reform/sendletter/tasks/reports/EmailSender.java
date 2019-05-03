@@ -52,6 +52,13 @@ public class EmailSender {
                 }
             }
 
+            log.info(
+                "About to send an email '{}' to {} recipients with {} attachments",
+                subject,
+                recipients.length,
+                attachments.length
+            );
+
             mailSender.send(message);
         } catch (MessagingException | MailException exc) {
             log.error("Error sending report", exc);
