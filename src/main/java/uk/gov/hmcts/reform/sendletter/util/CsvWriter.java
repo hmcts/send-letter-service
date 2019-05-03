@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.util;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateCsvReportException;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 
 import java.io.File;
@@ -22,21 +21,17 @@ public final class CsvWriter {
 
     public static File writeLettersCountSummaryToCsv(
         List<LettersCountSummary> lettersCountSummary
-    ) {
-        try {
-            File csvFile = File.createTempFile("Letters-count-summary-", ".csv");
+    ) throws IOException {
+        File csvFile = File.createTempFile("Letters-count-summary-", ".csv");
 
-            CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS);
-            FileWriter fileWriter = new FileWriter(csvFile);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS);
+        FileWriter fileWriter = new FileWriter(csvFile);
 
-            try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
-                for (LettersCountSummary summary : lettersCountSummary) {
-                    printer.printRecord(summary.service, summary.uploaded);
-                }
+        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+            for (LettersCountSummary summary : lettersCountSummary) {
+                printer.printRecord(summary.service, summary.uploaded);
             }
-            return csvFile;
-        } catch (IOException ex) {
-            throw new UnableToGenerateCsvReportException(ex);
         }
+        return csvFile;
     }
 }
