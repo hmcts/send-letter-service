@@ -94,26 +94,6 @@ class EmailSenderTest {
             .containsOnly(ATTACHMENT_1.filename, ATTACHMENT_2.filename);
     }
 
-    @Test
-    void should_send_to_recipient_with_custom_body_message() throws Exception {
-        // given
-        EmailSender emailSender = getEmailSender();
-
-        // when
-        emailSender.send(SUBJECT, "some body", new String[] { RECIPIENT_A });
-
-        // then
-        MimeMessageParser mimeMessage = new MimeMessageParser(greenMail.getReceivedMessages()[0]).parse();
-
-        assertThat(mimeMessage.getSubject()).isEqualTo(SUBJECT);
-        assertThat(mimeMessage.getTo())
-            .extracting(Address::toString)
-            .containsOnly(RECIPIENT_A);
-        assertThat(mimeMessage.getFrom()).isEqualTo(TEST_LOGIN);
-        assertThat(mimeMessage.getPlainContent()).isEqualTo("some body");
-        assertThat(mimeMessage.getAttachmentList()).isEmpty();
-    }
-
     private EmailSender getEmailSender() {
         greenMail.setUser(TEST_LOGIN, TEST_PASSWORD);
 

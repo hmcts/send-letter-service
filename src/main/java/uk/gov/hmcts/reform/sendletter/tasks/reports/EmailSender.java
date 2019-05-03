@@ -32,7 +32,6 @@ public class EmailSender {
 
     public void send(
         String subject,
-        String body,
         String[] recipients,
         Attachment... attachments
     ) {
@@ -44,7 +43,7 @@ public class EmailSender {
             helper.setFrom(from);
             helper.setTo(recipients);
             helper.setSubject(subject);
-            helper.setText(body == null ? EMAIL_BODY : body);
+            helper.setText(EMAIL_BODY);
 
             if (attachments.length > 0) {
                 for (Attachment attachment : attachments) {
@@ -56,20 +55,5 @@ public class EmailSender {
         } catch (MessagingException exc) {
             log.error("Error sending report", exc);
         }
-    }
-
-    public void send(
-        String subject,
-        String[] recipients,
-        Attachment... attachments
-    ) {
-        send(subject, null, recipients, attachments);
-    }
-
-    public void send(
-        String subject,
-        String[] recipients
-    ) {
-        send(subject, null, recipients);
     }
 }
