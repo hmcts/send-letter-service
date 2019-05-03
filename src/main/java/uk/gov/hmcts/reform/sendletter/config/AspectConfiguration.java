@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.config;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext;
 import com.microsoft.applicationinsights.web.internal.ThreadContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -22,26 +23,43 @@ public class AspectConfiguration {
 
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
-        RequestTelemetry requestTelemetry = ThreadContext.getRequestTelemetryContext().getHttpRequestTelemetry();
+        RequestTelemetryContext requestTelemetry = ThreadContext.getRequestTelemetryContext();
         Instant start = Instant.now();
         boolean success = false;
-
-        if (requestTelemetry != null) {
-            requestTelemetry.setName("Schedule /" + joinPoint.getTarget().getClass().getSimpleName());
-        }
 
         try {
             joinPoint.proceed();
 
             success = true;
         } finally {
-            if (requestTelemetry != null) {
-                requestTelemetry.setDuration(new Duration(ChronoUnit.MILLIS.between(start, Instant.now())));
-                requestTelemetry.setSuccess(success);
+            handleRequestTelemetry(requestTelemetry, joinPoint.getTarget().getClass().getSimpleName(), start, success);
+        }
+    }
 
-                if (telemetryClient != null) {
-                    telemetryClient.trackRequest(requestTelemetry);
-                }
+    private void handleRequestTelemetry(
+        RequestTelemetryContext requestTelemetryContext,
+        String caller,
+        Instant start,
+        boolean success
+    ) {
+        if (requestTelemetryContext != null) {
+            handleRequestTelemetry(requestTelemetryContext.getHttpRequestTelemetry(), caller, start, success);
+        }
+    }
+
+    private void handleRequestTelemetry(
+        RequestTelemetry requestTelemetry,
+        String caller,
+        Instant start,
+        boolean success
+    ) {
+        if (requestTelemetry != null) {
+            requestTelemetry.setName("Schedule /" + caller);
+            requestTelemetry.setDuration(new Duration(ChronoUnit.MILLIS.between(start, Instant.now())));
+            requestTelemetry.setSuccess(success);
+
+            if (telemetryClient != null) {
+                telemetryClient.trackRequest(requestTelemetry);
             }
         }
     }
