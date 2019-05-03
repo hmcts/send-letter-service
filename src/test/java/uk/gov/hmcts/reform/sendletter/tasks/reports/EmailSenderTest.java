@@ -2,17 +2,17 @@ package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.mail.util.MimeMessageParser;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.ResourceUtils;
 import uk.gov.hmcts.reform.sendletter.jupiter.GreenMailExtension;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Properties;
 import javax.activation.DataSource;
 import javax.mail.Address;
@@ -40,23 +40,16 @@ class EmailSenderTest {
 
     static {
         try {
-            ATTACHMENT_FILE = File.createTempFile("unit-test", "tst");
+            ATTACHMENT_FILE = ResourceUtils.getFile("classpath:report.csv");
             ATTACHMENT_1 = new Attachment("filename1", ATTACHMENT_FILE);
             ATTACHMENT_2 = new Attachment("filename2", ATTACHMENT_FILE);
-        } catch (IOException exception) {
+        } catch (FileNotFoundException exception) {
             throw new RuntimeException(exception);
         }
     }
 
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP);
-
-    @AfterAll
-    static void removeTmpFile() {
-        if (ATTACHMENT_FILE != null) {
-            ATTACHMENT_FILE.delete();
-        }
-    }
 
     @Test
     void should_send_to_multiple_recipients_without_attachment() throws Exception {
