@@ -55,6 +55,7 @@ class LettersCountSummaryRepositoryTest {
                     new ServiceLettersCount("b.service", 1)
                 )
             );
+        result.close(); //close the stream
     }
 
     @Test
@@ -75,6 +76,7 @@ class LettersCountSummaryRepositoryTest {
 
         //then
         assertThat(result).isEmpty();
+        result.close(); //close the stream
     }
 
     private Letter letterEntity(String service, LocalDateTime sentToPrintAt) {
