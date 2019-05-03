@@ -39,23 +39,23 @@ class LettersCountSummaryRepositoryTest {
         assertThat(letters.size()).isEqualTo(4);
 
         //when
-        Stream<ServiceLettersCountSummary> result = repository.countByDate(
+        try (Stream<ServiceLettersCountSummary> result = repository.countByDate(
             LocalDateTime.parse("2019-04-23T17:00:00"),
             LocalDateTime.parse("2019-04-24T16:00:00")
-        );
+        )) {
 
-        //then
-        assertThat(result)
-            .isNotEmpty()
-            .hasSize(2)
-            .usingFieldByFieldElementComparator()
-            .containsExactlyElementsOf(
-                Arrays.asList(
-                    new ServiceLettersCount("a.service", 2),
-                    new ServiceLettersCount("b.service", 1)
-                )
-            );
-        result.close(); //close the stream
+            //then
+            assertThat(result)
+                .isNotEmpty()
+                .hasSize(2)
+                .usingFieldByFieldElementComparator()
+                .containsExactlyElementsOf(
+                    Arrays.asList(
+                        new ServiceLettersCount("a.service", 2),
+                        new ServiceLettersCount("b.service", 1)
+                    )
+                );
+        }
     }
 
     @Test
@@ -69,14 +69,13 @@ class LettersCountSummaryRepositoryTest {
         assertThat(letters.size()).isEqualTo(2);
 
         //when
-        Stream<ServiceLettersCountSummary> result = repository.countByDate(
+        try (Stream<ServiceLettersCountSummary> result = repository.countByDate(
             formatDateTimeWithZoneId("2019-04-23T17:00:00"),
             formatDateTimeWithZoneId("2019-04-24T16:00:00")
-        );
-
-        //then
-        assertThat(result).isEmpty();
-        result.close(); //close the stream
+        )) {
+            //then
+            assertThat(result).isEmpty();
+        }
     }
 
     private Letter letterEntity(String service, LocalDateTime sentToPrintAt) {
