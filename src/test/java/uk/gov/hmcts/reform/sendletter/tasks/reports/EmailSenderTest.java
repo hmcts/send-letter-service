@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.mail.util.MimeMessageParser;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,22 +35,18 @@ class EmailSenderTest {
     private static final String SUBJECT = "email subject";
     private static final String RECIPIENT_A = "recipient A <a@localhost>";
     private static final String RECIPIENT_B = "b@localhost";
-    private static final File ATTACHMENT_FILE;
-    private static final Attachment ATTACHMENT_1;
-    private static final Attachment ATTACHMENT_2;
-
-    static {
-        try {
-            ATTACHMENT_FILE = ResourceUtils.getFile("classpath:report.csv");
-            ATTACHMENT_1 = new Attachment("filename1", ATTACHMENT_FILE);
-            ATTACHMENT_2 = new Attachment("filename2", ATTACHMENT_FILE);
-        } catch (FileNotFoundException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
+    private static Attachment ATTACHMENT_1;
+    private static Attachment ATTACHMENT_2;
 
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP);
+
+    @BeforeAll
+    static void setUp() throws FileNotFoundException {
+        File report = ResourceUtils.getFile("classpath:report.csv");
+        ATTACHMENT_1 = new Attachment("filename1", report);
+        ATTACHMENT_2 = new Attachment("filename2", report);
+    }
 
     @Test
     void should_send_to_multiple_recipients_without_attachment() throws Exception {
