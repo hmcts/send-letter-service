@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @Aspect
 @Configuration
@@ -24,7 +23,6 @@ public class AspectConfiguration {
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void around(ProceedingJoinPoint joinPoint) throws Throwable {
         RequestTelemetryContext requestTelemetry = ThreadContext.getRequestTelemetryContext();
-        Instant start = Instant.now();
         boolean success = false;
 
         try {
@@ -32,30 +30,34 @@ public class AspectConfiguration {
 
             success = true;
         } finally {
-            handleRequestTelemetry(requestTelemetry, joinPoint.getTarget().getClass().getSimpleName(), start, success);
+            handleRequestTelemetry(requestTelemetry, joinPoint.getTarget().getClass().getSimpleName(), success);
         }
     }
 
     private void handleRequestTelemetry(
         RequestTelemetryContext requestTelemetryContext,
         String caller,
-        Instant start,
         boolean success
     ) {
         if (requestTelemetryContext != null) {
-            handleRequestTelemetry(requestTelemetryContext.getHttpRequestTelemetry(), caller, start, success);
+            handleRequestTelemetry(
+                requestTelemetryContext.getHttpRequestTelemetry(),
+                caller,
+                requestTelemetryContext.getRequestStartTimeTicks(),
+                success
+            );
         }
     }
 
     private void handleRequestTelemetry(
         RequestTelemetry requestTelemetry,
         String caller,
-        Instant start,
+        long start,
         boolean success
     ) {
         if (requestTelemetry != null) {
             requestTelemetry.setName("Schedule /" + caller);
-            requestTelemetry.setDuration(new Duration(ChronoUnit.MILLIS.between(start, Instant.now())));
+            requestTelemetry.setDuration(new Duration(Instant.now().toEpochMilli() - start));
             requestTelemetry.setSuccess(success);
 
             if (telemetryClient != null) {
