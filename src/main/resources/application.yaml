@@ -75,17 +75,22 @@ ftp:
   downtime:
     from: ${FTP_DOWNTIME_FROM:16:00}
     to: ${FTP_DOWNTIME_TO:17:00}
-  service-folders:
+  services-config:
     - service: cmc_claim_store
       folder: CMC
+      displayName: CMC
     - service: send_letter_tests
       folder: BULKPRINT
+      displayName: Bulk Print
     - service: divorce_frontend
       folder: DIVORCE
+      displayName: Divorce
     - service: probate_backend
       folder: PROBATE
+      displayName: Probate
     - service: sscs
       folder: SSCS
+      displayName: SSCS
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}

@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.sendletter.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 @ConfigurationProperties(prefix = "ftp")
 public class FtpConfigProperties {
@@ -28,14 +25,15 @@ public class FtpConfigProperties {
 
     private String reportsFolder;
 
-    private Map<String, String> serviceFolders;
+    private List<ServiceNameFolderMapping> servicesConfig;
 
-    public static class ServiceFolderMapping {
+    public static class ServiceNameFolderMapping {
 
         private String service;
         private String folder;
+        private String displayName;
 
-        public ServiceFolderMapping() {
+        public ServiceNameFolderMapping() {
             // Spring needs it.
         }
 
@@ -53,6 +51,14 @@ public class FtpConfigProperties {
 
         public void setFolder(String folder) {
             this.folder = folder;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
         }
         // endregion
     }
@@ -137,13 +143,11 @@ public class FtpConfigProperties {
         this.reportsFolder = reportsFolder;
     }
 
-    public Map<String, String> getServiceFolders() {
-        return serviceFolders;
+    public List<ServiceNameFolderMapping> getServicesConfig() {
+        return servicesConfig;
     }
 
-    public void setServiceFolders(List<ServiceFolderMapping> serviceFolders) {
-        this.serviceFolders = serviceFolders
-            .stream()
-            .collect(toMap(ServiceFolderMapping::getService, ServiceFolderMapping::getFolder));
+    public void setServicesConfig(List<ServiceNameFolderMapping> servicesConfig) {
+        this.servicesConfig = servicesConfig;
     }
 }

@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.sendletter.services.ftp;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
+import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceNameFolderMapping;
 
 import java.util.Collection;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class ServiceFolderMapping {
@@ -16,10 +19,15 @@ public class ServiceFolderMapping {
     }
 
     public Collection<String> getFolders() {
-        return configProperties.getServiceFolders().values();
+        return configProperties.getServicesConfig()
+            .stream()
+            .map(ServiceNameFolderMapping::getFolder).collect(toList());
     }
 
     public Optional<String> getFolderFor(String serviceName) {
-        return Optional.ofNullable(configProperties.getServiceFolders().get(serviceName));
+        return configProperties.getServicesConfig()
+            .stream().filter(config -> config.getDisplayName().equals(serviceName))
+            .map(ServiceNameFolderMapping::getFolder)
+            .findFirst();
     }
 }
