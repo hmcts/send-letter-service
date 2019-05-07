@@ -60,7 +60,8 @@ public class StaleLetterControllerTest {
                     Resources.toString(
                         getResource("controller/stale-letters/stale-letters-response.json"),
                         UTF_8
-                    )
+                    ),
+                    false
                 )
             );
     }
