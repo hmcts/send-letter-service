@@ -28,7 +28,7 @@ public class DeleteOldFilesTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DeleteOldFilesTask.class);
 
-    public static final String TASK_NAME = "DeleteOldFiles";
+    private static final String TASK_NAME = "DeleteOldFiles";
 
     private final FtpClient ftp;
     private final ServiceFolderMapping serviceFolderMapping;
