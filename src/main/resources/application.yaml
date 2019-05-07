@@ -78,19 +78,19 @@ ftp:
   services-config:
     - service: cmc_claim_store
       folder: CMC
-      displayName: CMC
+      display-name: CMC
     - service: send_letter_tests
       folder: BULKPRINT
-      displayName: Bulk Print
+      display-name: Bulk Print
     - service: divorce_frontend
       folder: DIVORCE
-      displayName: Divorce
+      display-name: Divorce
     - service: probate_backend
       folder: PROBATE
-      displayName: Probate
+      display-name: Probate
     - service: sscs
       folder: SSCS
-      displayName: SSCS
+      display-name: SSCS
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
