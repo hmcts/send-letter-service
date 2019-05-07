@@ -119,6 +119,7 @@ module "send-letter-service" {
 
     // reports. depends on smtp
     UPLOAD_SUMMARY_REPORT_CRON       = "${var.upload_summary_report_cron}"
+    UPLOAD_SUMMARY_REPORT_ENABLED    = "${var.upload_summary_report_enabled}"
     UPLOAD_SUMMARY_REPORT_RECIPIENTS = "${data.azurerm_key_vault_secret.upload_summary_recipients.value}"
   }
 }

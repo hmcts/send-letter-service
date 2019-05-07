@@ -120,6 +120,10 @@ variable "upload_summary_report_cron" {
   description = "Cron signature for job to send daily summary report of uploaded letters"
 }
 
+variable "upload_summary_report_enabled" {
+  default = "false"
+}
+
 # endregion
 
 variable "deployment_namespace" {
