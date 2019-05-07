@@ -56,7 +56,7 @@ public class DailyLetterUploadSummaryReport {
     @Scheduled(cron = "${reports.upload-summary.cron}", zone = EUROPE_LONDON)
     public void send() {
         if (recipients.length == 0) {
-            log.warn("No recipients configured for reports");
+            log.error("No recipients configured for reports");
             return;
         }
 
