@@ -37,17 +37,21 @@ public class BankHolidaysClientTest {
     @Test
     public void should_fetch_holidays() {
         // given
-        api.stubFor(get("/").willReturn(
+        api.stubFor(get("/england-and-wales.json").willReturn(
             okJson("{"
                 + "\"division\": \"england-and-wales\","
                 + "\"events\": ["
                 + "  {"
                 + "    \"title\": \"Good Friday\","
-                + "    \"date\": \"2012-04-06\""
+                + "    \"date\": \"2012-04-06\","
+                + "    \"notes\": \"\","
+                + "    \"bunting\": \"false\""
                 + "  },"
                 + "  {"
                 + "    \"title\": \"Easter Monday\","
-                + "    \"date\": \"2012-04-09\""
+                + "    \"date\": \"2012-04-09\","
+                + "    \"notes\": \"\","
+                + "    \"bunting\": \"false\""
                 + "  }"
                 + "]"
                 + "}"
@@ -70,7 +74,7 @@ public class BankHolidaysClientTest {
     @Test
     public void should_throw_exception_if_error_occurred() {
         // given
-        api.stubFor(get("/").willReturn(notFound()));
+        api.stubFor(get("/england-and-wales.json").willReturn(notFound()));
 
         // when
         Throwable exc = catchThrowable(client::getForEngland);

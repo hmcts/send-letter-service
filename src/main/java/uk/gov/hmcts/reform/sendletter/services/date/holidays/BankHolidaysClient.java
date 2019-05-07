@@ -14,6 +14,6 @@ public class BankHolidaysClient {
     }
 
     public Holidays getForEngland() {
-        return restTemplate.getForObject(url, Holidays.class);
+        return restTemplate.getForObject(url + "/england-and-wales.json", Holidays.class);
     }
 }
