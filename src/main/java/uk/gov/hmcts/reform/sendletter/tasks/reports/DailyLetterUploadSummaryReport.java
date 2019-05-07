@@ -50,13 +50,16 @@ public class DailyLetterUploadSummaryReport {
         } else {
             this.recipients = Arrays.copyOf(recipients, recipients.length);
         }
+
+        if (this.recipients.length == 0) {
+            log.error("No recipients configured for '{}' report", EMAIL_SUBJECT);
+        }
     }
 
     @SchedulerLock(name = "daily-letter-upload-summary")
     @Scheduled(cron = "${reports.upload-summary.cron}", zone = EUROPE_LONDON)
     public void send() {
         if (recipients.length == 0) {
-            log.error("No recipients configured for '{}' report", EMAIL_SUBJECT);
             return;
         }
 
