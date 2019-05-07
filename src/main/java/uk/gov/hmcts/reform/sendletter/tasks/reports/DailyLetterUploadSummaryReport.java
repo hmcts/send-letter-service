@@ -50,15 +50,16 @@ public class DailyLetterUploadSummaryReport {
         } else {
             this.recipients = Arrays.copyOf(recipients, recipients.length);
         }
-
-        if (this.recipients.length == 0) {
-            log.warn("No recipients configured for reports");
-        }
     }
 
     @SchedulerLock(name = "daily-letter-upload-summary")
     @Scheduled(cron = "${reports.upload-summary.cron}", zone = EUROPE_LONDON)
     public void send() {
+        if (recipients.length == 0) {
+            log.warn("No recipients configured for reports");
+            return;
+        }
+
         LocalDate today = LocalDate.now();
         log.info("Generating report '{}' for '{}'", EMAIL_SUBJECT, today);
 
