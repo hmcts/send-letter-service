@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.sendletter.services.date.holidays.BankHolidaysClient;
 
+@Configuration
 public class BankHolidaysConfig {
 
     @Bean
