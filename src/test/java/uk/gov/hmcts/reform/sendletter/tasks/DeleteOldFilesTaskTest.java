@@ -44,7 +44,7 @@ class DeleteOldFilesTaskTest {
     }
 
     @Test
-    void should_remove_only_files_that_are_old_enough() throws Exception {
+    void should_remove_only_files_that_are_old_enough() {
         // given
         Duration ttl = Duration.ofMinutes(1);
 
@@ -72,7 +72,7 @@ class DeleteOldFilesTaskTest {
     }
 
     @Test
-    void should_delete_files_for_all_known_services() throws Exception {
+    void should_delete_files_for_all_known_services() {
         // given
         given(serviceFolderMapping.getFolders())
             .willReturn(ImmutableSet.of(
@@ -96,7 +96,7 @@ class DeleteOldFilesTaskTest {
     }
 
     @Test
-    void should_try_to_delete_next_file_if_previous_failed() throws Exception {
+    void should_try_to_delete_next_file_if_previous_failed() {
         // given
         given(serviceFolderMapping.getFolders())
             .willReturn(ImmutableSet.of("SERVICE"));
