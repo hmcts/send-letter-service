@@ -54,6 +54,10 @@ spring:
             enable: true
     test-connection: false
 
+reports:
+  upload-summary:
+    recipients:
+
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
   password: ${LETTER_TRACKING_DB_PASSWORD}
@@ -101,3 +105,5 @@ encryption:
   enabled: ${ENCRYPTION_ENABLED:false}
   publicKey: ${ENCRYPTION_PUBLIC_KEY:}
 
+stale-letters:
+  min-age-in-business-days: 2
