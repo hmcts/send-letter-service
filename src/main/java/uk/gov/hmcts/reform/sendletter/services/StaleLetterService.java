@@ -50,7 +50,7 @@ public class StaleLetterService {
                 .toLocalDateTime()
         );
 
-        return mapToStaleLetters(dbLetters);
+        return dbLetters.map(this::mapToStaleLetter);
     }
 
     /**
@@ -83,16 +83,14 @@ public class StaleLetterService {
         );
     }
 
-    private Stream<StaleLetter> mapToStaleLetters(Stream<Letter> dbLetters) {
-        return dbLetters.map(letter ->
-            new StaleLetter(
-                letter.getId(),
-                letter.getStatus().name(),
-                letter.getService(),
-                letter.getCreatedAt(),
-                letter.getSentToPrintAt(),
-                letter.isFailed()
-            )
+    private StaleLetter mapToStaleLetter(Letter dbLetter) {
+        return new StaleLetter(
+            dbLetter.getId(),
+            dbLetter.getStatus().name(),
+            dbLetter.getService(),
+            dbLetter.getCreatedAt(),
+            dbLetter.getSentToPrintAt(),
+            dbLetter.isFailed()
         );
     }
 }
