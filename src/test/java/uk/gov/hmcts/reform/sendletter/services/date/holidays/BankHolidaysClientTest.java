@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.sendletter.services.date.holidays;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.sendletter.services.date.holidays.response.Event;
@@ -19,14 +19,19 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class BankHolidaysClientTest {
 
-    @Rule
-    public WireMockRule api = new WireMockRule();
-
     private BankHolidaysClient client;
+    private WireMockServer api;
 
-    @Before
+    @BeforeEach
     public void setUp() {
+        this.api = new WireMockServer();
+        this.api.start();
         this.client = new BankHolidaysClient(new RestTemplate(), "http://localhost:8080");
+    }
+
+    @AfterEach
+    void tearDown() {
+        this.api.stop();
     }
 
     @Test
