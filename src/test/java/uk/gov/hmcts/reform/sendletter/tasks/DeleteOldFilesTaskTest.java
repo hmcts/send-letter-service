@@ -2,8 +2,12 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import net.schmizz.sshj.sftp.SFTPClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
@@ -14,19 +18,30 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteOldFilesTaskTest {
 
     @Mock private FtpClient ftp;
+    @Mock private SFTPClient sftpClient;
     @Mock private ServiceFolderMapping serviceFolderMapping;
+
+    @Captor private ArgumentCaptor<Function<SFTPClient, Void>> captureRunWith;
+
+    @BeforeEach
+    void setUp() {
+        given(ftp.runWith(any())).willReturn(0);
+    }
 
     @Test
     void should_remove_only_files_that_are_old_enough() throws Exception {
@@ -46,10 +61,14 @@ class DeleteOldFilesTaskTest {
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, ttl).run();
 
+        // and
+        verify(ftp).runWith(captureRunWith.capture());
+        captureRunWith.getValue().apply(sftpClient);
+
         // then
-        verify(ftp).deleteFile("old.zip");
-        verify(ftp, never()).deleteFile("new.zip");
-        verify(ftp, never()).deleteFile("almostOld.zip");
+        verify(ftp).deleteFile("old.zip", sftpClient);
+        verify(ftp, never()).deleteFile("new.zip", sftpClient);
+        verify(ftp, never()).deleteFile("almostOld.zip", sftpClient);
     }
 
     @Test
@@ -67,9 +86,13 @@ class DeleteOldFilesTaskTest {
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
 
+        // and
+        verify(ftp, times(2)).runWith(captureRunWith.capture());
+        captureRunWith.getAllValues().forEach(function -> function.apply(sftpClient));
+
         // then
-        verify(ftp).deleteFile("a.zip");
-        verify(ftp).deleteFile("b.zip");
+        verify(ftp).deleteFile("a.zip", sftpClient);
+        verify(ftp).deleteFile("b.zip", sftpClient);
     }
 
     @Test
@@ -87,14 +110,18 @@ class DeleteOldFilesTaskTest {
 
         given(ftp.listLetters("SERVICE")).willReturn(files);
 
-        willThrow(FtpException.class).given(ftp).deleteFile("error1.zip");
-        willThrow(FtpException.class).given(ftp).deleteFile("error2.zip");
+        willThrow(FtpException.class).given(ftp).deleteFile("error1.zip", sftpClient);
+        willThrow(FtpException.class).given(ftp).deleteFile("error2.zip", sftpClient);
 
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
 
+        // and
+        verify(ftp).runWith(captureRunWith.capture());
+        captureRunWith.getValue().apply(sftpClient);
+
         // then
-        files.forEach(file -> verify(ftp).deleteFile(file.path));
+        files.forEach(file -> verify(ftp).deleteFile(file.path, sftpClient));
     }
 
     private Instant secondAgo() {
