@@ -4,3 +4,5 @@ encyption_enabled = "true"
 file_cleanup_enabled = "false"
 
 capacity = "2"
+
+smtp_host = "smtp.office365.com"

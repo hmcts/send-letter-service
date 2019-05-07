@@ -7,7 +7,9 @@ import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+    "spring.mail.host=false"
+})
 public class DailyLetterUploadSummaryReportDisabledTest {
 
     @Autowired
