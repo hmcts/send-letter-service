@@ -34,7 +34,7 @@ public class BankHolidaysClientTest {
         // given
         api.stubFor(get("/").willReturn(
             okJson("{"
-                + "\"division\": \" england-and-wales\","
+                + "\"division\": \"england-and-wales\","
                 + "\"events\": ["
                 + "  {"
                 + "    \"title\": \"Good Friday\","
