@@ -40,7 +40,7 @@ public class DateCalculatorTest {
         int daysToSubtract,
         String expectResult
     ) {
-        given(bankHolidaysClient.getForEngland()).willReturn(new Holidays(emptyList()));
+        given(bankHolidaysClient.getHolidays()).willReturn(new Holidays(emptyList()));
 
         ZonedDateTime dateTime = ZonedDateTime.parse(baseDate);
         ZonedDateTime result = dateCalculator.subtractBusinessDays(dateTime, daysToSubtract);
@@ -51,7 +51,7 @@ public class DateCalculatorTest {
     void should_take_bank_holidays_into_account() {
         // given
         LocalDate christmasDay = LocalDate.of(2019, 12, 25);
-        given(bankHolidaysClient.getForEngland())
+        given(bankHolidaysClient.getHolidays())
             .willReturn(new Holidays(singletonList(
                 new Event(christmasDay, "Christmas Day")
             )));
@@ -72,7 +72,7 @@ public class DateCalculatorTest {
     @Test
     void should_work_if_fetching_holidays_fails() {
         // given
-        given(bankHolidaysClient.getForEngland()).willThrow(RestClientException.class);
+        given(bankHolidaysClient.getHolidays()).willThrow(RestClientException.class);
 
         // when
         ZonedDateTime result = this.dateCalculator.subtractBusinessDays(

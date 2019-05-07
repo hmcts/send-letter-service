@@ -48,7 +48,7 @@ public class DateCalculator {
     private List<LocalDate> getBankHolidayDates() {
         try {
             return this.bankHolidaysClient
-                .getForEngland()
+                .getHolidays()
                 .events
                 .stream()
                 .map(event -> event.date)
