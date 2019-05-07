@@ -62,7 +62,6 @@ public class BankHolidaysClientTest {
 
         // then
         assertThat(holidays).isNotNull();
-        assertThat(holidays.division).isEqualTo("england-and-wales");
         assertThat(holidays.events)
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(
