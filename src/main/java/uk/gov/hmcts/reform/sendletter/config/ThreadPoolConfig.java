@@ -20,7 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
- * Adds custom error handler to Scheduled Tasks.
+ * Adds custom error handler to Scheduled Tasks. Followed suggestions by Microsoft.
+ * {@see https://github.com/Microsoft/ApplicationInsights-Java/wiki/Distributed-Tracing-in-Asynchronous-Java-Applications#context-propagation-in-scheduled-events}
  */
 @Configuration
 @EnableScheduling
