@@ -49,10 +49,11 @@ class LettersCountReportTest {
     @Test
     void should_return_letters_count_summary_and_filter_the_test_service() throws Exception {
         // given
-        Letter letter1 = SampleData.letterEntityWithSentToPrintAt(
-            "some_service_name", LocalDateTime.of(2019, 4, 26, 14, 30, 10));
-        Letter letter2 = SampleData.letterEntityWithSentToPrintAt(
-            "send_letter_tests", LocalDateTime.of(2019, 4, 26, 10, 30, 10));
+        Letter letter1 = SampleData.letterEntity("some_service_name");
+        letter1.setSentToPrintAt(LocalDateTime.of(2019, 4, 26, 14, 30, 10));
+
+        Letter letter2 = SampleData.letterEntity("send_letter_tests");
+        letter2.setSentToPrintAt(LocalDateTime.of(2019, 4, 26, 10, 30, 10));
 
         letterRepository.saveAll(Arrays.asList(letter1, letter2));
 
