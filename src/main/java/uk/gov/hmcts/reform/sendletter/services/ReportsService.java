@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
@@ -45,6 +46,7 @@ public class ReportsService {
         this.timeToHour = downtimeFromHour;
     }
 
+    @Transactional
     public List<LettersCountSummary> getCountFor(LocalDate date) {
         LocalDateTime dateTimeFrom = localDateTimeWithUtc(date.minusDays(1), LocalTime.parse(timeFromHour));
         LocalDateTime dateTimeTo = localDateTimeWithUtc(date, LocalTime.parse(timeToHour));
