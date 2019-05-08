@@ -57,6 +57,17 @@ spring:
 reports:
   upload-summary:
     recipients:
+  service-config:
+    - service: cmc_claim_store
+      display-name: CMC
+    - service: send_letter_tests
+      display-name: Bulk Print
+    - service: divorce_frontend
+      display-name: Divorce
+    - service: probate_backend
+      display-name: Probate
+    - service: sscs
+      display-name: SSCS
 
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
