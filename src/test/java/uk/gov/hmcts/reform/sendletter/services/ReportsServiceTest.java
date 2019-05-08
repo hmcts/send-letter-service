@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
