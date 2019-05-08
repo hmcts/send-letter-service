@@ -12,9 +12,10 @@ import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +55,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount("bService", 20)
         ));
@@ -85,7 +86,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount("send_letter_tests", 20)
         ));
@@ -113,7 +114,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount(null, 2)
         ));
@@ -139,7 +140,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount("service_not_configured", 2)
         ));
@@ -167,7 +168,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.empty());
+        ).willReturn(Collections.emptyList());
 
         //when
         List<LettersCountSummary> result = service.getCountFor(date);
