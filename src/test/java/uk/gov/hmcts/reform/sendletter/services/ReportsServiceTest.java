@@ -5,16 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCount;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
-import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,13 +33,13 @@ class ReportsServiceTest {
     private ZeroRowFiller zeroRowFiller;
 
     @Mock
-    private ServiceFolderMapping serviceFolderMapping;
+    private ReportsServiceConfig reportsServiceConfig;
 
     private ReportsService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new ReportsService(this.repository, serviceFolderMapping, zeroRowFiller, "16:00", "17:00");
+        this.service = new ReportsService(this.repository, reportsServiceConfig, zeroRowFiller, "16:00", "17:00");
 
         when(this.zeroRowFiller.fill(any()))
             .thenAnswer(invocation -> invocation.getArgument(0)); // return data unchanged
@@ -54,13 +55,13 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount("bService", 20)
         ));
 
-        given(serviceFolderMapping.getFolderFor("aService")).willReturn(Optional.of("FolderA"));
-        given(serviceFolderMapping.getFolderFor("bService")).willReturn(Optional.of("FolderB"));
+        given(reportsServiceConfig.getDisplayName("aService")).willReturn(Optional.of("FolderA"));
+        given(reportsServiceConfig.getDisplayName("bService")).willReturn(Optional.of("FolderB"));
 
         //when
         List<LettersCountSummary> result = service.getCountFor(date);
@@ -85,12 +86,13 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount("send_letter_tests", 20)
         ));
-        given(serviceFolderMapping.getFolderFor("aService")).willReturn(Optional.of("FolderA"));
-        given(serviceFolderMapping.getFolderFor("send_letter_tests")).willReturn(Optional.of("BULKPRINT"));
+
+        given(reportsServiceConfig.getDisplayName("aService")).willReturn(Optional.of("FolderA"));
+        given(reportsServiceConfig.getDisplayName("send_letter_tests")).willReturn(Optional.of("Bulk Print"));
 
         //when
         List<LettersCountSummary> result = service.getCountFor(date);
@@ -112,11 +114,11 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.of(
+        ).willReturn(Arrays.asList(
             new ServiceLettersCount("aService", 10),
             new ServiceLettersCount(null, 2)
         ));
-        given(serviceFolderMapping.getFolderFor("aService")).willReturn(Optional.of("FolderA"));
+        given(reportsServiceConfig.getDisplayName("aService")).willReturn(Optional.of("FolderA"));
 
         //when
         List<LettersCountSummary> result = service.getCountFor(date);
@@ -129,6 +131,34 @@ class ReportsServiceTest {
     }
 
     @Test
+    void should_return_service_in_the_report_when_service_config_is_missing() {
+        LocalDate date = LocalDate.of(2019, 4, 25);
+        LocalTime timeFrom = LocalTime.parse("17:00");
+        LocalTime timeTo = LocalTime.parse("16:00");
+
+        //given
+        given(repository.countByDate(
+            localDateTimeWithUtc(date.minusDays(1), timeFrom),
+            localDateTimeWithUtc(date, timeTo))
+        ).willReturn(Arrays.asList(
+            new ServiceLettersCount("aService", 10),
+            new ServiceLettersCount("service_not_configured", 2)
+        ));
+        given(reportsServiceConfig.getDisplayName("aService")).willReturn(Optional.of("FolderA"));
+
+        //when
+        List<LettersCountSummary> result = service.getCountFor(date);
+
+        //then
+        assertThat(result).isNotEmpty()
+            .hasSize(2)
+            .usingFieldByFieldElementComparator()
+            .containsExactlyInAnyOrder(
+                new LettersCountSummary("FolderA", 10),
+                new LettersCountSummary("service_not_configured", 2));
+    }
+
+    @Test
     void should_map_empty_list_from_repo() {
         LocalDate date = LocalDate.of(2019, 4, 25);
         LocalTime timeFrom = LocalTime.parse("17:00");
@@ -138,7 +168,7 @@ class ReportsServiceTest {
         given(repository.countByDate(
             localDateTimeWithUtc(date.minusDays(1), timeFrom),
             localDateTimeWithUtc(date, timeTo))
-        ).willReturn(Stream.empty());
+        ).willReturn(Collections.emptyList());
 
         //when
         List<LettersCountSummary> result = service.getCountFor(date);

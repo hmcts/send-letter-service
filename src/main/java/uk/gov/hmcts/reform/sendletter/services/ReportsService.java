@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
-import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,11 +19,11 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.localDateTimeWithUtc
 @Service
 public class ReportsService {
 
-    private static final String TEST_SERVICE = "BULKPRINT";
+    private static final String TEST_SERVICE = "Bulk Print";
 
     private final LettersCountSummaryRepository repo;
 
-    private final ServiceFolderMapping serviceFolderMapping;
+    private final ReportsServiceConfig reportsServiceConfig;
 
     private final ZeroRowFiller zeroRowFiller;
 
@@ -33,13 +33,13 @@ public class ReportsService {
 
     public ReportsService(
         LettersCountSummaryRepository repo,
-        ServiceFolderMapping serviceFolderMapping,
+        ReportsServiceConfig reportsServiceConfig,
         ZeroRowFiller zeroRowFiller,
         @Value("${ftp.downtime.from}") String downtimeFromHour,
         @Value("${ftp.downtime.to}") String downtimeToHour
     ) {
         this.repo = repo;
-        this.serviceFolderMapping = serviceFolderMapping;
+        this.reportsServiceConfig = reportsServiceConfig;
         this.zeroRowFiller = zeroRowFiller;
         this.timeFromHour = downtimeToHour;
         this.timeToHour = downtimeFromHour;
@@ -50,17 +50,17 @@ public class ReportsService {
         LocalDateTime dateTimeTo = localDateTimeWithUtc(date, LocalTime.parse(timeToHour));
 
         return zeroRowFiller.fill(
-            repo.countByDate(dateTimeFrom, dateTimeTo).map(this::fromDb).collect(toList()))
+            repo.countByDate(dateTimeFrom, dateTimeTo).stream().map(this::fromDb).collect(toList()))
             .stream()
             .filter(
-                summary -> isNotBlank(summary.service) && !summary.service.equals(TEST_SERVICE)
+                summary -> isNotBlank(summary.serviceName) && !summary.serviceName.equals(TEST_SERVICE)
             ) //excludes nulls, empty values and test service
             .collect(toList());
     }
 
     private LettersCountSummary fromDb(ServiceLettersCountSummary dbSummary) {
         return new LettersCountSummary(
-            serviceFolderMapping.getFolderFor(dbSummary.getService()).orElse(null),
+            reportsServiceConfig.getDisplayName(dbSummary.getService()).orElse(dbSummary.getService()),
             dbSummary.getUploaded());
     }
 }
