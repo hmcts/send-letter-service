@@ -156,7 +156,7 @@ public class FtpClient {
     public void deleteFile(String filePath, SFTPClient sftpClient) {
         try {
             sftpClient.rm(filePath);
-        } catch (IOException exc) {
+        } catch (Exception exc) {
             throw new FtpException("Error while deleting file: " + filePath, exc);
         }
     }
