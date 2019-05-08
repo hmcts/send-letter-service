@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
@@ -54,6 +55,15 @@ public final class SampleData {
             "someType",
             Maps.newHashMap()
         );
+    }
+
+    public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntityWithSentToPrintAt(
+        String service,
+        LocalDateTime sentToPrintAt
+    ) {
+        Letter letter = letterEntity(service, now());
+        letter.setSentToPrintAt(sentToPrintAt);
+        return letter;
     }
 
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(String service) {
