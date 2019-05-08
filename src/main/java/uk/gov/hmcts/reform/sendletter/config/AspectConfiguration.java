@@ -8,6 +8,8 @@ import com.microsoft.applicationinsights.web.internal.ThreadContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +18,8 @@ import java.time.Instant;
 @Aspect
 @Configuration
 public class AspectConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(AspectConfiguration.class);
 
     @Autowired(required = false)
     private TelemetryClient telemetryClient;
@@ -39,27 +43,35 @@ public class AspectConfiguration {
         String caller,
         boolean success
     ) {
+        String requestName = "Schedule /" + caller;
+
         if (requestTelemetryContext != null) {
             handleRequestTelemetry(
                 requestTelemetryContext.getHttpRequestTelemetry(),
-                caller,
+                requestName,
                 requestTelemetryContext.getRequestStartTimeTicks(),
                 success
+            );
+        } else {
+            log.warn(
+                "Request Telemetry Context has been removed by ThreadContext - cannot log '{}' request",
+                requestName
             );
         }
     }
 
     private void handleRequestTelemetry(
         RequestTelemetry requestTelemetry,
-        String caller,
+        String requestName,
         long start,
         boolean success
     ) {
         if (requestTelemetry != null) {
-            requestTelemetry.setName("Schedule /" + caller);
+            requestTelemetry.setName(requestName);
             requestTelemetry.setDuration(new Duration(Instant.now().toEpochMilli() - start));
             requestTelemetry.setSuccess(success);
 
+            // in case telemetry client is not configured/enabled
             if (telemetryClient != null) {
                 telemetryClient.trackRequest(requestTelemetry);
             }
