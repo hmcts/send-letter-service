@@ -6,8 +6,6 @@ import net.schmizz.sshj.sftp.SFTPClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
@@ -36,11 +34,12 @@ class DeleteOldFilesTaskTest {
     @Mock private SFTPClient sftpClient;
     @Mock private ServiceFolderMapping serviceFolderMapping;
 
-    @Captor private ArgumentCaptor<Function<SFTPClient, Void>> captureRunWith;
-
     @BeforeEach
+    @SuppressWarnings("unchecked") // {@code invocation.getArgument(0)} has Object. But we know what it is
     void setUp() {
-        given(ftp.runWith(any())).willReturn(0);
+        given(ftp.runWith(any())).willAnswer(invocation ->
+            ((Function<SFTPClient, Void>) invocation.getArgument(0)).apply(sftpClient)
+        );
     }
 
     @Test
@@ -61,11 +60,8 @@ class DeleteOldFilesTaskTest {
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, ttl).run();
 
-        // and
-        verify(ftp).runWith(captureRunWith.capture());
-        captureRunWith.getValue().apply(sftpClient);
-
         // then
+        verify(ftp).runWith(any());
         verify(ftp).deleteFile("old.zip", sftpClient);
         verify(ftp, never()).deleteFile("new.zip", sftpClient);
         verify(ftp, never()).deleteFile("almostOld.zip", sftpClient);
@@ -86,11 +82,8 @@ class DeleteOldFilesTaskTest {
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
 
-        // and
-        verify(ftp, times(2)).runWith(captureRunWith.capture());
-        captureRunWith.getAllValues().forEach(function -> function.apply(sftpClient));
-
         // then
+        verify(ftp, times(2)).runWith(any());
         verify(ftp).deleteFile("a.zip", sftpClient);
         verify(ftp).deleteFile("b.zip", sftpClient);
     }
@@ -116,11 +109,8 @@ class DeleteOldFilesTaskTest {
         // when
         new DeleteOldFilesTask(ftp, serviceFolderMapping, Duration.ZERO).run();
 
-        // and
-        verify(ftp).runWith(captureRunWith.capture());
-        captureRunWith.getValue().apply(sftpClient);
-
         // then
+        verify(ftp).runWith(any());
         files.forEach(file -> verify(ftp).deleteFile(file.path, sftpClient));
     }
 
