@@ -71,7 +71,7 @@ public class FtpClient {
             isSuccess = true;
         } catch (IOException exc) {
             logger.error("Error uploading file. Filename: {}, ServiceFolder: {}", file.filename, serviceFolder, exc);
-            throw new FtpException("Unable to upload file. Filename: {}", exc);
+            throw new FtpException("Unable to upload file.", exc);
         } finally {
             insights.trackFtpUpload(Duration.between(start, Instant.now()), isSuccess);
         }
