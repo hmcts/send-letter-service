@@ -1,4 +1,3 @@
-// single alert to minify unnecessary cost because threshold used in here is minimal
 module "send-letter-service-stale-letter-alert" {
   source            = "git@github.com:hmcts/cnp-module-metric-alert"
   location          = "${azurerm_application_insights.appinsights.location}"
