@@ -15,7 +15,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     List<Letter> findFirst10ByStatus(LetterStatus status);
 
-    Stream<Letter> findByStatus(LetterStatus status);
+    List<Letter> findByStatus(LetterStatus status);
 
     @Query("select l from Letter l where l.status not in ('Posted', 'Aborted')"
         + " and l.createdAt < :createdBefore and l.type <> '"
