@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -71,6 +72,14 @@ public class FtpClient {
             isSuccess = true;
         } catch (IOException exc) {
             logger.error("Error uploading file. Path: {}", path, exc);
+
+            if (exc.getCause() instanceof TimeoutException) {
+                logger.error("Timeout error while uploading file. Path: {}", path, exc);
+                // deleting as file is corrupt and will break printing provider
+                deleteFile(path, sftpClient);
+                // this ^ can also cause FtpException. In case not - we will have the following FtpException
+            }
+
             throw new FtpException("Unable to upload file.", exc);
         } finally {
             insights.trackFtpUpload(Duration.between(start, Instant.now()), isSuccess);
