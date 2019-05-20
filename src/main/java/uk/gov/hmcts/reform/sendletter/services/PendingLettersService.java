@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 
 @Service
@@ -19,8 +18,6 @@ public class PendingLettersService {
     }
 
     public List<Letter> getPendingLetters() {
-        return repo
-            .findByStatus(Created)
-            .collect(toList());
+        return repo.findByStatus(Created);
     }
 }
