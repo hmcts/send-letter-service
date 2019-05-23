@@ -39,10 +39,10 @@ public class AppInsights {
 
     static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private final TelemetryClient telemetry;
+    private final TelemetryClient telemetryClient;
 
-    public AppInsights(TelemetryClient telemetry) {
-        this.telemetry = telemetry;
+    public AppInsights(TelemetryClient telemetryClient) {
+        this.telemetryClient = telemetryClient;
     }
 
     // schedules
@@ -94,7 +94,7 @@ public class AppInsights {
             requestTelemetry.setDuration(new Duration(getCurrentEuropeLondonInstant().toEpochMilli() - start));
             requestTelemetry.setSuccess(success);
 
-            telemetry.trackRequest(requestTelemetry);
+            telemetryClient.trackRequest(requestTelemetry);
         }
     }
 
@@ -108,7 +108,7 @@ public class AppInsights {
             success
         );
         dependencyTelemetry.setType(FTP_TYPE);
-        telemetry.trackDependency(dependencyTelemetry);
+        telemetryClient.trackDependency(dependencyTelemetry);
     }
 
     public void trackFtpUpload(java.time.Duration duration, boolean success) {
@@ -135,11 +135,11 @@ public class AppInsights {
         properties.put("sentToPrintDayOfWeek", staleLetter.getSentToPrintAt().getDayOfWeek().name());
         properties.put("sentToPrintAt", staleLetter.getSentToPrintAt().format(TIME_FORMAT));
 
-        telemetry.trackEvent(LETTER_NOT_PRINTED, properties, null);
+        telemetryClient.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
 
     public void trackPrintReportReceived(ParsedReport report) {
-        telemetry.trackEvent(
+        telemetryClient.trackEvent(
             LETTER_PRINT_REPORT,
             ImmutableMap.of("isReportParsedFully", BooleanUtils.toStringYesNo(report.allRowsParsed)),
             ImmutableMap.of("reportSize", (double) report.statuses.size())
@@ -149,6 +149,6 @@ public class AppInsights {
     // metrics
 
     public void trackUploadedLetters(int lettersUploaded) {
-        telemetry.trackMetric(LETTER_UPLOAD_FOR_PRINT, lettersUploaded);
+        telemetryClient.trackMetric(LETTER_UPLOAD_FOR_PRINT, lettersUploaded);
     }
 }
