@@ -5,7 +5,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.7.RELEASE'
   id 'org.flywaydb.flyway' version '5.2.4'
-  id 'org.springframework.boot' version '2.1.4.RELEASE'
+  id 'org.springframework.boot' version '2.1.5.RELEASE'
   id 'org.owasp.dependencycheck' version '4.0.2'
   id 'com.github.ben-manes.versions' version '0.21.0'
   id 'org.sonarqube' version '2.7.1'
@@ -187,7 +187,7 @@ def versions = [
   pdfbox: '2.0.15',
   reformLogging: '5.0.1',
   restAssured: '3.3.0',
-  shedlock: '2.4.0',
+  shedlock: '2.5.0',
   springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion,
   springfoxSwagger: '2.9.2'
 ]
@@ -202,11 +202,11 @@ dependencyManagement {
     dependencySet(group: 'org.mockito', version: versions.mockitoJupiter) {
       entry 'mockito-core'
     }
-    // CVE-2019-0232 - command line injections on windows
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.19') {
-      entry 'tomcat-embed-core'
-      entry 'tomcat-embed-el'
-      entry 'tomcat-embed-websocket'
+    // solves CVE-2019-12086
+    // remove once spring manager incorporates this changes
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.9.9') {
+      entry 'jackson-core'
+      entry 'jackson-databind'
     }
   }
 }
@@ -241,7 +241,7 @@ dependencies {
 
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.1.RELEASE'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.0'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.3'
 
   compile group: 'com.hierynomus', name: 'sshj', version: '0.27.0'
   compile group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
@@ -267,7 +267,7 @@ dependencies {
   integrationTestCompile sourceSets.test.runtimeClasspath
   integrationTestCompile group: 'org.apache.sshd', name: 'sshd-scp', version: '2.2.0'
   integrationTestCompile group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.2.0'
-  integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.11.2'
+  integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.11.3'
   integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.6'
   integrationTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
