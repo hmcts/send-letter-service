@@ -8,6 +8,7 @@ import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext;
 import com.microsoft.applicationinsights.web.internal.ThreadContext;
+import com.microsoft.applicationinsights.web.internal.correlation.TelemetryCorrelationUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -123,6 +124,7 @@ public class AppInsights {
     }
 
     private void handleDependencyTelemetry(Dependency dependency, long durationInMillis, boolean success) {
+        // dependency definition
         RemoteDependencyTelemetry dependencyTelemetry = new RemoteDependencyTelemetry(
             dependency.name(),
             dependency.command(),
@@ -131,6 +133,20 @@ public class AppInsights {
         );
 
         dependencyTelemetry.setType(dependency.type());
+
+        // tracing support
+        RequestTelemetryContext context = ThreadContext.getRequestTelemetryContext();
+
+        if (context != null) {
+            RequestTelemetry requestTelemetry = context.getHttpRequestTelemetry();
+            dependencyTelemetry.setId(TelemetryCorrelationUtils.generateChildDependencyId());
+            dependencyTelemetry.getContext().getOperation().setId(
+                requestTelemetry.getContext().getOperation().getId()
+            );
+            dependencyTelemetry.getContext().getOperation().setParentId(
+                requestTelemetry.getId()
+            );
+        }
 
         telemetryClient.trackDependency(dependencyTelemetry);
     }
