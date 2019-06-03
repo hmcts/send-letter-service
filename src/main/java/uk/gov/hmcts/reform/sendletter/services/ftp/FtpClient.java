@@ -24,7 +24,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_DELETED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
+import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_LIST_FILES;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DELETED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DOWNLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyName.FTP_CLIENT;
@@ -136,6 +138,7 @@ public class FtpClient {
         });
     }
 
+    @Dependency(name = FTP_CLIENT, command = FTP_LIST_FILES, type = FTP)
     public List<FileInfo> listLetters(String serviceFolder) {
         return runWith(sftp -> {
             try {
@@ -155,6 +158,7 @@ public class FtpClient {
         });
     }
 
+    @Dependency(name = FTP_CLIENT, command = FTP_FILE_DELETED, type = FTP)
     public void deleteFile(String filePath, SFTPClient sftpClient) {
         try {
             logger.info("Deleting file {} on SFTP server", filePath);
