@@ -169,10 +169,6 @@ public class FtpClient {
         }
     }
 
-    public void testConnection() {
-        runWith(sftpClient -> null);
-    }
-
     public <T> T runWith(Function<SFTPClient, T> action) {
         SSHClient ssh = null;
 
