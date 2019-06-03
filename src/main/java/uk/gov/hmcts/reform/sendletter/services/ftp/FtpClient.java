@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_CONNECTED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_DELETED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_LIST_FILES;
@@ -189,6 +190,7 @@ public class FtpClient {
         }
     }
 
+    @Dependency(name = FTP_CLIENT, command = FTP_CONNECTED, type = FTP)
     public SSHClient getSshClient() throws IOException {
         SSHClient ssh = sshClientSupplier.get();
 

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.sendletter.logging;
 
 public final class DependencyCommand {
 
+    public static final String FTP_CONNECTED = "FtpConnected";
+
     public static final String FTP_FILE_DELETED = "FtpFileDeleted";
 
     public static final String FTP_FILE_UPLOADED = "FtpFileUploaded";
