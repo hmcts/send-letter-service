@@ -177,19 +177,7 @@ public class FtpClient {
         SSHClient ssh = null;
 
         try {
-            ssh = sshClientSupplier.get();
-
-            ssh.addHostKeyVerifier(configProperties.getFingerprint());
-            ssh.connect(configProperties.getHostname(), configProperties.getPort());
-
-            ssh.authPublickey(
-                configProperties.getUsername(),
-                ssh.loadKeys(
-                    configProperties.getPrivateKey(),
-                    configProperties.getPublicKey(),
-                    null
-                )
-            );
+            ssh = getSshClient();
 
             return action.apply(ssh.newSFTPClient());
         } catch (IOException exc) {
@@ -203,6 +191,24 @@ public class FtpClient {
                 logger.warn("Error closing ssh connection.", e);
             }
         }
+    }
+
+    public SSHClient getSshClient() throws IOException {
+        SSHClient ssh = sshClientSupplier.get();
+
+        ssh.addHostKeyVerifier(configProperties.getFingerprint());
+        ssh.connect(configProperties.getHostname(), configProperties.getPort());
+
+        ssh.authPublickey(
+            configProperties.getUsername(),
+            ssh.loadKeys(
+                configProperties.getPrivateKey(),
+                configProperties.getPublicKey(),
+                null
+            )
+        );
+
+        return ssh;
     }
 
     private boolean isReportFile(RemoteResourceInfo resourceInfo) {
