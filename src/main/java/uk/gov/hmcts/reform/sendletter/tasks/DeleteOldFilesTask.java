@@ -62,10 +62,8 @@ public class DeleteOldFilesTask {
                             .filter(f -> f.modifiedAt.isBefore(now().minus(ttl)))
                             .collect(toList());
 
-                    logger.info("Deleting {} old files from {}", filesToDelete.size(), folder);
-
                     if (!filesToDelete.isEmpty()) {
-                        deleteFiles(filesToDelete, sftpClient);
+                        deleteFiles(folder, filesToDelete, sftpClient);
                     } else {
                         logger.info("No files to delete found");
                     }
@@ -76,7 +74,9 @@ public class DeleteOldFilesTask {
         logger.info("Completed {} task", TASK_NAME);
     }
 
-    private void deleteFiles(List<FileInfo> filesToDelete, SFTPClient sftpClient) {
+    private void deleteFiles(String ftpFolder, List<FileInfo> filesToDelete, SFTPClient sftpClient) {
+        logger.info("Deleting {} old files from {}", filesToDelete.size(), ftpFolder);
+
         filesToDelete.forEach(f -> {
             try {
                 ftp.deleteFile(f.path, sftpClient);
