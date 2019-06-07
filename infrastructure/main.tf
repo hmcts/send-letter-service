@@ -27,33 +27,9 @@ locals {
   nonPreviewVaultName    = "${var.product}-send-letter-${var.env}"
   vaultName              = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 
-  # URI of vault that stores long-term secrets. It's the app's own Key Vault, except for (s)preview,
-  # where vaults are short-lived and can only store secrets generated during deployment
-  permanent_vault_uri    = "https://${var.raw_product}-send-letter-${local.local_env}.vault.azure.net/"
-
   db_connection_options  = "?sslmode=require"
 
   sku_size = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"}"
-}
-
-data "azurerm_key_vault_secret" "ftp_user" {
-  name      = "ftp-user"
-  vault_uri = "${local.permanent_vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "ftp_private_key" {
-  name      = "ftp-private-key"
-  vault_uri = "${local.permanent_vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "ftp_public_key" {
-  name      = "ftp-public-key"
-  vault_uri = "${local.permanent_vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "encryption_public_key" {
-  name      = "encryption-public-key"
-  vault_uri = "${local.permanent_vault_uri}"
 }
 
 module "db" {
@@ -182,5 +158,25 @@ data "azurerm_key_vault_secret" "smtp_password" {
 
 data "azurerm_key_vault_secret" "upload_summary_recipients" {
   name         = "upload-summary-report-recipients"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+}
+
+data "azurerm_key_vault_secret" "ftp_user" {
+  name      = "ftp-user"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+}
+
+data "azurerm_key_vault_secret" "ftp_private_key" {
+  name      = "ftp-private-key"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+}
+
+data "azurerm_key_vault_secret" "ftp_public_key" {
+  name      = "ftp-public-key"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+}
+
+data "azurerm_key_vault_secret" "encryption_public_key" {
+  name      = "encryption-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
