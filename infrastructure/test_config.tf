@@ -9,12 +9,12 @@ data "azurerm_key_vault_secret" "source_test_ftp_user" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_secret" "source_test_ftp_private_key" {
+data "azurerm_key_vault_key" "source_test_ftp_private_key" {
   name      = "test-ftp-private-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_secret" "source_test_ftp_public_key" {
+data "azurerm_key_vault_key" "source_test_ftp_public_key" {
   name      = "test-ftp-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }

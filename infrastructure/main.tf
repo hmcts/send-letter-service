@@ -166,17 +166,17 @@ data "azurerm_key_vault_secret" "ftp_user" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_secret" "ftp_private_key" {
+data "azurerm_key_vault_key" "ftp_private_key" {
   name      = "ftp-private-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_secret" "ftp_public_key" {
+data "azurerm_key_vault_key" "ftp_public_key" {
   name      = "ftp-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_secret" "encryption_public_key" {
+data "azurerm_key_vault_key" "encryption_public_key" {
   name      = "encryption-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
