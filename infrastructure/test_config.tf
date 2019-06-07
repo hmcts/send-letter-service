@@ -4,6 +4,12 @@ data "azurerm_key_vault_secret" "source_test_s2s_secret" {
   vault_uri = "${local.s2s_vault_url}"
 }
 
+resource "azurerm_key_vault_secret" "test_s2s_secret" {
+  name      = "test-s2s-secret"
+  value     = "${data.azurerm_key_vault_secret.source_test_s2s_secret.value}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+}
+
 data "azurerm_key_vault_secret" "source_test_ftp_user" {
   name      = "test-ftp-user"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
