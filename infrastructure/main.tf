@@ -11,11 +11,11 @@ resource "azurerm_resource_group" "rg" {
 locals {
   ase_name               = "core-compute-${var.env}"
 
-  ftp_private_key        = "${data.azurerm_key_vault_key.ftp_private_key}"
-  ftp_public_key         = "${data.azurerm_key_vault_key.ftp_public_key}"
+  ftp_private_key        = "${data.azurerm_key_vault_secret.ftp_private_key.value}"
+  ftp_public_key         = "${data.azurerm_key_vault_secret.ftp_public_key.value}"
   ftp_user               = "${data.azurerm_key_vault_secret.ftp_user.value}"
 
-  encryption_public_key  = "${data.azurerm_key_vault_key.encryption_public_key}"
+  encryption_public_key  = "${data.azurerm_key_vault_secret.encryption_public_key.value}"
 
   local_env              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
@@ -166,17 +166,17 @@ data "azurerm_key_vault_secret" "ftp_user" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_key" "ftp_private_key" {
+data "azurerm_key_vault_secret" "ftp_private_key" {
   name      = "ftp-private-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_key" "ftp_public_key" {
+data "azurerm_key_vault_secret" "ftp_public_key" {
   name      = "ftp-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
-data "azurerm_key_vault_key" "encryption_public_key" {
+data "azurerm_key_vault_secret" "encryption_public_key" {
   name      = "encryption-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
