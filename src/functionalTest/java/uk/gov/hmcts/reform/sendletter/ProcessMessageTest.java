@@ -31,14 +31,13 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_single_document.json", "two-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        SFTPClient sftp = getSftpClient();
+        RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
-            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+        assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
-            if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 2);
-            }
+        if (!isEncryptionEnabled) {
+            validatePdfFile(letterId, sftp, sftpFile, 2);
         }
     }
 
@@ -50,14 +49,13 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_single_document.json", "one-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        SFTPClient sftp = getSftpClient();
+        RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
-            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+        assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
-            if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 2);
-            }
+        if (!isEncryptionEnabled) {
+            validatePdfFile(letterId, sftp, sftpFile, 2);
         }
     }
 
@@ -69,14 +67,13 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_two_documents.json", "two-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        SFTPClient sftp = getSftpClient();
+        RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
-            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+        assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
-            if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 4);
-            }
+        if (!isEncryptionEnabled) {
+            validatePdfFile(letterId, sftp, sftpFile, 4);
         }
     }
 
@@ -88,14 +85,13 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_two_documents.json", "one-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        SFTPClient sftp = getSftpClient();
+        RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
-            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+        assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
-            if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 4);
-            }
+        if (!isEncryptionEnabled) {
+            validatePdfFile(letterId, sftp, sftpFile, 4);
         }
     }
 
