@@ -172,19 +172,10 @@ public class FtpClient {
                 )
             );
 
-            try (SFTPClient sftp = ssh.newSFTPClient()) {
-                return action.apply(sftp);
-            }
+            SFTPClient sftp = ssh.newSFTPClient();
+            return action.apply(sftp);
         } catch (IOException exc) {
             throw new FtpException("Unable to upload file.", exc);
-        } finally {
-            try {
-                if (ssh != null) {
-                    ssh.disconnect();
-                }
-            } catch (IOException e) {
-                logger.warn("Error closing ssh connection.", e);
-            }
         }
     }
 
