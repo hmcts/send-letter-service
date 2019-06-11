@@ -145,7 +145,7 @@ abstract class FunctionalTestSuite {
 
     SFTPClient getSftpClient() throws IOException {
         DefaultConfig cfg = new DefaultConfig();
-        cfg.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
+        cfg.setKeepAliveProvider(KeepAliveProvider.HEARTBEAT);
         SSHClient ssh = new SSHClient(cfg);
 
         ssh.addHostKeyVerifier(ftpFingerprint);
