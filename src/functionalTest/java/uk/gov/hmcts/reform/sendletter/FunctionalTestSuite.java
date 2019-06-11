@@ -144,7 +144,6 @@ abstract class FunctionalTestSuite {
     SFTPClient getSftpClient() throws IOException {
         SSHClient ssh = new SSHClient();
 
-        ssh.getTransport().setTimeoutMs(10000);
         ssh.addHostKeyVerifier(ftpFingerprint);
         ssh.connect(ftpHostname, ftpPort);
 
@@ -153,7 +152,10 @@ abstract class FunctionalTestSuite {
             ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
         );
 
-        return ssh.newSFTPClient();
+        SFTPClient sftpClient = ssh.newSFTPClient();
+        sftpClient.getFileTransfer().setPreserveAttributes(false);
+
+        return sftpClient;
     }
 
     ZipInputStream getZipInputStream(RemoteFile zipFile) throws IOException {
