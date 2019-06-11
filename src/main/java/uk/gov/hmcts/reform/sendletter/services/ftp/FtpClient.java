@@ -162,6 +162,7 @@ public class FtpClient {
 
             ssh.addHostKeyVerifier(configProperties.getFingerprint());
             ssh.connect(configProperties.getHostname(), configProperties.getPort());
+            ssh.getConnection().getKeepAlive().setKeepAliveInterval(5);
 
             ssh.authPublickey(
                 configProperties.getUsername(),
