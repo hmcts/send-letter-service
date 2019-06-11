@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -30,7 +31,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             samplePdfLetterRequestJson("letter-with-single-pdf.json")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
@@ -48,7 +50,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             samplePdfLetterRequestJson("letter-with-two-pdfs.json")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));

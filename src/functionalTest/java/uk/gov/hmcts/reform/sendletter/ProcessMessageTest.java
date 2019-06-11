@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -31,7 +32,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_single_document.json", "two-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
@@ -50,7 +52,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_single_document.json", "one-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
@@ -69,7 +72,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_two_documents.json", "two-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
@@ -88,7 +92,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
             sampleLetterRequestJson("letter_two_documents.json", "one-page-template.html")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
+        try (SSHClient ssh = getSshClient()) {
+            SFTPClient sftp = ssh.newSFTPClient();
             RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));

@@ -8,7 +8,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
-import net.schmizz.sshj.sftp.SFTPClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,7 +140,7 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
-    SFTPClient getSftpClient() throws IOException {
+    SSHClient getSshClient() throws IOException {
         SSHClient ssh = new SSHClient();
 
         ssh.addHostKeyVerifier(ftpFingerprint);
@@ -152,7 +151,7 @@ abstract class FunctionalTestSuite {
             ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
         );
 
-        return ssh.newSFTPClient();
+        return ssh;
     }
 
     ZipInputStream getZipInputStream(RemoteFile zipFile) throws IOException {
