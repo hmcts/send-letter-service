@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -30,13 +31,13 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             samplePdfLetterRequestJson("letter-with-single-pdf.json")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        try (SSHClient sshClient = getSshClient()) {
+            RemoteResourceInfo sftpFile = waitForFileOnSftp(sshClient, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
             if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 2);
+                validatePdfFile(letterId, sshClient, sftpFile, 2);
             }
         }
     }
@@ -48,20 +49,20 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             samplePdfLetterRequestJson("letter-with-two-pdfs.json")
         );
 
-        try (SFTPClient sftp = getSftpClient()) {
-            RemoteResourceInfo sftpFile = waitForFileOnSftp(sftp, letterId);
+        try (SSHClient sshClient = getSshClient()) {
+            RemoteResourceInfo sftpFile = waitForFileOnSftp(sshClient, letterId);
 
             assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
 
             if (!isEncryptionEnabled) {
-                validatePdfFile(letterId, sftp, sftpFile, 4);
+                validatePdfFile(letterId, sshClient, sftpFile, 4);
             }
         }
     }
 
-    private void validatePdfFile(String letterId, SFTPClient sftp, RemoteResourceInfo sftpFile, int noOfDocuments)
+    private void validatePdfFile(String letterId, SSHClient sshClient, RemoteResourceInfo sftpFile, int noOfDocuments)
         throws IOException {
-        try (RemoteFile zipFile = sftp.open(sftpFile.getPath())) {
+        try (RemoteFile zipFile = sshClient.newSFTPClient().open(sftpFile.getPath())) {
             PdfFile pdfFile = unzipFile(zipFile);
             assertThat(pdfFile.name).matches(getPdfFileNamePattern(letterId));
 
@@ -72,7 +73,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     private RemoteResourceInfo waitForFileOnSftp(
-        SFTPClient sftp, String letterId
+        SSHClient sshClient, String letterId
     ) throws IOException, InterruptedException {
         Date waitUntil = addMilliseconds(now(), maxWaitForFtpFileInMs);
 
@@ -82,7 +83,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
 
 
         while (!now().after(waitUntil)) {
-            matchingFiles = sftp.ls(lettersFolder, file -> file.getName().contains(letterId));
+            matchingFiles = sshClient.newSFTPClient().ls(lettersFolder, file -> file.getName().contains(letterId));
 
             if (matchingFiles.size() == 1) {
                 return matchingFiles.get(0);

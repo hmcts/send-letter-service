@@ -141,7 +141,8 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
-    SFTPClient getSftpClient() throws IOException {
+    SSHClient getSshClient() throws IOException {
+
         SSHClient ssh = new SSHClient();
 
         ssh.addHostKeyVerifier(ftpFingerprint);
@@ -152,10 +153,7 @@ abstract class FunctionalTestSuite {
             ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
         );
 
-        SFTPClient sftpClient = ssh.newSFTPClient();
-        sftpClient.getFileTransfer().setPreserveAttributes(false);
-
-        return sftpClient;
+        return ssh;
     }
 
     ZipInputStream getZipInputStream(RemoteFile zipFile) throws IOException {
