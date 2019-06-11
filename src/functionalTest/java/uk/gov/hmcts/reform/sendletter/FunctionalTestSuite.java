@@ -6,6 +6,8 @@ import com.google.common.io.Resources;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -142,10 +144,13 @@ abstract class FunctionalTestSuite {
     }
 
     SFTPClient getSftpClient() throws IOException {
-        SSHClient ssh = new SSHClient();
+        DefaultConfig cfg = new DefaultConfig();
+        cfg.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
+        SSHClient ssh = new SSHClient(cfg);
 
         ssh.addHostKeyVerifier(ftpFingerprint);
         ssh.connect(ftpHostname, ftpPort);
+        ssh.getConnection().getKeepAlive().setKeepAliveInterval(5);
 
         ssh.authPublickey(
             ftpUser,
