@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.*;
+import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyName.FTP_CLIENT;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyType.FTP;
 
