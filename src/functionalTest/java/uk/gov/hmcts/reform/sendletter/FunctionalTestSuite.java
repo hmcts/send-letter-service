@@ -145,8 +145,7 @@ abstract class FunctionalTestSuite {
         SSHClient ssh = new SSHClient();
 
         ssh.addHostKeyVerifier(ftpFingerprint);
-        ssh.setConnectTimeout(60000);
-        ssh.setTimeout(60000);
+        ssh.getConnection().setTimeoutMs(60000);
         ssh.connect(ftpHostname, ftpPort);
 
         ssh.authPublickey(

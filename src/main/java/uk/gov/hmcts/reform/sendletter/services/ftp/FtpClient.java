@@ -24,9 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
-import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DELETED;
-import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DOWNLOADED;
+import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.*;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyName.FTP_CLIENT;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyType.FTP;
 
@@ -161,8 +159,8 @@ public class FtpClient {
             ssh = sshClientSupplier.get();
 
             ssh.addHostKeyVerifier(configProperties.getFingerprint());
-            ssh.setConnectTimeout(60000);
-            ssh.setTimeout(60000);
+            ssh.getConnection().setTimeoutMs(60000);
+
             ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
             ssh.authPublickey(
