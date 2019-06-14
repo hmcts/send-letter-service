@@ -161,7 +161,7 @@ public class FtpClient {
             ssh = sshClientSupplier.get();
 
             ssh.addHostKeyVerifier(configProperties.getFingerprint());
-            ssh.getConnection().setTimeoutMs(60000);
+            ssh.getTransport().setTimeoutMs(50000);
 
             ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
