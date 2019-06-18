@@ -12,7 +12,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
-import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
 
