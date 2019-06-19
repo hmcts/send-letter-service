@@ -124,7 +124,8 @@ jacocoTestReport {
   afterEvaluate {
     getClassDirectories().from = getClassDirectories().files.collect {
       fileTree(dir: it, exclude: [
-        'uk/gov/hmcts/reform/sendletter/config/**'
+        'uk/gov/hmcts/reform/sendletter/config/**',
+        '**/BasicLetterInfo.java'
       ])
     }
   }
