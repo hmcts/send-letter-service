@@ -1,2 +1,2 @@
 ALTER TABLE letters
-ADD COLUMN key_fingerprint VARCHAR(50) NULL;
+ADD COLUMN encryption_key_fingerprint VARCHAR(50) NULL;
