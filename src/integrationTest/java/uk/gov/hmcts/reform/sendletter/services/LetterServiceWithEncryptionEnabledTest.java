@@ -72,6 +72,9 @@ class LetterServiceWithEncryptionEnabledTest {
 
         Letter letterInDb = letterRepository.findById(id).get();
 
+        assertThat(letterInDb.isEncrypted()).isTrue();
+        assertThat(letterInDb.getEncryptionKeyFingerprint()).isNotBlank();
+
         byte[] encryptedZip = letterInDb.getFileContent();
 
         PgpDecryptionHelper.DecryptedFile decryptedZip = PgpDecryptionHelper.decryptFile(
