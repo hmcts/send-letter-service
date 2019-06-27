@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
-import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -20,9 +19,9 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,18 +52,15 @@ class MarkLettersPostedTest {
         given(ftpClient.downloadReports())
             .willReturn(singletonList(new Report(filePath, null)));
         given(parser.parse(any()))
-            .willReturn(SampleData.parsedReport(filePath, asList(known, unknown), true));
-        Letter letter = SampleData.letterEntity("a.service");
-        letter.setStatus(LetterStatus.Uploaded);
-        given(repo.findById(known)).willReturn(Optional.of(letter));
-        given(repo.findById(unknown)).willReturn(Optional.empty());
+            .willReturn(SampleData.parsedReport(filePath, asList(unknown, known), true));
+        given(repo.findStatusById(known)).willReturn(Optional.of(LetterStatus.Uploaded));
+        given(repo.findStatusById(unknown)).willReturn(Optional.empty());
 
         // when
         task.run();
 
         // then
-        assertThat(letter.getStatus()).isEqualTo(LetterStatus.Posted);
-        assertThat(letter.getFileContent()).isNull();
+        verify(repo).markAsPosted(eq(known), any());
     }
 
     @Test
@@ -79,7 +75,7 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findById(any())).willReturn(Optional.of(SampleData.letterEntity("cmc")));
+        given(repo.findStatusById(any())).willReturn(Optional.of(LetterStatus.Uploaded));
 
         // when
         task.run();
@@ -100,7 +96,7 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findById(any())).willReturn(Optional.of(SampleData.letterEntity("cmc")));
+        given(repo.findStatusById(any())).willReturn(Optional.of(LetterStatus.Uploaded));
 
         // when
         task.run();
