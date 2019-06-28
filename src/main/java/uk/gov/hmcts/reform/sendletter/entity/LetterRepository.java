@@ -35,7 +35,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     @Query("select l.status from Letter l where l.id = :id")
     Optional<LetterStatus> findStatusById(@Param("id") UUID id);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(""
         + "update Letter l "
         + "set l.fileContent = null, l.status = 'Posted', l.printedAt = :printedAt "
