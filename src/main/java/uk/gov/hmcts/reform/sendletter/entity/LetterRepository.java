@@ -41,7 +41,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         + "set l.fileContent = null, l.status = 'Posted', l.printedAt = :printedAt "
         + "where l.id = :id"
     )
-    void markAsPosted(UUID id, LocalDateTime printedAt);
+    void markAsPosted(@Param("id") UUID id, @Param("printedAt") LocalDateTime printedAt);
 
     Optional<Letter> findByIdAndService(UUID id, String service);
 
