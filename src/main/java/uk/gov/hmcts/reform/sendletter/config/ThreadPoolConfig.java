@@ -46,7 +46,7 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
         ThreadPoolTaskScheduler taskScheduler = new SendLetterTaskScheduler();
         taskScheduler.setThreadNamePrefix("SendLetterTask-");
         taskScheduler.setErrorHandler(t -> {
-            log.error("Unhandled exception during task. {}: {}", t.getClass(), t.getMessage(), t);
+            log.error("Unhandled exception during task. {}: {}", t.getClass().getName(), t.getMessage(), t);
             errorCount.incrementAndGet();
         });
         taskScheduler.initialize();
