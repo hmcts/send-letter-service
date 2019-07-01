@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.sendletter.util.CsvReportWriter;
 
 import java.time.LocalTime;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,9 +32,6 @@ class MarkLettersPostedTaskTest {
 
     @Autowired
     LetterRepository repository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     ReportParser parser = new ReportParser();
     FtpAvailabilityChecker checker = mock(FtpAvailabilityChecker.class);
@@ -59,12 +55,10 @@ class MarkLettersPostedTaskTest {
         }
 
         // Check that the letter has moved to the Posted state.
-        entityManager.flush();
-        letter = repository.findById(letter.getId()).get();
-        assertThat(letter.getStatus()).isEqualTo(LetterStatus.Posted);
-        // Check that printed at date has been set.
-        assertThat(letter.getPrintedAt()).isNotNull();
-        assertThat(letter.getFileContent()).isNull();
+        Letter letterAfterJobRun = repository.findById(letter.getId()).get();
+        assertThat(letterAfterJobRun.getStatus()).isEqualTo(LetterStatus.Posted);
+        assertThat(letterAfterJobRun.getPrintedAt()).isNotNull();
+        assertThat(letterAfterJobRun.getFileContent()).isNull();
 
         verify(insights).trackPrintReportReceived(any(ParsedReport.class));
     }
