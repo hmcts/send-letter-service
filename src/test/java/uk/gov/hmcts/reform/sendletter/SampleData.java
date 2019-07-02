@@ -56,16 +56,16 @@ public final class SampleData {
         );
     }
 
+    public static uk.gov.hmcts.reform.sendletter.entity.Letter letterWithFingerprint(String fingerprint) {
+        return letterEntity("some_service", now(), "letterType1", fingerprint);
+    }
+
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(String service) {
         return letterEntity(service, now());
     }
 
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(String service, LocalDateTime createdAt) {
         return letterEntity(service, createdAt, "letterType1", null);
-    }
-
-    public static uk.gov.hmcts.reform.sendletter.entity.Letter letterWithFingerprint(String fingerprint) {
-        return letterEntity("some_service", now(), "letterType1", fingerprint);
     }
 
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(
