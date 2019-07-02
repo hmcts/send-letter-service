@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -163,7 +165,20 @@ class UploadLettersTaskTest {
 
     @Test
     void should_send_only_letters_with_specified_fingerprint() {
-        
+        // given
+        Letter letterA = letterWithFingerprint("xxx");
+        Letter letterB = letterWithFingerprint("xxx");
+        Letter letterC = letterWithFingerprint("yyy");
+
+        givenDbContains(letterA, letterB, letterC);
+
+        // when
+        task("xxx").run();
+
+        // then
+        verify(repo, atLeastOnce()).findFirst3ByStatusAndEncryptionKeyFingerprint(Created, "xxx");
+        verify(repo, never()).findFirst3ByStatusAndEncryptionKeyFingerprint(Created, "yyy");
+        verify(repo, never()).findFirst3ByStatus(Created);
     }
 
     private Letter letterOfType(String type) {
@@ -217,6 +232,5 @@ class UploadLettersTaskTest {
             fingerprint,
             insights
         );
-
     }
 }
