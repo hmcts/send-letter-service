@@ -46,7 +46,7 @@ public class UploadLettersTask {
         FtpClient ftp,
         IFtpAvailabilityChecker availabilityChecker,
         ServiceFolderMapping serviceFolderMapping,
-        @Value("${file-cleanup.ttl}") String keyFingerprint,
+        @Value("${tasks.upload-letters.key-fingerprint}") String keyFingerprint,
         AppInsights insights
     ) {
         this.repo = repo;
