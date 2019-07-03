@@ -115,7 +115,7 @@ class BaseTest {
                 .atMost(15, SECONDS)
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
-                    assertThat(letters.size()).as("Number of letters in DB").isEqualTo(1);
+                    assertThat(letters).as("letters in DB").hasSize(1);
                     assertThat(letters.get(0).getStatus()).as("Letter status").isEqualTo(LetterStatus.Posted);
                 });
 
