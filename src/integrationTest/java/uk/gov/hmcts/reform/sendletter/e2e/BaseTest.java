@@ -100,8 +100,7 @@ class BaseTest {
             await()
                 .atMost(15, SECONDS)
                 .untilAsserted(() -> {
-                    File[] files = server.lettersFolder.listFiles();
-                    assertThat(files)
+                    assertThat(server.lettersFolder.listFiles())
                         .as("Files on FTP")
                         .isNotEmpty()
                         .allMatch(f -> isValidPdf(isEncryptionEnabled, f));
