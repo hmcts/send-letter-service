@@ -115,14 +115,14 @@ class BaseTest {
                 .atMost(15, SECONDS)
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
-                    assertThat(letters).as("letters in DB").hasSize(1);
+                    assertThat(letters).as("Letters in DB").hasSize(1);
                     assertThat(letters.get(0).getStatus()).as("Letter status").isEqualTo(LetterStatus.Posted);
                 });
 
             // Wait for the csv report to be deleted so that we don't stop the FTP server before the send letters
             // task has finished using it.
             await().atMost(15, SECONDS).untilAsserted(
-                () -> assertThat(server.reportFolder.listFiles()).as("CSV report on FTP").isEmpty()
+                () -> assertThat(server.reportFolder.listFiles()).as("CSV reports on FTP").isEmpty()
             );
         }
 
