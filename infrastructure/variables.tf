@@ -75,8 +75,8 @@ variable "file_cleanup_enabled" {
 }
 
 variable "file_cleanup_cron" {
-  default     = "0 0 5 * * *"
-  description = "Crontab value for task to be run. Default - 5AM server time"
+  default     = "0 15 * * * *"
+  description = "Crontab value for task to be run"
 }
 
 variable scheduling_lock_at_most_for {
@@ -109,13 +109,17 @@ variable "ftp_reports_folder" {
 }
 
 variable "ftp_reports_cron" {
-  default = "0 30 10 * * *"
+  default = "0 30 * * * *"
 }
 
 variable "smtp_host" {
   type        = "string"
   default     = "false"
   description = "SMTP host for sending out reports via JavaMailSender"
+}
+
+variable upload_letters_key_fingerprint {
+  default = ""
 }
 
 # region reports

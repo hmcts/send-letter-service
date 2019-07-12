@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.http.util.Asserts;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
@@ -44,7 +45,6 @@ public class LetterService {
     private final Zipper zipper;
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
-    private final String encryptionPublicKey;
     private final PGPPublicKey pgpPublicKey;
     private final ServiceFolderMapping serviceFolderMapping;
 
@@ -62,7 +62,6 @@ public class LetterService {
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
-        this.encryptionPublicKey = encryptionPublicKey;
         this.pgpPublicKey = loadPgpPublicKey(encryptionPublicKey);
         this.serviceFolderMapping = serviceFolderMapping;
     }
@@ -104,14 +103,11 @@ public class LetterService {
             serviceName,
             mapper.valueToTree(letter.getAdditionalData()),
             letter.getType(),
-            zipContent,
+            isEncryptionEnabled ? encryptZipContents(letter, serviceName, id, zipContent, createdAtTime) : zipContent,
             isEncryptionEnabled,
+            getEncryptionKeyFingerprint(),
             createdAtTime
         );
-
-        if (isEncryptionEnabled) {
-            dbLetter.setFileContent(encryptZipContents(letter, serviceName, id, zipContent, createdAtTime));
-        }
 
         letterRepository.save(dbLetter);
 
@@ -127,7 +123,7 @@ public class LetterService {
         byte[] zipContent,
         LocalDateTime createdAt
     ) {
-        Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
+        Asserts.notNull(pgpPublicKey, "pgpPublicKey");
 
         String zipFileName = FinalPackageFileNameHelper.generateName(
             letter.getType(),
@@ -138,6 +134,14 @@ public class LetterService {
         );
 
         return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey);
+    }
+
+    private String getEncryptionKeyFingerprint() {
+        if (isEncryptionEnabled) {
+            return Hex.encodeHexString(this.pgpPublicKey.getFingerprint());
+        } else {
+            return null;
+        }
     }
 
     private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
