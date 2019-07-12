@@ -5,22 +5,22 @@ data "azurerm_key_vault_secret" "source_test_s2s_secret" {
 }
 
 resource "azurerm_key_vault_secret" "test_s2s_secret" {
-  name      = "test-s2s-secret"
-  value     = "${data.azurerm_key_vault_secret.source_test_s2s_secret.value}"
+  name         = "test-s2s-secret"
+  value        = "${data.azurerm_key_vault_secret.source_test_s2s_secret.value}"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "source_test_ftp_user" {
-  name      = "test-ftp-user"
+  name         = "test-ftp-user"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "source_test_ftp_private_key" {
-  name      = "test-ftp-private-key"
+  name         = "test-ftp-private-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "source_test_ftp_public_key" {
-  name      = "test-ftp-public-key"
+  name         = "test-ftp-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }

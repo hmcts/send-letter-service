@@ -162,21 +162,21 @@ data "azurerm_key_vault_secret" "upload_summary_recipients" {
 }
 
 data "azurerm_key_vault_secret" "ftp_user" {
-  name      = "ftp-user"
+  name         = "ftp-user"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "ftp_private_key" {
-  name      = "ftp-private-key"
+  name         = "ftp-private-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "ftp_public_key" {
-  name      = "ftp-public-key"
+  name         = "ftp-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "encryption_public_key" {
-  name      = "encryption-public-key"
+  name         = "encryption-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
