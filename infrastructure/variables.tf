@@ -109,13 +109,17 @@ variable "ftp_reports_folder" {
 }
 
 variable "ftp_reports_cron" {
-  default = "0 30 10 * * *"
+  default = "0 30 * * * *"
 }
 
 variable "smtp_host" {
   type        = "string"
   default     = "false"
   description = "SMTP host for sending out reports via JavaMailSender"
+}
+
+variable upload_letters_key_fingerprint {
+  default = ""
 }
 
 # region reports
