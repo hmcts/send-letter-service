@@ -117,33 +117,33 @@ module "send-letter-key-vault" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name      = "${var.component}-POSTGRES-USER"
-  value     = "${module.db.user_name}"
-  vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-POSTGRES-USER"
+  value        = "${module.db.user_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name      = "${var.component}-POSTGRES-PASS"
-  value     = "${module.db.postgresql_password}"
-  vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-POSTGRES-PASS"
+  value        = "${module.db.postgresql_password}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name      = "${var.component}-POSTGRES-HOST"
-  value     = "${module.db.host_name}"
-  vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-POSTGRES-HOST"
+  value        = "${module.db.host_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name      = "${var.component}-POSTGRES-PORT"
-  value     = "${module.db.postgresql_listen_port}"
-  vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-POSTGRES-PORT"
+  value        = "${module.db.postgresql_listen_port}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name      = "${var.component}-POSTGRES-DATABASE"
-  value     = "${module.db.postgresql_database}"
-  vault_uri = "${module.send-letter-key-vault.key_vault_uri}"
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-POSTGRES-DATABASE"
+  value        = "${module.db.postgresql_database}"
 }
 # endregion
 
