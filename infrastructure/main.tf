@@ -20,8 +20,8 @@ locals {
   local_env              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase              = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
 
-  s2s_url                = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
-  s2s_vault_url          = "https://s2s-${local.local_env}.vault.azure.net/"
+  s2s_rg  = "rpe-service-auth-provider-${local.local_env}"
+  s2s_url = "http://${local.s2s_rg}.service.core-compute-${local.local_env}.internal"
 
   previewVaultName       = "${var.product}-send-letter"
   nonPreviewVaultName    = "${var.product}-send-letter-${var.env}"
@@ -114,6 +114,11 @@ module "send-letter-key-vault" {
   # dcd_cc-dev group object ID
   product_group_object_id = "38f9dea6-e861-4a50-9e73-21e64f563537"
   common_tags         = "${var.common_tags}"
+}
+
+data "azurerm_key_vault" "s2s_key_vault" {
+  name                = "s2s-${local.local_env}"
+  resource_group_name = "${local.s2s_rg}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {

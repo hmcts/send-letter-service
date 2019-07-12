@@ -1,7 +1,7 @@
 # copy S2S secret from S2S's vault to app's vault, so that it can be passed to tests by Jenkins
 data "azurerm_key_vault_secret" "source_test_s2s_secret" {
-  name      = "microservicekey-send-letter-tests"
-  vault_uri = "${local.s2s_vault_url}"
+  key_vault_id = "${data.azurerm_key_vault.s2s_key_vault.id}"
+  name         = "microservicekey-send-letter-tests"
 }
 
 resource "azurerm_key_vault_secret" "test_s2s_secret" {
