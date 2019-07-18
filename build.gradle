@@ -142,7 +142,7 @@ sonarqube {
 }
 
 pitest {
-  pitestVersion = '1.4.7'
+  pitestVersion = '1.4.9'
 }
 
 dependencyUpdates.resolutionStrategy = {
