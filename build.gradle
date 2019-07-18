@@ -182,8 +182,9 @@ repositories {
 def versions = [
   bouncycastle: '1.61',
   flywayV: plugins.getPlugin('org.flywaydb.flyway').class.package.implementationVersion,
-  junit: '5.4.2',
-  mockitoJupiter: '2.27.0',
+  junit: '5.5.0',
+  junitPlatform: '1.5.0',
+  mockitoJupiter: '3.0.0',
   pdfbox: '2.0.15',
   reformLogging: '5.0.1',
   shedlock: '2.5.0',
@@ -252,6 +253,12 @@ dependencies {
   compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   compile group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
+  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
+  testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, withoutJunit4
   testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.10', withoutJunit4
   testCompile group: 'org.apache.commons', name: 'commons-email', version: '1.5'
@@ -260,25 +267,20 @@ dependencies {
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockitoJupiter
   testCompile group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.24.0', withoutJunit4
 
-  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
-
   integrationTestCompile sourceSets.main.runtimeClasspath
   integrationTestCompile sourceSets.test.runtimeClasspath
   integrationTestCompile group: 'org.apache.sshd', name: 'sshd-scp', version: '2.3.0'
   integrationTestCompile group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.3.0'
   integrationTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.11.4'
   integrationTestCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.6'
-  integrationTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
   smokeTestCompile sourceSets.main.runtimeClasspath
+  smokeTestCompile sourceSets.test.runtimeClasspath
   smokeTestCompile group: 'io.rest-assured', name: 'rest-assured'
-  smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, withoutJunit4
-  smokeTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
   functionalTestCompile sourceSets.main.runtimeClasspath
+  functionalTestCompile sourceSets.test.runtimeClasspath
   functionalTestCompile group: 'io.rest-assured', name: 'rest-assured'
-  functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, withoutJunit4
-  functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 }
 
 mainClassName = 'uk.gov.hmcts.reform.sendletter.Application'
