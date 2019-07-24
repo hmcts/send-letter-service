@@ -94,6 +94,7 @@ public class MarkLettersPostedTask {
     private void markAsPosted(LetterPrintStatus letterPrintStatus, String reportFileName) {
         Optional<LetterStatus> optional = repo.findLetterStatus(letterPrintStatus.id);
 
+        // from java9 `ifPresentOrElse` is available. note for future
         if (optional.isPresent()) {
             LetterStatus status = optional.get();
 
