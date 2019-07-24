@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
@@ -93,20 +92,19 @@ public class MarkLettersPostedTask {
     }
 
     private void markAsPosted(LetterPrintStatus letterPrintStatus, String reportFileName) {
-        Optional<Letter> optional = repo.findById(letterPrintStatus.id);
+        Optional<LetterStatus> optional = repo.findLetterStatus(letterPrintStatus.id);
+
         if (optional.isPresent()) {
-            Letter letter = optional.get();
-            if (letter.getStatus() == LetterStatus.Uploaded) {
-                letter.setPrintedAt(letterPrintStatus.printedAt.toLocalDateTime());
-                letter.setStatus(LetterStatus.Posted);
-                letter.setFileContent(null);
-                repo.save(letter);
-                logger.info("Marked letter {} as posted", letter.getId());
+            LetterStatus status = optional.get();
+
+            if (status.equals(LetterStatus.Uploaded)) {
+                repo.markLetterAsPosted(letterPrintStatus.id, letterPrintStatus.printedAt.toLocalDateTime());
+                logger.info("Marked letter {} as posted", letterPrintStatus.id);
             } else {
                 logger.warn(
                     "Failed to mark letter {} as posted - unexpected status: {}. Report file name: {}",
-                    letter.getId(),
-                    letter.getStatus(),
+                    letterPrintStatus.id,
+                    status,
                     reportFileName
                 );
             }

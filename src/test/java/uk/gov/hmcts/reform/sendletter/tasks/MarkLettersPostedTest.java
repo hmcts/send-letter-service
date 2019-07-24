@@ -15,14 +15,15 @@ import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,15 +57,15 @@ class MarkLettersPostedTest {
             .willReturn(SampleData.parsedReport(filePath, asList(known, unknown), true));
         Letter letter = SampleData.letterEntity("a.service");
         letter.setStatus(LetterStatus.Uploaded);
-        given(repo.findById(known)).willReturn(Optional.of(letter));
-        given(repo.findById(unknown)).willReturn(Optional.empty());
+        given(repo.findLetterStatus(known)).willReturn(Optional.of(letter.getStatus()));
+        given(repo.findLetterStatus(unknown)).willReturn(Optional.empty());
 
         // when
         task.run();
 
         // then
-        assertThat(letter.getStatus()).isEqualTo(LetterStatus.Posted);
-        assertThat(letter.getFileContent()).isNull();
+        verify(repo).markLetterAsPosted(eq(known), any(LocalDateTime.class));
+        verify(repo, never()).markLetterAsPosted(eq(unknown), any(LocalDateTime.class));
     }
 
     @Test
@@ -79,7 +80,7 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findById(any())).willReturn(Optional.of(SampleData.letterEntity("cmc")));
+        given(repo.findLetterStatus(any())).willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
         // when
         task.run();
@@ -100,7 +101,7 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findById(any())).willReturn(Optional.of(SampleData.letterEntity("cmc")));
+        given(repo.findLetterStatus(any())).willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
         // when
         task.run();
