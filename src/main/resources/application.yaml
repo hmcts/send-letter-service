@@ -69,6 +69,8 @@ reports:
       display-name: Probate
     - service: sscs
       display-name: SSCS
+    - service: finrem_document_generator
+      display-name: FINREM
 
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
@@ -98,15 +100,21 @@ ftp:
       folder: PROBATE
     - service: sscs
       folder: SSCS
+    - service: finrem_document_generator
+      folder: FINREM
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
   lock_at_most_for: ${SCHEDULING_LOCK_AT_MOST_FOR:PT10M} # 10 minutes in ISO-8601
 
 tasks:
-  upload-letters-interval-ms: ${UPLOAD_LETTERS_INTERVAL:30000}
-  mark-letters-posted: ${FTP_REPORTS_CRON:0 30 10 * * *}
-  stale-letters-report: ${STALE_LETTERS_REPORT_CRON:0 30 11 * * *}
+  upload-letters:
+    interval-ms: ${UPLOAD_LETTERS_INTERVAL:30000}
+    key-fingerprint: ${UPLOAD_LETTERS_KEY_FINGERPRINT:}
+  mark-letters-posted:
+    cron:  ${FTP_REPORTS_CRON:0 30 * * * *}
+  stale-letters-report:
+    cron: ${STALE_LETTERS_REPORT_CRON:0 30 11 * * *}
 
 file-cleanup:
   enabled: ${FILE_CLEANUP_ENABLED:false}
