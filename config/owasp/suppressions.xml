@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.2.xsd">
 
+    <suppress>
+        <notes><![CDATA[No fix available]]></notes>
+        <gav regex="true">^org\.apache\.sling:org\.apache\.sling\.javax\.activation:0\.1\.0$</gav>
+        <cve>CVE-2016-5394</cve>
+        <cve>CVE-2016-6798</cve>
+    </suppress>
+
     <!-- spring security -->
     <suppress>
         <notes><![CDATA[No fix is available]]></notes>
@@ -32,7 +39,7 @@
 
     <suppress>
         <notes><![CDATA[ no fix available ]]></notes>
-        <gav regex="true">^org\.testcontainers:postgresql:1\.11\.4$</gav>
+        <gav regex="true">^org\.testcontainers:postgresql:1\.12\.0$</gav>
         <cpe>cpe:/a:postgresql:postgresql</cpe>
     </suppress>
 
