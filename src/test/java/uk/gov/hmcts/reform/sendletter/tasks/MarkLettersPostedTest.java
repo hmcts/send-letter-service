@@ -7,10 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
-import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.Report;
+import uk.gov.hmcts.reform.sendletter.services.LetterDataAccessService;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class MarkLettersPostedTest {
 
-    @Mock LetterRepository repo;
+    @Mock LetterDataAccessService dataAccessService;
     @Mock FtpClient ftpClient;
     @Mock FtpAvailabilityChecker availabilityChecker;
     @Mock ReportParser parser;
@@ -41,7 +41,7 @@ class MarkLettersPostedTest {
 
     @BeforeEach
     void setup() {
-        task = new MarkLettersPostedTask(repo, ftpClient, availabilityChecker, parser, insights);
+        task = new MarkLettersPostedTask(dataAccessService, ftpClient, availabilityChecker, parser, insights);
     }
 
     @Test
@@ -57,15 +57,15 @@ class MarkLettersPostedTest {
             .willReturn(SampleData.parsedReport(filePath, asList(known, unknown), true));
         Letter letter = SampleData.letterEntity("a.service");
         letter.setStatus(LetterStatus.Uploaded);
-        given(repo.findLetterStatus(known)).willReturn(Optional.of(letter.getStatus()));
-        given(repo.findLetterStatus(unknown)).willReturn(Optional.empty());
+        given(dataAccessService.findLetterStatus(known)).willReturn(Optional.of(letter.getStatus()));
+        given(dataAccessService.findLetterStatus(unknown)).willReturn(Optional.empty());
 
         // when
         task.run();
 
         // then
-        verify(repo).markLetterAsPosted(eq(known), any(LocalDateTime.class));
-        verify(repo, never()).markLetterAsPosted(eq(unknown), any(LocalDateTime.class));
+        verify(dataAccessService).markLetterAsPosted(eq(known), any(LocalDateTime.class));
+        verify(dataAccessService, never()).markLetterAsPosted(eq(unknown), any(LocalDateTime.class));
     }
 
     @Test
@@ -80,7 +80,8 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findLetterStatus(any())).willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
+        given(dataAccessService.findLetterStatus(any()))
+            .willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
         // when
         task.run();
@@ -101,7 +102,8 @@ class MarkLettersPostedTest {
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
-        given(repo.findLetterStatus(any())).willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
+        given(dataAccessService.findLetterStatus(any()))
+            .willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
         // when
         task.run();
