@@ -13,18 +13,26 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
+import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.tasks.FtpConstraint;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.getCurrentEuropeLondonInstant;
 
 @Aspect
@@ -43,14 +51,30 @@ public class AppInsights {
 
     private final TelemetryClient telemetryClient;
 
-    public AppInsights(TelemetryClient telemetryClient) {
+    private final IFtpAvailabilityChecker ftpAvailabilityChecker;
+
+    public AppInsights(
+        TelemetryClient telemetryClient,
+        IFtpAvailabilityChecker ftpAvailabilityChecker
+    ) {
         this.telemetryClient = telemetryClient;
+        this.ftpAvailabilityChecker = ftpAvailabilityChecker;
     }
 
     // schedules
 
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void aroundSchedule(ProceedingJoinPoint joinPoint) throws Throwable {
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        FtpConstraint ftpConstraint = AnnotationUtils.findAnnotation(method, FtpConstraint.class);
+
+        if (ftpConstraint != null) {
+            if (!ftpAvailabilityChecker.isFtpAvailable(LocalTime.now(ZoneId.of(EUROPE_LONDON)))) {
+                log.info("Not processing '{}' task due to FTP downtime window", ftpConstraint.name());
+                return;
+            }
+        }
+
         RequestTelemetryContext requestTelemetry = ThreadContext.getRequestTelemetryContext();
         boolean success = false;
 

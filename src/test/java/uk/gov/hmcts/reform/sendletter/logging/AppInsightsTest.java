@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
+import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -46,6 +47,9 @@ class AppInsightsTest {
     @Mock
     private TelemetryClient telemetry;
 
+    @Mock
+    private IFtpAvailabilityChecker ftpAvailabilityChecker;
+
     private AppInsights insights;
 
     private final TelemetryContext context = new TelemetryContext();
@@ -54,7 +58,7 @@ class AppInsightsTest {
     void setUp() {
         context.setInstrumentationKey("some-key");
         when(telemetry.getContext()).thenReturn(context);
-        insights = new AppInsights(telemetry);
+        insights = new AppInsights(telemetry, ftpAvailabilityChecker);
     }
 
     @AfterEach

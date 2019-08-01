@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.atLeastOnce;
 import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DELETED;
@@ -150,6 +151,25 @@ class BaseTest {
                 tuple(FTP, FTP_CLIENT, FTP_REPORT_DELETED, true),
                 tuple(FTP, FTP_CLIENT, FTP_REPORT_DOWNLOADED, true)
             ));
+    }
+
+    void request_to_upload_during_ftp_downtime(MockHttpServletRequestBuilder request) throws Throwable {
+        // manipulate ftp being down
+        fakeFtpAvailabilityChecker.setAvailable(false);
+
+        mvc.perform(request).andExpect(status().isOk());
+
+        // The report should be processed and the letter marked posted.
+        await()
+            .atMost(15, SECONDS)
+            .untilAsserted(() -> {
+                List<Letter> letters = repository.findAll();
+                assertThat(letters).as("Letters in DB").hasSize(1);
+                assertThat(letters.get(0).getStatus()).as("Letter status").isEqualTo(LetterStatus.Created);
+            });
+
+        verify(telemetryClient, never()).trackRequest(requestTelemetryCaptor.capture());
+        verify(telemetryClient, never()).trackDependency(dependencyTelemetryCaptor.capture());
     }
 
     String readResource(final String fileName) throws IOException {

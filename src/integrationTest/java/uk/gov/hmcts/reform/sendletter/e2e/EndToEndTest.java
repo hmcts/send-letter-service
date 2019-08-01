@@ -42,4 +42,13 @@ class EndToEndTest extends BaseTest {
             IS_ENCRYPTION_ENABLED
         );
     }
+
+    @Test
+    void should_not_upload_letter_due_to_ftp_downtime() throws Throwable {
+        request_to_upload_during_ftp_downtime(post("/letters")
+            .header("ServiceAuthorization", "auth-header-value")
+            .contentType(MediaTypes.LETTER_V2)
+            .content(readResource("letter-with-pdf.json"))
+        );
+    }
 }
