@@ -51,6 +51,7 @@ public class MarkLettersPostedTask {
         this.insights = insights;
     }
 
+    @FtpConstraint(name = TASK_NAME)
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "${tasks.mark-letters-posted.cron}", zone = EUROPE_LONDON)
     public void run() {

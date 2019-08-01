@@ -57,6 +57,7 @@ public class UploadLettersTask {
         this.insights = insights;
     }
 
+    @FtpConstraint(name = TASK_NAME)
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
     public void run() {
