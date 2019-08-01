@@ -226,7 +226,6 @@ class UploadLettersTaskTest {
         return new UploadLettersTask(
             repo,
             ftpClient,
-            availabilityChecker,
             serviceFolderMapping,
             fingerprint,
             insights

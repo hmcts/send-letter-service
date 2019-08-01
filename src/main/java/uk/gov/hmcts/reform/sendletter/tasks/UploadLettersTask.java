@@ -15,17 +15,14 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
-import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
-import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @Component
 @ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
@@ -36,7 +33,6 @@ public class UploadLettersTask {
 
     private final LetterRepository repo;
     private final FtpClient ftp;
-    private final IFtpAvailabilityChecker availabilityChecker;
     private final ServiceFolderMapping serviceFolderMapping;
     private final String keyFingerprint; // only letters with this fingerprint will be sent
     private final AppInsights insights;
@@ -44,14 +40,12 @@ public class UploadLettersTask {
     public UploadLettersTask(
         LetterRepository repo,
         FtpClient ftp,
-        IFtpAvailabilityChecker availabilityChecker,
         ServiceFolderMapping serviceFolderMapping,
         @Value("${tasks.upload-letters.key-fingerprint}") String keyFingerprint,
         AppInsights insights
     ) {
         this.repo = repo;
         this.ftp = ftp;
-        this.availabilityChecker = availabilityChecker;
         this.serviceFolderMapping = serviceFolderMapping;
         this.keyFingerprint = keyFingerprint;
         this.insights = insights;
@@ -61,11 +55,6 @@ public class UploadLettersTask {
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
     public void run() {
-        if (!availabilityChecker.isFtpAvailable(now(ZoneId.of(EUROPE_LONDON)).toLocalTime())) {
-            logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
-            return;
-        }
-
         logger.info("Started '{}' task", TASK_NAME);
 
         // Upload the letters in batches.

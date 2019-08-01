@@ -17,14 +17,12 @@ import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
-import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.io.File;
-import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -48,9 +46,6 @@ class UploadLettersTaskTest {
     @Autowired
     private EntityManager entityManager;
 
-    @Mock
-    private FtpAvailabilityChecker availabilityChecker;
-
     @Mock ServiceFolderMapping serviceFolderMapping;
 
     @Mock
@@ -60,7 +55,6 @@ class UploadLettersTaskTest {
 
     @BeforeEach
     void setUp() {
-        when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of(LocalSftpServer.SERVICE_FOLDER));
 
         this.letterService = new LetterService(
@@ -80,7 +74,6 @@ class UploadLettersTaskTest {
         UploadLettersTask task = new UploadLettersTask(
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-            availabilityChecker,
             serviceFolderMapping,
             null,
             insights
@@ -118,7 +111,6 @@ class UploadLettersTaskTest {
         UploadLettersTask task = new UploadLettersTask(
             repository,
             FtpHelper.getFailingClient(LocalSftpServer.port),
-            availabilityChecker,
             serviceFolderMapping,
             null,
             insights
@@ -156,7 +148,6 @@ class UploadLettersTaskTest {
         UploadLettersTask task = new UploadLettersTask(
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-            availabilityChecker,
             serviceFolderMapping,
             null,
             insights
@@ -187,7 +178,6 @@ class UploadLettersTaskTest {
         UploadLettersTask task = new UploadLettersTask(
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-            availabilityChecker,
             serviceFolderMapping,
             fingerprint,
             insights
