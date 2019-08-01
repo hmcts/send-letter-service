@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.Report;
 import uk.gov.hmcts.reform.sendletter.services.LetterDataAccessService;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
-import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ class MarkLettersPostedTest {
 
     @Mock LetterDataAccessService dataAccessService;
     @Mock FtpClient ftpClient;
-    @Mock FtpAvailabilityChecker availabilityChecker;
     @Mock ReportParser parser;
     @Mock AppInsights insights;
 
@@ -41,7 +39,7 @@ class MarkLettersPostedTest {
 
     @BeforeEach
     void setup() {
-        task = new MarkLettersPostedTask(dataAccessService, ftpClient, availabilityChecker, parser, insights);
+        task = new MarkLettersPostedTask(dataAccessService, ftpClient, parser, insights);
     }
 
     @Test
@@ -50,7 +48,6 @@ class MarkLettersPostedTest {
         UUID known = UUID.randomUUID();
         UUID unknown = UUID.randomUUID();
 
-        given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
         given(ftpClient.downloadReports())
             .willReturn(singletonList(new Report(filePath, null)));
         given(parser.parse(any()))
@@ -73,8 +70,6 @@ class MarkLettersPostedTest {
         final String reportName = "report.csv";
         final boolean allParsed = true;
 
-        given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
-
         given(ftpClient.downloadReports())
             .willReturn(singletonList(new Report(reportName, null)));
 
@@ -95,8 +90,6 @@ class MarkLettersPostedTest {
         final String reportName = "report.csv";
         final boolean allParsed = false;
 
-        given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
-
         given(ftpClient.downloadReports())
             .willReturn(singletonList(new Report(reportName, null)));
 
@@ -110,16 +103,5 @@ class MarkLettersPostedTest {
 
         // then
         verify(ftpClient, never()).deleteReport(anyString());
-    }
-
-    @Test
-    void should_not_attempt_to_download_reports_during_ftp_downtime() {
-        given(availabilityChecker.isFtpAvailable(any())).willReturn(false);
-
-        // when
-        task.run();
-
-        // then
-        verify(ftpClient, never()).downloadReports();
     }
 }

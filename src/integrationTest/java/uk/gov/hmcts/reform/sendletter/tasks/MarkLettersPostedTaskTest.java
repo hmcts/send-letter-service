@@ -15,11 +15,9 @@ import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
 import uk.gov.hmcts.reform.sendletter.services.LetterDataAccessService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
-import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import uk.gov.hmcts.reform.sendletter.util.CsvReportWriter;
 
-import java.time.LocalTime;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 
@@ -27,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -42,7 +39,6 @@ class MarkLettersPostedTaskTest {
     private EntityManager entityManager;
 
     ReportParser parser = new ReportParser();
-    FtpAvailabilityChecker checker = mock(FtpAvailabilityChecker.class);
     AppInsights insights = mock(AppInsights.class);
 
     @BeforeEach
@@ -57,13 +53,11 @@ class MarkLettersPostedTaskTest {
         letter.setStatus(LetterStatus.Uploaded);
         repository.saveAndFlush(letter);
 
-        when(checker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         try (LocalSftpServer server = LocalSftpServer.create()) {
             FtpClient client = FtpHelper.getSuccessfulClient(LocalSftpServer.port);
             MarkLettersPostedTask task = new MarkLettersPostedTask(
                 dataAccessService,
                 client,
-                checker,
                 parser,
                 insights
             );

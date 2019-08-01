@@ -12,10 +12,7 @@ import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.services.LetterDataAccessService;
 import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
-import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
@@ -30,7 +27,6 @@ public class MarkLettersPostedTask {
 
     private final LetterDataAccessService dataAccessService;
     private final FtpClient ftpClient;
-    private final IFtpAvailabilityChecker ftpAvailabilityChecker;
     private final ReportParser parser;
     private final AppInsights insights;
 
@@ -40,13 +36,11 @@ public class MarkLettersPostedTask {
     public MarkLettersPostedTask(
         LetterDataAccessService dataAccessService,
         FtpClient ftp,
-        IFtpAvailabilityChecker checker,
         ReportParser parser,
         AppInsights insights
     ) {
         this.dataAccessService = dataAccessService;
         this.ftpClient = ftp;
-        this.ftpAvailabilityChecker = checker;
         this.parser = parser;
         this.insights = insights;
     }
@@ -55,12 +49,8 @@ public class MarkLettersPostedTask {
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "${tasks.mark-letters-posted.cron}", zone = EUROPE_LONDON)
     public void run() {
-        if (!ftpAvailabilityChecker.isFtpAvailable(LocalTime.now(ZoneId.of(EUROPE_LONDON)))) {
-            logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
-            return;
-        }
-
         logger.info("Started '{}' task", TASK_NAME);
+
         try {
             ftpClient
                 .downloadReports()
