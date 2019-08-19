@@ -1,0 +1,10 @@
+java:
+  keyVaults:
+    "rpe-send-letter":
+      resourceGroup: rpe-send-letter-service
+      secrets:
+        - service-POSTGRES-PASS
+        - test-s2s-secret
+        - test-ftp-user
+        - test-ftp-private-key
+        - test-ftp-public-key

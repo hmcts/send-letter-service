@@ -2,13 +2,12 @@ java:
   applicationPort: 8485
   environment:
     # db
-    LETTER_TRACKING_DB_NAME: letter_tracking
-    LETTER_TRACKING_DB_HOST: ${SERVICE_NAME}-postgresql
-    LETTER_TRACKING_DB_PORT: "5432"
-    LETTER_TRACKING_DB_USER_NAME: letterservice
-    LETTER_TRACKING_DB_PASSWORD: letterpassword
+    LETTER_TRACKING_DB_HOST: "{{ .Release.Name }}-postgresql"
+    LETTER_TRACKING_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    LETTER_TRACKING_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    LETTER_TRACKING_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     # db - migration
-    FLYWAY_URL: "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/letter_tracking"
+    FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
     FLYWAY_NOOP_STRATEGY: "false"
     # encryption
     ENCRYPTION_ENABLED: "false"
@@ -37,14 +36,3 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-
-postgresql:
-  postgresqlUsername: letterservice
-  postgresqlPassword: letterpassword
-  postgresqlDatabase: letter_tracking
-  service:
-    port: 5432
-  persistence:
-    enabled: false
-tags:
-  postgresql-pod: true
