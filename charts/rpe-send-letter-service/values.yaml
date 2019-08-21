@@ -1,5 +1,13 @@
 java:
   applicationPort: 8485
+  keyVaults:
+    rpe-send-letter:
+      resourceGroup: rpe-send-letter-service
+      secrets:
+        - service-POSTGRES-PASS
+        - ftp-user
+        - ftp-private-key
+        - ftp-public-key
   environment:
     # db
     LETTER_TRACKING_DB_HOST: "{{ .Release.Name }}-postgresql"
