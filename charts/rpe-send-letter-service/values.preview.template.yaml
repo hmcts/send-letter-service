@@ -2,5 +2,10 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    FTP_USER: ${TEST_FTP_USER}
+    FTP_PRIVATE_KEY: ${TEST_FTP_PRIVATE_KEY}
+    FTP_PUBLIC_KEY: ${TEST_FTP_PUBLIC_KEY}
+
 postgresql:
   enabled: true
