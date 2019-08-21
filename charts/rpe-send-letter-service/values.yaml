@@ -27,5 +27,4 @@ java:
     # mails
     SPRING_MAIL_HOST: "false"
   # Don't modify below here
-  image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_FQDN}
+  image: 'https://hmctspublic.azurecr.io/rpe-send-letter/service:latest'
