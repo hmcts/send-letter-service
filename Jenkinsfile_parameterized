@@ -3,7 +3,7 @@
 
 secrets = [
   's2s-${env}': [
-    secret('test-s2s-secret', 'TEST_S2S_SECRET')
+    secret('microservicekey-send-letter-tests', 'TEST_S2S_SECRET')
   ],
   'rpe-send-letter-${env}': [
     secret('ftp-user', 'TEST_FTP_USER'),
