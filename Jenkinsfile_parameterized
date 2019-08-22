@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure")
+@Library("Infrastructure@feature/separate-vault-value-for-db-migration")
 
 secrets = [
   's2s-${env}': [
@@ -36,7 +36,7 @@ properties([
 def channel = '#bsp-build-notices'
 
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
-  enableDbMigration()
+  enableDbMigration('rpe-send-letter')
   enableSlackNotifications(channel)
 
   loadVaultSecrets(secrets)
