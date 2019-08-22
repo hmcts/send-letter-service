@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@feature/separate-vault-value-for-db-migration")
+@Library("Infrastructure")
 
 secrets = [
   's2s-${env}': [
