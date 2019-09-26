@@ -181,8 +181,8 @@ repositories {
 
 def versions = [
   bouncycastle: '1.62',
-  junit: '5.5.1',
-  junitPlatform: '1.5.1',
+  junit: '5.5.2',
+  junitPlatform: '1.5.2',
   mockitoJupiter: '3.0.0',
   pdfbox: '2.0.16',
   reformLogging: '5.0.1',
