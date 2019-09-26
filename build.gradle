@@ -191,7 +191,7 @@ def versions = [
   springfoxSwagger: '2.9.2'
 ]
 
-ext["rest-assured.version"] = '4.0.0'
+ext["rest-assured.version"] = '4.1.1'
 
 dependencyManagement {
   dependencies {
