@@ -29,7 +29,6 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
