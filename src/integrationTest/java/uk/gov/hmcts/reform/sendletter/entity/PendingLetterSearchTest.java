@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
@@ -52,6 +53,36 @@ public class PendingLetterSearchTest {
         // then
         assertThat(letters.size()).isEqualTo(2);
         assertThat(letters).noneMatch(l -> l.getStatus().equals(SMOKE_TEST_LETTER_TYPE));
+    }
+
+    @Test
+    public void should_set_properties_correctly() {
+        // given
+        Letter letter = SampleData.letterEntity("service", LocalDateTime.now(), "type", "fingerprint");
+        letter.setStatus(Created);
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        List<BasicLetterInfo> letters = repository.findPendingLetters();
+
+        // then
+        assertThat(letters)
+            .extracting(l -> tuple(
+                l.getId(),
+                l.getChecksum(),
+                l.getCreatedAt(),
+                l.getEncryptionKeyFingerprint(),
+                l.getService(),
+                l.getType()
+            ))
+            .containsExactly(tuple(
+                savedLetter.getId(),
+                savedLetter.getChecksum(),
+                savedLetter.getCreatedAt(),
+                savedLetter.getEncryptionKeyFingerprint(),
+                savedLetter.getService(),
+                savedLetter.getType()
+            ));
     }
 
     private void storeLetter(LetterStatus status, String type) {
