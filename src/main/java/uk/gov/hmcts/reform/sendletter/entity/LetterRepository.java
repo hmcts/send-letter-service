@@ -32,7 +32,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         + " from Letter l "
         + " where l.status = 'Created'"
         + " and l.type <> '" + UploadLettersTask.SMOKE_TEST_LETTER_TYPE + "'"
-        + " order by l.createdAt desc")
+        + " order by l.createdAt asc")
     List<BasicLetterInfo> findPendingLetters();
 
     Optional<Letter> findByChecksumAndStatusOrderByCreatedAtDesc(String checksum, LetterStatus status);
