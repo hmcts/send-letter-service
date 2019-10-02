@@ -28,7 +28,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         @Param("createdBefore") LocalDateTime createdBefore
     );
 
-    @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint l.createdAt, l.sentToPrintAt)"
+    @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt)"
         + " from Letter l "
         + " where l.status = 'Created'"
         + " and l.type <> '" + UploadLettersTask.SMOKE_TEST_LETTER_TYPE + "'"
