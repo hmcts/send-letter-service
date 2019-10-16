@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
