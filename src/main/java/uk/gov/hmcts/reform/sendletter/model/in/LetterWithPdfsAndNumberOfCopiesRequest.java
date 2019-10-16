@@ -20,7 +20,6 @@ public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILe
     @NotEmpty
     public final String type;
 
-    @JsonProperty("additional_data")
     public final Map<String, Object> additionalData;
 
     public LetterWithPdfsAndNumberOfCopiesRequest(
