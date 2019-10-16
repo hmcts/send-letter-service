@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 public class LetterWithPdfsAndCopiesRequest implements ILetterRequest {
 
     @Size(min = 1, max = 30)
-    public List<Doc> documents;
+    public final List<Doc> documents;
 
     @ApiModelProperty(value = "Type to be used to print documents", required = true)
     @NotEmpty
