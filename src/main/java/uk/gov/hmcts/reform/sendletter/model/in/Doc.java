@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Doc {
 
-    public byte[] content;
-    public int copies;
+    public final byte[] content;
+    public final int copies;
 
     public Doc(
         @JsonProperty("content") byte[] content,
