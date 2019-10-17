@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
 import com.google.common.io.Resources;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,19 +32,12 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
     @MockBean private LetterService letterService;
     @MockBean private AuthService authService;
 
-    private String validJson;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        this.validJson = Resources.toString(getResource("controller/letter/v3/letter.json"), UTF_8);
-    }
-
     @Test
     void should_call_service() throws Exception {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
         // when
-        sendLetter(validJson);
+        sendLetter(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8));
 
         // then
         verify(letterService).save(any(LetterWithPdfsAndNumberOfCopiesRequest.class), anyString());
@@ -61,7 +53,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
             post("/letters")
                 .contentType(MediaTypes.LETTER_V3)
                 .header("ServiceAuthorization", authHeader)
-                .content(validJson)
+                .content(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8))
         );
 
         // then
@@ -69,11 +61,19 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
     }
 
     @Test
+    void should_validate_number_of_copies() throws Exception {
+        given(authService.authenticate(anyString())).willReturn("some_service_name");
+
+        sendLetter(Resources.toString(getResource("controller/letter/v3/invalid_copies.json"), UTF_8))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void should_return_403_if_service_throws_ServiceNotConfiguredException() throws Exception {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
         given(letterService.save(any(), any())).willThrow(new ServiceNotConfiguredException("invalid service"));
 
-        sendLetter(validJson)
+        sendLetter(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8))
             .andExpect(status().isForbidden());
     }
 

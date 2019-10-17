@@ -92,7 +92,6 @@ public class SendLetterController {
     })
     public ResponseEntity<SendLetterResponse> sendLetter(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-        @ApiParam(value = "Letter consisting of documents and type", required = true)
         @Valid @RequestBody LetterWithPdfsAndNumberOfCopiesRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
