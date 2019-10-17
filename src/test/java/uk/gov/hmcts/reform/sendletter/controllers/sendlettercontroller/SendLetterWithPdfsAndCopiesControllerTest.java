@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
@@ -48,7 +48,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
         sendLetter(validJson);
 
         // then
-        verify(letterService).save(any(LetterWithPdfsRequest.class), anyString());
+        verify(letterService).save(any(LetterWithPdfsAndNumberOfCopiesRequest.class), anyString());
     }
 
     @Test
