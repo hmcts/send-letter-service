@@ -3,6 +3,12 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   aadIdentityName:
+  keyVaults:
+    rpe-send-letter:
+      secrets:
+        - ftp-user
+        - ftp-private-key
+        - ftp-public-key
   environment:
     # db
     LETTER_TRACKING_DB_HOST: "{{ .Release.Name }}-postgresql"
@@ -16,6 +22,5 @@ java:
     # encryption
     ENCRYPTION_ENABLED: "false"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    SPRING_CLOUD_PROPERTIESVOLUME_ENABLED: false
 postgresql:
   enabled: true
