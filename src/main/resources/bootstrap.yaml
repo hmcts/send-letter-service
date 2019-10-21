@@ -12,3 +12,5 @@ spring:
         send-letter-service-POSTGRES-PASS: LETTER_TRACKING_DB_PASSWORD
         encryption-public-key: ENCRYPTION_PUBLIC_KEY
         app-insights-instrumentation-key: azure.application-insights.instrumentation-key
+        reports-email-username: SMTP_USERNAME
+        reports-email-password: SMTP_PASSWORD

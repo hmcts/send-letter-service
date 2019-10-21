@@ -11,6 +11,8 @@ java:
         - send-letter-service-POSTGRES-PASS
         - encryption-public-key
         - app-insights-instrumentation-key
+        - reports-email-password
+        - reports-email-username
   environment:
     # db
     LETTER_TRACKING_DB_HOST: "rpe-send-letter-service-db-{{ .Values.global.environment }}.postgres.database.azure.com"
@@ -48,8 +50,6 @@ java:
 
     #smtp - For prod turn it on and assign values to vault reports-email-username and password
     SMTP_HOST:  "false"
-    SMTP_USERNAME: ""
-    SMTP_PASSWORD: ""
 
     #reports. depends on smtp - For prod overwrite
     UPLOAD_SUMMARY_REPORT_CRON: "0 0 19 * * *"
