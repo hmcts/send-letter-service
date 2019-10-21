@@ -2,9 +2,13 @@ spring:
   cloud:
     propertiesvolume:
       enabled: true
-      prefixed: true
+      prefixed: false
       paths: /mnt/secrets/rpe-send-letter
       aliases:
-        rpe-send-letter.ftp-user: FTP_USER
-        rpe-send-letter.ftp-private-key: FTP_PRIVATE_KEY
-        rpe-send-letter.ftp-public-key: FTP_PUBLIC_KEY
+        ftp-user: FTP_USER
+        ftp-private-key: FTP_PRIVATE_KEY
+        ftp-public-key: FTP_PUBLIC_KEY
+        upload-summary-report-recipients: UPLOAD_SUMMARY_REPORT_RECIPIENTS
+        send-letter-service-POSTGRES-PASS: LETTER_TRACKING_DB_PASSWORD
+        encryption-public-key: ENCRYPTION_PUBLIC_KEY
+        app-insights-instrumentation-key: azure.application-insights.instrumentation-key
