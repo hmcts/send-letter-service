@@ -19,6 +19,8 @@ java:
     # encryption
     ENCRYPTION_ENABLED: "false"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    TEST_S2S_NAME: "send_letter_tests"
+    TEST_S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     SPRING_CLOUD_PROPERTIESVOLUME_ENABLED: false
 postgresql:
   enabled: true
