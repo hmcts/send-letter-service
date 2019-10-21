@@ -21,6 +21,14 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     TEST_S2S_NAME: "send_letter_tests"
     TEST_S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    TEST_FTP_HOSTNAME: "cmseft.services.xerox.com"
+    TEST_FTP_PORT: "22"
+    TEST_FTP_FINGERPRINT: "SHA256:3tX3DIkqd1Loz2alHfnt+qjHocfxk0YUOZHlnf9Zgdk"
+    FTP_TARGET_FOLDER: "TO_XEROX"
+    TEST_FTP_REPORTS_FOLDER: "FROM_XEROX"
+    TEST_ENCRYPTION_ENABLED: "false"
+
+
     SPRING_CLOUD_PROPERTIESVOLUME_ENABLED: false
 postgresql:
   enabled: true
