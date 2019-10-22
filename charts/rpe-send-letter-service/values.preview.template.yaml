@@ -23,6 +23,3 @@ java:
     ENCRYPTION_ENABLED: "false"
 postgresql:
   enabled: true
-
-
-
