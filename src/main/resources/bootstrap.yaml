@@ -10,6 +10,10 @@ spring:
         ftp-public-key: FTP_PUBLIC_KEY
         upload-summary-report-recipients: UPLOAD_SUMMARY_REPORT_RECIPIENTS
         send-letter-service-POSTGRES-PASS: LETTER_TRACKING_DB_PASSWORD
+        send-letter-service-POSTGRES-DATABASE: LETTER_TRACKING_DB_NAME
+        send-letter-service-POSTGRES-PORT: LETTER_TRACKING_DB_PORT
+        send-letter-service-POSTGRES-HOST: LETTER_TRACKING_DB_HOST
+        send-letter-service-POSTGRES-USER: LETTER_TRACKING_DB_USER_NAME
         encryption-public-key: ENCRYPTION_PUBLIC_KEY
         app-insights-instrumentation-key: azure.application-insights.instrumentation-key
         reports-email-username: SMTP_USERNAME

@@ -9,16 +9,17 @@ java:
         - ftp-public-key
         - upload-summary-report-recipients
         - send-letter-service-POSTGRES-PASS
+        - send-letter-service-POSTGRES-USER
+        - send-letter-service-POSTGRES-DATABASE
+        - send-letter-service-POSTGRES-PORT
+        - send-letter-service-POSTGRES-HOST
         - encryption-public-key
         - app-insights-instrumentation-key
         - reports-email-password
         - reports-email-username
+
   environment:
     # db
-    LETTER_TRACKING_DB_HOST: "rpe-send-letter-service-db-{{ .Values.global.environment }}.postgres.database.azure.com"
-    LETTER_TRACKING_DB_PORT: "5432"
-    LETTER_TRACKING_DB_NAME: "send_letter"
-    LETTER_TRACKING_DB_USER_NAME: "send_letter@rpe-send-letter-service-db-{{ .Values.global.environment }}"
     LETTER_TRACKING_DB_CONN_OPTIONS: "?sslmode=require"
 
     # db - migration
@@ -34,8 +35,7 @@ java:
     # inherited
     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
 
-    FILE_CLEANUP_ENABLED: "true"
-    FILE_CLEANUP_CRON: "0 15 * * * *"
+    FILE_CLEANUP_ENABLED: "false"
 
     FTP_HOSTNAME: "cmseft.services.xerox.com"
     FTP_PORT: "22"
@@ -52,7 +52,7 @@ java:
     SMTP_HOST:  "false"
 
     #reports. depends on smtp - For prod overwrite
-    UPLOAD_SUMMARY_REPORT_CRON: "0 0 19 * * *"
     UPLOAD_SUMMARY_REPORT_ENABLED: "false"
+
   # Don't modify below here
   image: 'hmctspublic.azurecr.io/rpe-send-letter/service:latest'
