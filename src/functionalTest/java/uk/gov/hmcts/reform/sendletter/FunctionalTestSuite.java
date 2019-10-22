@@ -14,8 +14,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,8 +42,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @TestPropertySource("classpath:application.properties")
 abstract class FunctionalTestSuite {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalTestSuite.class);
 
     @Value("${s2s-url}")
     private String s2sUrl;
@@ -244,8 +240,6 @@ abstract class FunctionalTestSuite {
     ) throws IOException {
         String lettersFolder = String.join("/", ftpTargetFolder, "BULKPRINT");
 
-        System.out.println("sftp folder " + lettersFolder);
-        LOGGER.info("sftp folder {}", lettersFolder);
         List<RemoteResourceInfo> matchingFiles = sftp.ls(lettersFolder, file -> file.getName().contains(letterId));
 
         if (matchingFiles.size() > 1) {
