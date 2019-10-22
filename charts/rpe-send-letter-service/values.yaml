@@ -1,5 +1,6 @@
 java:
   applicationPort: 8485
+  ingressHost: rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: send-letter
   keyVaults:
     rpe-send-letter:
