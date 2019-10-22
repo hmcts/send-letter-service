@@ -45,7 +45,6 @@ withPipeline(type , product, component) {
 
   before('smoketest:preview') {
     withAksClient('nonprod') {
-      env.FTP_TARGET_FOLDER = 'TO_XEROX'
     }
   }
 
