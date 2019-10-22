@@ -42,10 +42,10 @@ withPipeline(type , product, component) {
   env.TEST_FTP_FINGERPRINT = 'SHA256:3tX3DIkqd1Loz2alHfnt+qjHocfxk0YUOZHlnf9Zgdk'
   env.TEST_FTP_REPORTS_FOLDER = 'FROM_XEROX'
   env.TEST_ENCRYPTION_ENABLED = false
+  env.FTP_TARGET_FOLDER = 'TO_XEROX'
 
   before('smoketest:preview') {
     withAksClient('nonprod') {
-      env.FTP_TARGET_FOLDER = 'TO_XEROX'
     }
   }
 
