@@ -45,10 +45,6 @@ withPipeline(type , product, component) {
     env.TEST_ENCRYPTION_ENABLED = false
   }
 
-  before('smoketest:preview') {
-    withAksClient('nonprod') {
-    }
-  }
   after('test') {
     builder.gradle('integration')
   }
