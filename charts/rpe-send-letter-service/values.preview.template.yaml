@@ -9,6 +9,7 @@ java:
         - ftp-user
         - ftp-private-key
         - ftp-public-key
+        - encryption-public-key
   environment:
     # db
     LETTER_TRACKING_DB_HOST: "{{ .Release.Name }}-postgresql"
