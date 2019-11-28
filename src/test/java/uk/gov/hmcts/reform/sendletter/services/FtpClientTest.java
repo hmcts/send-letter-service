@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.Connection;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
@@ -36,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FtpClientTest {
@@ -56,6 +59,9 @@ class FtpClientTest {
     void download_should_not_include_non_csv_files() throws Exception {
         // given
         given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        Connection mockConn = mock(Connection.class);
+        given(sshClient.getConnection()).willReturn(mockConn);
+        given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         RemoteResourceInfo nonCsvFile = mock(RemoteResourceInfo.class);
         given(nonCsvFile.isRegularFile()).willReturn(true);
@@ -75,6 +81,11 @@ class FtpClientTest {
     void should_track_failure_when_trying_to_download_report() throws IOException {
         // given
         given(sshClient.newSFTPClient()).willReturn(sftpClient);
+
+        Connection mockConn = mock(Connection.class);
+        given(sshClient.getConnection()).willReturn(mockConn);
+        given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
+
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         willThrow(IOException.class).given(sftpClient).ls(eq(null));
 
@@ -151,6 +162,9 @@ class FtpClientTest {
     void should_delete_report_from_ftp() throws IOException {
         // given
         given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        Connection mockConn = mock(Connection.class);
+        given(sshClient.getConnection()).willReturn(mockConn);
+        given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
         doNothing().when(sftpClient).rm(anyString());
 
         // when
@@ -164,6 +178,9 @@ class FtpClientTest {
     void should_track_failure_when_trying_to_delete_report_from_ftp() throws IOException {
         // given
         given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        Connection mockConn = mock(Connection.class);
+        given(sshClient.getConnection()).willReturn(mockConn);
+        given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
         willThrow(IOException.class).given(sftpClient).rm(anyString());
 
         // when
