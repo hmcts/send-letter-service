@@ -44,6 +44,8 @@ public class FtpClient {
 
     private final Supplier<SSHClient> sshClientSupplier;
 
+    private SSHClient ssh;
+
     // region constructor
     public FtpClient(
         Supplier<SSHClient> sshClientSupplier,
@@ -182,21 +184,29 @@ public class FtpClient {
             throw new FtpException("Unable to authenticate.", exception);
         } catch (IOException exc) {
             throw new FtpException("FTP operation failed.", exc);
-        } finally {
-            try {
-                if (ssh != null) {
-                    ssh.disconnect();
-                }
-            } catch (IOException e) {
-                logger.warn("Error closing ssh connection.", e);
-            }
         }
     }
 
     @Dependency(name = FTP_CLIENT, command = FTP_CONNECTED, type = FTP)
     public SSHClient getSshClient() throws IOException {
-        SSHClient ssh = sshClientSupplier.get();
 
+        if (ssh != null) {
+            try {
+                if (ssh.isConnected() && ssh.isAuthenticated()) {
+                    System.out.println("I will delete , returning existing one.");
+                    return ssh;
+                }
+            } catch (Exception ex) {
+                logger.warn("Connection lost, recreating SSHClient ", ex);
+                try {
+                    ssh.disconnect();
+                } catch (IOException e) {
+                    logger.warn("Error closing ssh connection.", e);
+                }
+            }
+        }
+
+        SSHClient ssh = sshClientSupplier.get();
         ssh.addHostKeyVerifier(configProperties.getFingerprint());
         ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
@@ -208,6 +218,7 @@ public class FtpClient {
                 null
             )
         );
+        ssh.getConnection().getKeepAlive().setKeepAliveInterval(30);
 
         return ssh;
     }
