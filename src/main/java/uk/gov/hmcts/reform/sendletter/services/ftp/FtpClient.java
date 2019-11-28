@@ -44,7 +44,7 @@ public class FtpClient {
 
     private final Supplier<SSHClient> sshClientSupplier;
 
-    private SSHClient ssh;
+    private SSHClient sshClient;
 
     // region constructor
     public FtpClient(
@@ -190,37 +190,37 @@ public class FtpClient {
     @Dependency(name = FTP_CLIENT, command = FTP_CONNECTED, type = FTP)
     public SSHClient getSshClient() throws IOException {
 
-        if (ssh != null) {
+        if (sshClient != null) {
             try {
-                if (ssh.isConnected() && ssh.isAuthenticated()) {
+                if (sshClient.isConnected() && sshClient.isAuthenticated()) {
                     System.out.println("I will delete , returning existing one.");
-                    return ssh;
+                    return sshClient;
                 }
             } catch (Exception ex) {
                 logger.warn("Connection lost, recreating SSHClient ", ex);
                 try {
-                    ssh.disconnect();
+                    sshClient.disconnect();
                 } catch (IOException e) {
                     logger.warn("Error closing ssh connection.", e);
                 }
             }
         }
 
-        SSHClient ssh = sshClientSupplier.get();
-        ssh.addHostKeyVerifier(configProperties.getFingerprint());
-        ssh.connect(configProperties.getHostname(), configProperties.getPort());
+        sshClient = sshClientSupplier.get();
+        sshClient.addHostKeyVerifier(configProperties.getFingerprint());
+        sshClient.connect(configProperties.getHostname(), configProperties.getPort());
 
-        ssh.authPublickey(
+        sshClient.authPublickey(
             configProperties.getUsername(),
-            ssh.loadKeys(
+            sshClient.loadKeys(
                 configProperties.getPrivateKey(),
                 configProperties.getPublicKey(),
                 null
             )
         );
-        ssh.getConnection().getKeepAlive().setKeepAliveInterval(30);
+        sshClient.getConnection().getKeepAlive().setKeepAliveInterval(30);
 
-        return ssh;
+        return sshClient;
     }
 
     private boolean isReportFile(RemoteResourceInfo resourceInfo) {
