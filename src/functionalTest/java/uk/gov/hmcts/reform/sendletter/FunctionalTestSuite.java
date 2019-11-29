@@ -86,6 +86,7 @@ abstract class FunctionalTestSuite {
     static void clear() {
         if (ssh != null) {
             try {
+                System.out.println("close connectionxxxx");
                 ssh.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -179,7 +180,7 @@ abstract class FunctionalTestSuite {
             }
         }
 
-        SSHClient ssh = new SSHClient();
+        ssh = new SSHClient();
         System.out.println("testxxxx create new one.");
 
         ssh.addHostKeyVerifier(ftpFingerprint);
@@ -243,27 +244,26 @@ abstract class FunctionalTestSuite {
 
         Boolean fileExists = false;
 
-        SSHClient ssh = getSshClient();
-        {
-            SFTPClient sftp = ssh.newSFTPClient();
 
-            while (!(now().after(waitUntil) || fileExists)) {
-                Optional<RemoteResourceInfo> matchingFile = findSingleFileOnSftp(letterId, sftp);
+        SFTPClient sftp = getSshClient().newSFTPClient();
 
-                if (matchingFile.isPresent()) {
-                    fileExists = true;
-                    action.accept(matchingFile.get(), sftp);
-                } else {
-                    Thread.sleep(1000);
-                }
-            }
+        while (!(now().after(waitUntil) || fileExists)) {
+            Optional<RemoteResourceInfo> matchingFile = findSingleFileOnSftp(letterId, sftp);
 
-            if (!fileExists) {
-                throw new AssertionError(
-                    "The expected file for letter '" + letterId + "' didn't appear on SFTP server"
-                );
+            if (matchingFile.isPresent()) {
+                fileExists = true;
+                action.accept(matchingFile.get(), sftp);
+            } else {
+                Thread.sleep(1000);
             }
         }
+
+        if (!fileExists) {
+            throw new AssertionError(
+                "The expected file for letter '" + letterId + "' didn't appear on SFTP server"
+            );
+        }
+
     }
 
     private Optional<RemoteResourceInfo> findSingleFileOnSftp(
