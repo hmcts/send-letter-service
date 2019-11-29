@@ -25,6 +25,12 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             }
         });
     }
+    @Test
+    void should_use_keep_sshClient_open_when_upload_file_more_than_one_on_sftp_server() throws Exception {
+        for(int i=0;i<3;i++) {
+            should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document();
+        }
+    }
 
     @Test
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
