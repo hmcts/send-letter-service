@@ -14,6 +14,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
@@ -78,6 +79,19 @@ abstract class FunctionalTestSuite {
 
     @Value("${encryption.enabled}")
     Boolean isEncryptionEnabled;
+
+    private static SSHClient ssh;
+
+    @AfterAll
+    static void clear() {
+        if (ssh != null) {
+            try {
+                ssh.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Sign in to s2s.
@@ -149,7 +163,24 @@ abstract class FunctionalTestSuite {
     }
 
     private SSHClient getSshClient() throws IOException {
+
+        if (ssh != null) {
+            try {
+                if (ssh.isConnected() && ssh.isAuthenticated()) {
+                    System.out.println("testxxxx returning existing one.");
+                    return ssh;
+                }
+            } catch (Exception ex) {
+                try {
+                    ssh.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         SSHClient ssh = new SSHClient();
+        System.out.println("testxxxx create new one.");
 
         ssh.addHostKeyVerifier(ftpFingerprint);
         ssh.connect(ftpHostname, ftpPort);
