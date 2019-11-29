@@ -219,6 +219,7 @@ public class FtpClient {
             )
         );
         sshClient.getConnection().getKeepAlive().setKeepAliveInterval(30);
+        sshClient.getConnection().setTimeoutMs(60*1000);
 
         return sshClient;
     }
