@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -29,6 +31,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_use_keep_sshClient_open_when_upload_file_more_than_one_on_sftp_server() throws Exception {
         for(int i=0;i<3;i++) {
             should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document();
+            TimeUnit.SECONDS.sleep(31);
         }
     }
 
