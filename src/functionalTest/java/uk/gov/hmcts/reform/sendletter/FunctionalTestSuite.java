@@ -148,7 +148,7 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
-    SSHClient getSshClient() throws IOException {
+    private SSHClient getSshClient() throws IOException {
         SSHClient ssh = new SSHClient();
 
         ssh.addHostKeyVerifier(ftpFingerprint);

@@ -220,7 +220,7 @@ public class FtpClient {
                 null
             )
         );
-        sshClient.getConnection().getKeepAlive().setKeepAliveInterval(30);
+        sshClient.getConnection().getKeepAlive().setKeepAliveInterval(10);
 
         return sshClient;
     }
