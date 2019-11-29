@@ -168,13 +168,15 @@ abstract class FunctionalTestSuite {
             try {
                 if (ssh.isConnected() && ssh.isAuthenticated()) {
                     return ssh;
+                } else {
+                    try {
+                        ssh.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (Exception ex) {
-                try {
-                    ssh.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                ex.printStackTrace();
             }
         }
 

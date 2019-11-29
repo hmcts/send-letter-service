@@ -207,4 +207,21 @@ class FtpClientTest {
             .hasMessage("Unable to authenticate.")
             .hasCauseInstanceOf(UserAuthException.class);
     }
+
+    @Test
+    void should_return_new_sshClient_when_connection_lost() throws IOException {
+        // given
+        Connection mockConn = mock(Connection.class);
+        given(sshClient.getConnection()).willReturn(mockConn);
+        given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
+
+        client.getSshClient();
+
+        given(sshClient.isConnected()).willReturn(false);
+        willThrow(new IOException("already closed")).given(sshClient).close();
+
+        // when
+        assertThat(client.getSshClient()).isNotNull();
+
+    }
 }

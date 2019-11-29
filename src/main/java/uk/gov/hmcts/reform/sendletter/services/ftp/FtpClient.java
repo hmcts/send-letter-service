@@ -194,14 +194,15 @@ public class FtpClient {
             try {
                 if (sshClient.isConnected() && sshClient.isAuthenticated()) {
                     return sshClient;
+                } else {
+                    try {
+                        sshClient.close();
+                    } catch (Exception e) {
+                        logger.warn("Error closing ssh connection.", e);
+                    }
                 }
             } catch (Exception ex) {
                 logger.warn("Connection lost, recreating SSHClient ", ex);
-                try {
-                    sshClient.disconnect();
-                } catch (IOException e) {
-                    logger.warn("Error closing ssh connection.", e);
-                }
             }
         }
 
