@@ -206,6 +206,8 @@ public class FtpClient {
             }
         }
 
+        System.out.println("create newwwwwww.");
+
         sshClient = sshClientSupplier.get();
         sshClient.addHostKeyVerifier(configProperties.getFingerprint());
         sshClient.connect(configProperties.getHostname(), configProperties.getPort());
