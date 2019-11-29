@@ -61,7 +61,6 @@ class FtpClientTest {
         Connection mockConn = mock(Connection.class);
         given(sshClient.getConnection()).willReturn(mockConn);
         given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
-        doNothing().when(mockConn).setTimeoutMs(60 * 1000);
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         RemoteResourceInfo nonCsvFile = mock(RemoteResourceInfo.class);
         given(nonCsvFile.isRegularFile()).willReturn(true);
@@ -85,7 +84,6 @@ class FtpClientTest {
         Connection mockConn = mock(Connection.class);
         given(sshClient.getConnection()).willReturn(mockConn);
         given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
-        doNothing().when(mockConn).setTimeoutMs(60 * 1000);
         given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
         willThrow(IOException.class).given(sftpClient).ls(eq(null));
 
@@ -165,7 +163,6 @@ class FtpClientTest {
         Connection mockConn = mock(Connection.class);
         given(sshClient.getConnection()).willReturn(mockConn);
         given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
-        doNothing().when(mockConn).setTimeoutMs(60 * 1000);
         doNothing().when(sftpClient).rm(anyString());
 
         // when
@@ -182,7 +179,6 @@ class FtpClientTest {
         Connection mockConn = mock(Connection.class);
         given(sshClient.getConnection()).willReturn(mockConn);
         given(mockConn.getKeepAlive()).willReturn(mock(KeepAlive.class));
-        doNothing().when(mockConn).setTimeoutMs(60 * 1000);
         willThrow(IOException.class).given(sftpClient).rm(anyString());
 
         // when
