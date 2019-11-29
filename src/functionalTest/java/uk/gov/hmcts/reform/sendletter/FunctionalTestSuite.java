@@ -86,7 +86,6 @@ abstract class FunctionalTestSuite {
     static void clear() {
         if (ssh != null) {
             try {
-                System.out.println("close connectionxxxx");
                 ssh.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -168,7 +167,6 @@ abstract class FunctionalTestSuite {
         if (ssh != null) {
             try {
                 if (ssh.isConnected() && ssh.isAuthenticated()) {
-                    System.out.println("testxxxx returning existing one.");
                     return ssh;
                 }
             } catch (Exception ex) {
@@ -181,7 +179,6 @@ abstract class FunctionalTestSuite {
         }
 
         ssh = new SSHClient();
-        System.out.println("testxxxx create new one.");
 
         ssh.addHostKeyVerifier(ftpFingerprint);
         ssh.connect(ftpHostname, ftpPort);
@@ -190,7 +187,7 @@ abstract class FunctionalTestSuite {
             ftpUser,
             ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
         );
-
+        ssh.getConnection().getKeepAlive().setKeepAliveInterval(5);
         return ssh;
     }
 

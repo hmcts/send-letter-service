@@ -193,7 +193,6 @@ public class FtpClient {
         if (sshClient != null) {
             try {
                 if (sshClient.isConnected() && sshClient.isAuthenticated()) {
-                    System.out.println("I will delete , returning existing one.");
                     return sshClient;
                 }
             } catch (Exception ex) {
@@ -206,7 +205,6 @@ public class FtpClient {
             }
         }
 
-        System.out.println("create newwwwwww.");
 
         sshClient = sshClientSupplier.get();
         sshClient.addHostKeyVerifier(configProperties.getFingerprint());
