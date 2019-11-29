@@ -243,7 +243,8 @@ abstract class FunctionalTestSuite {
 
         Boolean fileExists = false;
 
-        try (SSHClient ssh = getSshClient()) {
+        SSHClient ssh = getSshClient();
+        {
             SFTPClient sftp = ssh.newSFTPClient();
 
             while (!(now().after(waitUntil) || fileExists)) {
