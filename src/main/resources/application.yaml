@@ -129,4 +129,7 @@ stale-letters:
 
 logging:
   level:
-    root: DEBUG
+      uk:
+       gov: DEBUG
+      net:
+        schmizz: DEBUG
