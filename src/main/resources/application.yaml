@@ -126,3 +126,7 @@ encryption:
 
 stale-letters:
   min-age-in-business-days: 2
+
+logging:
+  level:
+    root: DEBUG
