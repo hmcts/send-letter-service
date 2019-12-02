@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.sendletter.helper;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties.ServiceFolderMapping;
@@ -24,7 +26,9 @@ public final class FtpHelper {
     // server's public key.
     private static FtpClient getClient(int port, boolean verified) throws IOException {
         Supplier<SSHClient> s = () -> {
-            SSHClient client = new SSHClient();
+            DefaultConfig defaultConfig = new DefaultConfig();
+            defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
+            SSHClient client = new SSHClient(defaultConfig);
             client.addHostKeyVerifier((a, b, c) -> verified);
             return client;
         };

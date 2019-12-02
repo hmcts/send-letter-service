@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
+import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +16,9 @@ public class SftpConfig {
 
     @Bean
     public Supplier<SSHClient> sshClient() {
-        return SSHClient::new;
+        DefaultConfig defaultConfig = new DefaultConfig();
+        defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
+        return () -> new SSHClient(defaultConfig);
     }
 
     @Bean
