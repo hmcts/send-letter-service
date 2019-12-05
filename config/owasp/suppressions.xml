@@ -46,16 +46,6 @@
     </suppress>
 
     <suppress>
-        <notes><![CDATA[
-       file name: wiremock-jre8-2.23.2.jar.
-       This is only used for TESTING purposes.
-   ]]></notes>
-        <filePath regex="true">.*wiremock-jre8-2\.23\.2\.jar.*</filePath>
-        <!-- jquery -->
-        <cve>CVE-2019-11358</cve>
-    </suppress>
-
-    <suppress>
         <notes><![CDATA[ file name: handlebars-4.1.2.jar: handlebars-v4.0.4.js ]]></notes>
         <packageUrl regex="true">^pkg:javascript/handlebars\.js@.*$</packageUrl>
         <vulnerabilityName>A prototype pollution vulnerability in handlebars is exploitable if an attacker can control the template</vulnerabilityName>
