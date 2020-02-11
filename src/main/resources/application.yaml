@@ -107,7 +107,7 @@ ftp:
     - service: finrem_document_generator
       folder: FINREM
     - service: fpl_case_service
-      # change the folder name once contract is agreed with Xerox
+      # change the folder name once folder is created for FPLA
       folder: BULKPRINT
 
 scheduling:
