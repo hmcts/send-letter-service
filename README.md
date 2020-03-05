@@ -49,9 +49,9 @@ $ curl http://localhost:8485/health
 ```bash
 curl -X POST -H "Content-Type: application/json" "http://localhost:4552/lease" -d '{"microservice":"send_letter_tests","oneTimePassword":"OTP"}'
 
-OTP_RESPONSE
+S2S_TOKEN
 
-curl -X POST -H "Content-Type: application/vnd.uk.gov.hmcts.letter-service.in.letter.v2+json" -H "ServiceAuthorization: Bearer OTP_RESPONSE" "http://localhost:8485/letters" -d '{"documents":["aGVsbG8="],"type":"BPS001"}'
+curl -X POST -H "Content-Type: application/vnd.uk.gov.hmcts.letter-service.in.letter.v2+json" -H "ServiceAuthorization: Bearer S2S_TOKEN" "http://localhost:8485/letters" -d '{"documents":["aGVsbG8="],"type":"BPS001"}'
 
 {"letter_id":"f015a4dd-cfa5-4b2b-9fb0-e43ad6ceea35"}
 ```
