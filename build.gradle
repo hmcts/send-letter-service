@@ -204,7 +204,7 @@ dependencyManagement {
       entry 'mockito-core'
     }
     // remove once aligned with testcontainers
-    dependencySet(group: 'org.testcontainers', version: '1.12.4') {
+    dependencySet(group: 'org.testcontainers', version: '1.13.0') {
       entry 'database-commons'
     }
   }
