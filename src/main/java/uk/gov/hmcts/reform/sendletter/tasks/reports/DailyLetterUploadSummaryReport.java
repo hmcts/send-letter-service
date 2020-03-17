@@ -30,8 +30,8 @@ public class DailyLetterUploadSummaryReport {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private static final String EMAIL_SUBJECT = "Sent Letters Summary to Bulk Print Daily Report";
-    private static final String ATTACHMENT_PREFIX = "send-letter-summary-";
+    private static final String EMAIL_SUBJECT = "Sent Letters Summary split by services";
+    private static final String ATTACHMENT_PREFIX = "Bulk-Print-Daily-Report-";
 
     private final ReportsService reportService;
 
