@@ -111,6 +111,9 @@ This can only be deployed once ftp provider has created folder in all relevant e
 
 ## Using the service
 
+This section contains some helpful information about talking to Send Letter Service.
+Swagger specification for the API can be found [here](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/send-letter-service.json)
+
 ### Sending a letter request
 
 In order to request sending a letter, retrieve a token from [S2S](https://github.com/hmcts/service-auth-provider-app)
