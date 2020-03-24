@@ -220,7 +220,7 @@ dependencies {
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
 
-  compile group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: versions.shedlock
+  compile group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc', version: versions.shedlock
   compile group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: versions.shedlock
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
