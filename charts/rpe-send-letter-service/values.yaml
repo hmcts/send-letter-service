@@ -21,7 +21,7 @@ java:
 
   environment:
     # db
-    LETTER_TRACKING_DB_CONN_OPTIONS: "?sslmode=require"
+    LETTER_TRACKING_DB_CONN_OPTIONS: "?sslmode=require&raiseExceptionOnSilentRollback=false"
 
     # db - migration
     FLYWAY_URL: "jdbc:postgresql://rpe-send-letter-service-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/send_letter?sslmode=require"
