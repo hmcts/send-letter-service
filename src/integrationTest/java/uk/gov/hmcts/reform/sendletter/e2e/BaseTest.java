@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 import uk.gov.hmcts.reform.sendletter.tasks.MarkLettersPostedTask;
-import uk.gov.hmcts.reform.sendletter.tasks.StaleLettersTask;
+import uk.gov.hmcts.reform.sendletter.tasks.alerts.StaleLettersTask;
 import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 import uk.gov.hmcts.reform.sendletter.util.CsvReportWriter;
 
