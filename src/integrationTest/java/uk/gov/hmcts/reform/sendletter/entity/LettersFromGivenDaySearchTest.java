@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class LetterFromGivenDaySearchTest {
+public class LettersFromGivenDaySearchTest {
 
     private static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
 
@@ -45,7 +45,7 @@ public class LetterFromGivenDaySearchTest {
                 assertThat(l.getSentToPrintAt()).isEqualTo(letter.getSentToPrintAt());
                 assertThat(l.getPrintedAt()).isEqualTo(letter.getPrintedAt());
                 assertThat(l.getService()).isEqualTo(letter.getService());
-                assertThat(l.getType()).isEqualTo(letter.getType());g
+                assertThat(l.getType()).isEqualTo(letter.getType());
                 assertThat(l.getStatus()).isEqualTo(letter.getStatus().toString());
             });
     }
