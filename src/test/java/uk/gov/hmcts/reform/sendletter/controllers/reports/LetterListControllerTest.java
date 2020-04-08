@@ -103,6 +103,20 @@ class LetterListControllerTest {
             );
     }
 
+    @Test
+    void should_return_400_when_date_is_not_provided() throws Exception {
+        mockMvc
+            .perform(get("/letters"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_400_when_invalid_date_is_provided() throws Exception {
+        mockMvc
+            .perform(get("/letters").queryParam("date", "not-a-date"))
+            .andExpect(status().isBadRequest());
+    }
+
     private BasicLetterInfo letter(
         UUID id,
         String status,
