@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.UUID;
 
 import static java.time.Month.MAY;
@@ -77,6 +78,25 @@ class LetterListControllerTest {
                     + "    'printed_at': null"
                     + "  }"
                     + "]"
+                    + "}",
+                true
+                )
+            );
+    }
+
+    @Test
+    void should_return_valid_response_when_letters_are_not_found() throws Exception {
+        LocalDate date = LocalDate.of(2020, 1, 20);
+
+        given(repository.findCreatedAt(date)).willReturn(Collections.emptyList());
+
+        mockMvc
+            .perform(get("/letters").queryParam("date", "2020-01-20"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(
+                "{"
+                    + "'count': 0,"
+                    + "'letters': []"
                     + "}",
                 true
                 )
