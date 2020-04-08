@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter.model.out;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class LetterInfo {
