@@ -5,9 +5,9 @@ import java.util.List;
 public class LettersInfoResponse {
 
     public final int count;
-    public final List<LetterStatus> letters;
+    public final List<LetterInfo> letters;
 
-    public LettersInfoResponse(List<LetterStatus> letters) {
+    public LettersInfoResponse(List<LetterInfo> letters) {
         this.letters = letters;
         this.count = letters.size();
     }
