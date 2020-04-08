@@ -64,20 +64,21 @@ class LetterListControllerTest {
                     + "    'id': '9b9c019d-78e7-479d-afc6-a7b5b585c47e',"
                     + "    'service': 'service_A',"
                     + "    'status': 'Posted',"
-                    + "    'created_at': '2019-05-17T07:00:00',"
-                    + "    'sent_to_print_at': '2019-05-17T08:00:00',"
-                    + "    'printed_at': '2019-05-17T09:29:30'"
+                    + "    'created_at': '2020-05-17T07:00:00',"
+                    + "    'sent_to_print_at': '2020-05-17T08:00:00',"
+                    + "    'printed_at': '2020-05-17T09:29:30'"
                     + "  },"
                     + "  {"
                     + "    'id': 'db4c7ec5-c2ae-4bd7-b2b6-f743234f55bf',"
                     + "    'service': 'service_B',"
                     + "    'status': 'Uploaded',"
-                    + "    'created_at': '2019-05-17T10:00:00',"
-                    + "    'sent_to_print_at': '2019-05-17T11:00:00',"
+                    + "    'created_at': '2020-05-17T10:00:00',"
+                    + "    'sent_to_print_at': '2020-05-17T11:00:00',"
                     + "    'printed_at': null"
                     + "  }"
                     + "]"
-                    + "}"
+                    + "}",
+                true
                 )
             );
     }
