@@ -212,33 +212,33 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
 }
 
 # region staging DB secrets
-resource "azurerm_key_vault_secret" "STAGING_POSTGRES_USER" {
+resource "azurerm_key_vault_secret" "staging_db_user" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-STAGING-POSTGRES-USER"
+  name         = "${var.component}-staging-db-user"
   value        = "${module.staging-db.user_name}"
 }
 
-resource "azurerm_key_vault_secret" "STAGING_POSTGRES_PASS" {
+resource "azurerm_key_vault_secret" "staging_db_password" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-STAGING-POSTGRES-PASS"
+  name         = "${var.component}-staging-db-password"
   value        = "${module.staging-db.postgresql_password}"
 }
 
-resource "azurerm_key_vault_secret" "STAGING_POSTGRES_HOST" {
+resource "azurerm_key_vault_secret" "staging_db_host" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-STAGING-POSTGRES-HOST"
+  name         = "${var.component}-staging-db-host"
   value        = "${module.staging-db.host_name}"
 }
 
-resource "azurerm_key_vault_secret" "STAGING_POSTGRES_PORT" {
+resource "azurerm_key_vault_secret" "staging_db_port" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-STAGING-POSTGRES-PORT"
+  name         = "${var.component}-staging-db-port"
   value        = "${module.staging-db.postgresql_listen_port}"
 }
 
-resource "azurerm_key_vault_secret" "STAGING_POSTGRES_DATABASE" {
+resource "azurerm_key_vault_secret" "staging_db_name" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-STAGING-POSTGRES-DATABASE"
+  name         = "${var.component}-staging-db-name"
   value        = "${module.staging-db.postgresql_database}"
 }
 # endregion
