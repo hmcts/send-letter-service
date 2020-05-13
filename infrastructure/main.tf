@@ -141,7 +141,7 @@ data "azurerm_key_vault" "s2s_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-USER"
-  value        = "${module.staging-db.user_name}"
+  value        = "${module.db.user_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
