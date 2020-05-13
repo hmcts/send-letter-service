@@ -45,6 +45,19 @@ module "db" {
   subscription    = "${var.subscription}"
 }
 
+module "staging-db" {
+  source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product         = "${var.component}-staging-db"
+  location        = "${var.location_db}"
+  env             = "${var.env}"
+  database_name   = "send_letter"
+  postgresql_user = "send_letter"
+  sku_name        = "GP_Gen5_2"
+  sku_tier        = "GeneralPurpose"
+  common_tags     = "${var.common_tags}"
+  subscription    = "${var.subscription}"
+}
+
 module "send-letter-service" {
   source                 = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                = "${var.product}-${var.component}"
@@ -128,7 +141,7 @@ data "azurerm_key_vault" "s2s_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-USER"
-  value        = "${module.db.user_name}"
+  value        = "${module.staging-db.user_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
@@ -197,3 +210,35 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
   name         = "encryption-public-key"
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
 }
+
+# region staging DB secrets
+resource "azurerm_key_vault_secret" "STAGING_POSTGRES_USER" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-STAGING-POSTGRES-USER"
+  value        = "${module.staging-db.user_name}"
+}
+
+resource "azurerm_key_vault_secret" "STAGING_POSTGRES_PASS" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-STAGING-POSTGRES-PASS"
+  value        = "${module.staging-db.postgresql_password}"
+}
+
+resource "azurerm_key_vault_secret" "STAGING_POSTGRES_HOST" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-STAGING-POSTGRES-HOST"
+  value        = "${module.staging-db.host_name}"
+}
+
+resource "azurerm_key_vault_secret" "STAGING_POSTGRES_PORT" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-STAGING-POSTGRES-PORT"
+  value        = "${module.staging-db.postgresql_listen_port}"
+}
+
+resource "azurerm_key_vault_secret" "STAGING_POSTGRES_DATABASE" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-STAGING-POSTGRES-DATABASE"
+  value        = "${module.staging-db.postgresql_database}"
+}
+# endregion
