@@ -204,10 +204,6 @@ dependencyManagement {
 }
 
 dependencies {
-  def withoutJunit4 = {
-    exclude group: 'junit', module: 'junit'
-  }
-
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -251,20 +247,34 @@ dependencies {
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
 
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', withoutJunit4
-  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.13', withoutJunit4
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+    exclude group: 'junit', module: 'junit'
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.13', {
+    exclude group: 'junit', module: 'junit'
+  }
   testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.5'
   testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
-  testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.20', withoutJunit4
+  testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.20', {
+    exclude group: 'junit', module: 'junit'
+  }
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockitoJupiter
-  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.25.1', withoutJunit4
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.25.1', {
+    exclude group: 'junit', module: 'junit'
+  }
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.4.0'
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.4.0'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.14.3' // brings in junit4. testcontainers depend on it
-  integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3', withoutJunit4
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.14.3', {
+    exclude group: 'junit', module: 'junit'
+  }
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.14.3'
+  integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3', {
+    exclude group: 'junit', module: 'junit'
+  }
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
