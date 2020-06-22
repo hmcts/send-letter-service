@@ -6,6 +6,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTest extends FunctionalTestSuite {
@@ -80,6 +81,6 @@ class ProcessMessageTest extends FunctionalTestSuite {
 
     @Override
     String getContentType() {
-        return MediaTypes.LETTER_V1;
+        return MediaTypes.LETTER_V1 + "," + APPLICATION_JSON_VALUE;
     }
 }
