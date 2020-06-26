@@ -37,6 +37,7 @@ import static org.apache.commons.lang.time.DateUtils.addSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.util.DateUtil.now;
+import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -113,6 +114,7 @@ abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .header("ServiceAuthorization", "Bearer " + jwt)
             .header(CONTENT_TYPE, getContentType())
+            .header(ACCEPT, APPLICATION_JSON_VALUE)
             .baseUri(sendLetterServiceUrl)
             .body(jsonBody.getBytes())
             .when()
