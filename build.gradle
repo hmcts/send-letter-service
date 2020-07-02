@@ -213,6 +213,7 @@ dependencyManagement {
 dependencies {
   def withoutJunit4 = {
     exclude group: 'junit', module: 'junit'
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
