@@ -8,15 +8,15 @@
 <!--        <cpe>cpe:/a:pgp:pgp</cpe>-->
 <!--    </suppress>-->
 
-<!--    <suppress until="2020-08-19">-->
-<!--        <packageUrl regex="true">^pkg:maven/org\.apache\.sling/org\.apache\.sling\.javax\.activation@.*$</packageUrl>-->
-<!--        <cpe>cpe:/a:apache:sling</cpe>-->
-<!--    </suppress>-->
+    <suppress until="2020-08-19">
+        <packageUrl regex="true">^pkg:maven/org\.apache\.sling/org\.apache\.sling\.javax\.activation@.*$</packageUrl>
+        <cpe>cpe:/a:apache:sling</cpe>
+    </suppress>
 
-<!--    <suppress until="2020-08-19">-->
-<!--        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>-->
-<!--        <cpe>cpe:/a:pivotal_software:spring_security</cpe>-->
-<!--    </suppress>-->
+    <suppress until="2020-08-19">
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+        <cpe>cpe:/a:pivotal_software:spring_security</cpe>
+    </suppress>
 
     <suppress>
         <notes><![CDATA[ file name: wiremock-jre8-2.25.1.jar: jquery-3.4.1.min.js ]]></notes>
