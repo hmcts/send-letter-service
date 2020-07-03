@@ -180,7 +180,7 @@ repositories {
 }
 
 def versions = [
-  bouncycastle: '1.65.01',
+  bouncycastle: '1.64',
   junit: '5.6.2',
   junitPlatform: '1.6.2',
   mockitoJupiter: '3.3.3',
@@ -267,7 +267,7 @@ dependencies {
   testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.20', withoutJunit4
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockitoJupiter
-  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.25.1', withoutJunit4
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.27.0', withoutJunit4
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
