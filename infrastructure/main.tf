@@ -58,8 +58,6 @@ module "staging-db" {
   subscription    = "${var.subscription}"
 }
 
-}
-
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
   source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
