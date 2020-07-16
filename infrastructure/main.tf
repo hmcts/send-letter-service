@@ -31,6 +31,20 @@ module "db" {
   subscription    = "${var.subscription}"
 }
 
+module "db-v11" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.component}-db"
+  location           = "${var.location_db}"
+  env                = "${var.env}"
+  database_name      = "send_letter"
+  postgresql_user    = "send_letter"
+  postgresql_version = "11"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = "${var.common_tags}"
+  subscription       = "${var.subscription}"
+}
+
 module "staging-db" {
   source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product         = "${var.component}-staging-db"
