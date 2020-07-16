@@ -114,31 +114,31 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 resource "azurerm_key_vault_secret" "postgres_user_v11" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-db-user-v11"
-  value        = "${module.db.user_name}"
+  value        = "${module.db-v11.user_name}"
 }
 
 resource "azurerm_key_vault_secret" "postgres_pass_v11" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-db-pass-v11"
-  value        = "${module.db.postgresql_password}"
+  value        = "${module.db-v11.postgresql_password}"
 }
 
 resource "azurerm_key_vault_secret" "postgres_host_v11" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-db-host-v11"
-  value        = "${module.db.host_name}"
+  value        = "${module.db-v11.host_name}"
 }
 
 resource "azurerm_key_vault_secret" "postgres_port_v11" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-db-port-v11"
-  value        = "${module.db.postgresql_listen_port}"
+  value        = "${module.db-v11.postgresql_listen_port}"
 }
 
 resource "azurerm_key_vault_secret" "postgres_database_v11" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-db-database-v11"
-  value        = "${module.db.postgresql_database}"
+  value        = "${module.db-v11.postgresql_database}"
 }
 
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
