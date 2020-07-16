@@ -46,16 +46,17 @@ module "db-v11" {
 }
 
 module "staging-db" {
-  source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = "${var.component}-staging-db"
-  location        = "${var.location_db}"
-  env             = "${var.env}"
-  database_name   = "send_letter"
-  postgresql_user = "send_letter"
-  sku_name        = "GP_Gen5_2"
-  sku_tier        = "GeneralPurpose"
-  common_tags     = "${var.common_tags}"
-  subscription    = "${var.subscription}"
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.component}-staging-db"
+  location           = "${var.location_db}"
+  env                = "${var.env}"
+  database_name      = "send_letter"
+  postgresql_user    = "send_letter"
+  postgresql_version = "11"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = "${var.common_tags}"
+  subscription       = "${var.subscription}"
 }
 
 # region save DB details to Azure Key Vault
