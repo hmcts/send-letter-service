@@ -111,6 +111,36 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value        = "${module.db.postgresql_database}"
 }
 
+resource "azurerm_key_vault_secret" "new_postgres_user" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-new-db-user"
+  value        = "${module.db.user_name}"
+}
+
+resource "azurerm_key_vault_secret" "new_postgres_pass" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-new-db-pass"
+  value        = "${module.db.postgresql_password}"
+}
+
+resource "azurerm_key_vault_secret" "new_postgres_host" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-new-db-host"
+  value        = "${module.db.host_name}"
+}
+
+resource "azurerm_key_vault_secret" "new_postgres_port" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-new-db-port"
+  value        = "${module.db.postgresql_listen_port}"
+}
+
+resource "azurerm_key_vault_secret" "new_postgres_database" {
+  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
+  name         = "${var.component}-new-db-database"
+  value        = "${module.db.postgresql_database}"
+}
+
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "app-insights-instrumentation-key"
