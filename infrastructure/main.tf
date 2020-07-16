@@ -58,62 +58,6 @@ module "staging-db" {
   subscription    = "${var.subscription}"
 }
 
-module "send-letter-service" {
-  source                 = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product                = "${var.product}-${var.component}"
-  location               = "${var.location_app}"
-  env                    = "${var.env}"
-  ilbIp                  = "${var.ilbIp}"
-  resource_group_name    = "${azurerm_resource_group.rg.name}"
-  subscription           = "${var.subscription}"
-  capacity               = "${var.capacity}"
-  common_tags            = "${var.common_tags}"
-  asp_name               = "${var.product}-${var.component}-${var.env}"
-  asp_rg                 = "${var.product}-${var.component}-${var.env}"
-  instance_size          = "${local.sku_size}"
-  java_container_version = "9.0"
-  enable_ase             = "${var.enable_ase}"
-
-  app_settings = {
-    S2S_URL                         = "${local.s2s_url}"
-    LETTER_TRACKING_DB_HOST         = "${module.db.host_name}"
-    LETTER_TRACKING_DB_PORT         = "${module.db.postgresql_listen_port}"
-    LETTER_TRACKING_DB_USER_NAME    = "${module.db.user_name}"
-    LETTER_TRACKING_DB_PASSWORD     = "${module.db.postgresql_password}"
-    LETTER_TRACKING_DB_NAME         = "${module.db.postgresql_database}"
-    LETTER_TRACKING_DB_CONN_OPTIONS = "${local.db_connection_options}"
-    FLYWAY_URL                      = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}${local.db_connection_options}"
-    FLYWAY_USER                     = "${module.db.user_name}"
-    FLYWAY_PASSWORD                 = "${module.db.postgresql_password}"
-    ENCRYPTION_ENABLED              = "${var.encyption_enabled}"
-    SCHEDULING_ENABLED              = "${var.scheduling_enabled}"
-    SCHEDULING_LOCK_AT_MOST_FOR     = "${var.scheduling_lock_at_most_for}"
-    FILE_CLEANUP_ENABLED            = "${var.file_cleanup_enabled}"
-    FILE_CLEANUP_CRON               = "${var.file_cleanup_cron}"
-
-    // ftp
-    FTP_HOSTNAME                 = "${var.ftp_hostname}"
-    FTP_PORT                     = "${var.ftp_port}"
-    FTP_FINGERPRINT              = "${var.ftp_fingerprint}"
-    FTP_TARGET_FOLDER            = "${var.ftp_target_folder}"
-    FTP_SMOKE_TEST_TARGET_FOLDER = "${var.ftp_smoke_test_target_folder}"
-    FTP_REPORTS_FOLDER           = "${var.ftp_reports_folder}"
-    FTP_REPORTS_CRON             = "${var.ftp_reports_cron}"
-    FTP_USER                     = "${local.ftp_user}"
-    FTP_PRIVATE_KEY              = "${local.ftp_private_key}"
-    FTP_PUBLIC_KEY               = "${local.ftp_public_key}"
-    ENCRYPTION_PUBLIC_KEY        = "${local.encryption_public_key}"
-
-    // smtp
-    SMTP_HOST     = "${var.smtp_host}"
-    SMTP_USERNAME = "${data.azurerm_key_vault_secret.smtp_username.value}"
-    SMTP_PASSWORD = "${data.azurerm_key_vault_secret.smtp_password.value}"
-
-    // reports. depends on smtp
-    UPLOAD_SUMMARY_REPORT_CRON       = "${var.upload_summary_report_cron}"
-    UPLOAD_SUMMARY_REPORT_ENABLED    = "${var.upload_summary_report_enabled}"
-    UPLOAD_SUMMARY_REPORT_RECIPIENTS = "${data.azurerm_key_vault_secret.upload_summary_recipients.value}"
-  }
 }
 
 # region save DB details to Azure Key Vault
