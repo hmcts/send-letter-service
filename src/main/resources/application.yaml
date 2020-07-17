@@ -51,6 +51,8 @@ spring:
       maxLifetime: 7200000
       connectionTimeout: 30000
   jpa:
+    # so spring can auto-detect different sql dialect for each datasource
+    database: default
     properties:
       hibernate:
         jdbc:
