@@ -35,6 +35,21 @@ spring:
       poolName: SendLetterHikariCP
       maxLifetime: 7200000
       connectionTimeout: 30000
+  # same as ^
+  datasource-v11:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:send-letter-database}:${DB_PORT:5432}/${DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
+    username: ${DB_USER:letterservice}
+    password: ${DB_PASSWORD:}
+    properties:
+      charSet: UTF-8
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 10000
+      poolName: SendLetterHikariCP
+      maxLifetime: 7200000
+      connectionTimeout: 30000
   jpa:
     properties:
       hibernate:
