@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -25,8 +24,7 @@ import javax.sql.DataSource;
 public class DbConfiguration {
 
     @Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource-v11")
-    @FlywayDataSource
+    @ConfigurationProperties(prefix = "spring.datasource.v11")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }

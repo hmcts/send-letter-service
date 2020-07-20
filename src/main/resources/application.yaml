@@ -22,34 +22,35 @@ spring:
   application:
     name: Send Letter Service
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${LETTER_TRACKING_DB_HOST:send-letter-database}:${LETTER_TRACKING_DB_PORT:5432}/${LETTER_TRACKING_DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
-    username: ${LETTER_TRACKING_DB_USER_NAME:letterservice}
-    password: ${LETTER_TRACKING_DB_PASSWORD:}
-    properties:
-      charSet: UTF-8
-    hikari:
-      minimumIdle: 2
-      maximumPoolSize: 10
-      idleTimeout: 10000
-      poolName: SendLetterHikariCP
-      maxLifetime: 7200000
-      connectionTimeout: 30000
-  # same as ^
-  datasource-v11:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:send-letter-database}:${DB_PORT:5432}/${DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
-    username: ${DB_USER:letterservice}
-    password: ${DB_PASSWORD:}
-    properties:
-      charSet: UTF-8
-    hikari:
-      minimumIdle: 2
-      maximumPoolSize: 10
-      idleTimeout: 10000
-      poolName: SendLetterHikariCP
-      maxLifetime: 7200000
-      connectionTimeout: 30000
+    legacy:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://${LETTER_TRACKING_DB_HOST:send-letter-database}:${LETTER_TRACKING_DB_PORT:5432}/${LETTER_TRACKING_DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
+      username: ${LETTER_TRACKING_DB_USER_NAME:letterservice}
+      password: ${LETTER_TRACKING_DB_PASSWORD:}
+      properties:
+        charSet: UTF-8
+      hikari:
+        minimumIdle: 2
+        maximumPoolSize: 10
+        idleTimeout: 10000
+        poolName: SendLetterHikariCP
+        maxLifetime: 7200000
+        connectionTimeout: 30000
+    # same as ^
+    v11:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://${DB_HOST:send-letter-database}:${DB_PORT:5432}/${DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
+      username: ${DB_USER:letterservice}
+      password: ${DB_PASSWORD:}
+      properties:
+        charSet: UTF-8
+      hikari:
+        minimumIdle: 2
+        maximumPoolSize: 10
+        idleTimeout: 10000
+        poolName: SendLetterHikariCP
+        maxLifetime: 7200000
+        connectionTimeout: 30000
   jpa:
     # so spring can auto-detect different sql dialect for each datasource
     database: default
