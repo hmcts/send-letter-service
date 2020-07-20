@@ -128,7 +128,7 @@ file-cleanup:
 
 old-letter-content-cleanup:
   enabled: ${OLD_LETTER_CONTENT_CLEANUP_ENABLED:false}
-  cron: ${OLD_LETTER_CONTENT_CLEANUP_CRON:0 0 7 * * MON}
+  cron: ${OLD_LETTER_CONTENT_CLEANUP_CRON:0 0 7 * * *}
   ttl: P31D
 
 encryption:
