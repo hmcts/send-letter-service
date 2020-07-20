@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
  * To be used on AAT only.
  */
 @Component
-@ConditionalOnProperty(value = "letter-content-cleanup.enabled")
+@ConditionalOnProperty(value = "old-letter-content-cleanup.enabled")
 public class ClearOldLetterContentTask {
 
     private static final String TASK_NAME = "ClearOldLetterContent";
@@ -33,7 +33,7 @@ public class ClearOldLetterContentTask {
 
     public ClearOldLetterContentTask(
         LetterRepository letterRepository,
-        @Value("${letter-content-cleanup.ttl}") Duration ttl,
+        @Value("${old-letter-content-cleanup.ttl}") Duration ttl,
         Clock clock
     ) {
         this.letterRepository = letterRepository;
@@ -42,7 +42,7 @@ public class ClearOldLetterContentTask {
     }
 
     @SchedulerLock(name = TASK_NAME)
-    @Scheduled(cron = "${letter-content-cleanup.cron}", zone = EUROPE_LONDON)
+    @Scheduled(cron = "${old-letter-content-cleanup.cron}", zone = EUROPE_LONDON)
     public void run() {
         var cutoff = LocalDateTime.now(clock).minus(ttl);
 
