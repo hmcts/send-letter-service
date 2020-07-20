@@ -20,14 +20,14 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    entityManagerFactoryRef = "entityManagerFactory",
+    entityManagerFactoryRef = "entityManagerFactory-legacy",
     basePackages = { "uk.gov.hmcts.reform.sendletter.entity" }
 )
 public class LegacyDbConfiguration {
 
     @Primary
     @Bean(name = "dataSource-legacy")
-    @ConfigurationProperties(prefix = "spring.datasource.legacy")
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }

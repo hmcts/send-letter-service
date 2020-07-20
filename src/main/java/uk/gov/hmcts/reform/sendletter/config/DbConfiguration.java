@@ -19,12 +19,13 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityManagerFactory",
+    transactionManagerRef = "transactionManager",
     basePackages = { "uk.gov.hmcts.reform.sendletter.data" }
 )
 public class DbConfiguration {
 
     @Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.v11")
+    @ConfigurationProperties(prefix = "spring.datasource-v11")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
