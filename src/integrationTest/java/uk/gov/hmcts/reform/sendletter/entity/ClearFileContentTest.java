@@ -25,9 +25,9 @@ class ClearFileContentTest {
         // given
         var cutOffDate = LocalDateTime.now().minusDays(2);
 
-        Letter l1 = storeLetter(cutOffDate.minusSeconds(10), Created); // age ✔️, status ❌
+        Letter l1 = storeLetter(cutOffDate.minusSeconds(10), Created); // age ✔️, status ✖️
         Letter l2 = storeLetter(cutOffDate.minusSeconds(20), Uploaded); // age ✔️, status ✔️
-        Letter l3 = storeLetter(cutOffDate.plusSeconds(30), Uploaded); // age ❌, status ✔️
+        Letter l3 = storeLetter(cutOffDate.plusSeconds(30), Uploaded); // age ✖️, status ✔️
 
         // when
         int updateCount = repo.clearFileContent(cutOffDate, Uploaded);
