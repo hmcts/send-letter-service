@@ -8,8 +8,6 @@ services:
     env_file:
       - env.list
     environment:
-      FTP_PRIVATE_KEY: /run/secrets/sftp-private-key
-      FTP_PUBLIC_KEY: /run/secrets/sftp-public-key
       S2S_URL: http://service-auth-provider-api:8080
     image: hmctspublic.azurecr.io/rpe/send-letter-service:latest
     links:
@@ -18,9 +16,6 @@ services:
       - service-auth-provider-api
     ports:
       - 8485:8485
-    secrets:
-      - sftp-private-key
-      - sftp-public-key
   send-letter-database:
     build:
       context: database
@@ -39,9 +34,10 @@ services:
     healthcheck:
       retries: 40
     ports:
-      - 22:22
+      - "22:22"
     volumes:
       - ./sftp/data/incoming:/home/sftp/incoming
+      - ./sftp/data/SMOKE_TEST:/home/sftp/SMOKE_TEST
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     healthcheck:
@@ -56,12 +52,6 @@ services:
       JWT_KEY: wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       MICROSERVICEKEYS_SEND_LETTER_TESTS: AAAAAAAAAAAAAAAA
       TESTING_SUPPORT_ENABLED: 'true'
-
-secrets:
-  sftp-private-key:
-    file: sftp/data/keys/ssh_host_ed25519_key
-  sftp-public-key:
-    file: sftp/data/keys/ssh_host_ed25519_key.pub
 
 volumes:
   send-letter-database:
