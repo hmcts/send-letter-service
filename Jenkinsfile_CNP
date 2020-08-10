@@ -49,6 +49,12 @@ withPipeline(type , product, component) {
     builder.gradle('integration')
   }
 
+  enableDbMigration('rpe-send-letter')
+  enableSlackNotifications(channel)
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+  loadVaultSecrets(secrets)
+
   onMaster {
     after('test') {
       sh '''
@@ -57,10 +63,4 @@ withPipeline(type , product, component) {
              '''
     }
   }
-
-  enableDbMigration('rpe-send-letter')
-  enableSlackNotifications(channel)
-  enableAksStagingDeployment()
-  disableLegacyDeployment()
-  loadVaultSecrets(secrets)
 }
