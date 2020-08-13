@@ -22,7 +22,9 @@ public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILe
     @NotEmpty
     public final String type;
 
-    @ApiModelProperty(value = "This field is used by BSP/Service team if there are any issues with the letter so that service team can track it using case reference/claim id and then can handle the case accordingly")
+    @ApiModelProperty(value = "This field is used by BSP/Service team if there are any issues"
+            + " with the letter so that service team can track it using case reference/claim id "
+            + "and then can handle the case accordingly")
     public final Map<String, Object> additionalData;
 
     public LetterWithPdfsAndNumberOfCopiesRequest(
