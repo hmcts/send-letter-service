@@ -24,9 +24,10 @@ class CreateLetterSmokeTest extends SmokeTestSuite {
                 arguments(MediaTypes.LETTER_V3, "letter-with-document-count.json")
         );
     }
+
     @ParameterizedTest
     @MethodSource("testData")
-    void should_create_letter_successfully(String mediaType, String fileName) throws Exception {
+    void shouldCreatLetterSuccessfully(String mediaType, String fileName) throws Exception {
 
         String jwt = signIn();
 
