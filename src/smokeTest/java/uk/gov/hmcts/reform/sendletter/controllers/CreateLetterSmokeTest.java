@@ -17,9 +17,9 @@ class CreateLetterSmokeTest extends SmokeTestSuite {
 
         String jwt = signIn();
 
-        String id = givenJwt(jwt)
+        String id = givenJwt(jwt, MediaTypes.LETTER_V2)
             .and()
-            .body(sampleLetterJson("letter.json"))
+            .body(sampleLetterJson("letter-with-pdf.json"))
             .when()
             .post("/letters")
             .then()
@@ -29,19 +29,19 @@ class CreateLetterSmokeTest extends SmokeTestSuite {
             .jsonPath()
             .get("letter_id");
 
-        givenJwt(jwt)
+        givenJwt(jwt, MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/letters/" + id)
             .then()
             .statusCode(200);
     }
 
-    private RequestSpecification givenJwt(String jwt) {
+    private RequestSpecification givenJwt(String jwt, String mediaType) {
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
             .baseUri(this.testUrl)
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, mediaType)
             .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE)
             .header("ServiceAuthorization", "Bearer " + jwt);
     }
