@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.util.Asserts;
@@ -30,6 +31,9 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
@@ -72,7 +76,7 @@ public class LetterService {
         String checksum = generateChecksum(letter);
         Asserts.notEmpty(serviceName, "serviceName");
 
-        if (!serviceFolderMapping.getFolderFor(serviceName).isPresent()) {
+        if (serviceFolderMapping.getFolderFor(serviceName).isEmpty()) {
             throw new ServiceNotConfiguredException("No configuration for service " + serviceName + " found");
         }
 
@@ -179,7 +183,10 @@ public class LetterService {
                 letter.getChecksum(),
                 toDateTime(letter.getCreatedAt()),
                 toDateTime(letter.getSentToPrintAt()),
-                toDateTime(letter.getPrintedAt())
+                toDateTime(letter.getPrintedAt()),
+                Optional.ofNullable(letter.getAdditionalData())
+                        .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>(){}))
+                        .orElse(Collections.emptyMap())
             ))
             .orElseThrow(() -> new LetterNotFoundException(id));
     }

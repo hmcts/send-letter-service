@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +41,8 @@ class GetLetterStatusControllerTest {
     @BeforeEach
     void setUp() {
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
-        letterStatus = new LetterStatus(UUID.randomUUID(), "Created", "some-message-id", now, now, now);
+        letterStatus = new LetterStatus(UUID.randomUUID(), "Created",
+                "some-message-id", now, now, now, Collections.emptyMap());
     }
 
     @Test
