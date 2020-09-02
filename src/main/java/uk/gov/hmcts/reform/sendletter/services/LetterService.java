@@ -179,8 +179,8 @@ public class LetterService {
     }
 
     public LetterStatus getStatus(UUID id, String isAdditonalDataRequired) {
-        Function<JsonNode, Map<String, Object>> additionDataFunction = (additionalData) -> {
-            if (YES.equals(isAdditonalDataRequired.toLowerCase())) {
+        Function<JsonNode, Map<String, Object>> additionDataFunction = additionalData -> {
+            if (YES.equalsIgnoreCase(isAdditonalDataRequired)) {
                 return Optional.ofNullable(additionalData)
                     .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>(){}))
                     .orElse(Collections.emptyMap());

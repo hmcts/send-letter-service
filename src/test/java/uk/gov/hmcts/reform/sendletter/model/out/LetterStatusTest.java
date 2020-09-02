@@ -23,7 +23,7 @@ class LetterStatusTest {
     private JacksonTester<LetterStatus> json;
 
     @Test
-    public void testAdditionalDataPresent() throws IOException {
+    void testAdditionalDataPresent() throws IOException {
         UUID uuid = UUID.randomUUID();
         Map<String, Object> additionalData = Map.of("reference", "ABD-123-WAZ", "count", 10, "additionInfo", "present");
         LetterStatus letterStatus = new LetterStatus(uuid, "TEST", "abc",
@@ -31,31 +31,31 @@ class LetterStatusTest {
                 ZonedDateTime.now().plusHours(2), additionalData);
         JsonContent<LetterStatus> jsonContent = this.json.write(letterStatus);
         System.out.println(jsonContent);
-        assertThat(jsonContent).hasJsonPathStringValue("$.id");
-        assertThat(jsonContent).hasJsonPath("$.additional_data");
+        assertThat(jsonContent).hasJsonPathStringValue("$.id")
+                .hasJsonPath("$.additional_data");
     }
 
     @Test
-    public void testWithEmptyAdditionalData() throws IOException {
+    void testWithEmptyAdditionalData() throws IOException {
         UUID uuid = UUID.randomUUID();
         LetterStatus letterStatus = new LetterStatus(uuid, "TEST", "abc",
                 ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
                 ZonedDateTime.now().plusHours(2), Collections.emptyMap());
         JsonContent<LetterStatus> jsonContent = this.json.write(letterStatus);
         System.out.println(jsonContent);
-        assertThat(jsonContent).hasJsonPathStringValue("$.id");
-        assertThat(jsonContent).hasJsonPath("$.additional_data");
+        assertThat(jsonContent).hasJsonPathStringValue("$.id")
+                .hasJsonPath("$.additional_data");
     }
 
     @Test
-    public void testWithNullAdditionalDataPresent() throws IOException {
+    void testWithNullAdditionalDataPresent() throws IOException {
         UUID uuid = UUID.randomUUID();
         LetterStatus letterStatus = new LetterStatus(uuid, "TEST", "abc",
                 ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
                 ZonedDateTime.now().plusHours(2), null);
         JsonContent<LetterStatus> jsonContent = this.json.write(letterStatus);
         System.out.println(jsonContent);
-        assertThat(jsonContent).hasJsonPathStringValue("$.id");
-        assertThat(jsonContent).doesNotHaveJsonPath("$.additional_data");
+        assertThat(jsonContent).hasJsonPathStringValue("$.id")
+                .doesNotHaveJsonPath("$.additional_data");
     }
 }
