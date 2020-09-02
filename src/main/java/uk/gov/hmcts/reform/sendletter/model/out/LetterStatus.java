@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.model.out;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -31,6 +32,8 @@ public class LetterStatus {
 
     @ApiModelProperty(value = "Additional information about the letter")
     @JsonProperty("additional_data")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+
     public final Map<String, Object> additionalData;
 
     public LetterStatus(

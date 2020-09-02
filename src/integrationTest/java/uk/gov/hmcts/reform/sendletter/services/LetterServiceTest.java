@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
-import uk.gov.hmcts.reform.sendletter.IntegrationSampleData;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
@@ -79,7 +78,7 @@ class LetterServiceTest {
 
     @Test
     void generatesLetterWithAddionalDataAndSaveZippedPdf() throws IOException {
-        UUID id = service.save(IntegrationSampleData.letterWithPdfsRequestWithAdditionalData(), SERVICE_NAME);
+        UUID id = service.save(SampleData.letterWithPdfsRequestWithAdditionalData(), SERVICE_NAME);
 
         Letter result = letterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
@@ -94,7 +93,7 @@ class LetterServiceTest {
 
     @Test
     void generatesLetterWithNoAddionalDataAndSaveZippedPdf() throws IOException {
-        UUID id = service.save(IntegrationSampleData.letterWithPdfsRequestWithNoAdditionalData(), SERVICE_NAME);
+        UUID id = service.save(SampleData.letterWithPdfsRequestWithNoAdditionalData(), SERVICE_NAME);
 
         Letter result = letterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));

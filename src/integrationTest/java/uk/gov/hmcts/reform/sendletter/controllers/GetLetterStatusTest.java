@@ -118,7 +118,7 @@ class GetLetterStatusTest {
                 .andExpect(jsonPath("$.created_at").isNotEmpty())
                 .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
                 .andExpect(jsonPath("$.printed_at").isEmpty())
-                .andExpect(jsonPath("$.additional_data").isEmpty());
+                .andExpect(jsonPath("$.additional_data").doesNotHaveJsonPath());
     }
 
     @Test
@@ -134,10 +134,12 @@ class GetLetterStatusTest {
                                 .contentType(MediaTypes.LETTER_V2)
                                 .content(json)
                 ).andReturn();
-
+        System.out.println(result.getResponse().getContentAsString());
         JSONObject jsonObject = new JSONObject(result.getResponse().getContentAsString());
         String letterId = jsonObject.getString("letter_id");
-        getLetterStatus(letterId)
+        mvc.perform(
+                get("/letters/" + letterId)
+                .param("include-additional-info", "yes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.status").value(LetterStatus.Created.name()))
