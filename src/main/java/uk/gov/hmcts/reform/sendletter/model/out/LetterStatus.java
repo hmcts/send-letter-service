@@ -33,7 +33,6 @@ public class LetterStatus {
     @ApiModelProperty(value = "Additional information about the letter")
     @JsonProperty("additional_data")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-
     public final Map<String, Object> additionalData;
 
     public LetterStatus(

@@ -134,7 +134,6 @@ class GetLetterStatusTest {
                                 .contentType(MediaTypes.LETTER_V2)
                                 .content(json)
                 ).andReturn();
-        System.out.println(result.getResponse().getContentAsString());
         JSONObject jsonObject = new JSONObject(result.getResponse().getContentAsString());
         String letterId = jsonObject.getString("letter_id");
         mvc.perform(
