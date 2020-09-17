@@ -1,5 +1,4 @@
 variable "product" {
-  type    = "string"
 }
 
 variable "raw_product" {
@@ -7,16 +6,13 @@ variable "raw_product" {
 }
 
 variable "component" {
-  type = "string"
 }
 
 variable "location_app" {
-  type    = "string"
   default = "UK South"
 }
 
 variable "location_db" {
-  type    = "string"
   default = "UK South"
 }
 
@@ -33,7 +29,6 @@ variable "application_type" {
 }
 
 variable "env" {
-  type = "string"
 }
 
 variable "capacity" {
@@ -136,7 +131,7 @@ variable "deployment_namespace" {
 }
 
 variable "common_tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "managed_identity_object_id" {
