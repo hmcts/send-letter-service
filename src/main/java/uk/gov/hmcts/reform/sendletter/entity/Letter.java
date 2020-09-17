@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -42,7 +41,6 @@ public class Letter {
     private byte[] fileContent;
     private Boolean isEncrypted;
     private String encryptionKeyFingerprint;
-    @ColumnDefault("1")
     private Integer copies;
 
     // For use by hibernate.
