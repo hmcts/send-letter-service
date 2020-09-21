@@ -98,8 +98,9 @@ class LetterServiceTest {
         }
     }
 
-    @Test
-    void should_generate_final_pdf_with_requested_no_of_copies_when_encryption_enabled() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_with_requested_no_of_copies_when_encryption_enabled(String async) throws Exception {
         // given
         thereAreNoDuplicates();
 
@@ -115,7 +116,7 @@ class LetterServiceTest {
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
         // when
-        service.save(letterWithPdfsAndNumberOfCopiesRequest, "some_service");
+        service.save(letterWithPdfsAndNumberOfCopiesRequest, "some_service", async);
 
         // then
         verify(pdfCreator).createFromBase64PdfWithCopies(letterWithPdfsAndNumberOfCopiesRequest.documents);
@@ -125,7 +126,12 @@ class LetterServiceTest {
         verify(letterRepository).save(letterArgumentCaptor.capture());
 
         assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(15);
+
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
+
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
     void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled(String async)
