@@ -133,7 +133,7 @@ module "send-letter-service" {
 
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
-  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
   name                = "${local.vaultName}"
   product             = "${var.product}"
   env                 = "${var.env}"

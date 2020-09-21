@@ -24,8 +24,8 @@ variable "appinsights_location" {
 
 variable "application_type" {
   type        = "string"
-  default     = "Web"
-  description = "Type of Application Insights (Web/Other)"
+  default     = "web"
+  description = "Type of Application Insights (web/Other)"
 }
 
 variable "env" {
