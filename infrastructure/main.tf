@@ -1,11 +1,11 @@
 provider "azurerm" {
-  version = "=1.42.0"
+  features {}
 }
 
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
-  location = "${var.location_app}"
+  location = var.location_app
 }
 
 locals {
@@ -61,7 +61,7 @@ module "db-v11" {
 
 module "staging-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.component}-staging-db"
+  product            = "${var.component}-stg-db"
   location           = "${var.location_db}"
   env                = "${var.env}"
   database_name      = "send_letter"
@@ -133,7 +133,7 @@ module "send-letter-service" {
 
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
-  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
   name                = "${local.vaultName}"
   product             = "${var.product}"
   env                 = "${var.env}"
@@ -156,67 +156,37 @@ data "azurerm_key_vault" "s2s_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-USER"
-  value        = "${module.db.user_name}"
+  value        = "${module.db-v11.user_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-PASS"
-  value        = "${module.db.postgresql_password}"
+  value        = "${module.db-v11.postgresql_password}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-HOST"
-  value        = "${module.db.host_name}"
+  value        = "${module.db-v11.host_name}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-PORT"
-  value        = "${module.db.postgresql_listen_port}"
+  value        = "${module.db-v11.postgresql_listen_port}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "${var.component}-POSTGRES-DATABASE"
-  value        = "${module.db.postgresql_database}"
-}
-
-resource "azurerm_key_vault_secret" "postgres_user_v11" {
-  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-db-user-v11"
-  value        = "${module.db-v11.user_name}"
-}
-
-resource "azurerm_key_vault_secret" "postgres_pass_v11" {
-  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-db-pass-v11"
-  value        = "${module.db-v11.postgresql_password}"
-}
-
-resource "azurerm_key_vault_secret" "postgres_host_v11" {
-  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-db-host-v11"
-  value        = "${module.db-v11.host_name}"
-}
-
-resource "azurerm_key_vault_secret" "postgres_port_v11" {
-  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-db-port-v11"
-  value        = "${module.db-v11.postgresql_listen_port}"
-}
-
-resource "azurerm_key_vault_secret" "postgres_database_v11" {
-  key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
-  name         = "${var.component}-db-database-v11"
   value        = "${module.db-v11.postgresql_database}"
 }
 
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
   key_vault_id = "${module.send-letter-key-vault.key_vault_id}"
   name         = "app-insights-instrumentation-key"
-  value        = "${azurerm_application_insights.appinsights.instrumentation_key}"
+  value        = azurerm_application_insights.appinsights.instrumentation_key
 }
 
 # endregion
