@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
@@ -32,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,11 +47,13 @@ class LetterServiceTest {
     @Mock Zipper zipper;
     @Mock ObjectMapper objectMapper;
     @Mock ServiceFolderMapping serviceFolderMapping;
+    @Spy AsyncService asyncService;
 
     private LetterService service;
 
-    @Test
-    void should_generate_final_pdf_from_template_when_old_model_is_passed() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_template_when_old_model_is_passed(String async) {
         // given
         thereAreNoDuplicates();
 
@@ -58,14 +64,18 @@ class LetterServiceTest {
         LetterRequest letter = SampleData.letterRequest();
 
         // when
-        service.save(letter, "some_service");
+        service.save(letter, "some_service", async);
 
         // then
         verify(pdfCreator).createFromTemplates(letter.documents);
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
 
-    @Test
-    void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed(String async)  {
         // given
         thereAreNoDuplicates();
 
@@ -76,14 +86,19 @@ class LetterServiceTest {
         LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequest();
 
         // when
-        service.save(letter, "some_service");
+        service.save(letter, "some_service", async);
 
         // then
         verify(pdfCreator).createFromBase64Pdfs(letter.documents);
+
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
 
-    @Test
-    void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled()
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled(String async)
         throws Exception {
         // given
         thereAreNoDuplicates();
@@ -99,15 +114,20 @@ class LetterServiceTest {
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
         // when
-        service.save(letter, "some_service");
+        service.save(letter, "some_service", async);
 
         // then
         verify(pdfCreator).createFromTemplates(letter.documents);
         verify(zipper).zip(any(PdfDoc.class));
+
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
 
-    @Test
-    void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed_and_encryption_enabled()
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed_and_encryption_enabled(String async)
         throws Exception {
         // given
         thereAreNoDuplicates();
@@ -123,15 +143,20 @@ class LetterServiceTest {
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
         // when
-        service.save(letter, "some_service");
+        service.save(letter, "some_service", async);
 
         // then
         verify(pdfCreator).createFromBase64Pdfs(letter.documents);
         verify(zipper).zip(any(PdfDoc.class));
+
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
 
-    @Test
-    void should_generate_final_pdf_from_when_model_with_number_of_copies_is_passed() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_when_model_with_number_of_copies_is_passed(String async) throws Exception {
         // given
         thereAreNoDuplicates();
 
@@ -144,11 +169,15 @@ class LetterServiceTest {
         when(zipper.zip(any(PdfDoc.class))).thenReturn(Resources.toByteArray(getResource("unencrypted.zip")));
 
         // when
-        service.save(letter, "some_service");
+        service.save(letter, "some_service", async);
 
         // then
         verify(pdfCreator).createFromBase64PdfWithCopies(letter.documents);
         verify(zipper).zip(any(PdfDoc.class));
+
+        if (Boolean.parseBoolean(async)) {
+            verify(asyncService).run(any());
+        }
     }
 
     @Test
@@ -164,8 +193,9 @@ class LetterServiceTest {
             .hasMessage("encryptionPublicKey is null");
     }
 
-    @Test
-    public void should_throw_an_exception_when_folder_for_given_service_is_not_configured() {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    public void should_throw_an_exception_when_folder_for_given_service_is_not_configured(String async) {
         // given
         final String serviceWithoutFolderConfigured = "some_invalid_service";
         given(serviceFolderMapping.getFolderFor(serviceWithoutFolderConfigured)).willReturn(Optional.empty());
@@ -173,16 +203,20 @@ class LetterServiceTest {
 
         // when
         Throwable err =
-            catchThrowable(() -> service.save(SampleData.letterWithPdfsRequest(), serviceWithoutFolderConfigured));
+            catchThrowable(() -> service.save(SampleData.letterWithPdfsRequest(),
+                    serviceWithoutFolderConfigured, async));
 
         // then
         assertThat(err)
             .isInstanceOf(ServiceNotConfiguredException.class)
             .hasMessageContaining(serviceWithoutFolderConfigured);
+
+        verify(asyncService, never()).run(any());
     }
 
-    @Test
-    void should_throw_an_exception_when_unsupported_letter_request_is_received() {
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_throw_an_exception_when_unsupported_letter_request_is_received(String async) {
         // given
         thereAreNoDuplicates();
 
@@ -191,12 +225,14 @@ class LetterServiceTest {
         createLetterService(false, null);
 
         // when
-        Throwable throwable = catchThrowable(() -> service.save(new DummyLetterRequest(), "some_service"));
+        Throwable throwable = catchThrowable(() -> service.save(new DummyLetterRequest(), "some_service", async));
 
         // then
         assertThat(throwable)
             .isInstanceOf(UnsupportedLetterRequestTypeException.class)
             .hasMessage("Unsupported letter request type");
+
+        verify(asyncService, never()).run(any());
     }
 
     private void thereAreNoDuplicates() {
@@ -205,6 +241,7 @@ class LetterServiceTest {
     }
 
     private void createLetterService(Boolean isEncryptionEnabled, String encryptionKey) {
+
         this.service = new LetterService(
             pdfCreator,
             letterRepository,
@@ -212,7 +249,8 @@ class LetterServiceTest {
             objectMapper,
             isEncryptionEnabled,
             encryptionKey,
-            serviceFolderMapping
+            serviceFolderMapping,
+            asyncService
         );
     }
 
