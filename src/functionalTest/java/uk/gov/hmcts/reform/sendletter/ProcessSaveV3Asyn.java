@@ -25,7 +25,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     public void testSaveLetterAsync() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
                 signIn(),
-                samplePdfLetterRequestJson("letter-with-document-count.json", "Docmosis-Template-Guide.pdf")
+                samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
         );
         logger.info("Letter id created {}", letterId);
         String letterStatus = verifyLetterCreated(letterId, this::logRetry);
