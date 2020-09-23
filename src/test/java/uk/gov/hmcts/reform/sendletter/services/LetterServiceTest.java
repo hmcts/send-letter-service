@@ -239,7 +239,7 @@ class LetterServiceTest {
     }
 
     @Test
-    public void should_throw_assertion_error_on_service_init_when_encryption_enabled_and_public_key_is_null() {
+    void should_throw_assertion_error_on_service_init_when_encryption_enabled_and_public_key_is_null() {
         assertThatThrownBy(() -> createLetterService(true, null))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("encryptionPublicKey is null");
@@ -247,7 +247,7 @@ class LetterServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
-    public void should_throw_an_exception_when_folder_for_given_service_is_not_configured(String async) {
+    void should_throw_an_exception_when_folder_for_given_service_is_not_configured(String async) {
         // given
         final String serviceWithoutFolderConfigured = "some_invalid_service";
         given(serviceFolderMapping.getFolderFor(serviceWithoutFolderConfigured)).willReturn(Optional.empty());

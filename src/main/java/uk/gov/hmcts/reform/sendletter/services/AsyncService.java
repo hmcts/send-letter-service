@@ -13,7 +13,7 @@ public class AsyncService {
     public void run(final Runnable runnable) {
         try {
             runnable.run();
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             logger.error("Async task error", e);
         }
     }
