@@ -88,6 +88,19 @@ class LetterServiceTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void generatesLetterWithAddionalCopiesAndSaveZippedPdf(String async) throws IOException {
+        UUID id = service.save(SampleData.letterWithPdfAndCopiesRequest(4,10), SERVICE_NAME, async);
+
+        Letter result = letterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
+
+        assertEquals(14, result.getCopies().intValue());
+        assertThat(result.isEncrypted()).isFalse();
+        assertThat(result.getEncryptionKeyFingerprint()).isNull();
+        PdfHelper.validateZippedPdf(result.getFileContent());
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -96,7 +109,6 @@ class LetterServiceTest {
 
         Letter result = letterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
-        assertEquals(14, result.getCopies().intValue());
         assertThat(result.isEncrypted()).isFalse();
         assertThat(result.getEncryptionKeyFingerprint()).isNull();
         PdfHelper.validateZippedPdf(result.getFileContent());
