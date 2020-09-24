@@ -135,6 +135,7 @@ abstract class FunctionalTestSuite {
     String getLetterStatus(String letterId) {
         return RestAssured
                 .given()
+                .relaxedHTTPSValidation()
                 .baseUri(sendLetterServiceUrl)
                 .when()
                 .get("/letters/{id}", letterId)
