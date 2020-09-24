@@ -23,7 +23,6 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    @Disabled
     public void testSaveLetterAsync() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
                 signIn(),
