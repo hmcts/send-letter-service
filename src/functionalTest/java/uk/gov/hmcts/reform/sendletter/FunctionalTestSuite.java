@@ -263,6 +263,7 @@ abstract class FunctionalTestSuite {
             try {
                 letterStatus = getLetterStatus(letterId);
             } catch (AssertionError e) {
+                System.out.println(String.format("Letter id %s not found so, retrying %s", letterId, counter));
                 logger.accept(letterId, counter++);
                 try {
                     Thread.sleep(100);
