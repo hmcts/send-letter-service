@@ -261,9 +261,11 @@ abstract class FunctionalTestSuite {
         String letterStatus = "Not found";
         while (letterStatus.equals("Not found") && counter <= 10) {
             try {
+                System.out.println(String.format(" TRYING TO FIND Letter id %s not found so, retrying %s", letterId, counter));
+                logger.accept(letterId, counter++);
                 letterStatus = getLetterStatus(letterId);
-            } catch (AssertionError e) {
-                System.out.println(String.format("Letter id %s not found so, retrying %s", letterId, counter));
+            } catch (RuntimeException e) {
+                System.out.println(String.format("ERROR Letter id %s not found so, retrying %s", letterId, counter));
                 logger.accept(letterId, counter++);
                 try {
                     Thread.sleep(100);
