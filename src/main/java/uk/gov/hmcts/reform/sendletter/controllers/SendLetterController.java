@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +36,6 @@ import static org.springframework.http.ResponseEntity.ok;
     produces = {MediaType.APPLICATION_JSON_VALUE}
 )
 public class SendLetterController {
-    private Logger logger = LoggerFactory.getLogger(SendLetterController.class);
 
     private final LetterService letterService;
     private final AuthService authService;
@@ -120,9 +117,7 @@ public class SendLetterController {
         @PathVariable String id,
         @RequestParam(name = "include-additional-info", defaultValue = "false") String isAdditionalInfoRequired
     ) {
-        logger.info("Getting letter status for id {} ", id);
         LetterStatus letterStatus = letterService.getStatus(getLetterIdFromString(id), isAdditionalInfoRequired);
-        logger.info("Returning letter status for id {} ", id);
         return ok(letterStatus);
     }
 

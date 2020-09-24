@@ -208,6 +208,7 @@ public class LetterService {
         request -> request.documents.stream().mapToInt(doc -> doc.copies).sum();
 
     public LetterStatus getStatus(UUID id, String isAdditonalDataRequired) {
+        log.info("Getting letter status for id {} ", id);
         Function<JsonNode, Map<String, Object>> additionDataFunction = additionalData -> {
             if (Boolean.parseBoolean(isAdditonalDataRequired)) {
                 return Optional.ofNullable(additionalData)
@@ -216,8 +217,9 @@ public class LetterService {
             }
             return null;
         };
-
-        return getStatus(id, additionDataFunction);
+        LetterStatus status = getStatus(id, additionDataFunction);
+        log.info("Returning  letter status for letter {} ", status);
+        return status;
     }
 
     private LetterStatus getStatus(UUID id, Function<JsonNode, Map<String, Object>> additionalDataEvaluator) {
