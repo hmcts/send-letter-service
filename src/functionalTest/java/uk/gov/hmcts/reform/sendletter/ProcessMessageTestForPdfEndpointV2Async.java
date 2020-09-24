@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     private static Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
 
     @Test
+    @Disabled
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
