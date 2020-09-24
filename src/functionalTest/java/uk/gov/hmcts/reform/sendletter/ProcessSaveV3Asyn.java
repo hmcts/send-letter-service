@@ -32,7 +32,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
 
         logger.info("Letter id created {}", letterId);
         String letterStatus = verifyLetterCreated(letterId, this::logRetry);
-        assertThat(letterStatus).isNotEqualTo(LetterStatus.Created.toString());
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
     }
 
     private void logRetry(String letterId, Integer counter) {
