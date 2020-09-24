@@ -27,6 +27,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
                 signIn(),
                 samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
         );
+        System.out.println("Async Letter id created " + letterId);
         logger.info("Letter id created {}", letterId);
         String letterStatus = verifyLetterCreated(letterId, this::logRetry);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.toString());
