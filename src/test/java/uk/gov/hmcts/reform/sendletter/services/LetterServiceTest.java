@@ -250,6 +250,96 @@ class LetterServiceTest {
             .hasMessage("Unsupported letter request type");
     }
 
+    @Test
+    void shouldHandleGetStatusCallWhenNoDocumentAvailable_RequestTypeLetterWithPdfsRequest()
+            throws Exception {
+        // given
+        thereAreNoDuplicates();
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(true, new String(loadPublicKey()));
+
+        LetterWithPdfsRequest letter = SampleData.letterDoNotHavePdfRequestTypeLetterWithPdfsRequest();
+
+        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+
+        when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
+
+        // when
+        service.save(letter, "some_service");
+
+        // then
+        verify(pdfCreator).createFromBase64Pdfs(letter.documents);
+        verify(zipper).zip(any(PdfDoc.class));
+
+        ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
+        verify(letterRepository).save(letterArgumentCaptor.capture());
+
+        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(-1);
+
+    }
+
+    @Test
+    void shouldHandleGetStatusCallWhenNoDocumentAvailable_RequestTypeLetterRequest()
+            throws Exception {
+        // given
+        thereAreNoDuplicates();
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(true, new String(loadPublicKey()));
+
+        LetterRequest letter = SampleData.letterDoNotHavePdfRequestTypeLetterRequest();
+
+        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+
+        when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
+
+        // when
+        service.save(letter, "some_service");
+
+        // then
+        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(zipper).zip(any(PdfDoc.class));
+
+        ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
+        verify(letterRepository).save(letterArgumentCaptor.capture());
+
+        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(-1);
+    }
+
+    @Test
+    void shouldHandleGetStatusCallWhenNoDoc_RequestTypeLetterWithPdfsAndNumberOfCopiesRequest()
+            throws Exception {
+        // given
+        thereAreNoDuplicates();
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(false, new String(loadPublicKey()));
+
+        final LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfsAndNumberOfCopiesRequest =
+                SampleData.request();
+
+        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+
+        when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
+
+        // when
+        service.save(letterWithPdfsAndNumberOfCopiesRequest, "some_service");
+
+        // then
+        verify(pdfCreator).createFromBase64PdfWithCopies(letterWithPdfsAndNumberOfCopiesRequest.documents);
+        verify(zipper).zip(any(PdfDoc.class));
+
+        ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
+        verify(letterRepository).save(letterArgumentCaptor.capture());
+
+        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(-1);
+    }
+
+
     private void thereAreNoDuplicates() {
         given(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(any(), any()))
             .willReturn(Optional.empty());
