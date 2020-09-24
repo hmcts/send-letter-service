@@ -29,8 +29,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         );
         System.out.println("Async Letter id created " + letterId);
         logger.info("Letter id created {}", letterId);
-        //String letterStatus = verifyLetterCreated(letterId, this::logRetry);
-       // assertThat(letterStatus).isEqualTo(LetterStatus.Created.toString());
+        String letterStatus = verifyLetterCreated(letterId, this::logRetry);
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.toString());
     }
 
     private void logRetry(String letterId, Integer counter) {
