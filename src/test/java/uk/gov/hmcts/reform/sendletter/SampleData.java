@@ -154,34 +154,6 @@ public final class SampleData {
         );
     }
 
-    /*
-        Exception case- Ideally should not be the case.
-        DTSBP-105 Null pointer for send letter service when invoking getStatus
-     */
-    public static LetterWithPdfsRequest letterDoNotHavePdfRequestTypeLetterWithPdfsRequest() {
-        return new LetterWithPdfsRequest(
-                null,
-                "someType",
-                Maps.newHashMap()
-        );
-    }
-
-    public static LetterRequest letterDoNotHavePdfRequestTypeLetterRequest() {
-        return new LetterRequest(
-                null,
-                "someType",
-                Maps.newHashMap()
-        );
-    }
-
-    public static LetterWithPdfsAndNumberOfCopiesRequest request() {
-        return new LetterWithPdfsAndNumberOfCopiesRequest(
-                null,
-                "someType",
-                Maps.newHashMap()
-        );
-    }
-
     private SampleData() {
     }
 }

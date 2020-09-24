@@ -182,13 +182,11 @@ public class LetterService {
     private int getCopies(ILetterRequest letter) {
         int letterCount = -1;
         if (letter instanceof LetterRequest) {
-            letterCount = ((LetterRequest) letter).documents != null ?  ((LetterRequest) letter).documents.size() : -1;
+            letterCount = ((LetterRequest) letter).documents.size();
         } else if (letter instanceof LetterWithPdfsRequest) {
-            letterCount = ((LetterWithPdfsRequest) letter).documents != null
-                    ? ((LetterWithPdfsRequest) letter).documents.size() : -1;
+            letterCount = ((LetterWithPdfsRequest) letter).documents.size();
         } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
-            letterCount = ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents != null
-                    ? copies.applyAsInt((LetterWithPdfsAndNumberOfCopiesRequest) letter) : -1;
+            letterCount = copies.applyAsInt((LetterWithPdfsAndNumberOfCopiesRequest) letter);
         }
         return letterCount;
     }
