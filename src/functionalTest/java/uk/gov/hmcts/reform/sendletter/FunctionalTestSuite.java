@@ -78,6 +78,8 @@ abstract class FunctionalTestSuite {
     @Value("${encryption.enabled}")
     Boolean isEncryptionEnabled;
 
+    static final int retryCount = 40;
+    static final int retryInterval = 500;
     /**
      * Sign in to s2s.
      *
