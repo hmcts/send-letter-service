@@ -107,10 +107,10 @@ public class LetterService {
         );
 
         if (Boolean.parseBoolean(isAsync)) {
-            log.info("Saving letter in async mode as flag value is {}", isAsync);
+            log.info("Saving letter id {} in async mode as flag value is {}", id, isAsync);
             asynService.run(() -> saveLetter(letter, messageId, serviceName, id, zipContent));
         } else {
-            log.info("Saving letter in sync mode as flag value is {}", isAsync);
+            log.info("Saving letter id {} in sync mode as flag value is {}", id, isAsync);
             saveLetter(letter, messageId, serviceName, id, zipContent);
         }
 
