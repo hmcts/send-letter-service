@@ -36,13 +36,13 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     private String verifyLetterCreated(String letterId) {
         int counter = 1;
         String letterStatus = "Not found";
-        while (letterStatus.equals("Not found") && counter <= retryCount) {
+        while (letterStatus.equals("Not found") && counter <= LETTER_STATUS_RETRY_COUNT) {
             try {
                 logger.info("Retrieving letter id {} and retry count {} ", letterId, counter++);
                 letterStatus = getLetterStatus(letterId);
             } catch (AssertionError e) {
                 try {
-                    Thread.sleep(retryInterval);
+                    Thread.sleep(LETTER_STATUS_RETRY_INTERVAL);
                 } catch (InterruptedException interruptedException) {
                     interruptedException.printStackTrace();
                 }
