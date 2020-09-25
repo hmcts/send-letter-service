@@ -27,7 +27,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
         );
 
         String letterStatus = verifyLetterCreated(letterId);
-        assertThat(letterStatus).isNotEqualTo(LetterStatus.Created.toString());
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
     }
 
     private String verifyLetterCreated(String letterId) {
