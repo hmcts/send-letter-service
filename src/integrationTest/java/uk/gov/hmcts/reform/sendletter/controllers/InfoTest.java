@@ -44,11 +44,11 @@ class InfoTest {
         WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
+        letterRepository.deleteAll();
     }
 
     @Test
     void should_return_status_breakdown() throws Exception {
-        letterRepository.deleteAll();
         insert(LetterStatus.Created);
         insert(LetterStatus.Posted);
         insert(LetterStatus.Posted);
