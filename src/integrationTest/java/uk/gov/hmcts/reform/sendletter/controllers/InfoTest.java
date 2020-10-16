@@ -48,7 +48,7 @@ class InfoTest {
 
     @Test
     void should_return_status_breakdown() throws Exception {
-
+        letterRepository.deleteAll();
         insert(LetterStatus.Created);
         insert(LetterStatus.Posted);
         insert(LetterStatus.Posted);
