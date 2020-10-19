@@ -69,7 +69,7 @@ class LetterServiceTest {
             false,
             null,
             serviceFolderMapping,
-                execusionService,
+            execusionService,
             duplicateLetterService
         );
     }

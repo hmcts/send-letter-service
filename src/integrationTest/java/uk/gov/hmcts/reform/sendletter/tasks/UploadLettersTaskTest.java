@@ -70,7 +70,7 @@ class UploadLettersTaskTest {
             false,
             null,
             serviceFolderMapping,
-                execusionService,
+            execusionService,
             duplicateLetterService
         );
     }

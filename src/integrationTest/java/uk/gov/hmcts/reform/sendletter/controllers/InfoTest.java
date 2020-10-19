@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,14 @@ class InfoTest {
         letterRepository.deleteAll();
     }
 
+    @AfterEach
+    void tearDown() {
+        letterRepository.deleteAll();
+    }
+
     @Test
     void should_return_status_breakdown() throws Exception {
+
         insert(LetterStatus.Created);
         insert(LetterStatus.Posted);
         insert(LetterStatus.Posted);
