@@ -336,8 +336,11 @@ class LetterServiceTest {
         given(duplicateLetterService.isPresent(isA(UUID.class))).willReturn(Optional.of(duplicateLetter));
         createLetterService(false, null);
 
-        assertThrows(DataIntegrityViolationException.class, () -> service.getStatus(UUID.randomUUID(), "false",
-                "true"));
+       assertThrows(DataIntegrityViolationException.class, () -> {
+            UUID uuid = UUID.randomUUID();
+            service.getStatus(uuid, "false",
+                    "true");
+        });
         verify(duplicateLetterService).isPresent(isA(UUID.class));
     }
 
@@ -345,7 +348,10 @@ class LetterServiceTest {
     void should_throw_LetterNotFoundException() {
         createLetterService(false, null);
 
-        assertThrows(LetterNotFoundException.class, () -> service.getStatus(UUID.randomUUID(), "false", "false"));
+        assertThrows(LetterNotFoundException.class, () -> {
+            UUID id = UUID.randomUUID();
+            service.getStatus(id, "false", "false");
+        });
         verify(duplicateLetterService, never()).isPresent(isA(UUID.class));
     }
 
