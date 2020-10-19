@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -19,6 +21,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DuplicateLetterTest {
     @Autowired
     DuplicateRepository duplicateRepository;
+
+    @BeforeEach
+    void setUp() {
+        duplicateRepository.deleteAll();
+    }
+
+    @AfterEach
+    void tearDown() {
+        duplicateRepository.deleteAll();
+    }
 
     @Test
     void should_Save_Duplicate() throws JsonProcessingException {
