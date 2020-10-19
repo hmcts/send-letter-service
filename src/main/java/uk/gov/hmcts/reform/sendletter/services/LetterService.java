@@ -258,38 +258,35 @@ public class LetterService {
             }
             return null;
         };
-        LetterStatus status = getStatus(id, additionDataFunction);
-        log.info("Returning  letter status for letter {} ", status);
-        return status;
+
+        LetterStatus letterStatus = letterRepository
+                .findById(id)
+                .map(letter -> new LetterStatus(
+                        id,
+                        letter.getStatus().name(),
+                        letter.getChecksum(),
+                        toDateTime(letter.getCreatedAt()),
+                        toDateTime(letter.getSentToPrintAt()),
+                        toDateTime(letter.getPrintedAt()),
+                        additionDataFunction.apply(letter.getAdditionalData()),
+                        letter.getCopies()
+                ))
+                .orElseThrow(() -> new LetterNotFoundException(id));
+        log.info("Returning  letter status for letter {} ", letterStatus);
+        return letterStatus;
     }
 
     private void duplicateCheck(UUID id, String isDuplicate) {
         if (Boolean.parseBoolean(isDuplicate)) {
-            Optional<DuplicateLetter> OptduplicateLetter = duplicateLetterService.isPresent(id);
-            if (OptduplicateLetter.isPresent()) {
-                DuplicateLetter duplicateLetter = OptduplicateLetter.get();
+            Optional<DuplicateLetter> optDuplicateLetter = duplicateLetterService.isPresent(id);
+            if (optDuplicateLetter.isPresent()) {
+                DuplicateLetter duplicateLetter = optDuplicateLetter.get();
                 String duplicateMessage = String.join(",",
                         "Duplicate record for service:", duplicateLetter.getService(),
                         " with checksum:", duplicateLetter.getChecksum());
                 throw new DataIntegrityViolationException(duplicateMessage);
-            };
+            }
         }
-    }
-
-    private LetterStatus getStatus(UUID id, Function<JsonNode, Map<String, Object>> additionalDataEvaluator) {
-        return letterRepository
-            .findById(id)
-            .map(letter -> new LetterStatus(
-                id,
-                letter.getStatus().name(),
-                letter.getChecksum(),
-                toDateTime(letter.getCreatedAt()),
-                toDateTime(letter.getSentToPrintAt()),
-                toDateTime(letter.getPrintedAt()),
-                additionalDataEvaluator.apply(letter.getAdditionalData()),
-                letter.getCopies()
-            ))
-            .orElseThrow(() -> new LetterNotFoundException(id));
     }
 
     static ZonedDateTime toDateTime(LocalDateTime dateTime) {
