@@ -335,9 +335,8 @@ class LetterServiceTest {
         DuplicateLetter duplicateLetter = mock(DuplicateLetter.class);
         given(duplicateLetterService.isPresent(isA(UUID.class))).willReturn(Optional.of(duplicateLetter));
         createLetterService(false, null);
-
+        UUID uuid = UUID.randomUUID();
         assertThrows(DataIntegrityViolationException.class, () -> {
-            UUID uuid = UUID.randomUUID();
             service.getStatus(uuid, "false",
                     "true");
         });
@@ -347,9 +346,8 @@ class LetterServiceTest {
     @Test
     void should_throw_LetterNotFoundException() {
         createLetterService(false, null);
-
+        UUID id = UUID.randomUUID();
         assertThrows(LetterNotFoundException.class, () -> {
-            UUID id = UUID.randomUUID();
             service.getStatus(id, "false", "false");
         });
         verify(duplicateLetterService, never()).isPresent(isA(UUID.class));
