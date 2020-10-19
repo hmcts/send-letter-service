@@ -119,7 +119,6 @@ public class LetterService {
                 log.info("Saving letter id {} in sync mode as flag value is {}", id, isAsync);
                 asynService.execute(() -> saveLetter(letter, messageId, serviceName, id, zipContent));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-                log.error("Duplicate record ", dataIntegrityViolationException);
                 asynService.run(() -> saveDuplicate(letter, id, messageId, serviceName, zipContent, isAsync),
                     () -> {});
                 throw dataIntegrityViolationException;
@@ -249,13 +248,7 @@ public class LetterService {
     public LetterStatus getStatus(UUID id, String isAdditonalDataRequired, String isDuplicate) {
         log.info("Getting letter status for id {} ", id);
 
-        if (Boolean.parseBoolean(isDuplicate)) {
-            duplicateLetterService.isPresent(id).map((duplicateLetter) -> {
-                String duplicateMessage = String.join(",",
-                        "Duplicate record for service:", duplicateLetter.getService(),
-                        " with checksum:", duplicateLetter.getChecksum());
-                throw new DataIntegrityViolationException(duplicateMessage); });
-        }
+        duplicateCheck(id, isDuplicate);
 
         Function<JsonNode, Map<String, Object>> additionDataFunction = additionalData -> {
             if (Boolean.parseBoolean(isAdditonalDataRequired)) {
@@ -268,6 +261,19 @@ public class LetterService {
         LetterStatus status = getStatus(id, additionDataFunction);
         log.info("Returning  letter status for letter {} ", status);
         return status;
+    }
+
+    private void duplicateCheck(UUID id, String isDuplicate) {
+        if (Boolean.parseBoolean(isDuplicate)) {
+            Optional<DuplicateLetter> OptduplicateLetter = duplicateLetterService.isPresent(id);
+            if (OptduplicateLetter.isPresent()) {
+                DuplicateLetter duplicateLetter = OptduplicateLetter.get();
+                String duplicateMessage = String.join(",",
+                        "Duplicate record for service:", duplicateLetter.getService(),
+                        " with checksum:", duplicateLetter.getChecksum());
+                throw new DataIntegrityViolationException(duplicateMessage);
+            };
+        }
     }
 
     private LetterStatus getStatus(UUID id, Function<JsonNode, Map<String, Object>> additionalDataEvaluator) {
