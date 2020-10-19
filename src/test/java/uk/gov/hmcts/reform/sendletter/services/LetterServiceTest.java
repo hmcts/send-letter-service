@@ -336,7 +336,7 @@ class LetterServiceTest {
         given(duplicateLetterService.isPresent(isA(UUID.class))).willReturn(Optional.of(duplicateLetter));
         createLetterService(false, null);
 
-       assertThrows(DataIntegrityViolationException.class, () -> {
+        assertThrows(DataIntegrityViolationException.class, () -> {
             UUID uuid = UUID.randomUUID();
             service.getStatus(uuid, "false",
                     "true");
