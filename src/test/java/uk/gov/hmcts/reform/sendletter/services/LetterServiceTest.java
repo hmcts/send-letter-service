@@ -84,7 +84,7 @@ class LetterServiceTest {
         // then
         verify(pdfCreator).createFromTemplates(letter.documents);
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
     }
 
@@ -112,7 +112,7 @@ class LetterServiceTest {
         // then
         verify(pdfCreator).createFromTemplates(letter.documents);
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
     }
@@ -137,7 +137,7 @@ class LetterServiceTest {
         verify(pdfCreator).createFromBase64Pdfs(letter.documents);
 
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
     }
 
@@ -171,7 +171,7 @@ class LetterServiceTest {
         assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(15);
 
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
     }
 
@@ -200,7 +200,7 @@ class LetterServiceTest {
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
 
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
@@ -234,7 +234,7 @@ class LetterServiceTest {
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
 
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
@@ -265,7 +265,7 @@ class LetterServiceTest {
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any());
+            verify(execusionService).run(any(), any(), any());
         }
 
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
@@ -306,7 +306,7 @@ class LetterServiceTest {
             .isInstanceOf(ServiceNotConfiguredException.class)
             .hasMessageContaining(serviceWithoutFolderConfigured);
 
-        verify(execusionService, never()).run(any(), any());
+        verify(execusionService, never()).run(any(), any(), any());
     }
 
     @ParameterizedTest
@@ -327,7 +327,7 @@ class LetterServiceTest {
             .isInstanceOf(UnsupportedLetterRequestTypeException.class)
             .hasMessage("Unsupported letter request type");
 
-        verify(execusionService, never()).run(any(), any());
+        verify(execusionService, never()).run(any(), any(), any());
     }
 
     @Test

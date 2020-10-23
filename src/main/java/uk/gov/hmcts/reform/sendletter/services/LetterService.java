@@ -112,14 +112,15 @@ public class LetterService {
 
         if (Boolean.parseBoolean(isAsync)) {
             Runnable logger = () -> log.info("Saving letter id {} in async mode as flag value is {}", id, isAsync);
-            asynService.run(() -> saveLetter(letter, messageId, serviceName, id, zipContent),
+            asynService.run(() -> saveLetter(letter, messageId, serviceName, id, zipContent), logger,
                 () -> saveDuplicate(letter, id, messageId, serviceName, zipContent, isAsync));
         } else {
             try {
                 log.info("Saving letter id {} in sync mode as flag value is {}", id, isAsync);
                 asynService.execute(() -> saveLetter(letter, messageId, serviceName, id, zipContent));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-                asynService.run(() -> saveDuplicate(letter, id, messageId, serviceName, zipContent, isAsync),
+                Runnable logger = () -> log.error("Duplicate record ", dataIntegrityViolationException);
+                asynService.run(() -> saveDuplicate(letter, id, messageId, serviceName, zipContent, isAsync), logger,
                     () -> {});
                 throw dataIntegrityViolationException;
             }

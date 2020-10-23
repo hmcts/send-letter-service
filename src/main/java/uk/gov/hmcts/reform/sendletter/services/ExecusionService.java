@@ -12,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExecusionService {
     private static final Logger logger = LoggerFactory.getLogger(ExecusionService.class);
 
-    @Async
-    public void run(final Runnable runnable,  final Execute execute)  {
+    @Async(value = "AsyncExecutor")
+    public void run(final Runnable runnable, final Runnable infoLogger, final Execute execute)  {
         try {
+            infoLogger.run();
             runnable.run();
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             logger.error("Async duplicate record ", dataIntegrityViolationException);
