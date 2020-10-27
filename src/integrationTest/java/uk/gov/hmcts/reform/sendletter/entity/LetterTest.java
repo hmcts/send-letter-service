@@ -57,9 +57,6 @@ class LetterTest {
         repository.save(SampleData.letterEntity("a.service"));
         List<Letter> letters = Lists.newArrayList(repository.findAll());
         assertThat(letters.size()).isEqualTo(2);
-        System.out.println(letters.get(0).getCreatedAt());
-        System.out.println(letters.get(1).getCreatedAt())
-        System.out.println(LocalDateTime.now().minusMinutes(3));
         Optional<Letter> findLetter = repository.findFirstLetterCreated(LocalDateTime.now().minusMinutes(3));
         assertThat(findLetter.isPresent()).isEqualTo(false);
     }
