@@ -114,7 +114,7 @@ class BaseTest {
 
             // Wait for letter to be uploaded.
             await()
-                .atMost(UploadLettersTask.DELAY_PERIOD_MINUTES + 1 * 60, SECONDS)
+                .atMost((UploadLettersTask.DELAY_PERIOD_MINUTES + 1) * 60, SECONDS)
                 .untilAsserted(() -> {
                     assertThat(server.lettersFolder.listFiles())
                         .as("Files on FTP")
