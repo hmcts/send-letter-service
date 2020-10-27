@@ -25,7 +25,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-ten-pdfs.json", "test.pdf")
+            samplePdfLetterRequestJson("letter-with-three-pdfs.json", "test.pdf")
         );
 
         String letterStatus = verifyLetterCreated(letterId);
@@ -64,7 +64,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                     signIn(),
-                    samplePdfLetterRequestJson("letter-with-twenty-pdfs.json", "test.pdf")
+                    samplePdfLetterRequestJson("letter-with-four-pdfs.json", "test.pdf")
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);

@@ -2,12 +2,12 @@
   "documents": [
     {
       "content": "{{pdf}}",
-      "copies": 10
+      "copies": 3
     },
     {
       "content": "{{pdf}}",
-      "copies": 10
+      "copies": 6
     }
   ],
-  "type": "BPS001"
+  "type": "BPS00"
 }

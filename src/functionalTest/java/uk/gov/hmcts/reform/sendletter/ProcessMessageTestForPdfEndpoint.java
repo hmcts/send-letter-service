@@ -45,7 +45,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         try {
             letterId =  sendPrintLetterRequest(
                     signIn(),
-                    samplePdfLetterRequestJson("letter-with-ten-pdfs.json", "hello.pdf")
+                    samplePdfLetterRequestJson("letter-with-three-pdfs.json", "hello.pdf")
             );
         } catch (IOException e) {
             e.printStackTrace();
