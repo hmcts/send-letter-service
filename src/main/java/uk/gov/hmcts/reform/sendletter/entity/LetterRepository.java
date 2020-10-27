@@ -15,10 +15,10 @@ import java.util.UUID;
 @SuppressWarnings("checkstyle:LineLength")
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
-    @Query("select l from Letter l "
+   @Query(value="select * from letters l "
         + " where l.status = 'Created' "
-        + " and l.createdAt <= :createdBefore")
-    Optional<Letter> findLetterCreated(@Param("createdBefore") LocalDateTime createdBefore);
+        + " and l.created_at <= :createdBefore order by l.created_at asc limit 1", nativeQuery = true)
+    Optional<Letter> findFirstLetterCreated(@Param("createdBefore") LocalDateTime createdBefore);
 
     List<Letter> findByStatus(LetterStatus status);
 

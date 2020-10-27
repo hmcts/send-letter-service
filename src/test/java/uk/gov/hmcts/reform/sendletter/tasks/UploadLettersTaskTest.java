@@ -79,7 +79,7 @@ class UploadLettersTaskTest {
 
         given(repo.countByStatus(eq(Created))).willReturn(2);
 
-        given(repo.findLetterCreated(isA(LocalDateTime.class)))
+        given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
             .willReturn(Optional.of(letterOfType(SMOKE_TEST_LETTER_TYPE,1)))
             .willReturn(Optional.of(letterOfType("not_" + SMOKE_TEST_LETTER_TYPE, 1)))
             .willReturn(Optional.empty());
@@ -130,7 +130,7 @@ class UploadLettersTaskTest {
 
         given(repo.countByStatus(eq(Created))).willReturn(3);
 
-        given(repo.findLetterCreated(isA(LocalDateTime.class)))
+        given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
             .willReturn(Optional.of(letterA))
             .willReturn(Optional.of(letterB))
             .willReturn(Optional.of(letterC))

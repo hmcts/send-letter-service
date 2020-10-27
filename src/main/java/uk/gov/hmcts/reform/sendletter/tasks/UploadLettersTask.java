@@ -77,7 +77,7 @@ public class UploadLettersTask {
 
             for (int i = 0; i < BATCH_SIZE; i++) {
                 Optional<Letter> letter
-                        = repo.findLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
+                        = repo.findFirstLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
                 if (letter.isPresent()) {
                     boolean uploaded = processLetter(letter.get(), client);
