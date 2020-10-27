@@ -83,7 +83,8 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
-            serviceFolderMapping
+            serviceFolderMapping,
+                0
         );
 
         // Invoke the upload job.
@@ -118,7 +119,8 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getFailingClient(LocalSftpServer.port),
             availabilityChecker,
-            serviceFolderMapping
+            serviceFolderMapping,
+                0
         );
 
         // and
@@ -152,7 +154,8 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
-            serviceFolderMapping
+            serviceFolderMapping,
+                0
         );
 
         try (LocalSftpServer server = LocalSftpServer.create()) {

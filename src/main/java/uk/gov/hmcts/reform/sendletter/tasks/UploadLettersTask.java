@@ -4,6 +4,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.schmizz.sshj.sftp.SFTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -32,29 +33,32 @@ public class UploadLettersTask {
     public static final int BATCH_SIZE = 10;
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
     private static final String TASK_NAME = "UploadLetters";
-    public static final int DELAY_PERIOD_MINUTES = 3;
 
     private final LetterRepository repo;
     private final FtpClient ftp;
     private final IFtpAvailabilityChecker availabilityChecker;
     private final ServiceFolderMapping serviceFolderMapping;
+    private final int dbPollDelay;
 
     public UploadLettersTask(
         LetterRepository repo,
         FtpClient ftp,
         IFtpAvailabilityChecker availabilityChecker,
-        ServiceFolderMapping serviceFolderMapping
+        ServiceFolderMapping serviceFolderMapping,
+        @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
     ) {
         this.repo = repo;
         this.ftp = ftp;
         this.availabilityChecker = availabilityChecker;
         this.serviceFolderMapping = serviceFolderMapping;
+        this.dbPollDelay = dbPollDelay;
     }
 
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
     public void run() {
         logger.info("Started '{}' task", TASK_NAME);
+        logger.info("db-poll-delay {}", dbPollDelay);
 
         if (!availabilityChecker.isFtpAvailable(now(ZoneId.of(EUROPE_LONDON)).toLocalTime())) {
             logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
@@ -74,7 +78,7 @@ public class UploadLettersTask {
 
             for (int i = 0; i < BATCH_SIZE; i++) {
                 Optional<Letter> letter
-                        = repo.findLetterCreated(LocalDateTime.now().minusMinutes(DELAY_PERIOD_MINUTES));
+                        = repo.findLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
                 if (letter.isPresent()) {
                     boolean uploaded = processLetter(letter.get(), client);

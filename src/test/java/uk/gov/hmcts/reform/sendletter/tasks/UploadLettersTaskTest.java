@@ -194,7 +194,8 @@ class UploadLettersTaskTest {
             repo,
             ftpClient,
             availabilityChecker,
-            serviceFolderMapping
+            serviceFolderMapping,
+                0
         );
     }
 }
