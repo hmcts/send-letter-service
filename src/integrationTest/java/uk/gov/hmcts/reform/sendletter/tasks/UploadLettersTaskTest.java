@@ -62,6 +62,7 @@ class UploadLettersTaskTest {
         ExecusionService execusionService = new ExecusionService();
         DuplicateLetterService duplicateLetterService = mock(DuplicateLetterService.class);
 
+        repository.deleteAll();
         this.letterService = new LetterService(
             new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
             repository,
