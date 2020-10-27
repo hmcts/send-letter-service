@@ -36,7 +36,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     private String verifyLetterUploaded(String letterId) {
         int counter = 1;
         String letterStatus = LetterStatus.Created.name();
-        while (!letterStatus.equals(LetterStatus.Uploaded.name()) && counter <= LETTER_STATUS_RETRY_COUNT) {
+        while (!letterStatus.equals(LetterStatus.Uploaded.name())) {
             try {
                 Thread.sleep(LETTER_UPLOAD_DELAY);
                 logger.info("Retrieving letter id {} and retry count {} ", letterId, counter++);

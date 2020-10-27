@@ -90,7 +90,7 @@ abstract class FunctionalTestSuite {
 
     static final int LETTER_STATUS_RETRY_COUNT = 40;
     static final int LETTER_STATUS_RETRY_INTERVAL = 500;
-    static final int LETTER_UPLOAD_DELAY = 180000;
+    static final int LETTER_UPLOAD_DELAY = 30000;
 
     /**
      * Sign in to s2s.
