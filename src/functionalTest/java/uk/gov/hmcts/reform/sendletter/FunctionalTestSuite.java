@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -90,7 +91,8 @@ abstract class FunctionalTestSuite {
 
     static final int LETTER_STATUS_RETRY_COUNT = 40;
     static final int LETTER_STATUS_RETRY_INTERVAL = 500;
-    
+    static final int LETTER_UPLOAD_DELAY = UploadLettersTask.DELAY_PERIOD_MINUTES * 60000;
+
     /**
      * Sign in to s2s.
      *

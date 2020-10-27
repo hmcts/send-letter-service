@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class UploadLettersTask {
     public static final int BATCH_SIZE = 10;
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
     private static final String TASK_NAME = "UploadLetters";
+    public static final int DELAY_PERIOD_MINUTES = 3;
 
     private final LetterRepository repo;
     private final FtpClient ftp;
@@ -71,7 +73,9 @@ public class UploadLettersTask {
             int uploadCount = 0;
 
             for (int i = 0; i < BATCH_SIZE; i++) {
-                Optional<Letter> letter = repo.findFirstByStatusOrderByCreatedAtAsc(LetterStatus.Created);
+                Optional<Letter> letter
+                        = repo.findLetterCreated(LocalDateTime.now().minusMinutes(DELAY_PERIOD_MINUTES));
+
                 if (letter.isPresent()) {
                     boolean uploaded = processLetter(letter.get(), client);
                     if (uploaded) {

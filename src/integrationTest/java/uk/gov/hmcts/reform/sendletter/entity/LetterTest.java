@@ -9,7 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,4 +40,14 @@ class LetterTest {
         assertThat(letters.get(0).getStatus()).isEqualTo(LetterStatus.Created);
     }
 
+    @Test
+    void should_pick_recently_saved_in_db() {
+        repository.save(SampleData.letterEntity("a.service"));
+        List<Letter> letters = Lists.newArrayList(repository.findAll());
+        assertThat(letters.size()).isEqualTo(1);
+        assertThat(letters.get(0).getStatus()).isEqualTo(LetterStatus.Created);
+        Optional<Letter> findLetter = repository.findLetterCreated(LocalDateTime.now());
+        assertThat(findLetter.isPresent()).isEqualTo(true);
+        assertThat(letters.get(0).getChecksum()).isEqualTo(findLetter.get().getChecksum());
+    }
 }
