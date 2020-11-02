@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRe
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToLoadPgpPublicKeyException;
+import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToPgpEncryptZipFileException;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -118,6 +119,42 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"false","true"})
+    void should_handle_ExceptionLetter(String async) {
+        // given
+        thereAreNoDuplicates();
+
+        given(letterRepository.save(any()))
+                .willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records")));
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(false, null);
+
+        LetterRequest letter = SampleData.letterRequest();
+
+        // when
+        if (Boolean.parseBoolean(async)) {
+            service.save(letter, "some_service", async);
+        } else {
+            assertThrows(UnableToPgpEncryptZipFileException.class, () -> service.save(letter, "some_service", async));
+        }
+
+        // then
+        verify(pdfCreator).createFromTemplates(letter.documents);
+        if (Boolean.parseBoolean(async)) {
+            verify(execusionService).run(any(), any(), any(), any());
+        }
+        verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        if (Boolean.parseBoolean(async)) {
+            verify(exceptionLetterService).save(isA(ExceptionLetter.class));
+        } else {
+            verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+        }
+
     }
 
 

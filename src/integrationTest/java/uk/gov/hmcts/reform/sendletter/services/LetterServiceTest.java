@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
+import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
@@ -95,6 +96,7 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
     }
 
     @ParameterizedTest
@@ -110,6 +112,8 @@ class LetterServiceTest {
         assertThat(result.getEncryptionKeyFingerprint()).isNull();
         PdfHelper.validateZippedPdf(result.getFileContent());
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+
     }
 
     @ParameterizedTest
@@ -131,6 +135,8 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+
     }
 
     @ParameterizedTest
@@ -149,6 +155,8 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+
     }
 
     @ParameterizedTest
@@ -172,6 +180,8 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+
     }
 
     @ParameterizedTest
@@ -197,6 +207,8 @@ class LetterServiceTest {
             verify(execusionService, times(2)).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
+
     }
 
     @ParameterizedTest

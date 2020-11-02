@@ -52,4 +52,27 @@ public class ExceptionLetterTest {
         assertThat(savedExceptionLetter.getIsAsync()).isEqualTo("true");
         assertThat(savedExceptionLetter.getMessage()).isEqualTo("Error");
     }
+
+    @Test
+    void should_Save_default_constructor_Exception() {
+        UUID uuid = UUID.randomUUID();
+        ExceptionLetter exceptionLetter = new ExceptionLetter();
+        exceptionLetter.setId(uuid);
+        exceptionLetter.setService("a.service");
+        exceptionLetter.setCreatedAt(LocalDateTime.now());
+        exceptionLetter.setType("test");
+        exceptionLetter.setMessage("Error");
+        exceptionLetter.setIsAsync("true");
+
+        exceptionRepository.save(exceptionLetter);
+        Optional<ExceptionLetter> optExceptionLetter = exceptionRepository.findById(uuid);
+        assertThat(optExceptionLetter.isPresent()).isEqualTo(true);
+        ExceptionLetter savedExceptionLetter = optExceptionLetter.get();
+        assertThat(savedExceptionLetter.getId()).isEqualTo(uuid);
+        assertThat(savedExceptionLetter.getService()).isEqualTo("a.service");
+        assertThat(savedExceptionLetter.getType()).isEqualTo("test");
+        assertThat(savedExceptionLetter.getCreatedAt()).isInstanceOf(LocalDateTime.class);
+        assertThat(savedExceptionLetter.getIsAsync()).isEqualTo("true");
+        assertThat(savedExceptionLetter.getMessage()).isEqualTo("Error");
+    }
 }

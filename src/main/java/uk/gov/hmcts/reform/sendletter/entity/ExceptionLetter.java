@@ -17,7 +17,7 @@ public class ExceptionLetter {
     private String isAsync;
     private String message;
 
-    private ExceptionLetter() {
+    ExceptionLetter() {
     }
 
     public ExceptionLetter(UUID id, String service, LocalDateTime createdAt,
