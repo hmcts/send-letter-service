@@ -37,8 +37,8 @@ class ExecusionServiceTest {
             () -> {
                 throw new RuntimeException("This should not be invoked"); },
             data -> consumer.append(data)));
-
-        assertThat(consumer).isEqualTo("This is consumer Error");
+        String result = consumer.toString();
+        assertThat(result).isEqualTo("This is consumer Error");
     }
 
     @Test
