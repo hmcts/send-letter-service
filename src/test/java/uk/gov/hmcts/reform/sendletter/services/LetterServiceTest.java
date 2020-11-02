@@ -129,8 +129,10 @@ class LetterServiceTest {
         thereAreNoDuplicates();
 
         given(letterRepository.save(any())).willThrow(new DataIntegrityViolationException("Duplicate records"));
-        willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records"))).
-        given(duplicateLetterService).save(isA(DuplicateLetter.class));
+
+        willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records")))
+                .given(duplicateLetterService).save(isA(DuplicateLetter.class));
+
         given(zipper.zip(any())).willReturn("Test bytes".getBytes());
 
         // and
