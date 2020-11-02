@@ -12,7 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ExceptionLetterServiceTest {
+class ExceptionLetterServiceTest {
     @Mock
     private ExceptionRepository repository;
 
