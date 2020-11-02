@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -119,6 +120,32 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"false"})
+    void should_handle_DataIntegrityViolationException_and_exceptionletter_exception(String async) {
+        // given
+        thereAreNoDuplicates();
+
+        given(letterRepository.save(any())).willThrow(new DataIntegrityViolationException("Duplicate records"));
+        willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records"))).
+        given(duplicateLetterService).save(isA(DuplicateLetter.class));
+        given(zipper.zip(any())).willReturn("Test bytes".getBytes());
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(false, null);
+
+        LetterRequest letter = SampleData.letterRequest();
+
+        // when
+        assertThrows(DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
+
+        // then
+        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(duplicateLetterService).save(isA(DuplicateLetter.class));
+        verify(exceptionLetterService).save(isA(ExceptionLetter.class));
     }
 
     @ParameterizedTest
