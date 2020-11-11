@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.util.CsvWriter;
 import java.io.File;
 import java.io.IOException;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -21,7 +24,7 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.UTC;
 
 @Service
 public class StaleLetterService {
-
+    private static final Logger log = LoggerFactory.getLogger(StaleLetterService.class);
     private static final ZoneId SERVICE_TIME_ZONE_ID = ZoneId.of(EUROPE_LONDON);
     private static final ZoneId DB_TIME_ZONE_ID = ZoneId.of(UTC);
 
@@ -46,11 +49,11 @@ public class StaleLetterService {
     }
 
     public List<BasicLetterInfo> getStaleLetters() {
-        return letterRepository.findStaleLetters(
-            calculateCutOffCreationDate()
+        LocalDateTime localDateTime = calculateCutOffCreationDate()
                 .withZoneSameInstant(DB_TIME_ZONE_ID)
-                .toLocalDateTime()
-        );
+                .toLocalDateTime();
+        log.info("Stale letters before {} ", localDateTime);
+        return letterRepository.findStaleLetters(localDateTime);
     }
 
     /**
