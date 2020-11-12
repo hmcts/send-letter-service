@@ -139,7 +139,7 @@ public class StaleLetterServiceTest {
     }
 
     @Test
-    public void getStaleLetters_should_file_with_all_letters_returned_by_repository() throws IOException {
+    void getStaleLetters_should_file_with_all_letters_returned_by_repository() throws IOException {
         reset(letterRepository);
 
         UUID[] uuids = {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};

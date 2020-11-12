@@ -73,7 +73,7 @@ public class StaleLetterControllerTest {
     }
 
     @Test
-    public void should_return_letters_from_stale_as_csv_file() throws Exception {
+    void should_return_letters_from_stale_as_csv_file() throws Exception {
         String expected = String.join("\r\n", "Id,Status,Service,CreatedAt,SentToPrintAt",
                 "767cf17e-0ec0-452b-a457-bc173d51ff40,Uploaded,service1,2019-05-03T12:34:56.123,2019-05-03T13:00",
                 "462a58fe-e9b7-494f-a719-5083f31c69cf,Created,service2,2019-05-02T10:11:22.321,","");

@@ -55,15 +55,11 @@ public class StaleLetterController {
             @ApiResponse(code = 200, response = StaleLetterResponse.class, message = "Retrieved stale letters file"),
             @ApiResponse(code = 500, message = "Error occurred while retrieving stale letters file")
     })
-    public ResponseEntity<byte[]> getFileWithStaleLetters() {
-        try {
-            File csvFile = staleLetterService.getDownloadFile();
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=stale-letters.csv")
-                    .body(Files.readAllBytes(csvFile.toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<byte[]> getFileWithStaleLetters() throws IOException {
+        File csvFile = staleLetterService.getDownloadFile();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=stale-letters.csv")
+                .body(Files.readAllBytes(csvFile.toPath()));
     }
 
 
