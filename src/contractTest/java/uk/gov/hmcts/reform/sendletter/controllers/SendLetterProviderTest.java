@@ -16,12 +16,17 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
+import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(SpringExtension.class)
@@ -39,6 +44,12 @@ public class SendLetterProviderTest {
 
     @Autowired
     LetterService letterService;
+
+    @Autowired
+    LetterRepository letterRepository;
+
+    @Autowired
+    ServiceFolderMapping serviceFolderMapping;
 
     @Autowired
     SendLetterController sendLetterController;
@@ -60,6 +71,8 @@ public class SendLetterProviderTest {
     @State({"A valid send letter request is received"})
     public void sendValidLetter() {
         Mockito.when(authService.authenticate(anyString())).thenReturn("serviceName");
-        Mockito.when(letterService.save(ArgumentMatchers.any(ILetterRequest.class), anyString(), anyString())).thenReturn(UUID.randomUUID());
+        Mockito.when(serviceFolderMapping.getFolderFor("serviceName")).thenReturn(Optional.of("serviceFolder"));
+        Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(), any(LetterStatus.class))).thenReturn(Optional.empty());
+        //Mockito.when(letterService.save(ArgumentMatchers.any(ILetterRequest.class), anyString(), anyString())).thenReturn(UUID.randomUUID());
     }
 }
