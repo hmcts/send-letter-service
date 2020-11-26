@@ -17,8 +17,8 @@ locals {
 
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
-  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env
-  local_ase = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.ase_name
+  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
+  local_ase = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.ase_name
 
   s2s_rg  = "rpe-service-auth-provider-${local.local_env}"
   s2s_url = "http://${local.s2s_rg}.service.core-compute-${local.local_env}.internal"
@@ -170,30 +170,35 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
 
 # region staging DB secrets
 resource "azurerm_key_vault_secret" "staging_db_user" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-user"
   value        = module.staging-db.user_name
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-password"
   value        = module.staging-db.postgresql_password
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-host"
   value        = module.staging-db.host_name
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-port"
   value        = module.staging-db.postgresql_listen_port
 }
 
 resource "azurerm_key_vault_secret" "staging_db_name" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-name"
   value        = module.staging-db.postgresql_database
