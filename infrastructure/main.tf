@@ -173,34 +173,34 @@ resource "azurerm_key_vault_secret" "staging_db_user" {
   count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-user"
-  value        = module.staging-db.user_name
+  value        = try(module.staging-db.user_name, "nope")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
   count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-password"
-  value        = module.staging-db.postgresql_password
+  value        = try(module.staging-db.postgresql_password, "nope")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
   count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-host"
-  value        = module.staging-db.host_name
+  value        = try(module.staging-db.host_name, "nope")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
   count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-port"
-  value        = module.staging-db.postgresql_listen_port
+  value        = try(module.staging-db.postgresql_listen_port, "nope")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_name" {
   count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-name"
-  value        = module.staging-db.postgresql_database
+  value        = try(module.staging-db.postgresql_database, "nope")
 }
 # endregion
