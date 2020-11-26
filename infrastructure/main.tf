@@ -9,22 +9,12 @@ resource "azurerm_resource_group" "rg" {
 }
 
 locals {
-  ase_name = "core-compute-${var.env}"
-
   ftp_private_key = data.azurerm_key_vault_secret.ftp_private_key.value
   ftp_public_key  = data.azurerm_key_vault_secret.ftp_public_key.value
   ftp_user        = data.azurerm_key_vault_secret.ftp_user.value
 
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
-  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
-
-  s2s_rg  = "rpe-service-auth-provider-${var.env}"
-  s2s_url = "http://${local.s2s_rg}.service.core-compute-${var.env}.internal"
-
-  previewVaultName    = "${var.product}-send-letter"
-  nonPreviewVaultName = "${var.product}-send-letter-${var.env}"
-  vaultName           = (var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName
 }
 
 module "db-v11" {
@@ -59,7 +49,7 @@ module "staging-db" {
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
   source              = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
-  name                = local.vaultName
+  name                = "${var.product}-send-letter-${var.env}"
   product             = var.product
   env                 = var.env
   tenant_id           = var.tenant_id
@@ -75,7 +65,7 @@ module "send-letter-key-vault" {
 
 data "azurerm_key_vault" "s2s_key_vault" {
   name                = "s2s-${var.env}"
-  resource_group_name = local.s2s_rg
+  resource_group_name = "rpe-service-auth-provider-${var.env}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
