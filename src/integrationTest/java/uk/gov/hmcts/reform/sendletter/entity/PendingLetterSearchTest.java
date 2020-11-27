@@ -104,7 +104,6 @@ public class PendingLetterSearchTest {
                         UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
             // then
             assertThat(letters.count()).isEqualTo(2);
-            assertThat(letters).noneMatch(l -> l.getStatus().equals(SMOKE_TEST_LETTER_TYPE));
         }
     }
 
