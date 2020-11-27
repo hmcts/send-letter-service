@@ -11,8 +11,10 @@ import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
@@ -97,14 +99,16 @@ public class PendingLetterSearchTest {
         storeLetter(Created, SMOKE_TEST_LETTER_TYPE, currentTime.minusMinutes(30));
         storeLetter(Created, "not-smoke-test-type-1", currentTime.minusMinutes(30));
         storeLetter(Created, "not-smoke-test-type-2", currentTime.minusMinutes(30));
-
+        List<BasicLetterInfo> collect;
         // when
         try (Stream<BasicLetterInfo> letters = repository
                 .findByCreatedAtBeforeAndStatusAndTypeNot(currentTime.minusMinutes(5), Created,
                         UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
-            // then
-            assertThat(letters.count()).isEqualTo(2);
+            collect = letters.collect(toList());
         }
+        assertThat(collect.size()).isEqualTo(2);
+        assertThat(collect).extracting("type")
+                .containsExactlyInAnyOrder("not-smoke-test-type-1","not-smoke-test-type-2");
     }
 
     @Test
