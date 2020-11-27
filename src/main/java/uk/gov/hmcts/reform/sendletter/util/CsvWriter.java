@@ -2,15 +2,22 @@ package uk.gov.hmcts.reform.sendletter.util;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public final class CsvWriter {
+    private static final Logger logger = LoggerFactory.getLogger(CsvWriter.class);
 
     private static final String[] LETTERS_COUNT_SUMMARY_CSV_HEADERS = {
         "Service", "Letters Uploaded"
@@ -19,6 +26,11 @@ public final class CsvWriter {
     private static final String[] STALE_LETTERS_CSV_HEADERS = {
         "Id", "Status", "Service", "CreatedAt", "SentToPrintAt"
     };
+
+    private static final String[] DELAYED_LETTERS_CSV_HEADERS = {
+        "FileName", "ServiceName", "ReceivedDate", "UploadedDate", "PrintedDate"
+    };
+
 
 
 
@@ -55,5 +67,31 @@ public final class CsvWriter {
         }
 
         return csvFile;
+    }
+
+    public static File writeDelayedPostedLettersToCsv(Stream<Letter> letters) throws IOException {
+        LoggerFactory.getLogger(CsvWriter.class);
+        File csvFIle = File.createTempFile("Deplayed-letters-", ".csv");
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_CSV_HEADERS);
+        FileWriter fileWriter = new FileWriter(csvFIle);
+        AtomicInteger count = new AtomicInteger(0);
+
+        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+            letters.forEach(letter -> printRecords(letter, printer, count));
+        }
+
+        logger.info("Number of delayed print letters {}", count.get());
+        return csvFIle;
+    }
+
+    private static void printRecords(Letter letter, CSVPrinter printer, AtomicInteger count) {
+        try {
+            printer.printRecord(FinalPackageFileNameHelper.generateName(letter),
+                    letter.getService(), letter.getCreatedAt(),
+                    letter.getSentToPrintAt(), letter.getPrintedAt());
+            count.incrementAndGet();
+        } catch (Exception e) {
+            logger.error("Deplay posted exception ", e);
+        }
     }
 }
