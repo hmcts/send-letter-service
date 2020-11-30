@@ -13,8 +13,6 @@ locals {
   ftp_public_key  = data.azurerm_key_vault_secret.ftp_public_key.value
   ftp_user        = data.azurerm_key_vault_secret.ftp_user.value
 
-  s2s_url = "http://rpe-service-auth-provider-${var.env}.service.core-compute-${var.env}.internal"
-
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
 }

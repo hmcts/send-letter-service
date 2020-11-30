@@ -1,7 +1,7 @@
 #region Data for tests
 
 output "test_s2s_url" {
-  value = local.s2s_url
+  value = "http://rpe-service-auth-provider-${var.env}.service.core-compute-${var.env}.internal"
 }
 
 output "test_s2s_name" {
