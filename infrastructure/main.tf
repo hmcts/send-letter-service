@@ -9,40 +9,12 @@ resource "azurerm_resource_group" "rg" {
 }
 
 locals {
-  ase_name = "core-compute-${var.env}"
-
   ftp_private_key = data.azurerm_key_vault_secret.ftp_private_key.value
   ftp_public_key  = data.azurerm_key_vault_secret.ftp_public_key.value
   ftp_user        = data.azurerm_key_vault_secret.ftp_user.value
 
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
-  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env
-  local_ase = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.ase_name
-
-  s2s_rg  = "rpe-service-auth-provider-${local.local_env}"
-  s2s_url = "http://${local.s2s_rg}.service.core-compute-${local.local_env}.internal"
-
-  previewVaultName    = "${var.product}-send-letter"
-  nonPreviewVaultName = "${var.product}-send-letter-${var.env}"
-  vaultName           = (var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName
-
-  db_connection_options = "?sslmode=require"
-
-  sku_size = var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"
-}
-
-module "db" {
-  source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = "${var.product}-${var.component}-db"
-  location        = var.location_db
-  env             = var.env
-  database_name   = "send_letter"
-  postgresql_user = "send_letter"
-  sku_name        = "GP_Gen5_2"
-  sku_tier        = "GeneralPurpose"
-  common_tags     = var.common_tags
-  subscription    = var.subscription
 }
 
 module "db-v11" {
@@ -60,6 +32,7 @@ module "db-v11" {
 }
 
 module "staging-db" {
+  count              = var.num_staging_dbs
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.component}-stg-db"
   location           = var.location_db
@@ -76,7 +49,7 @@ module "staging-db" {
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
   source              = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
-  name                = local.vaultName
+  name                = "${var.product}-send-letter-${var.env}"
   product             = var.product
   env                 = var.env
   tenant_id           = var.tenant_id
@@ -91,8 +64,8 @@ module "send-letter-key-vault" {
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
-  name                = "s2s-${local.local_env}"
-  resource_group_name = local.s2s_rg
+  name                = "s2s-${var.env}"
+  resource_group_name = "rpe-service-auth-provider-${var.env}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
@@ -170,32 +143,37 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
 
 # region staging DB secrets
 resource "azurerm_key_vault_secret" "staging_db_user" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-user"
-  value        = module.staging-db.user_name
+  value        = try(module.staging-db[0].user_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-password"
-  value        = module.staging-db.postgresql_password
+  value        = try(module.staging-db[0].postgresql_password, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-host"
-  value        = module.staging-db.host_name
+  value        = try(module.staging-db[0].host_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-port"
-  value        = module.staging-db.postgresql_listen_port
+  value        = try(module.staging-db[0].postgresql_listen_port, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_name" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-name"
-  value        = module.staging-db.postgresql_database
+  value        = try(module.staging-db[0].postgresql_database, "null")
 }
 # endregion
