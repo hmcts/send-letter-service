@@ -159,6 +159,36 @@ class CsvWriterTest {
     }
 
     @Test
+    void should_return_stale_posted_letters() throws IOException {
+        List<Letter> letters = Arrays.asList(createLetter(), createLetter(), createLetter());
+        Stream<Letter> stream = letters.stream();
+        File file = CsvWriter.writeStaleLettersReport(stream);
+        List<CSVRecord> csvRecords = readCsv(file);
+
+        assertThat(csvRecords).isNotEmpty().hasSize(4)
+                .extracting(record -> tuple(
+                        record.get(0), record.get(1), record.get(2), record.get(3))
+                ).contains(
+                tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate"),
+                tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
+                        letters.get(0).getCreatedAt(), letters.get(0).getId(), letters.get(0).isEncrypted()),
+                        letters.get(0).getService(),
+                        letters.get(0).getCreatedAt().toString(),
+                        letters.get(0).getSentToPrintAt().toString()),
+                tuple(generateName(letters.get(1).getType(), letters.get(1).getService(),
+                        letters.get(1).getCreatedAt(), letters.get(1).getId(), letters.get(1).isEncrypted()),
+                        letters.get(1).getService(),
+                        letters.get(1).getCreatedAt().toString(),
+                        letters.get(1).getSentToPrintAt().toString()),
+                tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
+                        letters.get(2).getCreatedAt(), letters.get(2).getId(), letters.get(2).isEncrypted()),
+                        letters.get(2).getService(),
+                        letters.get(2).getCreatedAt().toString(),
+                        letters.get(2).getSentToPrintAt().toString()));
+
+    }
+
+    @Test
     void should_return_only_two_delayed_posted_letters() throws IOException {
         List<Letter> letters = Arrays.asList(createLetter(), createExceptionLetter(), createLetter());
         Stream<Letter> stream = letters.stream();
@@ -182,6 +212,31 @@ class CsvWriterTest {
                         letters.get(2).getCreatedAt().toString(),
                         letters.get(2).getSentToPrintAt().toString(),
                         letters.get(2).getPrintedAt().toString()));
+
+    }
+
+    @Test
+    void should_return_only_two_stale_letters() throws IOException {
+        List<Letter> letters = Arrays.asList(createLetter(), createExceptionLetter(), createLetter());
+        Stream<Letter> stream = letters.stream();
+        File file = CsvWriter.writeStaleLettersReport(stream);
+        List<CSVRecord> csvRecords = readCsv(file);
+
+        assertThat(csvRecords).isNotEmpty().hasSize(3)
+                .extracting(record -> tuple(
+                        record.get(0), record.get(1), record.get(2), record.get(3))
+                ).contains(
+                tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate"),
+                tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
+                        letters.get(0).getCreatedAt(), letters.get(0).getId(), letters.get(0).isEncrypted()),
+                        letters.get(0).getService(),
+                        letters.get(0).getCreatedAt().toString(),
+                        letters.get(0).getSentToPrintAt().toString()),
+                tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
+                        letters.get(2).getCreatedAt(), letters.get(2).getId(), letters.get(2).isEncrypted()),
+                        letters.get(2).getService(),
+                        letters.get(2).getCreatedAt().toString(),
+                        letters.get(2).getSentToPrintAt().toString()));
 
     }
 

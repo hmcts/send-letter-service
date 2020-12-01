@@ -23,8 +23,9 @@ public class DelayedPrintService {
     public File getDeplayLettersAttachment(LocalDateTime fromCreatedDate,
                                           LocalDateTime toCreatedDate,
                                           int minProcessingHours) throws IOException {
-        Stream<Letter> deplayedPostedLetter = letterRepository.findDeplayedPostedLetter(fromCreatedDate, toCreatedDate,
-                minProcessingHours);
-        return CsvWriter.writeDelayedPostedLettersToCsv(deplayedPostedLetter);
+        try (Stream<Letter> deplayedPostedLetter = letterRepository
+                .findDeplayedPostedLetter(fromCreatedDate, toCreatedDate, minProcessingHours)) {
+            return CsvWriter.writeDelayedPostedLettersToCsv(deplayedPostedLetter);
+        }
     }
 }

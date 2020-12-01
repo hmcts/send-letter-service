@@ -27,8 +27,12 @@ public final class CsvWriter {
         "Id", "Status", "Service", "CreatedAt", "SentToPrintAt"
     };
 
-    private static final String[] DELAYED_LETTERS_CSV_HEADERS = {
+    private static final String[] DELAYED_LETTERS_EMAIL_CSV_HEADERS = {
         "FileName", "ServiceName", "ReceivedDate", "UploadedDate", "PrintedDate"
+    };
+
+    private static final String[] STALE_LETTERS_EMAIL_CSV_HEADERS = {
+        "FileName", "ServiceName", "ReceivedDate", "UploadedDate"
     };
 
 
@@ -70,28 +74,52 @@ public final class CsvWriter {
     }
 
     public static File writeDelayedPostedLettersToCsv(Stream<Letter> letters) throws IOException {
-        LoggerFactory.getLogger(CsvWriter.class);
         File csvFIle = File.createTempFile("Deplayed-letters-", ".csv");
-        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_CSV_HEADERS);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS);
         FileWriter fileWriter = new FileWriter(csvFIle);
         AtomicInteger count = new AtomicInteger(0);
 
         try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
-            letters.forEach(letter -> printRecords(letter, printer, count));
+            letters.forEach(letter -> printDelayRecords(letter, printer, count));
         }
 
-        logger.info("Number of delayed print letters {}", count.get());
+        logger.info("Number of weekly delayed print letters {}", count.get());
         return csvFIle;
     }
 
-    private static void printRecords(Letter letter, CSVPrinter printer, AtomicInteger count) {
+    public static File writeStaleLettersReport(Stream<Letter> letters) throws IOException {
+        File csvFIle = File.createTempFile("Stale-letters-", ".csv");
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_EMAIL_CSV_HEADERS);
+        FileWriter fileWriter = new FileWriter(csvFIle);
+        AtomicInteger count = new AtomicInteger(0);
+
+        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+            letters.forEach(letter -> printStaleRecords(letter, printer, count));
+        }
+
+        logger.info("Number of weekly stale letters {}", count.get());
+        return csvFIle;
+    }
+
+    private static void printStaleRecords(Letter letter, CSVPrinter printer, AtomicInteger count) {
+        try {
+            printer.printRecord(FinalPackageFileNameHelper.generateName(letter),
+                    letter.getService(), letter.getCreatedAt(),
+                    letter.getSentToPrintAt());
+            count.incrementAndGet();
+        } catch (Exception e) {
+            logger.error("Stale letter exception ", e);
+        }
+    }
+
+    private static void printDelayRecords(Letter letter, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(FinalPackageFileNameHelper.generateName(letter),
                     letter.getService(), letter.getCreatedAt(),
                     letter.getSentToPrintAt(), letter.getPrintedAt());
             count.incrementAndGet();
         } catch (Exception e) {
-            logger.error("Deplay posted exception ", e);
+            logger.error("Deplay letter posted exception ", e);
         }
     }
 }

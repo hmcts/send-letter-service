@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.services.DelayedPrintService;
@@ -39,6 +40,15 @@ class DelayAndStaleReportTest {
     @Mock
     private EmailSender emailSender;
 
+    @Captor
+    ArgumentCaptor<Attachment> attachmentArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<String> emailSubjectCaptor;
+
+    @Captor
+    ArgumentCaptor<String[]> recipientsCaptor;
+
     private DelayAndStaleReport delayAndStaleReport;
 
     String[] recipients = null;
@@ -57,20 +67,23 @@ class DelayAndStaleReportTest {
         given(delayedPrintService.getDeplayLettersAttachment(isA(LocalDateTime.class),
                 isA(LocalDateTime.class), anyInt())).willReturn(deplayedFile);
 
+        File staleFile = new File("stale-file");
+        given(staleLetterService.getWeeklyStaleLetters()).willReturn(staleFile);
+
         delayAndStaleReport.send();
 
         verify(delayedPrintService).getDeplayLettersAttachment(isA(LocalDateTime.class),
                 isA(LocalDateTime.class), anyInt());
-        ArgumentCaptor<String> emailSubjectCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String[]> recipientsCaptor = ArgumentCaptor.forClass(String[].class);
-        ArgumentCaptor<Attachment> attachmentArgumentCaptor = ArgumentCaptor.forClass(Attachment.class);
+        verify(staleLetterService).getWeeklyStaleLetters();
+
+
 
         verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
                 attachmentArgumentCaptor.capture());
 
         assertThat(emailSubjectCaptor.getValue()).isEqualTo(EMAIL_SUBJECT);
         assertThat(recipientsCaptor.getValue()).isEqualTo(recipients);
-        assertThat(attachmentArgumentCaptor.getValue()).isNotNull();
+        assertThat(attachmentArgumentCaptor.getAllValues().size()).isEqualTo(2);
     }
 
     @ParameterizedTest
@@ -95,18 +108,42 @@ class DelayAndStaleReportTest {
     }
 
     @Test
-    void should_not_invoke_send_emails_for_exception() throws IOException {
+    void should_invoke_send_emails_for_only_delayed_exception() throws IOException {
         given(delayedPrintService.getDeplayLettersAttachment(isA(LocalDateTime.class),
                 isA(LocalDateTime.class), anyInt())).willThrow(new RuntimeException("Error occured"));
 
         delayAndStaleReport.send();
 
-        verify(emailSender, never()).send(eq(EMAIL_SUBJECT), eq(recipients),
-                ArgumentMatchers.<Attachment>any());
+        verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
+                attachmentArgumentCaptor.capture());
+        assertThat(emailSubjectCaptor.getValue()).isEqualTo(EMAIL_SUBJECT);
+        assertThat(recipientsCaptor.getValue()).isEqualTo(recipients);
+        assertThat(attachmentArgumentCaptor.getAllValues().size()).isEqualTo(1);
     }
 
+    @Test
+    void should_invoke_send_emails_for_only_stale_exception() throws IOException {
+        given(staleLetterService.getWeeklyStaleLetters()).willThrow(new RuntimeException("Error occured"));
 
+        delayAndStaleReport.send();
 
+        verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
+                attachmentArgumentCaptor.capture());
+        assertThat(emailSubjectCaptor.getValue()).isEqualTo(EMAIL_SUBJECT);
+        assertThat(recipientsCaptor.getValue()).isEqualTo(recipients);
+        assertThat(attachmentArgumentCaptor.getAllValues().size()).isEqualTo(1);
+    }
 
+    @Test
+    void should_not_invoke_send_emails_for_stale_exception() throws IOException {
+        given(delayedPrintService.getDeplayLettersAttachment(isA(LocalDateTime.class),
+                isA(LocalDateTime.class), anyInt())).willThrow(new RuntimeException("Error occured"));
 
+        given(staleLetterService.getWeeklyStaleLetters()).willThrow(new RuntimeException("Error occured"));
+
+        delayAndStaleReport.send();
+
+        verify(emailSender, never()).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
+                attachmentArgumentCaptor.capture());
+    }
 }

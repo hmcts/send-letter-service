@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +33,10 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     List<BasicLetterInfo> findStaleLetters(
         @Param("createdBefore") LocalDateTime createdBefore
     );
+
+
+    Stream<Letter> findByStatusNotInAndTypeNotAndCreatedAtBetweenOrderByCreatedAtAsc(Collection<LetterStatus> letterStatuses,
+                                                               String type, LocalDateTime from, LocalDateTime to);
 
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "

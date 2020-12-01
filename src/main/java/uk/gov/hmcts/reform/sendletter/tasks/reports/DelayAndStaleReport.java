@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
@@ -56,21 +59,53 @@ public class DelayAndStaleReport {
         } else {
             LocalDateTime toDate = LocalDateTime.now();
             LocalDateTime fromDate = toDate.minusDays(6);
-            try {
-                File deplayLettersAttachment = deplayedPrintService.getDeplayLettersAttachment(fromDate, toDate,
-                        minStaleLetterAgeInBusinessDays * 24);
-                String deplayFileName = String.join("", ATTACHEMENT_DELAYED_PRINT_PREFIX,
-                        toDate.format(FORMATTER), ".csv");
+            List<Attachment> attachments = new ArrayList<>();
+            Consumer<Attachment> addAttachment = attachment -> {
+                if (attachment != null) {
+                    attachments.add(attachment);
+                }
+            };
 
-                Attachment attachment = new Attachment(deplayFileName, deplayLettersAttachment);
+            addAttachment.accept(getDeplayedAttachment(fromDate, toDate));
+            addAttachment.accept(getStaleLetterAttachment(toDate));
 
-                emailSender.send(EMAIL_SUBJECT, recipients, attachment);
-
+            if (attachments.size() > 0) {
+                emailSender.send(EMAIL_SUBJECT, recipients, attachments.toArray(new Attachment[0]));
                 log.info("Send email for {} ", EMAIL_SUBJECT);
-            } catch (Exception e) {
-                log.error("Error sending {}", EMAIL_SUBJECT, e);
+            } else {
+                log.info("Send not email for {} as there are no attachemnts", EMAIL_SUBJECT);
             }
         }
+    }
+
+
+    private Attachment getStaleLetterAttachment(LocalDateTime toDate) {
+        Attachment staleLetterAttachment = null;
+        try {
+            File weeklyStaleLettersFile = staleLetterService.getWeeklyStaleLetters();
+            String staleFileName = String.join("", ATTACHEMENT_STALE_LETTER_PREFIX,
+                    toDate.format(FORMATTER), ".csv");
+
+            staleLetterAttachment = new Attachment(staleFileName, weeklyStaleLettersFile);
+        } catch (Exception e) {
+            log.error("Error stale letter report", e);
+        }
+        return staleLetterAttachment;
+    }
+
+    private Attachment getDeplayedAttachment(LocalDateTime fromDate, LocalDateTime toDate) {
+        Attachment deplayLettersAttachment = null;
+        try {
+            File deplayLettersFile = deplayedPrintService.getDeplayLettersAttachment(fromDate, toDate,
+                    minStaleLetterAgeInBusinessDays * 24);
+            String deplayFileName = String.join("", ATTACHEMENT_DELAYED_PRINT_PREFIX,
+                    toDate.format(FORMATTER), ".csv");
+
+            deplayLettersAttachment = new Attachment(deplayFileName, deplayLettersFile);
+        } catch (Exception e) {
+            log.error("Error delayed letter report", e);
+        }
+        return deplayLettersAttachment;
     }
 
 }

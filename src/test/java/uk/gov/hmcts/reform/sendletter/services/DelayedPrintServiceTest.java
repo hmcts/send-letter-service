@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +49,8 @@ class DelayedPrintServiceTest {
         File deplayLettersAttachment = delayedPrintService.getDeplayLettersAttachment(
                 current.minusDays(6), current, 48);
         assertThat(deplayLettersAttachment).isNotEmpty();
+        verify(letterRepository).findDeplayedPostedLetter(isA(LocalDateTime.class),
+                isA(LocalDateTime.class), anyInt());
     }
 
     private Letter createLetter() {
