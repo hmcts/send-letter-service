@@ -125,7 +125,7 @@ public class StaleLetterServiceTest {
     }
 
     @Test
-    public void should_return_weeky_stale_letters_repository_with_calculated_cut_off_date() throws IOException {
+    void should_return_weeky_stale_letters_repository_with_calculated_cut_off_date() throws IOException {
         // given
         ZonedDateTime cutOffTime = LocalDateTime.parse("2019-05-01T15:34:56.123").atZone(ZoneId.of(EUROPE_LONDON));
 

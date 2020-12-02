@@ -39,7 +39,8 @@ public class StaleLetterService {
     private final LocalTime ftpDowntimeStart;
     private final Clock clock;
 
-    public static List<LetterStatus> LETTER_STATUS_TO_IGNORE = Arrays.asList(LetterStatus.Posted, LetterStatus.Aborted);
+    public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE = Arrays
+            .asList(LetterStatus.Posted, LetterStatus.Aborted);
 
     public StaleLetterService(
         DateCalculator dateCalculator,

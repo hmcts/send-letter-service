@@ -69,7 +69,7 @@ public class DelayAndStaleReport {
             addAttachment.accept(getDeplayedAttachment(fromDate, toDate));
             addAttachment.accept(getStaleLetterAttachment(toDate));
 
-            if (attachments.size() > 0) {
+            if (!attachments.isEmpty()) {
                 emailSender.send(EMAIL_SUBJECT, recipients, attachments.toArray(new Attachment[0]));
                 log.info("Send email for {} ", EMAIL_SUBJECT);
             } else {
