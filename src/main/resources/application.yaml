@@ -78,7 +78,7 @@ reports:
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 9 * * 4}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
-    recipients: ${UPLOAD_SUMMARY_REPORT_RECIPIENTS:}
+    recipients: ${DELAYED_STALE_REPORT_RECIPIENTS:}
 
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
