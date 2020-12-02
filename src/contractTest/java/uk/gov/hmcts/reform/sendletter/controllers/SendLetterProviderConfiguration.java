@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.impl.cookie.PublicSuffixDomainFilter;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -44,14 +43,15 @@ public class SendLetterProviderConfiguration {
 
     @Bean
     @Primary
-    PdfCreator pdfCreator(){
+    PdfCreator pdfCreator() {
         return new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
     }
 
     @Bean
     @Primary
     LetterService letterService() {
-        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(), false, "", serviceFolderMapping, new ExecusionService(),
+        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(), false, "", serviceFolderMapping,
+            new ExecusionService(),
             duplicateLetterService, exceptionLetterService);
     }
 

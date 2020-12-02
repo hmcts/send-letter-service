@@ -11,20 +11,17 @@ import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,7 +32,6 @@ import static org.mockito.ArgumentMatchers.anyString;
     host = "${PACT_BROKER_URL:localhost}",
     port = "${PACT_BROKER_PORT:80}", consumerVersionSelectors = {
     @VersionSelector(tag = "${PACT_BRANCH_NAME:Dev}")})
-@IgnoreNoPactsToVerify
 @Import({SendLetterProviderConfiguration.class})
 public class SendLetterProviderTest {
 
@@ -73,6 +69,5 @@ public class SendLetterProviderTest {
         Mockito.when(authService.authenticate(anyString())).thenReturn("serviceName");
         Mockito.when(serviceFolderMapping.getFolderFor("serviceName")).thenReturn(Optional.of("serviceFolder"));
         Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(), any(LetterStatus.class))).thenReturn(Optional.empty());
-        //Mockito.when(letterService.save(ArgumentMatchers.any(ILetterRequest.class), anyString(), anyString())).thenReturn(UUID.randomUUID());
     }
 }
