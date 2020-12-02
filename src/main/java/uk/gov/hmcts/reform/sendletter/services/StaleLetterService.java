@@ -39,7 +39,7 @@ public class StaleLetterService {
     private final Clock clock;
 
     public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE =
-            List.of(new LetterStatus[]{LetterStatus.Posted, LetterStatus.Aborted});
+            List.of(LetterStatus.Posted, LetterStatus.Aborted);
 
 
     public StaleLetterService(
