@@ -75,6 +75,10 @@ reports:
       display-name: FINREM
     - service: fpl_case_service
       display-name: FPLA
+  delayed-stale-report:
+    cron: ${DELAYED_STALE_REPORT_CRON:0 0 9 * * 4}
+    enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
+    recipients: ${DELAYED_STALE_REPORT_RECIPIENTS:}
 
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
@@ -121,6 +125,9 @@ tasks:
     cron:  ${FTP_REPORTS_CRON:0 30 * * * *}
   stale-letters-report:
     cron: ${STALE_LETTERS_REPORT_CRON:0 30 11 * * *}
+  pending-letters-report:
+    cron: ${PENDING_LETTERS_REPORT_CRON:0 0 9 * * *}
+    before-mins: ${PENDING_LETTERS_BEFORE:15}
 
 file-cleanup:
   enabled: ${FILE_CLEANUP_ENABLED:false}

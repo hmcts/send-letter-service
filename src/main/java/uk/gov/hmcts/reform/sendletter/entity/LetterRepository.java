@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @SuppressWarnings("checkstyle:LineLength")
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
@@ -32,12 +34,18 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         @Param("createdBefore") LocalDateTime createdBefore
     );
 
+
+    Stream<Letter> findByStatusNotInAndTypeNotAndCreatedAtBetweenOrderByCreatedAtAsc(Collection<LetterStatus> letterStatuses,
+                                                               String type, LocalDateTime from, LocalDateTime to);
+
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
         + " where l.status = 'Created'"
         + " and l.type <> '" + UploadLettersTask.SMOKE_TEST_LETTER_TYPE + "'"
         + " order by l.createdAt asc")
     List<BasicLetterInfo> findPendingLetters();
+
+    Stream<BasicLetterInfo> findByCreatedAtBeforeAndStatusAndTypeNot(LocalDateTime createdBefore, LetterStatus status, String type);
 
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
@@ -69,4 +77,16 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     );
 
     int countByStatus(LetterStatus status);
+
+    @Query(nativeQuery = true,
+            value = "SELECT *"
+        + " FROM Letters l"
+        + " WHERE l.created_at BETWEEN :fromDate AND :toDate"
+        + " AND EXTRACT(EPOCH FROM  printed_at - sent_to_print_at ) /3600 > :limit"
+        + " AND l.status = 'Posted'"
+        + " ORDER BY l.created_at"
+    )
+    Stream<Letter> findDeplayedPostedLetter(@Param("fromDate") LocalDateTime fromCreatedDate,
+                                            @Param("toDate") LocalDateTime toCreatedDate,
+                                            @Param("limit") int minProcessingHours);
 }

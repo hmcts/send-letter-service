@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.sendletter.logging.AppInsights.DATE_TIME_FORMAT;
 
 @ExtendWith(MockitoExtension.class)
 class AppInsightsTest {
@@ -83,10 +84,38 @@ class AppInsightsTest {
         expectedProperties.put("service", SERVICE_NAME);
         expectedProperties.put("type", TYPE);
         expectedProperties.put("sentToPrintDayOfWeek", sentToPrint.getDayOfWeek().name());
-        expectedProperties.put("sentToPrintAt", sentToPrint.format(AppInsights.TIME_FORMAT));
+        expectedProperties.put("sentToPrintAt", sentToPrint.format(DATE_TIME_FORMAT));
 
         verify(telemetry).trackEvent(
             eq(AppInsights.LETTER_NOT_PRINTED),
+            properties.capture(),
+            eq(null)
+        );
+        assertThat(properties.getValue()).containsAllEntriesOf(expectedProperties);
+    }
+
+
+    @Test
+    void should_track_event_of_letter_not_sent_to_print() {
+        LocalDateTime pendingLetter = now();
+
+        BasicLetterInfo letter = mock(BasicLetterInfo.class);
+        when(letter.getId()).thenReturn(UUID.randomUUID());
+        when(letter.getService()).thenReturn(SERVICE_NAME);
+        when(letter.getType()).thenReturn(TYPE);
+        when(letter.getCreatedAt()).thenReturn(pendingLetter);
+
+        insights.trackPendingLetter(letter);
+
+        Map<String, String> expectedProperties = new HashMap<>();
+        expectedProperties.put("letterId", letter.getId().toString());
+        expectedProperties.put("service", SERVICE_NAME);
+        expectedProperties.put("type", TYPE);
+        expectedProperties.put("createdAt", pendingLetter.format(DATE_TIME_FORMAT));
+        expectedProperties.put("createdDayOfWeek", pendingLetter.getDayOfWeek().name());
+
+        verify(telemetry).trackEvent(
+            eq(AppInsights.PENDING_LETTER),
             properties.capture(),
             eq(null)
         );

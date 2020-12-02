@@ -35,9 +35,11 @@ public class AppInsights {
 
     static final String LETTER_NOT_PRINTED = "LetterNotPrinted";
 
+    static final String PENDING_LETTER = "PendingLetter";
+
     static final String LETTER_PRINT_REPORT = "LetterPrintReportReceived";
 
-    static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+    static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final TelemetryClient telemetryClient;
 
@@ -159,9 +161,21 @@ public class AppInsights {
         properties.put("service", staleLetter.getService());
         properties.put("type", staleLetter.getType());
         properties.put("sentToPrintDayOfWeek", staleLetter.getSentToPrintAt().getDayOfWeek().name());
-        properties.put("sentToPrintAt", staleLetter.getSentToPrintAt().format(TIME_FORMAT));
+        properties.put("sentToPrintAt", staleLetter.getSentToPrintAt().format(DATE_TIME_FORMAT));
 
         telemetryClient.trackEvent(LETTER_NOT_PRINTED, properties, null);
+    }
+
+    public void trackPendingLetter(BasicLetterInfo pendingLetter) {
+        Map<String, String> properties = new HashMap<>();
+
+        properties.put("letterId", pendingLetter.getId().toString());
+        properties.put("service", pendingLetter.getService());
+        properties.put("type", pendingLetter.getType());
+        properties.put("createdAt", pendingLetter.getCreatedAt().format(DATE_TIME_FORMAT));
+        properties.put("createdDayOfWeek", pendingLetter.getCreatedAt().getDayOfWeek().name());
+
+        telemetryClient.trackEvent(PENDING_LETTER, properties, null);
     }
 
     public void trackPrintReportReceived(ParsedReport report) {
