@@ -50,7 +50,8 @@ public class SendLetterProviderConfiguration {
     @Bean
     @Primary
     LetterService letterService() {
-        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(), false, "", serviceFolderMapping,
+        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(),
+            false, "", serviceFolderMapping,
             new ExecusionService(),
             duplicateLetterService, exceptionLetterService);
     }
@@ -64,6 +65,4 @@ public class SendLetterProviderConfiguration {
         return new SendLetterController(letterService(), authService);
 
     }
-
-
 }

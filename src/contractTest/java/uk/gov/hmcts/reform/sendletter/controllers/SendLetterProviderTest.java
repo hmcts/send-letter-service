@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
 import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
-import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
@@ -68,6 +67,7 @@ public class SendLetterProviderTest {
     public void sendValidLetter() {
         Mockito.when(authService.authenticate(anyString())).thenReturn("serviceName");
         Mockito.when(serviceFolderMapping.getFolderFor("serviceName")).thenReturn(Optional.of("serviceFolder"));
-        Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(), any(LetterStatus.class))).thenReturn(Optional.empty());
+        Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(),
+            any(LetterStatus.class))).thenReturn(Optional.empty());
     }
 }
