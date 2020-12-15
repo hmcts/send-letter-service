@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +65,7 @@ class LetterServiceTest {
     @Mock PdfCreator pdfCreator;
     @Mock LetterRepository letterRepository;
     @Mock Zipper zipper;
-    @Mock ObjectMapper objectMapper;
+    ObjectMapper objectMapper = new ObjectMapper();
     @Mock ServiceFolderMapping serviceFolderMapping;
     @Spy
     ExecusionService execusionService;
@@ -70,6 +73,11 @@ class LetterServiceTest {
     @Mock ExceptionLetterService exceptionLetterService;
 
     private LetterService service;
+
+
+    Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
+            objectMapper.convertValue(jsonNode,
+                    new TypeReference<Map<String, Integer>>() {});
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -237,7 +245,8 @@ class LetterServiceTest {
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
 
-        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(15);
+        assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
+                .containsAllEntriesOf(Map.of("Document_1", 5, "Document_2", 10));
 
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
@@ -275,7 +284,9 @@ class LetterServiceTest {
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
 
-        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(1);
+        assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
+                .containsAllEntriesOf(Map.of("Document_1", 1));
+
     }
 
     @ParameterizedTest
@@ -309,7 +320,9 @@ class LetterServiceTest {
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
 
-        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(1);
+        assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
+                .containsAllEntriesOf(Map.of("Document_1", 1));
+
     }
 
     @ParameterizedTest
@@ -340,8 +353,8 @@ class LetterServiceTest {
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
 
-        assertThat(letterArgumentCaptor.getValue().getCopies()).isEqualTo(11);
-
+        assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
+                .containsAllEntriesOf(Map.of("Document_1", 3, "Document_2", 8));
     }
 
     @Test

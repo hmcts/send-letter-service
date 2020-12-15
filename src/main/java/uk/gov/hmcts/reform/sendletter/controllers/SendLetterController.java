@@ -123,6 +123,20 @@ public class SendLetterController {
         return ok(letterStatus);
     }
 
+    @GetMapping(path = "/v2/{id}")
+    @ApiOperation(value = "Get letter status")
+    @ApiResponses({
+        @ApiResponse(code = 200, response = LetterStatus.class, message = "Success"),
+        @ApiResponse(code = 404, message = "Letter not found")
+    })
+    public ResponseEntity<uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus> getLatestLetterStatus(
+        @PathVariable String id
+    ) {
+        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus letterStatus =
+                letterService.getLatestStatus(getLetterIdFromString(id));
+        return ok(letterStatus);
+    }
+
     private UUID getLetterIdFromString(String letterId) {
         try {
             return UUID.fromString(letterId);
