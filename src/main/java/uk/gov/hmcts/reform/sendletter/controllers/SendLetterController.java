@@ -124,7 +124,7 @@ public class SendLetterController {
     }
 
     @GetMapping(path = "/v2/{id}")
-    @ApiOperation(value = "Get letter status")
+    @ApiOperation(value = "Get letter status with copies requested")
     @ApiResponses({
         @ApiResponse(code = 200, response = LetterStatus.class, message = "Success"),
         @ApiResponse(code = 404, message = "Letter not found")
