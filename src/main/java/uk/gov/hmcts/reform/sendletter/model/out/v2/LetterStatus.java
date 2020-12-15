@@ -10,33 +10,33 @@ import java.util.UUID;
 
 public class LetterStatus {
 
-    public UUID id;
+    public final UUID id;
 
-    public String status;
+    public final String status;
 
     @ApiModelProperty(notes = "This field is deprecated, please use `checksum` instead")
     @JsonProperty("message_id")
-    public String messageId;
+    public final String messageId;
 
     @JsonProperty("checksum")
-    public String checksum;
+    public final String checksum;
 
     @JsonProperty("created_at")
-    public ZonedDateTime createdAt;
+    public final ZonedDateTime createdAt;
 
     @JsonProperty("sent_to_print_at")
-    public ZonedDateTime sentToPrintAt;
+    public final ZonedDateTime sentToPrintAt;
 
     @JsonProperty("printed_at")
-    public ZonedDateTime printedAt;
+    public final ZonedDateTime printedAt;
 
     @ApiModelProperty(value = "Additional information about the letter")
     @JsonProperty("additional_data")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public Map<String, Object> additionalData;
+    public final Map<String, Object> additionalData;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public Map<String, Object> copies;
+    public final Map<String, Object> copies;
 
     public LetterStatus(
         final UUID id,

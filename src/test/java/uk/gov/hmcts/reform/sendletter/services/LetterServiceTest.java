@@ -449,6 +449,15 @@ class LetterServiceTest {
     }
 
     @Test
+    void should_throw_LetterNotFoundException_for_json_copies() {
+        createLetterService(false, null);
+        UUID id = UUID.randomUUID();
+        assertThrows(LetterNotFoundException.class, () -> {
+            service.getLatestStatus(id);
+        });
+    }
+
+    @Test
     void should_return_letter() {
         createLetterService(false, null);
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
@@ -458,6 +467,23 @@ class LetterServiceTest {
         assertNotNull(status);
         verify(letterRepository).findById(isA(UUID.class));
         verify(duplicateLetterService).isDuplicate(isA(UUID.class));
+    }
+
+    @Test
+    void should_return_letter_json_copies() {
+        createLetterService(false, null);
+        ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
+        Letter letter = createLetter();
+        JsonNode copies = objectMapper.valueToTree(Map.of("Document_1", 20, "Document_2", 40));
+
+        given(letter.getCopies()).willReturn(copies);
+        given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.of(letter));
+
+        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus status
+                = service.getLatestStatus(UUID.randomUUID());
+
+        assertNotNull(status);
+        verify(letterRepository).findById(isA(UUID.class));
     }
 
 
