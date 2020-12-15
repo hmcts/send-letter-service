@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpEncryptionUtil;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
@@ -309,13 +310,13 @@ public class LetterService {
         return letterStatus;
     }
 
-    public uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus
+    public LetterStatusV2
         getLatestStatus(UUID id) {
         log.info("Getting v2 letter status for id {} ", id);
 
-        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus letterStatus = letterRepository
+        LetterStatusV2 letterStatus = letterRepository
                 .findById(id)
-                .map(letter -> new uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus(
+                .map(letter -> new LetterStatusV2(
                         id,
                         letter.getStatus().name(),
                         letter.getChecksum(),

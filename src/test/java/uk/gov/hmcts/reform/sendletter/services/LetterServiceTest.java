@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToLoadPgpPublicKeyException;
 import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToPgpEncryptZipFileException;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
@@ -479,7 +480,7 @@ class LetterServiceTest {
         given(letter.getCopies()).willReturn(copies);
         given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.of(letter));
 
-        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus status
+        LetterStatusV2 status
                 = service.getLatestStatus(UUID.randomUUID());
 
         assertNotNull(status);

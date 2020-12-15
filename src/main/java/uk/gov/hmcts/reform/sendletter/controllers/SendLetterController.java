@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRe
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.SendLetterResponse;
+import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
@@ -129,10 +130,10 @@ public class SendLetterController {
         @ApiResponse(code = 200, response = LetterStatus.class, message = "Success"),
         @ApiResponse(code = 404, message = "Letter not found")
     })
-    public ResponseEntity<uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus> getLatestLetterStatus(
+    public ResponseEntity<LetterStatusV2> getLatestLetterStatus(
         @PathVariable String id
     ) {
-        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus letterStatus =
+        LetterStatusV2 letterStatus =
                 letterService.getLatestStatus(getLetterIdFromString(id));
         return ok(letterStatus);
     }

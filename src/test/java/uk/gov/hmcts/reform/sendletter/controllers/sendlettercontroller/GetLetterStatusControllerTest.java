@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
@@ -73,8 +74,8 @@ class GetLetterStatusControllerTest {
         Map<String, Object> detailCopies = Map.of("Document_1", 1);
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
 
-        uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus letterStatus =
-                new uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatus(UUID.randomUUID(), "Created",
+        LetterStatusV2 letterStatus =
+                new LetterStatusV2(UUID.randomUUID(), "Created",
                 "some-message-id", now, now, now, null, detailCopies);
         given(service.getLatestStatus(letterStatus.id)).willReturn(letterStatus);
 
