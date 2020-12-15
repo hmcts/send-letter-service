@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.model.out.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
