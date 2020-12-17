@@ -192,9 +192,6 @@ public class LetterService {
                 serviceName,
                 mapper.valueToTree(letter.getAdditionalData()),
                 letter.getType(),
-                zipContent.apply(createdAtTime),
-                isEncryptionEnabled,
-                getEncryptionKeyFingerprint(),
                 createdAtTime,
                 mapper.valueToTree(getCopies(letter)),
                 isAsync
