@@ -227,12 +227,12 @@ dependencyManagement {
       entry 'groovy-xml'
     }
     // CVE-2020-11996 until 9.0.35 (inclusive)
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.39') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.40') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-websocket'
     }
     //CVE-2019-14900
-    dependencySet(group: 'org.hibernate', version: '5.4.23.Final') {
+    dependencySet(group: 'org.hibernate', version: '5.4.27.Final') {
       entry 'hibernate-core'
     }
   }
@@ -254,7 +254,7 @@ dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.17'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.14.0'
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.15.1'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.18.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -329,7 +329,7 @@ dependencies {
   contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
 
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
   contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
   contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 

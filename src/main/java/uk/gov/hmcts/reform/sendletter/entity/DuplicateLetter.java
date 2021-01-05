@@ -28,10 +28,9 @@ public class DuplicateLetter {
     private JsonNode additionalData;
     private LocalDateTime createdAt;
     private String type;
-    private byte[] fileContent;
-    private Boolean isEncrypted;
-    private String encryptionKeyFingerprint;
-    private Integer copies;
+    @Type(type = "json")
+    @Column(columnDefinition = "json")
+    private JsonNode copies;
     private String isAsync;
 
     // For use by hibernate.
@@ -44,11 +43,8 @@ public class DuplicateLetter {
         String service,
         JsonNode additionalData,
         String type,
-        byte[] fileContent,
-        Boolean isEncrypted,
-        String encryptionKeyFingerprint,
         LocalDateTime createdAt,
-        Integer copies,
+        JsonNode copies,
         String isAsync
     ) {
         this.id = id;
@@ -57,9 +53,6 @@ public class DuplicateLetter {
         this.additionalData = additionalData;
         this.createdAt = createdAt;
         this.type = type;
-        this.fileContent = fileContent;
-        this.isEncrypted = isEncrypted;
-        this.encryptionKeyFingerprint = encryptionKeyFingerprint;
         this.copies = copies;
         this.isAsync = isAsync;
     }
@@ -106,35 +99,11 @@ public class DuplicateLetter {
         this.additionalData = additionalData;
     }
 
-    public byte[] getFileContent() {
-        return fileContent;
-    }
-
-    public void setFileContent(byte[] fileContent) {
-        this.fileContent = fileContent;
-    }
-
-    public Boolean getEncrypted() {
-        return isEncrypted;
-    }
-
-    public void setEncrypted(Boolean encrypted) {
-        isEncrypted = encrypted;
-    }
-
-    public String getEncryptionKeyFingerprint() {
-        return encryptionKeyFingerprint;
-    }
-
-    public void setEncryptionKeyFingerprint(String encryptionKeyFingerprint) {
-        this.encryptionKeyFingerprint = encryptionKeyFingerprint;
-    }
-
-    public Integer getCopies() {
+    public JsonNode getCopies() {
         return copies;
     }
 
-    public void setCopies(Integer copies) {
+    public void setCopies(JsonNode copies) {
         this.copies = copies;
     }
 
