@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DuplicateLetterTest {
     @Autowired
     DuplicateRepository duplicateRepository;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private Map<String, Integer> document = Map.of("Document_1", 1);
 
     @BeforeEach
     void setUp() {
@@ -35,17 +40,13 @@ public class DuplicateLetterTest {
     @Test
     void should_Save_Duplicate() throws JsonProcessingException {
         UUID uuid = UUID.randomUUID();
-        DuplicateLetter duplicateLetter = new DuplicateLetter(
-                uuid,
+        DuplicateLetter duplicateLetter = new DuplicateLetter(uuid,
                 "checksum",
                 "a.service",
-                new ObjectMapper().readTree("{}"),
+                objectMapper.readTree("{}"),
                 "test",
-               "true".getBytes(),
-                true,
-                "EncryptionKeyFingerprint",
                 LocalDateTime.now(),
-                0,
+                objectMapper.valueToTree(document),
                 "true"
         );
         duplicateRepository.save(duplicateLetter);
@@ -56,11 +57,10 @@ public class DuplicateLetterTest {
         assertThat(savedDuplicateLetter.getChecksum()).isEqualTo("checksum");
         assertThat(savedDuplicateLetter.getService()).isEqualTo("a.service");
         assertThat(savedDuplicateLetter.getAdditionalData()).isInstanceOf(JsonNode.class);
-        assertThat(savedDuplicateLetter.getFileContent()).isEqualTo("true".getBytes());
         assertThat(savedDuplicateLetter.getType()).isEqualTo("test");
-        assertThat(savedDuplicateLetter.getEncryptionKeyFingerprint()).isEqualTo("EncryptionKeyFingerprint");
         assertThat(savedDuplicateLetter.getCreatedAt()).isInstanceOf(LocalDateTime.class);
-        assertThat(savedDuplicateLetter.getCopies()).isEqualTo(0);
+        assertThat(objectMapper.convertValue(savedDuplicateLetter.getCopies(),
+                new TypeReference<Map<String, Integer>>() {})).containsAllEntriesOf(document);
         assertThat(savedDuplicateLetter.getIsAsync()).isEqualTo("true");
     }
 
@@ -74,12 +74,9 @@ public class DuplicateLetterTest {
         duplicateLetter.setService("a.service");
         duplicateLetter.setAdditionalData(new ObjectMapper().readTree("{}"));
         duplicateLetter.setType("test");
-        duplicateLetter.setFileContent("true".getBytes());
-        duplicateLetter.setEncrypted(true);
-        duplicateLetter.setEncryptionKeyFingerprint("EncryptionKeyFingerprint");
         duplicateLetter.setCreatedAt(LocalDateTime.now());
-        duplicateLetter.setCopies(0);
         duplicateLetter.setIsAsync("true");
+        duplicateLetter.setCopies(objectMapper.valueToTree(document));
 
         duplicateRepository.save(duplicateLetter);
         Optional<DuplicateLetter> optDuplicateLetter = duplicateRepository.findById(uuid);
@@ -89,11 +86,10 @@ public class DuplicateLetterTest {
         assertThat(savedDuplicateLetter.getChecksum()).isEqualTo("checksum");
         assertThat(savedDuplicateLetter.getService()).isEqualTo("a.service");
         assertThat(savedDuplicateLetter.getAdditionalData()).isInstanceOf(JsonNode.class);
-        assertThat(savedDuplicateLetter.getFileContent()).isEqualTo("true".getBytes());
         assertThat(savedDuplicateLetter.getType()).isEqualTo("test");
-        assertThat(savedDuplicateLetter.getEncryptionKeyFingerprint()).isEqualTo("EncryptionKeyFingerprint");
         assertThat(savedDuplicateLetter.getCreatedAt()).isInstanceOf(LocalDateTime.class);
-        assertThat(savedDuplicateLetter.getCopies()).isEqualTo(0);
+        assertThat(objectMapper.convertValue(savedDuplicateLetter.getCopies(),
+                new TypeReference<Map<String, Integer>>() {})).containsAllEntriesOf(document);
         assertThat(savedDuplicateLetter.getIsAsync()).isEqualTo("true");
     }
 }
