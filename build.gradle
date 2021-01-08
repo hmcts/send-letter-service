@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.flywaydb.flyway' version '7.0.2'
+  id 'org.flywaydb.flyway' version '7.4.0'
   id 'org.springframework.boot' version '2.3.4.RELEASE' // review tomcat manual management
   id 'org.owasp.dependencycheck' version '6.0.3'
   id 'com.github.ben-manes.versions' version '0.36.0'
@@ -221,7 +221,7 @@ dependencyManagement {
     }
     // force junit5 deps to use groovy v3 which fixes reflective call errors for java 11
     // rest assured 4.1 -> 4.3 jumps to groovy v3. junit v5.6 still on v2.5
-    dependencySet(group: 'org.codehaus.groovy', version: '3.0.6') {
+    dependencySet(group: 'org.codehaus.groovy', version: '3.0.7') {
       entry 'groovy'
       entry 'groovy-json'
       entry 'groovy-xml'
@@ -329,10 +329,8 @@ dependencies {
   contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
 
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
-  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
-
+  contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
 }
 
 processFunctionalTestResources {
