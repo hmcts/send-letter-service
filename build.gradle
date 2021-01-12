@@ -204,8 +204,7 @@ def versions = [
   mockitoJupiter: '3.3.3',
   reformLogging: '5.1.5',
   springfoxSwagger: '2.9.2',
-  pact_version: '4.1.7',
-  pdfbox_version: '2.0.21'
+  pact_version: '4.1.7'
 ]
 
 ext["rest-assured.version"] = '4.3.0'
