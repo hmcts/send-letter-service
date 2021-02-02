@@ -19,7 +19,7 @@ secrets = [
     secret('ftp-user', 'TEST_FTP_USER'),
     secret('ftp-private-key', 'TEST_FTP_PRIVATE_KEY'),
     secret('ftp-public-key', 'TEST_FTP_PUBLIC_KEY'),
-    secret('xerox-ftp-hostname', 'TEST_FTP_HOSTNAME')
+    secret('xerox-ftp-hostname', 'FTP_HOSTNAME')
   ]
 ]
 
