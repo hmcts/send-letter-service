@@ -208,6 +208,7 @@ public class FtpClient {
         SSHClient ssh = sshClientSupplier.get();
 
         ssh.addHostKeyVerifier(configProperties.getFingerprint());
+        logger.info("Rishi hostname {}", configProperties.getHostname());
         ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
         ssh.authPublickey(

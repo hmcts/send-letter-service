@@ -41,7 +41,7 @@ java:
 
     FILE_CLEANUP_ENABLED: "false"
 
-    # FTP_HOSTNAME: "cmseft.services.xerox.com"
+    FTP_HOSTNAME: "google.com"
     FTP_PORT: "22"
     FTP_FINGERPRINT: "SHA256:3tX3DIkqd1Loz2alHfnt+qjHocfxk0YUOZHlnf9Zgdk"
     FTP_TARGET_FOLDER: "TO_XEROX"
