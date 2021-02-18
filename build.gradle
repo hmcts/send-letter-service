@@ -215,10 +215,6 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '30.1-jre') {
       entry 'guava'
     }
-    // align with jupiter
-    dependencySet(group: 'org.mockito', version: versions.mockitoJupiter) {
-      entry 'mockito-core'
-    }
     // force junit5 deps to use groovy v3 which fixes reflective call errors for java 11
     // rest assured 4.1 -> 4.3 jumps to groovy v3. junit v5.6 still on v2.5
     dependencySet(group: 'org.codehaus.groovy', version: '3.0.7') {
@@ -267,8 +263,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.1.0'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.1'
-  implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
-  //implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+  //implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
   //implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.7.RELEASE'
 
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
