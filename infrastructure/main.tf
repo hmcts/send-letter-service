@@ -33,7 +33,6 @@ module "db-v11" {
 
 module "staging-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  count              = var.num_staging_dbs
   product            = "${var.component}-stg-db"
   location           = var.location_db
   env                = var.env
