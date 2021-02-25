@@ -32,8 +32,8 @@ module "db-v11" {
 }
 
 module "staging-db" {
-  db_count              = var.num_staging_dbs
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  count              = var.num_staging_dbs
   product            = "${var.component}-stg-db"
   location           = var.location_db
   env                = var.env
@@ -143,35 +143,35 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
 
 # region staging DB secrets
 resource "azurerm_key_vault_secret" "staging_db_user" {
-  db_count        = var.num_staging_dbs
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-user"
   value        = try(module.staging-db[0].user_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
-  db_count        = var.num_staging_dbs
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-password"
   value        = try(module.staging-db[0].postgresql_password, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
-  db_count        = var.num_staging_dbs
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-host"
   value        = try(module.staging-db[0].host_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
-  db_count        = var.num_staging_dbs
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-port"
   value        = try(module.staging-db[0].postgresql_listen_port, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_name" {
-  db_count        = var.num_staging_dbs
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-name"
   value        = try(module.staging-db[0].postgresql_database, "null")
