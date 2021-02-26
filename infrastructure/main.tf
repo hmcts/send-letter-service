@@ -1,5 +1,4 @@
 provider "azurerm" {
-  version = "=2.46.1"
   features {}
 }
 
@@ -33,6 +32,7 @@ module "db-v11" {
 }
 
 module "staging-db" {
+  count              = var.num_staging_dbs
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.component}-stg-db"
   location           = var.location_db
@@ -143,32 +143,37 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
 
 # region staging DB secrets
 resource "azurerm_key_vault_secret" "staging_db_user" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-user"
-  value        = try(module.staging-db.user_name, "null")
+  value        = try(module.staging-db[0].user_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-password"
-  value        = try(module.staging-db.postgresql_password, "null")
+  value        = try(module.staging-db[0].postgresql_password, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-host"
-  value        = try(module.staging-db.host_name, "null")
+  value        = try(module.staging-db[0].host_name, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-port"
-  value        = try(module.staging-db.postgresql_listen_port, "null")
+  value        = try(module.staging-db[0].postgresql_listen_port, "null")
 }
 
 resource "azurerm_key_vault_secret" "staging_db_name" {
+  count        = var.num_staging_dbs
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-staging-db-name"
-  value        = try(module.staging-db.postgresql_database, "null")
+  value        = try(module.staging-db[0].postgresql_database, "null")
 }
 # endregion
