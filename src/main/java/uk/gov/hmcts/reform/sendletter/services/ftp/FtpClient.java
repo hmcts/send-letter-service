@@ -58,7 +58,6 @@ public class FtpClient {
 
     @Dependency(name = FTP_CLIENT, command = FTP_FILE_UPLOADED, type = FTP)
     public void upload(FileToSend file, String serviceFolder, SFTPClient sftpClient) {
-
         String folder = file.isSmokeTest
             ? configProperties.getSmokeTestTargetFolder()
             : String.join("/", configProperties.getTargetFolder(), serviceFolder);
@@ -67,8 +66,8 @@ public class FtpClient {
         Instant start = Instant.now();
 
         retryTemplate.execute(arg -> {
-
             try {
+                logger.info("Uploading file {} to SFTP server", file.filename);
                 sftpClient.getFileTransfer().upload(file, path);
 
                 logger.info(
