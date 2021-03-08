@@ -14,6 +14,7 @@ import java.io.IOException;
 @Component
 public class DuplexPreparator {
     private static final Logger logger = LoggerFactory.getLogger(DuplexPreparator.class);
+
     /**
      * Adds an extra blank page if the total number of pages is odd.
      */
