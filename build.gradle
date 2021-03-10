@@ -225,6 +225,9 @@ dependencyManagement {
     dependencySet(group: 'org.hibernate', version: '5.4.27.Final') {
       entry 'hibernate-core'
     }
+    imports {
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR10"
+    }
   }
 }
 
