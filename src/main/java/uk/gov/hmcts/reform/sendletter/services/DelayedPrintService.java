@@ -27,7 +27,7 @@ public class DelayedPrintService {
     }
 
     @Transactional
-    public File getDeplayLettersAttachment(LocalDateTime fromCreatedDate,
+    public File getDelayLettersAttachment(LocalDateTime fromCreatedDate,
                                           LocalDateTime toCreatedDate,
                                           int minProcessingDays) throws IOException {
         try (Stream<BasicLetterInfo> deplayedPostedLetter = letterRepository
