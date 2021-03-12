@@ -34,7 +34,7 @@ public class DelayedPrintService {
                 .findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(LetterStatus.Posted,
                     fromCreatedDate, toCreatedDate)) {
             List<BasicLetterInfo> filteredLetters = deplayedPostedLetter.filter(letter ->
-                Duration.between(letter.getSentToPrintAt(), letter.getPrintedAt()).toHours() > minProcessingDays)
+                Duration.between(letter.getSentToPrintAt(), letter.getPrintedAt()).toHours() > minProcessingDays * 24)
                 .collect(toList());
             return CsvWriter.writeDelayedPostedLettersToCsv(filteredLetters.stream());
         }

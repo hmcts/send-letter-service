@@ -97,7 +97,7 @@ public class DelayAndStaleReport {
         Attachment deplayLettersAttachment = null;
         try {
             File deplayLettersFile = deplayedPrintService.getDeplayLettersAttachment(fromDate, toDate,
-                    minStaleLetterAgeInBusinessDays * 2);
+                    minStaleLetterAgeInBusinessDays);
             String deplayFileName = String.join("", ATTACHEMENT_DELAYED_PRINT_PREFIX,
                     toDate.format(FORMATTER), ".csv");
 
