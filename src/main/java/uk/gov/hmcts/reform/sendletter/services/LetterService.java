@@ -234,7 +234,6 @@ public class LetterService {
     }
 
     private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
-        log.info("Encryption loaded {}", encryptionPublicKey);
         if (!isEncryptionEnabled) {
             log.info("Encryption is not enabled hence not loading the public key");
             return null;
