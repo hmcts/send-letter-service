@@ -4,7 +4,7 @@ java:
   aadIdentityName: send-letter
   readinessPath: '/health/readiness'
   keyVaults:
-    "rpe-send-letter":
+    rpe-send-letter:
       secrets:
         - name: ftp-user
           alias: FTP_USER
