@@ -145,7 +145,7 @@ old-letter-content-cleanup:
 
 encryption:
   enabled: ${ENCRYPTION_ENABLED:false}
-  publicKey: ${ENCRYPTION_PUBLIC_KEY}
+  publicKey: ${ENCRYPTION_PUBLIC_KEY:}
 
 stale-letters:
   min-age-in-business-days: 2
