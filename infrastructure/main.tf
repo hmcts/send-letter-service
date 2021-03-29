@@ -16,6 +16,15 @@ locals {
 
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
+  product = "bulk-print"
+  tags = "${
+    merge(
+      var.common_tags,
+      map(
+        "Team Contact", "#bulk-print-build-notices",
+        "Team Name", "Bulk Print"
+      )
+    )}"
 }
 
 module "db-v11" {
