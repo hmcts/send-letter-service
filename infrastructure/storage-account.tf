@@ -23,23 +23,18 @@ locals {
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
 
-  preview_subnets = var.env == "aat" ? [
-    data.azurerm_subnet.preview_aks_00_subnet.id,
-    data.azurerm_subnet.preview_aks_01_subnet.id] : []
-  all_valid_subnets = concat(local.valid_subnets, local.preview_subnets)
-
 }
 
 resource "azurerm_storage_account" "storage_account" {
   name = local.account_name
-  resource_group_name = "${azurerm_resource_group.rg.name}"
+  resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
   account_tier = "Standard"
   account_replication_type = "LRS"
-  account_kind = "BlobStorage"
+  account_kind = "StorageV2"
 
   network_rules {
-    virtual_network_subnet_ids = local.all_valid_subnets
+    virtual_network_subnet_ids = local.valid_subnets
     bypass = [
       "Logging",
       "Metrics",
