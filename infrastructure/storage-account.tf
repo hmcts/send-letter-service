@@ -26,7 +26,7 @@ locals {
 }
 
 module "storage_account" {
-  source                   = "git@github.com:hmcts/cnp-module-storage-account.git"
+  source                   = "git@github.com:hmcts/cnp-module-storage-account.git?ref=master"
   env                      = var.env
   storage_account_name     = replace("${var.product}${local.short_component}${var.env}", "-", "")
   resource_group_name      = azurerm_resource_group.rg.name
