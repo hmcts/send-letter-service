@@ -33,9 +33,13 @@ module "storage_account" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
   sa_subnets               = local.valid_subnets
+  managed_identity_object_id = var.managed_identity_object_id
+  role_assignments           = [
+    "Storage Blob Delegator",
+    "Storage Blob Data Contributor"
+  ]
 
   common_tags                = var.common_tags
-  managed_identity_object_id = var.managed_identity_object_id
 }
 
 resource "azurerm_storage_container" "service_containers" {
