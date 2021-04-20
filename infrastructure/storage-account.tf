@@ -41,7 +41,7 @@ module "storage_account" {
     "Storage Blob Data Contributor"
   ]
 
-  common_tags                = var.common_tags
+  common_tags                = local.tags
 }
 
 resource "azurerm_storage_container" "service_containers" {
