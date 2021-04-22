@@ -23,6 +23,8 @@ locals {
   ]
 
   short_component = replace(var.component, "-service", "")
+
+  keda_mi_object_id = data.azurerm_user_assigned_identity.keda_mi.principal_id
 }
 
 module "storage_account" {

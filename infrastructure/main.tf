@@ -13,7 +13,6 @@ locals {
   ftp_private_key = data.azurerm_key_vault_secret.ftp_private_key.value
   ftp_public_key  = data.azurerm_key_vault_secret.ftp_public_key.value
   ftp_user        = data.azurerm_key_vault_secret.ftp_user.value
-  keda_mi_object_id = data.azurerm_user_assigned_identity.keda_mi.principal_id
 
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
