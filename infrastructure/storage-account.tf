@@ -35,10 +35,9 @@ module "storage_account" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
   sa_subnets               = local.valid_subnets
-  managed_identity_object_id = var.managed_identity_object_id
+  managed_identity_object_id = local.keda_mi_object_id
   role_assignments           = [
-    "Storage Blob Delegator",
-    "Storage Blob Data Contributor"
+    "Storage Blob Data Reader"
   ]
 
   common_tags                = local.tags
