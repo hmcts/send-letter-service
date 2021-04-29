@@ -1,0 +1,28 @@
+{
+  "print_job": {
+    "id": "33dffc2f-94e0-4584-a973-cc56849ecc0b",
+    "created_at": "2021-04-07T10:03:00.000Z",
+    "printed_at": null,
+    "sent_to_print_at": null,
+    "service": "sscs",
+    "status": "New",
+    "documents": [
+      {
+        "file_name": "mypdf.pdf",
+        "copies_required": 2
+      },
+      {
+        "file_name": "1.pdf",
+        "copies_required": 1
+      }
+    ],
+    "additional_data": {
+      "x": "y"
+    }
+  },
+  "upload": {
+    "upload_to_container": "url",
+    "sas": "?sas=sadas56tfuvydasd",
+    "upload_to_path": "/{:service}/{:uuid}/file1-c10.pdf"
+  }
+}
