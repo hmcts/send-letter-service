@@ -5,7 +5,7 @@
     "printed_at": null,
     "sent_to_print_at": null,
     "service": "sscs",
-    "status": "New",
+    "status": "NEW",
     "documents": [
       {
         "file_name": "mypdf.pdf",

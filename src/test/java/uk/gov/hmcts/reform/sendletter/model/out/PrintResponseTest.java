@@ -38,7 +38,7 @@ class PrintResponseTest {
         assertThat(printJob.service)
             .isEqualTo("sscs");
         assertThat(printJob.printStatus)
-            .isEqualTo(PrintStatus.New);
+            .isEqualTo(PrintStatus.NEW);
 
         List<Document> documents = printJob.documents;
         assertThat(documents)
