@@ -7,14 +7,14 @@ public class Document {
     public final String fileName;
 
     @JsonProperty("copies_required")
-    public final String copies;
+    public final Integer copies;
 
     private Document() {
         fileName = null;
         copies = null;
     }
 
-    public Document(String fileName, String copies) {
+    public Document(String fileName, Integer copies) {
         this.fileName = fileName;
         this.copies = copies;
     }

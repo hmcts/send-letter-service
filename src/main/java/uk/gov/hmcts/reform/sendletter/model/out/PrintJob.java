@@ -32,8 +32,6 @@ public class PrintJob {
     @JsonProperty("additional_data")
     public final Map<String, String> additionalData;
 
-    @JsonProperty("upload")
-    public final PrintUploadInfo printUploadInfo;
 
     private PrintJob() {
         id = null;
@@ -44,12 +42,11 @@ public class PrintJob {
         printStatus = null;
         documents = null;
         additionalData = null;
-        printUploadInfo = null;
     }
 
     public PrintJob(UUID id, LocalDateTime createdAt, LocalDateTime printedAt, LocalDateTime sentToPrintAt,
                     String service, PrintStatus printStatus, List<@Valid Document> documents,
-                    Map<String, String> additionalData, PrintUploadInfo printUploadInfo) {
+                    Map<String, String> additionalData) {
         this.id = id;
         this.createdAt = createdAt;
         this.printedAt = printedAt;
@@ -58,6 +55,5 @@ public class PrintJob {
         this.printStatus = printStatus;
         this.documents = documents;
         this.additionalData = additionalData;
-        this.printUploadInfo = printUploadInfo;
     }
 }

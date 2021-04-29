@@ -33,8 +33,8 @@ class PrintRequestTest {
             .as("Document list")
             .extracting("fileName", "copies")
             .contains(
-                tuple("1.pdf", "2"),
-                tuple("2.pdf", "1")
+                tuple("1.pdf", 2),
+                tuple("2.pdf", 1)
             );
     }
 }
