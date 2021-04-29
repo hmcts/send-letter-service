@@ -18,7 +18,9 @@ public class PrintUploadInfo {
         uploadToPath = null;
     }
 
-    public PrintUploadInfo(String uploadToContainer, String sasToken, String uploadToPath) {
+    public PrintUploadInfo(String uploadToContainer,
+                           String sasToken,
+                           String uploadToPath) {
         this.uploadToContainer = uploadToContainer;
         this.sasToken = sasToken;
         this.uploadToPath = uploadToPath;

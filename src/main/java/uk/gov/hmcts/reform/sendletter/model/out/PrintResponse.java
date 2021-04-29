@@ -14,7 +14,8 @@ public class PrintResponse {
         printUploadInfo = null;
     }
 
-    public PrintResponse(PrintJob printJob, PrintUploadInfo printUploadInfo) {
+    public PrintResponse(PrintJob printJob,
+                         PrintUploadInfo printUploadInfo) {
         this.printJob = printJob;
         this.printUploadInfo = printUploadInfo;
     }

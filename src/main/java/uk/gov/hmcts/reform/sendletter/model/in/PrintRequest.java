@@ -19,7 +19,8 @@ public class PrintRequest {
         documents = null;
     }
 
-    public PrintRequest(List<Document> documents, Map<String, String> additionalData) {
+    public PrintRequest(List<Document> documents,
+                        Map<String, String> additionalData) {
         this.documents = documents;
         this.additionalData = additionalData;
     }

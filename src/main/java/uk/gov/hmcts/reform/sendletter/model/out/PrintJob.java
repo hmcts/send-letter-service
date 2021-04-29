@@ -44,8 +44,14 @@ public class PrintJob {
         additionalData = null;
     }
 
-    public PrintJob(UUID id, LocalDateTime createdAt, LocalDateTime printedAt, LocalDateTime sentToPrintAt,
-                    String service, PrintStatus printStatus, List<@Valid Document> documents,
+    @SuppressWarnings("squid:S00107")
+    public PrintJob(UUID id,
+                    LocalDateTime createdAt,
+                    LocalDateTime printedAt,
+                    LocalDateTime sentToPrintAt,
+                    String service,
+                    PrintStatus printStatus,
+                    List<@Valid Document> documents,
                     Map<String, String> additionalData) {
         this.id = id;
         this.createdAt = createdAt;

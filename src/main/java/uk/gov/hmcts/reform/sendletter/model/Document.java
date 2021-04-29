@@ -14,7 +14,8 @@ public class Document {
         copies = null;
     }
 
-    public Document(String fileName, Integer copies) {
+    public Document(String fileName,
+                    Integer copies) {
         this.fileName = fileName;
         this.copies = copies;
     }
