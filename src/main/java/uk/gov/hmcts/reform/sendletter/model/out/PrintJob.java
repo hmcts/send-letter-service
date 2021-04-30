@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import javax.validation.Valid;
 
 public class PrintJob {
     public final UUID id;
@@ -29,8 +28,14 @@ public class PrintJob {
 
     public final List<@Valid Document> documents;
 
-    @JsonProperty("additional_data")
-    public final Map<String, String> additionalData;
+    @JsonProperty("case_id")
+    public final String caseId;
+
+    @JsonProperty("case_ref")
+    public final String caseRef;
+
+    @JsonProperty("letter_type")
+    public final String letterType;
 
 
     private PrintJob() {
@@ -41,7 +46,9 @@ public class PrintJob {
         service = null;
         printStatus = null;
         documents = null;
-        additionalData = null;
+        caseId = null;
+        caseRef = null;
+        letterType = null;
     }
 
     @SuppressWarnings("squid:S00107")
@@ -52,7 +59,9 @@ public class PrintJob {
                     String service,
                     PrintStatus printStatus,
                     List<@Valid Document> documents,
-                    Map<String, String> additionalData) {
+                    String caseId,
+                    String caseRef,
+                    String letterType) {
         this.id = id;
         this.createdAt = createdAt;
         this.printedAt = printedAt;
@@ -60,6 +69,8 @@ public class PrintJob {
         this.service = service;
         this.printStatus = printStatus;
         this.documents = documents;
-        this.additionalData = additionalData;
+        this.caseId = caseId;
+        this.caseRef = caseRef;
+        this.letterType = letterType;
     }
 }

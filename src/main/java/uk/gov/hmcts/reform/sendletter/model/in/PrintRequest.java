@@ -4,25 +4,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 
 public class PrintRequest {
     @JsonProperty
     public final List<@Valid Document> documents;
 
-    @JsonProperty("additional_data")
-    public final Map<String, String> additionalData;
+    @JsonProperty("case_id")
+    public final String caseId;
+
+    @JsonProperty("case_ref")
+    public final String caseRef;
+
+    @JsonProperty("letter_type")
+    public final String letterType;
+
 
     private PrintRequest() {
-        additionalData = null;
         documents = null;
+        caseId = null;
+        caseRef = null;
+        letterType = null;
     }
 
-    public PrintRequest(List<Document> documents,
-                        Map<String, String> additionalData) {
+    public PrintRequest(
+        List<Document> documents,
+        String caseId,
+        String caseRef,
+        String letterType
+    ) {
         this.documents = documents;
-        this.additionalData = additionalData;
+        this.caseId = caseId;
+        this.caseRef = caseRef;
+        this.letterType = letterType;
     }
-
 }

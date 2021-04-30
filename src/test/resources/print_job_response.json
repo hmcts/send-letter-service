@@ -16,9 +16,9 @@
         "copies_required": 1
       }
     ],
-    "additional_data": {
-      "x": "y"
-    }
+    "case_id": "12345",
+    "case_ref": "162MC066",
+    "letter_type": "first-contact-pack"
   },
   "upload": {
     "upload_to_container": "url",
