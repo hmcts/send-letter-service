@@ -45,11 +45,10 @@ public final class CsvWriter {
         List<LettersCountSummary> lettersCountSummary
     ) throws IOException {
         File csvFile = File.createTempFile("Letters-count-summary-", ".csv");
-
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS);
-        FileWriter fileWriter = new FileWriter(csvFile);
 
-        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (FileWriter fileWriter = new FileWriter(csvFile);
+             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             for (LettersCountSummary summary : lettersCountSummary) {
                 printer.printRecord(summary.serviceName, summary.uploaded);
             }
@@ -60,9 +59,9 @@ public final class CsvWriter {
     public static File writeStaleLettersToCsv(List<BasicLetterInfo> staleLetters) throws IOException {
         File csvFile = File.createTempFile("Stale-letters-", ".csv");
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_CSV_HEADERS);
-        FileWriter fileWriter = new FileWriter(csvFile);
 
-        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (FileWriter fileWriter = new FileWriter(csvFile);
+            CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             for (BasicLetterInfo staleLetter : staleLetters) {
                 printer.printRecord(staleLetter.getId(), staleLetter.getStatus(),
                         staleLetter.getService(), staleLetter.getCreatedAt(), staleLetter.getSentToPrintAt());
@@ -75,10 +74,10 @@ public final class CsvWriter {
     public static File writeDelayedPostedLettersToCsv(Stream<BasicLetterInfo> letters) throws IOException {
         File csvFIle = File.createTempFile("Deplayed-letters-", ".csv");
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS);
-        FileWriter fileWriter = new FileWriter(csvFIle);
         AtomicInteger count = new AtomicInteger(0);
 
-        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (FileWriter fileWriter = new FileWriter(csvFIle);
+             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             letters.forEach(letter -> printDelayRecords(letter, printer, count));
         }
 
@@ -89,10 +88,10 @@ public final class CsvWriter {
     public static File writeStaleLettersReport(Stream<BasicLetterInfo> letters) throws IOException {
         File csvFIle = File.createTempFile("Stale-letters-", ".csv");
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_EMAIL_CSV_HEADERS);
-        FileWriter fileWriter = new FileWriter(csvFIle);
         AtomicInteger count = new AtomicInteger(0);
 
-        try (CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (FileWriter fileWriter = new FileWriter(csvFIle);
+             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             letters.forEach(letter -> printStaleRecords(letter, printer, count));
         }
 
