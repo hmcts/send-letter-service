@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.Valid;
 
 public class PrintJob {
     public final UUID id;
