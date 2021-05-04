@@ -1,7 +1,7 @@
-create table if not exists prints
+create table if not exists public.prints
 (
     id uuid not null
-        constraint message_pkey
+        constraint print_pkey
             primary key,
     service varchar(256) not null,
     created_at timestamp not null,
@@ -10,16 +10,14 @@ create table if not exists prints
     is_failed boolean default false,
     type varchar(256) not null,
     status varchar(256),
-    checksum varchar(256) not null,
+    idempotency_key varchar(256) not null,
     documents json,
     case_id varchar(256),
     case_ref varchar(256),
     letter_type varchar(256)
 );
 
-alter table prints owner to send_letter;
-
-create unique index if not exists print_checksum_status
-    on letters (checksum, status)
+create unique index if not exists print_idempotency_status
+    on prints (idempotency_key, status)
     where ((status)::text = 'NEW'::text);
 
