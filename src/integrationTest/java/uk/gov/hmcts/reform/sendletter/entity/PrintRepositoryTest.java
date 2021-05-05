@@ -33,19 +33,32 @@ class PrintRepositoryTest {
             )
         );
         Print print = printRepository.findAll().get(0);
-        assertThat(print.getId()).isEqualTo(uuid);
-        assertThat(print.getDocuments()).isEqualTo(getDocuments());
-        assertThat(print.getService()).isEqualTo("sscs");
-        assertThat(print.getCreatedAt()).isEqualTo(currentDateTime);
-        assertThat(print.getType()).isEqualTo("sscs_001");
-        assertThat(print.getIdempotencyKey()).isEqualTo("idempotencyKey");
-        assertThat(print.getCaseId()).isEqualTo("caseId");
-        assertThat(print.getCaseRef()).isEqualTo("caseRef");
-        assertThat(print.getLetterType()).isEqualTo("letterType");
-        assertThat(print.getStatus()).isEqualTo(PrintStatus.NEW);
-        assertThat(print.getSentToPrintAt()).isNull();
-        assertThat(print.getPrintedAt()).isNull();
-        assertThat(print.isFailed()).isFalse();
+        assertThat(print.getId())
+            .isEqualTo(uuid);
+        assertThat(print.getDocuments())
+            .isEqualTo(getDocuments());
+        assertThat(print.getService())
+            .isEqualTo("sscs");
+        assertThat(print.getCreatedAt())
+            .isEqualTo(currentDateTime);
+        assertThat(print.getType())
+            .isEqualTo("sscs_001");
+        assertThat(print.getIdempotencyKey())
+            .isEqualTo("idempotencyKey");
+        assertThat(print.getCaseId())
+            .isEqualTo("caseId");
+        assertThat(print.getCaseRef())
+            .isEqualTo("caseRef");
+        assertThat(print.getLetterType())
+            .isEqualTo("letterType");
+        assertThat(print.getStatus())
+            .isEqualTo(PrintStatus.REQUEST);
+        assertThat(print.getSentToPrintAt())
+            .isNull();
+        assertThat(print.getPrintedAt())
+            .isNull();
+        assertThat(print.isFailed())
+            .isFalse();
     }
 
     @Test
@@ -69,19 +82,32 @@ class PrintRepositoryTest {
         printRepository.save(updatedPrint);
 
         Print print = printRepository.findAll().get(0);
-        assertThat(print.getId()).isEqualTo(uuid);
-        assertThat(print.getDocuments()).isEqualTo(getDocuments());
-        assertThat(print.getService()).isEqualTo("sscs");
-        assertThat(print.getCreatedAt()).isEqualTo(currentDateTime);
-        assertThat(print.getType()).isEqualTo("sscs_001");
-        assertThat(print.getIdempotencyKey()).isEqualTo("idempotencyKey");
-        assertThat(print.getCaseId()).isEqualTo("caseId");
-        assertThat(print.getCaseRef()).isEqualTo("caseRef");
-        assertThat(print.getLetterType()).isEqualTo("letterType");
-        assertThat(print.getStatus()).isEqualTo(PrintStatus.PROCESSED);
-        assertThat(print.getSentToPrintAt()).isEqualTo(sentToPrintAt);
-        assertThat(print.getPrintedAt()).isEqualTo(printAt);
-        assertThat(print.isFailed()).isTrue();
+        assertThat(print.getId())
+            .isEqualTo(uuid);
+        assertThat(print.getDocuments())
+            .isEqualTo(getDocuments());
+        assertThat(print.getService())
+            .isEqualTo("sscs");
+        assertThat(print.getCreatedAt())
+            .isEqualTo(currentDateTime);
+        assertThat(print.getType())
+            .isEqualTo("sscs_001");
+        assertThat(print.getIdempotencyKey())
+            .isEqualTo("idempotencyKey");
+        assertThat(print.getCaseId())
+            .isEqualTo("caseId");
+        assertThat(print.getCaseRef())
+            .isEqualTo("caseRef");
+        assertThat(print.getLetterType())
+            .isEqualTo("letterType");
+        assertThat(print.getStatus())
+            .isEqualTo(PrintStatus.PROCESSED);
+        assertThat(print.getSentToPrintAt())
+            .isEqualTo(sentToPrintAt);
+        assertThat(print.getPrintedAt())
+            .isEqualTo(printAt);
+        assertThat(print.isFailed())
+            .isTrue();
     }
 
     private JsonNode getDocuments() throws JsonProcessingException {

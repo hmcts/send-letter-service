@@ -8,6 +8,9 @@ import javax.validation.Valid;
 
 public class PrintRequest {
     @JsonProperty
+    public final String type;
+
+    @JsonProperty
     public final List<@Valid Document> documents;
 
     @JsonProperty("case_id")
@@ -21,6 +24,7 @@ public class PrintRequest {
 
 
     private PrintRequest() {
+        type = null;
         documents = null;
         caseId = null;
         caseRef = null;
@@ -28,11 +32,13 @@ public class PrintRequest {
     }
 
     public PrintRequest(
+        String type,
         List<Document> documents,
         String caseId,
         String caseRef,
         String letterType
     ) {
+        this.type = type;
         this.documents = documents;
         this.caseId = caseId;
         this.caseRef = caseRef;
