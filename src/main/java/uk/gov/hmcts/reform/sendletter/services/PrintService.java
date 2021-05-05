@@ -24,8 +24,8 @@ public class PrintService {
     }
 
     public PrintResponse save(String service, PrintRequest request, String idempotencyKey) {
-        UUID uuid = UUID.randomUUID();
-        Print print = new Print(
+        var uuid = UUID.randomUUID();
+        var print = new Print(
             uuid,
             service,
             LocalDateTime.now(),
