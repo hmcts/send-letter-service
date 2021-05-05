@@ -48,6 +48,42 @@ class PrintRepositoryTest {
         assertThat(print.isFailed()).isFalse();
     }
 
+    @Test
+    void should_update_sendToPrint_printAt_failed_status_when_saved() throws JsonProcessingException {
+        UUID uuid = UUID.randomUUID();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        printRepository.save(
+            getPrintEntity(
+                uuid,
+                currentDateTime
+            )
+        );
+        LocalDateTime sentToPrintAt = LocalDateTime.now();
+        LocalDateTime printAt = sentToPrintAt.plusDays(1);
+        Print updatedPrint = printRepository.findAll().get(0);
+        updatedPrint.setFailed(true);
+        updatedPrint.setSentToPrintAt(sentToPrintAt);
+        updatedPrint.setPrintedAt(printAt);
+        updatedPrint.setStatus(PrintStatus.PROCESSED);
+
+        printRepository.save(updatedPrint);
+
+        Print print = printRepository.findAll().get(0);
+        assertThat(print.getId()).isEqualTo(uuid);
+        assertThat(print.getDocuments()).isEqualTo(getDocuments());
+        assertThat(print.getService()).isEqualTo("sscs");
+        assertThat(print.getCreatedAt()).isEqualTo(currentDateTime);
+        assertThat(print.getType()).isEqualTo("sscs_001");
+        assertThat(print.getIdempotencyKey()).isEqualTo("idempotencyKey");
+        assertThat(print.getCaseId()).isEqualTo("caseId");
+        assertThat(print.getCaseRef()).isEqualTo("caseRef");
+        assertThat(print.getLetterType()).isEqualTo("letterType");
+        assertThat(print.getStatus()).isEqualTo(PrintStatus.PROCESSED);
+        assertThat(print.getSentToPrintAt()).isEqualTo(sentToPrintAt);
+        assertThat(print.getPrintedAt()).isEqualTo(printAt);
+        assertThat(print.isFailed()).isTrue();
+    }
+
     private JsonNode getDocuments() throws JsonProcessingException {
         return objectMapper.readTree(
             "[{\n"

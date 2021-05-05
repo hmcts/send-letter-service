@@ -17,9 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "prints")
-@TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonBinaryType.class)
-})
+@TypeDef(name = "json", typeClass = JsonBinaryType.class)
 public class Print {
     @Id
     private UUID id;
@@ -45,6 +43,7 @@ public class Print {
     private Print() {
     }
 
+    @SuppressWarnings("squid:S00107")
     public Print(
         UUID id,
         String service,
@@ -67,29 +66,16 @@ public class Print {
         this.letterType = letterType;
     }
 
-
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getService() {
         return service;
     }
 
-    public void setService(String service) {
-        this.service = service;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public LocalDateTime getSentToPrintAt() {
@@ -120,10 +106,6 @@ public class Print {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public PrintStatus getStatus() {
         return status;
     }
@@ -136,39 +118,19 @@ public class Print {
         return idempotencyKey;
     }
 
-    public void setIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
-    }
-
     public JsonNode getDocuments() {
         return documents;
-    }
-
-    public void setDocuments(JsonNode documents) {
-        this.documents = documents;
     }
 
     public String getCaseId() {
         return caseId;
     }
 
-    public void setCaseId(String caseId) {
-        this.caseId = caseId;
-    }
-
     public String getCaseRef() {
         return caseRef;
     }
 
-    public void setCaseRef(String caseRef) {
-        this.caseRef = caseRef;
-    }
-
     public String getLetterType() {
         return letterType;
-    }
-
-    public void setLetterType(String letterType) {
-        this.letterType = letterType;
     }
 }
