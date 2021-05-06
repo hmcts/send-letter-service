@@ -6,38 +6,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.entity.PrintRepository;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
-class PrintServiceTest {
-    @Mock
-    private PrintRepository repository;
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class PrintServiceTest {
 
-    @Captor
-    private ArgumentCaptor<Print> printArgumentCaptor;
-
+    @Autowired
+    private PrintRepository printRepository;
     private PrintService printService;
-
     private ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
-        printService = new PrintService(repository, mapper);
+        printService = new PrintService(printRepository, mapper);
+        printRepository.deleteAll();
     }
 
     @Test
@@ -51,34 +47,32 @@ class PrintServiceTest {
 
         printService.save(service, printRequest, idempotencyKey);
 
-        verify(repository).save(printArgumentCaptor.capture());
-
-        Print result = printArgumentCaptor.getValue();
-        assertThat(result.getId())
+        Print print = printRepository.findAll().get(0);
+        assertThat(print.getId())
             .isNotNull();
-        assertThat(result.getDocuments())
+        assertThat(print.getDocuments())
             .isEqualTo(getDocuments());
-        assertThat(result.getService())
+        assertThat(print.getService())
             .isEqualTo("sscs");
-        assertThat(result.getCreatedAt())
-            .isNotNull();
-        assertThat(result.getType())
+        assertThat(print.getCreatedAt().toLocalDate())
+            .isEqualTo(LocalDate.now());
+        assertThat(print.getType())
             .isEqualTo("SSC001");
-        assertThat(result.getIdempotencyKey())
+        assertThat(print.getIdempotencyKey())
             .isEqualTo("idempotencyKey");
-        assertThat(result.getCaseId())
+        assertThat(print.getCaseId())
             .isEqualTo("12345");
-        assertThat(result.getCaseRef())
+        assertThat(print.getCaseRef())
             .isEqualTo("162MC066");
-        assertThat(result.getLetterType())
+        assertThat(print.getLetterType())
             .isEqualTo("first-contact-pack");
-        assertThat(result.getStatus())
+        assertThat(print.getStatus())
             .isEqualTo(PrintStatus.NEW);
-        assertThat(result.getSentToPrintAt())
+        assertThat(print.getSentToPrintAt())
             .isNull();
-        assertThat(result.getPrintedAt())
+        assertThat(print.getPrintedAt())
             .isNull();
-        assertThat(result.isFailed())
+        assertThat(print.isFailed())
             .isFalse();
     }
 
@@ -94,4 +88,5 @@ class PrintServiceTest {
                 + " }\n"
                 + "]");
     }
+
 }

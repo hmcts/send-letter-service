@@ -52,7 +52,7 @@ class PrintRepositoryTest {
         assertThat(print.getLetterType())
             .isEqualTo("letterType");
         assertThat(print.getStatus())
-            .isEqualTo(PrintStatus.REQUEST);
+            .isEqualTo(PrintStatus.NEW);
         assertThat(print.getSentToPrintAt())
             .isNull();
         assertThat(print.getPrintedAt())

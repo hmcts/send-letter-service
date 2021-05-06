@@ -27,7 +27,7 @@ public class Print {
     private boolean isFailed;
     private String type;
     @Enumerated(EnumType.STRING)
-    private PrintStatus status = PrintStatus.REQUEST;
+    private PrintStatus status = PrintStatus.NEW;
     private String idempotencyKey;
     // The following Type annotation instructs jpa to JSON serialize this field.
     // The column annotation instructs jpa that this field is stored as a json column

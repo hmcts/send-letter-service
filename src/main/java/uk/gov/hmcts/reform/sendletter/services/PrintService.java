@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.model.out.PrintResponse;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import javax.transaction.Transactional;
 
 @Service
 public class PrintService {
@@ -23,6 +24,7 @@ public class PrintService {
         this.mapper = mapper;
     }
 
+    @Transactional
     public PrintResponse save(String service, PrintRequest request, String idempotencyKey) {
         var uuid = UUID.randomUUID();
         var print = new Print(
