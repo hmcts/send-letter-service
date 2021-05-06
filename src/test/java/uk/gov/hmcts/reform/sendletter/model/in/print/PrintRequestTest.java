@@ -24,6 +24,9 @@ class PrintRequestTest {
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
 
+        assertThat(printRequest.type)
+            .isEqualTo("SSC001");
+
         assertThat(printRequest.caseId)
             .isEqualTo("12345");
 
@@ -50,11 +53,15 @@ class PrintRequestTest {
         );
 
         PrintRequest printRequest = new PrintRequest(
+            "SSC001",
             documents,
             "12345",
             "162MC066",
             "first-contact-pack"
         );
+
+        assertThat(printRequest.type)
+            .isEqualTo("SSC001");
 
         assertThat(printRequest.documents)
             .as("documents list")
