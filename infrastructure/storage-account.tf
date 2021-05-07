@@ -7,7 +7,6 @@ provider "azurerm" {
 
 locals {
   container_names = [
-    "new",
     "new-cmc",
     "new-divorce",
     "new-finrem",
