@@ -53,9 +53,9 @@ module "storage_account" {
 }
 
 resource "azurerm_storage_container" "service_containers" {
-  name                 = local.container_names[count.index]
+  for_each             = toset(local.container_names)
+  name                 = each.value
   storage_account_name = module.storage_account.storageaccount_name
-  count                = length(local.container_names)
 }
 
 resource "azurerm_key_vault_secret" "storage_account_name" {
