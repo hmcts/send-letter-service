@@ -8,6 +8,13 @@ provider "azurerm" {
 locals {
   container_names = [
     "new",
+    "new-cmc",
+    "new-divorce",
+    "new-finrem",
+    "new-fpl",
+    "new-nfdivorce",
+    "new-probate",
+    "new-sscs",
     "backup",
     "processed",
     "zipped",
