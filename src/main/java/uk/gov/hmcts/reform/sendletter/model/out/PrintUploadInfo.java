@@ -9,20 +9,20 @@ public class PrintUploadInfo {
     @JsonProperty("sas")
     public final String sasToken;
 
-    @JsonProperty("upload_to_path")
-    public final String uploadToPath;
+    @JsonProperty("manifest_path")
+    public final String manifestPath;
 
     private PrintUploadInfo() {
         uploadToContainer = null;
         sasToken = null;
-        uploadToPath = null;
+        manifestPath = null;
     }
 
     public PrintUploadInfo(String uploadToContainer,
                            String sasToken,
-                           String uploadToPath) {
+                           String manifestPath) {
         this.uploadToContainer = uploadToContainer;
         this.sasToken = sasToken;
-        this.uploadToPath = uploadToPath;
+        this.manifestPath = manifestPath;
     }
 }

@@ -7,14 +7,8 @@
     "service": "sscs",
     "status": "PROCESSED",
     "documents": [
-      {
-        "file_name": "mypdf.pdf",
-        "copies_required": 2
-      },
-      {
-        "file_name": "1.pdf",
-        "copies_required": 1
-      }
+      { "file_name": "mypdf.pdf", "upload_to_path": "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-mypdf.pdf", "copies_required": 2 },
+      { "file_name": "1.pdf", "upload_to_path": "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-1.pdf", "copies_required": 1 }
     ],
     "case_id": "12345",
     "case_ref": "162MC066",
@@ -23,6 +17,6 @@
   "upload": {
     "upload_to_container": "url",
     "sas": "?sas=sadas56tfuvydasd",
-    "upload_to_path": "/sscs/33dffc2f-94e0-4584-a973-cc56849ecc0b/file1-c10.pdf"
+    "manifest_path": "manifest-33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs.json"
   }
 }
