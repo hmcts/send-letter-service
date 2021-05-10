@@ -7,17 +7,6 @@ provider "azurerm" {
 
 locals {
   container_names = [
-    "new-cmc",
-    "new-divorce",
-    "new-finrem",
-    "new-fpl",
-    "new-nfdivorce",
-    "new-probate",
-    "new-sscs",
-    "backup",
-    "processed",
-    "zipped",
-    "encrypted"
   ]
 
   valid_subnets = [
