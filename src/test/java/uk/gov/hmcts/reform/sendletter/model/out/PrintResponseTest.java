@@ -44,10 +44,19 @@ class PrintResponseTest {
         List<Document> documents = printJob.documents;
         assertThat(documents)
             .as("documents list")
-            .extracting("fileName", "copies")
+            .extracting(
+                "fileName",
+                "uploadToPath",
+                "copies")
             .contains(
-                tuple("mypdf.pdf", 2),
-                tuple("1.pdf", 1)
+                tuple(
+                    "mypdf.pdf",
+                    "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-mypdf.pdf",
+                    2),
+                tuple(
+                    "1.pdf",
+                    "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-1.pdf",
+                    1)
             );
 
         assertThat(printJob.caseId)
@@ -62,16 +71,24 @@ class PrintResponseTest {
             .isEqualTo("url");
         assertThat(printUploadInfo.sasToken)
             .isEqualTo("?sas=sadas56tfuvydasd");
-        assertThat(printUploadInfo.uploadToPath)
-            .isEqualTo("/sscs/33dffc2f-94e0-4584-a973-cc56849ecc0b/file1-c10.pdf");
+        assertThat(printUploadInfo.manifestPath)
+            .isEqualTo("manifest-33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs.json");
     }
 
     @Test
     void should_set_all_fields_when_intialised_with_values() {
 
         List<Document> documents = List.of(
-            new Document("mypdf.pdf", 2),
-            new Document("1.pdf", 1)
+            new Document(
+                "mypdf.pdf",
+                "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-mypdf.pdf",
+                2
+            ),
+            new Document(
+                "1.pdf",
+                "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-2.pdf",
+                1
+            )
         );
 
         UUID uuid = UUID.randomUUID();
@@ -134,7 +151,7 @@ class PrintResponseTest {
             .isEqualTo("url");
         assertThat(printUploadInfo.sasToken)
             .isEqualTo("token");
-        assertThat(printUploadInfo.uploadToPath)
+        assertThat(printUploadInfo.manifestPath)
             .isEqualTo("path");
     }
 }

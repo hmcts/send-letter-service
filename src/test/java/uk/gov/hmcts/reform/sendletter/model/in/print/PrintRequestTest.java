@@ -48,8 +48,16 @@ class PrintRequestTest {
     @Test
     void should_set_all_fields_when_intialised_with_values() {
         List<Document> documents = List.of(
-            new Document("mypdf.pdf", 2),
-            new Document("1.pdf", 1)
+            new Document(
+                "mypdf.pdf",
+                "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-mypdf.pdf",
+                2
+            ),
+            new Document(
+                "1.pdf",
+                "33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs-SSC001-2.pdf",
+                1
+            )
         );
 
         PrintRequest printRequest = new PrintRequest(
