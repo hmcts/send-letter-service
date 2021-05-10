@@ -289,7 +289,7 @@ dependencies {
   testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.5'
   testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.23', withoutJunit4
-  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.27.0', withoutJunit4
+  testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.27.2', withoutJunit4
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
