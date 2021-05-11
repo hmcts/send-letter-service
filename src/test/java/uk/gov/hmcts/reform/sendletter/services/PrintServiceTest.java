@@ -17,10 +17,14 @@ import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,17 +49,33 @@ class PrintServiceTest {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
         String idempotencyKey = "idempotencyKey";
+        UUID uuid = UUID.randomUUID();
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
 
-        printService.save(service, printRequest, idempotencyKey);
+        given(repository.save(isA(Print.class)))
+            .willReturn(
+                new Print(
+                    uuid,
+                    service,
+                    LocalDateTime.now(),
+                    printRequest.type,
+                    idempotencyKey,
+                    mapper.valueToTree(printRequest.documents),
+                    printRequest.caseId,
+                    printRequest.caseRef,
+                    printRequest.letterType
+                )
+            );
+
+        printService.save(uuid.toString(), service, printRequest, idempotencyKey);
 
         verify(repository).save(printArgumentCaptor.capture());
 
         Print result = printArgumentCaptor.getValue();
         assertThat(result.getId())
-            .isNotNull();
+            .isEqualTo(uuid);
         assertThat(result.getDocuments())
             .isEqualTo(getDocuments());
         assertThat(result.getService())
