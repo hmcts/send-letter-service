@@ -5,4 +5,5 @@ final class ControllerResponseMessage {
 
     static final String RESPONSE_401 = "Invalid service authorisation header";
     static final String RESPONSE_403 = "Service not configured";
+    static final String RESPONSE_400 = "Bad Request";
 }

@@ -3,10 +3,14 @@ package uk.gov.hmcts.reform.sendletter.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class Document {
     @JsonProperty("file_name")
+    @NotEmpty
     public final String fileName;
 
     @JsonProperty("upload_to_path")
@@ -14,6 +18,7 @@ public class Document {
     public final String uploadToPath;
 
     @JsonProperty("copies_required")
+    @Min(1)
     public final Integer copies;
 
     private Document() {

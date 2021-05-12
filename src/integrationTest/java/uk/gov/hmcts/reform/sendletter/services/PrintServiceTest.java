@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
@@ -32,7 +34,12 @@ public class PrintServiceTest {
 
     @BeforeEach
     void setUp() {
+        printRepository.deleteAll();
         printService = new PrintService(printRepository, mapper);
+    }
+
+    @AfterEach
+    void afterEach() {
         printRepository.deleteAll();
     }
 
@@ -41,15 +48,16 @@ public class PrintServiceTest {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
         String idempotencyKey = "idempotencyKey";
+        UUID uuid = UUID.randomUUID();
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
 
-        printService.save(service, printRequest, idempotencyKey);
+        printService.save(uuid.toString(), service, printRequest, idempotencyKey);
 
         Print print = printRepository.findAll().get(0);
         assertThat(print.getId())
-            .isNotNull();
+            .isEqualTo(uuid);
         assertThat(print.getDocuments())
             .isEqualTo(getDocuments());
         assertThat(print.getService())

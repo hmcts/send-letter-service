@@ -1,16 +1,24 @@
 package uk.gov.hmcts.reform.sendletter.model.in;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 public class PrintRequest {
+
+    @ApiModelProperty(value = "Type to be used to print documents", required = true)
     @JsonProperty
+    @NotEmpty
     public final String type;
 
     @JsonProperty
+    @NotEmpty
+    @Size(min = 1, max = 30)
     public final List<@Valid Document> documents;
 
     @JsonProperty("case_id")
