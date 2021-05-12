@@ -117,11 +117,11 @@ public class PrintControllerTest {
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].field_name")
-                .value("type"))
+                .isNotEmpty())
             .andExpect(jsonPath("$.errors[0].message")
                 .value("must not be empty"))
             .andExpect(jsonPath("$.errors[1].field_name")
-                .value("documents"))
+                .isNotEmpty())
             .andExpect(jsonPath("$.errors[1].message")
                 .value("must not be empty"));
     }
