@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,12 @@ public class PrintServiceTest {
 
     @BeforeEach
     void setUp() {
+        printRepository.deleteAll();
         printService = new PrintService(printRepository, mapper);
+    }
+
+    @AfterEach
+    void afterEach() {
         printRepository.deleteAll();
     }
 
