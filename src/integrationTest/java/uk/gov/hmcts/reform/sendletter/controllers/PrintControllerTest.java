@@ -20,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
+import static org.springframework.util.SerializationUtils.serialize;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -41,8 +43,8 @@ public class PrintControllerTest {
     @Test
     void should_responsed_when_request_is_valid() throws Exception {
         String type = "SSC001";
-        String idempotencyKey = "idempotencyKey";
         UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
 
         String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
         String serviceAuthorization = "ServiceAuthorization";
@@ -104,8 +106,8 @@ public class PrintControllerTest {
     @Test
     void should_fail_validation_when_type_and_documents_missing() throws Exception {
         String type = "SSC001";
-        String idempotencyKey = "idempotencyKey";
         UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
 
         String requestJson = Resources.toString(getResource("print_job_type_documents_missing.json"), UTF_8);
         String serviceAuthorization = "ServiceAuthorization";

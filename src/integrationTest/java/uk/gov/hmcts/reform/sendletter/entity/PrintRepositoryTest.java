@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
+import static org.springframework.util.SerializationUtils.serialize;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -25,10 +27,13 @@ class PrintRepositoryTest {
     @Test
     void should_create_new_record_when_saved() throws JsonProcessingException {
         UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
+
         LocalDateTime currentDateTime = LocalDateTime.now();
         printRepository.save(
             getPrintEntity(
                 uuid,
+                idempotencyKey,
                 currentDateTime
             )
         );
@@ -44,7 +49,7 @@ class PrintRepositoryTest {
         assertThat(print.getType())
             .isEqualTo("sscs_001");
         assertThat(print.getIdempotencyKey())
-            .isEqualTo("idempotencyKey");
+            .isEqualTo(idempotencyKey);
         assertThat(print.getCaseId())
             .isEqualTo("caseId");
         assertThat(print.getCaseRef())
@@ -64,10 +69,12 @@ class PrintRepositoryTest {
     @Test
     void should_update_sendToPrint_printAt_failed_status_when_saved() throws JsonProcessingException {
         UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
         LocalDateTime currentDateTime = LocalDateTime.now();
         printRepository.save(
             getPrintEntity(
                 uuid,
+                idempotencyKey,
                 currentDateTime
             )
         );
@@ -93,7 +100,7 @@ class PrintRepositoryTest {
         assertThat(print.getType())
             .isEqualTo("sscs_001");
         assertThat(print.getIdempotencyKey())
-            .isEqualTo("idempotencyKey");
+            .isEqualTo(idempotencyKey);
         assertThat(print.getCaseId())
             .isEqualTo("caseId");
         assertThat(print.getCaseRef())
@@ -123,13 +130,16 @@ class PrintRepositoryTest {
                 + "]");
     }
 
-    private Print getPrintEntity(UUID uuid, LocalDateTime currentDateTime) throws JsonProcessingException {
+    private Print getPrintEntity(UUID uuid,
+                                 String idempotencyKey,
+                                 LocalDateTime currentDateTime)
+        throws JsonProcessingException {
         return SampleData.printEntity(
             uuid,
             "sscs",
             currentDateTime,
             "sscs_001",
-            "idempotencyKey",
+            idempotencyKey,
             getDocuments(),
             "caseId",
             "caseRef",
