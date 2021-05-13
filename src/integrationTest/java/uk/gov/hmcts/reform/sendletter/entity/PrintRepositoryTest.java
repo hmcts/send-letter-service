@@ -49,7 +49,7 @@ class PrintRepositoryTest {
         assertThat(print.getType())
             .isEqualTo("sscs_001");
         assertThat(print.getIdempotencyKey())
-            .isEqualTo("idempotencyKey");
+            .isEqualTo(idempotencyKey);
         assertThat(print.getCaseId())
             .isEqualTo("caseId");
         assertThat(print.getCaseRef())
