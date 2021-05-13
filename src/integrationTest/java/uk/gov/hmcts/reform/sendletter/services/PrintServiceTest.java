@@ -22,6 +22,8 @@ import java.util.UUID;
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
+import static org.springframework.util.SerializationUtils.serialize;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -47,8 +49,8 @@ public class PrintServiceTest {
     void should_save_print_request_when_request_is_valid() throws IOException {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
-        String idempotencyKey = "idempotencyKey";
         UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
@@ -67,7 +69,7 @@ public class PrintServiceTest {
         assertThat(print.getType())
             .isEqualTo("SSC001");
         assertThat(print.getIdempotencyKey())
-            .isEqualTo("idempotencyKey");
+            .isEqualTo(idempotencyKey);
         assertThat(print.getCaseId())
             .isEqualTo("12345");
         assertThat(print.getCaseRef())
