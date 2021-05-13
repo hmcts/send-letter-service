@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.base.Charsets.UTF_8;
@@ -57,32 +58,33 @@ public class PrintServiceTest {
 
         printService.save(uuid.toString(), service, printRequest, idempotencyKey);
 
-        Print print = printRepository.findAll().get(0);
-        assertThat(print.getId())
+        Optional<Print> print = printRepository.findById(uuid);
+        assertThat(print).isPresent();
+        assertThat(print.get().getId())
             .isEqualTo(uuid);
-        assertThat(print.getDocuments())
+        assertThat(print.get().getDocuments())
             .isEqualTo(getDocuments());
-        assertThat(print.getService())
+        assertThat(print.get().getService())
             .isEqualTo("sscs");
-        assertThat(print.getCreatedAt().toLocalDate())
+        assertThat(print.get().getCreatedAt().toLocalDate())
             .isEqualTo(LocalDate.now());
-        assertThat(print.getType())
+        assertThat(print.get().getType())
             .isEqualTo("SSC001");
-        assertThat(print.getIdempotencyKey())
+        assertThat(print.get().getIdempotencyKey())
             .isEqualTo(idempotencyKey);
-        assertThat(print.getCaseId())
+        assertThat(print.get().getCaseId())
             .isEqualTo("12345");
-        assertThat(print.getCaseRef())
+        assertThat(print.get().getCaseRef())
             .isEqualTo("162MC066");
-        assertThat(print.getLetterType())
+        assertThat(print.get().getLetterType())
             .isEqualTo("first-contact-pack");
-        assertThat(print.getStatus())
+        assertThat(print.get().getStatus())
             .isEqualTo(PrintStatus.NEW);
-        assertThat(print.getSentToPrintAt())
+        assertThat(print.get().getSentToPrintAt())
             .isNull();
-        assertThat(print.getPrintedAt())
+        assertThat(print.get().getPrintedAt())
             .isNull();
-        assertThat(print.isFailed())
+        assertThat(print.get().isFailed())
             .isFalse();
     }
 
