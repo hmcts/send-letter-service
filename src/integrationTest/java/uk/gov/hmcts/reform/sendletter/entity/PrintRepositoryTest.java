@@ -103,6 +103,7 @@ class PrintRepositoryTest {
         printRepository.save(updatedPrint);
 
         Optional<Print> print = printRepository.findById(uuid);
+        assertThat(print).isPresent();
         assertThat(print.get().getId())
             .isEqualTo(uuid);
         assertThat(print.get().getDocuments())
