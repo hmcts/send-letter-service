@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.sendletter.entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +27,16 @@ class PrintRepositoryTest {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    @BeforeEach
+    void beforeEach() {
+        printRepository.deleteAll();
+    }
+
+    @AfterEach
+    void afterEach() {
+        printRepository.deleteAll();
+    }
+
     @Test
     void should_create_new_record_when_saved() throws JsonProcessingException {
         UUID uuid = UUID.randomUUID();
@@ -37,32 +50,33 @@ class PrintRepositoryTest {
                 currentDateTime
             )
         );
-        Print print = printRepository.findAll().get(0);
-        assertThat(print.getId())
+        Optional<Print> print = printRepository.findById(uuid);
+        assertThat(print).isPresent();
+        assertThat(print.get().getId())
             .isEqualTo(uuid);
-        assertThat(print.getDocuments())
+        assertThat(print.get().getDocuments())
             .isEqualTo(getDocuments());
-        assertThat(print.getService())
+        assertThat(print.get().getService())
             .isEqualTo("sscs");
-        assertThat(print.getCreatedAt())
+        assertThat(print.get().getCreatedAt())
             .isEqualTo(currentDateTime);
-        assertThat(print.getType())
+        assertThat(print.get().getType())
             .isEqualTo("sscs_001");
-        assertThat(print.getIdempotencyKey())
+        assertThat(print.get().getIdempotencyKey())
             .isEqualTo(idempotencyKey);
-        assertThat(print.getCaseId())
+        assertThat(print.get().getCaseId())
             .isEqualTo("caseId");
-        assertThat(print.getCaseRef())
+        assertThat(print.get().getCaseRef())
             .isEqualTo("caseRef");
-        assertThat(print.getLetterType())
+        assertThat(print.get().getLetterType())
             .isEqualTo("letterType");
-        assertThat(print.getStatus())
+        assertThat(print.get().getStatus())
             .isEqualTo(PrintStatus.NEW);
-        assertThat(print.getSentToPrintAt())
+        assertThat(print.get().getSentToPrintAt())
             .isNull();
-        assertThat(print.getPrintedAt())
+        assertThat(print.get().getPrintedAt())
             .isNull();
-        assertThat(print.isFailed())
+        assertThat(print.get().isFailed())
             .isFalse();
     }
 
@@ -88,32 +102,32 @@ class PrintRepositoryTest {
 
         printRepository.save(updatedPrint);
 
-        Print print = printRepository.findAll().get(0);
-        assertThat(print.getId())
+        Optional<Print> print = printRepository.findById(uuid);
+        assertThat(print.get().getId())
             .isEqualTo(uuid);
-        assertThat(print.getDocuments())
+        assertThat(print.get().getDocuments())
             .isEqualTo(getDocuments());
-        assertThat(print.getService())
+        assertThat(print.get().getService())
             .isEqualTo("sscs");
-        assertThat(print.getCreatedAt())
+        assertThat(print.get().getCreatedAt())
             .isEqualTo(currentDateTime);
-        assertThat(print.getType())
+        assertThat(print.get().getType())
             .isEqualTo("sscs_001");
-        assertThat(print.getIdempotencyKey())
+        assertThat(print.get().getIdempotencyKey())
             .isEqualTo(idempotencyKey);
-        assertThat(print.getCaseId())
+        assertThat(print.get().getCaseId())
             .isEqualTo("caseId");
-        assertThat(print.getCaseRef())
+        assertThat(print.get().getCaseRef())
             .isEqualTo("caseRef");
-        assertThat(print.getLetterType())
+        assertThat(print.get().getLetterType())
             .isEqualTo("letterType");
-        assertThat(print.getStatus())
+        assertThat(print.get().getStatus())
             .isEqualTo(PrintStatus.PROCESSED);
-        assertThat(print.getSentToPrintAt())
+        assertThat(print.get().getSentToPrintAt())
             .isEqualTo(sentToPrintAt);
-        assertThat(print.getPrintedAt())
+        assertThat(print.get().getPrintedAt())
             .isEqualTo(printAt);
-        assertThat(print.isFailed())
+        assertThat(print.get().isFailed())
             .isTrue();
     }
 
