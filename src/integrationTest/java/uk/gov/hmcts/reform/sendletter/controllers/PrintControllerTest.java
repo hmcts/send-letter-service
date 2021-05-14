@@ -7,14 +7,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.sendletter.services.AuthService;
+import uk.gov.hmcts.reform.sendletter.services.SasTokenGeneratorService;
 
 import java.util.UUID;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +30,10 @@ import static org.springframework.util.SerializationUtils.serialize;
 @AutoConfigureMockMvc
 @SpringBootTest
 public class PrintControllerTest {
+    @MockBean
+    private AuthService authService;
+    @MockBean
+    private SasTokenGeneratorService sasTokenGeneratorService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,12 +50,24 @@ public class PrintControllerTest {
 
     @Test
     void should_responsed_when_request_is_valid() throws Exception {
+        String serviceName = "sscs";
+        String serviceAuthorization = "ServiceAuthorization";
+        given(authService.authenticate(serviceAuthorization))
+            .willReturn(serviceName);
+        String accountUrl = "https://rpesendletterdemo.blob.core.windows.net";
+        given(sasTokenGeneratorService.getAccountUrl())
+            .willReturn(accountUrl);
+        given(sasTokenGeneratorService.getContainerName(serviceName))
+            .willReturn("new-sscs");
+        String sasTokenForNewSscsContainer = "sasTokenForNewSscsContainer";
+        given(sasTokenGeneratorService.generateSasToken(serviceName))
+            .willReturn(sasTokenForNewSscsContainer);
         String type = "SSC001";
         UUID uuid = UUID.randomUUID();
         String idempotencyKey = md5DigestAsHex(serialize(uuid));
 
         String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
-        String serviceAuthorization = "ServiceAuthorization";
+
         mockMvc.perform(put("/print-jobs/{id}", uuid)
             .header("ServiceAuthorization", serviceAuthorization)
             .header("X-Hash", idempotencyKey)
@@ -58,14 +78,18 @@ public class PrintControllerTest {
             .andExpect(jsonPath("$.print_job.id")
                 .value(uuid.toString()))
             .andExpect(jsonPath("$.print_job.service")
-                .value("some_service_name"))
+                .value(serviceName))
+            .andExpect(jsonPath("$.print_job.type")
+                .value(type))
+            .andExpect(jsonPath("$.print_job.container_name")
+                .value("new-sscs"))
             .andExpect(jsonPath("$.print_job.documents[0].file_name")
                 .value("1.pdf"))
             .andExpect(jsonPath("$.print_job.documents[0].upload_to_path")
                 .value(
                     String.join("-",
                         uuid.toString(),
-                        "some_service_name",
+                        serviceName,
                         type,
                         "1.pdf"
                     )
@@ -78,7 +102,7 @@ public class PrintControllerTest {
                 .value(
                     String.join("-",
                         uuid.toString(),
-                        "some_service_name",
+                        serviceName,
                         type,
                         "2.pdf"
                     )
@@ -90,15 +114,15 @@ public class PrintControllerTest {
             .andExpect(jsonPath("$.print_job.letter_type")
                 .value("first-contact-pack"))
             .andExpect(jsonPath("$.upload.upload_to_container")
-                .isEmpty())
+                .value("https://rpesendletterdemo.blob.core.windows.net/new-sscs"))
             .andExpect(jsonPath("$.upload.sas")
-                .isEmpty())
+                .value(sasTokenForNewSscsContainer))
             .andExpect(jsonPath("$.upload.manifest_path")
                 .value(
                     String.join("-",
                         "manifest",
                         uuid.toString(),
-                        "some_service_name.json"
+                        "sscs.json"
                     )
                 ));
     }
