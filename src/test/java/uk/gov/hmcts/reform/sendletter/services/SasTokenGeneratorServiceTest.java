@@ -92,6 +92,12 @@ class SasTokenGeneratorServiceTest {
     }
 
     @Test
+    void should_return_container_name_when_configured_service_name_passed() {
+        String containerName = sasTokenGeneratorService.getContainerName("sscs");
+        assertThat(containerName).isEqualTo("new-sscs");
+    }
+
+    @Test
     void should_return_account_url() {
         String accountUrl = sasTokenGeneratorService.getAccountUrl();
         assertThat(accountUrl).isEqualTo("http://test.account");
