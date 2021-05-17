@@ -51,14 +51,7 @@ public class SasTokenGeneratorService {
     }
 
     public String getContainerName(String serviceName) {
-        return accessTokenProperties.getServiceConfig().stream()
-            .filter(tokenConfig -> tokenConfig.getServiceName().equalsIgnoreCase(serviceName))
-            .findFirst()
-            .map(TokenConfig::getNewContainerName)
-            .orElseThrow(
-                () -> new ServiceNotConfiguredException(
-                    "No configuration found for service " + serviceName)
-            );
+        return getTokenConfigForService(serviceName).getNewContainerName();
     }
 
     private BlobServiceSasSignatureValues createSharedAccessPolicy(TokenConfig config) {

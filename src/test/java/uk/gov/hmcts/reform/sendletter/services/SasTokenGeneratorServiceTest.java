@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -16,6 +18,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class SasTokenGeneratorServiceTest {
@@ -57,6 +62,33 @@ class SasTokenGeneratorServiceTest {
         assertThat(tokenData.get("sv")).contains("2020-04-08");//azure api version is latest
         assertThat(tokenData.get("sp")).contains("rwl");//access permissions(write-w,list-l)
         assertThat(tokenData.get("sr")).isNotNull();
+    }
+
+    @Test
+    void should_throw_unable_to_generate_sas_token_exception_when_unable_to_create_sas_token() {
+        BlobServiceClient blobServiceClient = mock(BlobServiceClient.class);
+        given(blobServiceClient.getBlobContainerClient("new-sscs"))
+            .willThrow(new RuntimeException("Invalid service"));
+
+        sasTokenGeneratorService = new SasTokenGeneratorService(
+            blobServiceClient,
+            getAccessTokenProperties()
+        );
+
+        assertThatThrownBy(() ->
+            sasTokenGeneratorService.generateSasToken("sscs")
+        ).isInstanceOf(UnableToGenerateSasTokenException.class)
+            .hasMessage("java.lang.RuntimeException: Invalid service");
+
+    }
+
+    @Test
+    void should_throw_service_not_configured_exception_when_service_is_unknow() {
+        assertThatThrownBy(() ->
+            sasTokenGeneratorService.getContainerName("unkown")
+        ).isInstanceOf(ServiceNotConfiguredException.class)
+            .hasMessage("No configuration found for service unkown");
+
     }
 
     @Test
