@@ -11,6 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.SasTokenGeneratorService;
 
@@ -21,6 +23,7 @@ import static com.google.common.io.Resources.getResource;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -150,5 +153,57 @@ public class PrintControllerTest {
                 .isNotEmpty())
             .andExpect(jsonPath("$.errors[1].message")
                 .value("must not be empty"));
+    }
+
+    @Test
+    void should_throw_service_not_configured_exception_when_accesstoken_not_configured() throws Exception {
+        String serviceName = "dummy";
+        String serviceAuthorization = "ServiceAuthorization";
+        given(authService.authenticate(serviceAuthorization))
+            .willReturn(serviceName);
+        String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
+
+        given(sasTokenGeneratorService.getContainerName(serviceName))
+            .willThrow(
+                new ServiceNotConfiguredException("No configuration found for service " + serviceName));
+
+        UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
+
+        mockMvc.perform(put("/print-jobs/{id}", uuid)
+            .header("ServiceAuthorization", serviceAuthorization)
+            .header("X-Hash", idempotencyKey)
+            .contentType(MediaTypes.PRINT_V1)
+            .content(requestJson))
+            .andDo(print())
+            .andExpect(status().isForbidden())
+            .andExpect(content()
+                .string("Service not configured"));
+    }
+
+    @Test
+    void should_throw_internal_server_error_when_accesstoken_cannot_be_generated() throws Exception {
+        String serviceName = "dummy";
+        String serviceAuthorization = "ServiceAuthorization";
+        given(authService.authenticate(serviceAuthorization))
+            .willReturn(serviceName);
+        String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
+
+        given(sasTokenGeneratorService.generateSasToken(serviceName))
+            .willThrow(
+                new UnableToGenerateSasTokenException(new Exception("Container not reachable")));
+
+        UUID uuid = UUID.randomUUID();
+        String idempotencyKey = md5DigestAsHex(serialize(uuid));
+
+        mockMvc.perform(put("/print-jobs/{id}", uuid)
+            .header("ServiceAuthorization", serviceAuthorization)
+            .header("X-Hash", idempotencyKey)
+            .contentType(MediaTypes.PRINT_V1)
+            .content(requestJson))
+            .andDo(print())
+            .andExpect(status().is5xxServerError())
+            .andExpect(content()
+                .string("Exception occurred while generating SAS Token"));
     }
 }

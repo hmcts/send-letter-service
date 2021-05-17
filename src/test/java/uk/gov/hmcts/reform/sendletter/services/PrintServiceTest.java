@@ -124,6 +124,56 @@ class PrintServiceTest {
             .isNull();
         assertThat(result.isFailed())
             .isFalse();
+    }
+
+    @Test
+    void should_return_print_response_when_request_is_valid() throws IOException {
+        String json = Resources.toString(getResource("print_job.json"), UTF_8);
+        String service = "sscs";
+        String idempotencyKey = "idempotencyKey";
+        UUID uuid = UUID.randomUUID();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
+
+        given(repository.save(isA(Print.class)))
+            .willReturn(
+                new Print(
+                    uuid,
+                    service,
+                    LocalDateTime.now(),
+                    printRequest.type,
+                    idempotencyKey,
+                    mapper.valueToTree(printRequest.documents),
+                    printRequest.caseId,
+                    printRequest.caseRef,
+                    printRequest.letterType
+                )
+            );
+        String accountUrl = "https://blobstoreurl.com";
+        given(sasTokenGeneratorService.getAccountUrl())
+            .willReturn(accountUrl);
+
+        String sasToken = "?sas=sadas56tfuvydasd";
+        given(sasTokenGeneratorService.generateSasToken(service))
+            .willReturn(sasToken);
+
+        String containerName = "new-sscs";
+        given(sasTokenGeneratorService.getContainerName(service))
+            .willReturn(containerName);
+
+        PrintResponse printResponse = printService.save(
+            uuid.toString(),
+            service,
+            printRequest,
+            idempotencyKey
+        );
+
+        verify(sasTokenGeneratorService).generateSasToken(service);
+        verify(sasTokenGeneratorService).getAccountUrl();
+        verify(sasTokenGeneratorService).getContainerName(service);
+
+        verify(repository).save(isA(Print.class));
 
         PrintUploadInfo printUploadInfo = printResponse.printUploadInfo;
         assertThat(printUploadInfo.uploadToContainer)
@@ -147,7 +197,7 @@ class PrintServiceTest {
             .extracting("fileName", "uploadToPath", "copies")
             .contains(
                 tuple(
-                "1.pdf",
+                    "1.pdf",
                     String.format("%s-%s-%s-1.pdf", printJob.id, service, printJob.type),
                     2
                 ),
@@ -180,6 +230,7 @@ class PrintServiceTest {
             .isEqualTo("SSC001");
         assertThat(printJob.containerName)
             .isEqualTo("new-sscs");
+
     }
 
     private JsonNode getDocuments() throws JsonProcessingException {
