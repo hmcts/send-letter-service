@@ -17,7 +17,8 @@ locals {
     "backup",
     "processed",
     "zipped",
-    "encrypted"
+    "encrypted",
+    "new-bulkprint"
   ]
 
   valid_subnets = [
