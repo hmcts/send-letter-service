@@ -13,7 +13,10 @@ import uk.gov.hmcts.reform.sendletter.model.out.PrintResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintUploadInfo;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 
@@ -24,11 +27,16 @@ public class PrintService {
 
     private final PrintRepository repository;
     private final ObjectMapper mapper;
+    private final SasTokenGeneratorService sasTokenGeneratorService;
 
     @Autowired
-    public PrintService(PrintRepository repository, ObjectMapper mapper) {
+    public PrintService(
+        PrintRepository repository,
+        ObjectMapper mapper,
+        SasTokenGeneratorService sasTokenGeneratorService) {
         this.repository = repository;
         this.mapper = mapper;
+        this.sasTokenGeneratorService = sasTokenGeneratorService;
     }
 
     @Transactional
@@ -46,41 +54,44 @@ public class PrintService {
         );
         Print printSaved = repository.save(printRequest);
 
-        return getResponse(printSaved);
+        return getResponse(printSaved, service);
     }
 
-    private PrintResponse getResponse(Print print) {
+    private PrintResponse getResponse(Print print, String service) {
+        String containerName = sasTokenGeneratorService.getContainerName(service);
         return new PrintResponse(
-           getPrintJob(print),
-           getPrintUploadInfo(print)
+           getPrintJob(print, containerName),
+           getPrintUploadInfo(print, service, containerName)
         );
     }
 
-    private PrintUploadInfo getPrintUploadInfo(Print print) {
-        String manifest = String.join("-",
-            "manifest",
-            print.getId().toString(),
-            print.getService());
-
+    private PrintUploadInfo getPrintUploadInfo(Print print,
+                                               String service,
+                                               String containerName) {
         return new PrintUploadInfo(
-            null,
-            null,
-            String.join(".",
-                manifest,
-                "json"
+            String.join("/",
+                sasTokenGeneratorService.getAccountUrl(),
+                containerName
+            ),
+            sasTokenGeneratorService.generateSasToken(service),
+            String.format(
+                "manifest-%s-%s.json",
+                print.getId().toString(), print.getService()
             )
         );
 
     }
 
-    private PrintJob getPrintJob(Print print) {
+    private PrintJob getPrintJob(Print print, String containerName) {
         List<Document> documents = getDocuments(print);
         return new PrintJob(
             print.getId(),
-            print.getCreatedAt(),
-            print.getPrintedAt(),
-            print.getSentToPrintAt(),
+            toDateTime(print.getCreatedAt()),
+            toDateTime(print.getPrintedAt()),
+            toDateTime(print.getSentToPrintAt()),
             print.getService(),
+            print.getType(),
+            containerName,
             print.getStatus(),
             documents,
             print.getCaseId(),
@@ -108,5 +119,11 @@ public class PrintService {
                 document.copies
             ))
             .collect(toList());
+    }
+
+    static ZonedDateTime toDateTime(LocalDateTime dateTime) {
+        return Optional.ofNullable(dateTime)
+            .map(value -> value.atZone(ZoneId.of("UTC")))
+            .orElse(null);
     }
 }
