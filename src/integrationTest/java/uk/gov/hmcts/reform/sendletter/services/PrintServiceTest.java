@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.entity.PrintRepository;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
@@ -18,40 +19,60 @@ import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintJob;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintUploadInfo;
+import uk.gov.hmcts.reform.sendletter.util.TestStorageHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.util.DigestUtils.md5DigestAsHex;
 import static org.springframework.util.SerializationUtils.serialize;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+@SpringBootTest
 public class PrintServiceTest {
 
     @Autowired
     private PrintRepository printRepository;
+    @Autowired
+    private AccessTokenProperties accessTokenProperties;
     private PrintService printService;
     private ObjectMapper mapper = new ObjectMapper();
-    @Mock
     private SasTokenGeneratorService sasTokenGeneratorService;
 
+    @BeforeAll
+    public static void initializeStorage() {
+        TestStorageHelper.initialize();
+    }
+
+    @AfterAll
+    public static void tearDownContainer() {
+        TestStorageHelper.stopDocker();
+    }
+
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
+        TestStorageHelper.getInstance().createBulkprintContainer();
         printRepository.deleteAll();
+        sasTokenGeneratorService = new SasTokenGeneratorService(
+            TestStorageHelper.blobServiceClient,
+            accessTokenProperties
+            );
         printService = new PrintService(printRepository, mapper, sasTokenGeneratorService);
     }
+
 
     @AfterEach
     void afterEach() {
         printRepository.deleteAll();
+        TestStorageHelper.getInstance().deleteBulkprintContainer();
     }
 
     @Test
@@ -60,18 +81,6 @@ public class PrintServiceTest {
         String service = "sscs";
         UUID uuid = UUID.randomUUID();
         String idempotencyKey = md5DigestAsHex(serialize(uuid));
-
-        String accountUrl = "https://blobstoreurl.com";
-        given(sasTokenGeneratorService.getAccountUrl())
-            .willReturn(accountUrl);
-
-        String sasToken = "?sas=sadas56tfuvydasd";
-        given(sasTokenGeneratorService.generateSasToken(service))
-            .willReturn(sasToken);
-
-        String containerName = "new-sscs";
-        given(sasTokenGeneratorService.getContainerName(service))
-            .willReturn(containerName);
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
@@ -109,14 +118,27 @@ public class PrintServiceTest {
 
         PrintUploadInfo printUploadInfo = printResponse.printUploadInfo;
         assertThat(printUploadInfo.uploadToContainer)
-            .isEqualTo("https://blobstoreurl.com/new-sscs");
-        assertThat(printUploadInfo.sasToken)
-            .isEqualTo(sasToken);
+            .isEqualTo("http://localhost:10000/devstoreaccount1/new-sscs");
+        String token = printUploadInfo.sasToken;
+        Map<String, String> tokenData = Arrays.stream(token.split("&"))
+            .map(data -> {
+                String[] split = data.split("=");
+                return Map.entry(split[0], split[1]);
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                Map.Entry::getValue));
+
+        assertThat(tokenData.get("sig")).isNotNull();//this is a generated hash of the resource string
+        assertThat(tokenData.get("se")).startsWith(LocalDate.now().toString());//the expiry date/time for the signature
+        assertThat(tokenData.get("sv")).contains("2020-04-08");//azure api version is latest
+        assertThat(tokenData.get("sp")).contains("rwl");//access permissions(write-w,list-l)
+        assertThat(tokenData.get("sr")).isNotNull();
+
         assertThat(printUploadInfo.manifestPath)
             .isEqualTo(
                 String.format(
                     "manifest-%s-%s.json",
-                    uuid.toString(), service
+                    uuid, service
                 )
             );
 

@@ -166,7 +166,7 @@ accesstoken:
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: send_letter_tests
-      newContainerName: new-test
+      newContainerName: new-bulkprint
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: divorce_frontend
       newContainerName: new-cmc
