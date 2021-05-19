@@ -80,12 +80,13 @@ public class PrintServiceTest {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
         UUID uuid = UUID.randomUUID();
-        String idempotencyKey = md5DigestAsHex(serialize(uuid));
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
 
-        PrintResponse printResponse = printService.save(uuid.toString(), service, printRequest, idempotencyKey);
+        PrintResponse printResponse = printService.save(uuid.toString(), service, printRequest);
 
         Optional<Print> print = printRepository.findById(uuid);
         assertThat(print).isPresent();

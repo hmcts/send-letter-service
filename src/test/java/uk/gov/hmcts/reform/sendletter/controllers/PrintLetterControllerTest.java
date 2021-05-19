@@ -40,7 +40,6 @@ class PrintLetterControllerTest {
     @Test
     void should_responsed_when_request_is_valid() throws Exception {
         String serviceName = "sscs";
-        String idempotencyKey = "idempotencyKey";
         UUID uuid = UUID.randomUUID();
 
         String responseJson = Resources.toString(getResource("print_job_response.json"), UTF_8);
@@ -53,13 +52,12 @@ class PrintLetterControllerTest {
         given(authService.authenticate(serviceAuthorization))
             .willReturn(serviceName);
 
-        given(printService.save(eq(uuid.toString()), eq(serviceName), isA(PrintRequest.class), eq(idempotencyKey)))
+        given(printService.save(eq(uuid.toString()), eq(serviceName), isA(PrintRequest.class)))
             .willReturn(printResponse);
 
         String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
         mockMvc.perform(put("/print-jobs/{id}", uuid)
             .header("ServiceAuthorization", serviceAuthorization)
-            .header("X-Hash", idempotencyKey)
             .contentType(MediaTypes.PRINT_V1)
             .content(requestJson)
         ).andDo(print())

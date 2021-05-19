@@ -52,12 +52,11 @@ class PrintServiceTest {
     void should_save_print_request_when_request_is_valid() throws IOException {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
-        String idempotencyKey = "idempotencyKey";
         UUID uuid = UUID.randomUUID();
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
-
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
         given(repository.save(isA(Print.class)))
             .willReturn(
                 new Print(
@@ -87,8 +86,7 @@ class PrintServiceTest {
         PrintResponse printResponse = printService.save(
             uuid.toString(),
             service,
-            printRequest,
-            idempotencyKey
+            printRequest
         );
 
         verify(sasTokenGeneratorService).generateSasToken(service);
@@ -109,7 +107,7 @@ class PrintServiceTest {
         assertThat(result.getType())
             .isEqualTo("SSC001");
         assertThat(result.getIdempotencyKey())
-            .isEqualTo("idempotencyKey");
+            .isEqualTo(idempotencyKey);
         assertThat(result.getCaseId())
             .isEqualTo("12345");
         assertThat(result.getCaseRef())
@@ -130,12 +128,12 @@ class PrintServiceTest {
     void should_return_print_response_when_request_is_valid() throws IOException {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
-        String idempotencyKey = "idempotencyKey";
+
         UUID uuid = UUID.randomUUID();
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
-
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
         given(repository.save(isA(Print.class)))
             .willReturn(
                 new Print(
@@ -165,8 +163,7 @@ class PrintServiceTest {
         PrintResponse printResponse = printService.save(
             uuid.toString(),
             service,
-            printRequest,
-            idempotencyKey
+            printRequest
         );
 
         verify(sasTokenGeneratorService).generateSasToken(service);

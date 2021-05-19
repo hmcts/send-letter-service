@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.sendletter.model.out;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PrintUploadInfo {
+import java.io.Serializable;
+
+public class PrintUploadInfo implements Serializable {
     @JsonProperty("upload_to_container")
     public final String uploadToContainer;
 
