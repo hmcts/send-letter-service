@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.sendletter.model.out;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PrintResponse {
+import java.io.Serializable;
+
+public class PrintResponse implements Serializable {
     @JsonProperty("print_job")
     public final PrintJob printJob;
 

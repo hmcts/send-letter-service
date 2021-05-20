@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.sendletter.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class Document {
+public class Document implements Serializable {
+    private static final long serialVersionUID = -8034446485215946927L;
+
     @JsonProperty("file_name")
     @NotEmpty
     public final String fileName;

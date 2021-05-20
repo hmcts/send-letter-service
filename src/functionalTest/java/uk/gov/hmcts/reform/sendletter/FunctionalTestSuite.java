@@ -142,6 +142,25 @@ abstract class FunctionalTestSuite {
                 .get("letter_id");
     }
 
+    public String putPrintRequest(String jsonBody, String endPoint, String uuid, int responseSatus) {
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .header("ServiceAuthorization", "Bearer " + signIn())
+            .header(CONTENT_TYPE, getContentType())
+            .baseUri(sendLetterServiceUrl)
+            .body(jsonBody.getBytes())
+            .when()
+            .put(endPoint, uuid)
+            .prettyPeek()
+            .then()
+            .statusCode(responseSatus)
+            .extract()
+            .body()
+            .asString();
+
+    }
+
     String sendPrintLetterRequestAsync(String jwt, String jsonBody) {
         return post(jwt, jsonBody, "/letters?isAsync=true");
     }

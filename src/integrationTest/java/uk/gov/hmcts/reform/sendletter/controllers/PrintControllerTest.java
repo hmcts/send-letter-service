@@ -122,10 +122,10 @@ public class PrintControllerTest {
                 .value(sasTokenForNewSscsContainer))
             .andExpect(jsonPath("$.upload.manifest_path")
                 .value(
-                    String.join("-",
-                        "manifest",
+                    String.join("",
+                        "manifest-/",
                         uuid.toString(),
-                        "sscs.json"
+                        "-sscs.json"
                     )
                 ));
     }

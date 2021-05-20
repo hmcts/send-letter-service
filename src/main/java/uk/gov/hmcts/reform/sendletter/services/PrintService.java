@@ -40,13 +40,14 @@ public class PrintService {
     }
 
     @Transactional
-    public PrintResponse save(String id, String service, PrintRequest request, String idempotencyKey) {
+    public PrintResponse save(String id, String service, PrintRequest request) {
+        String checksum = LetterChecksumGenerator.generateChecksum(request);
         var printRequest = new Print(
             UUID.fromString(id),
             service,
             LocalDateTime.now(),
             request.type,
-            idempotencyKey,
+            checksum,
             mapper.valueToTree(request.documents),
             request.caseId,
             request.caseRef,
@@ -75,7 +76,7 @@ public class PrintService {
             ),
             sasTokenGeneratorService.generateSasToken(service),
             String.format(
-                "manifest-%s-%s.json",
+                "manifest-/%s-%s.json",
                 print.getId().toString(), print.getService()
             )
         );

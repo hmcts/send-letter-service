@@ -33,8 +33,6 @@ import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.springframework.util.DigestUtils.md5DigestAsHex;
-import static org.springframework.util.SerializationUtils.serialize;
 
 @SpringBootTest
 public class PrintServiceTest {
@@ -80,12 +78,13 @@ public class PrintServiceTest {
         String json = Resources.toString(getResource("print_job.json"), UTF_8);
         String service = "sscs";
         UUID uuid = UUID.randomUUID();
-        String idempotencyKey = md5DigestAsHex(serialize(uuid));
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
 
-        PrintResponse printResponse = printService.save(uuid.toString(), service, printRequest, idempotencyKey);
+        PrintResponse printResponse = printService.save(uuid.toString(), service, printRequest);
 
         Optional<Print> print = printRepository.findById(uuid);
         assertThat(print).isPresent();
@@ -137,7 +136,7 @@ public class PrintServiceTest {
         assertThat(printUploadInfo.manifestPath)
             .isEqualTo(
                 String.format(
-                    "manifest-%s-%s.json",
+                    "manifest-/%s-%s.json",
                     uuid, service
                 )
             );

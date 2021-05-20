@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
 
-public class PrintJob {
+public class PrintJob implements Serializable {
+    private static final long serialVersionUID = 3711622159588476678L;
+
     public final UUID id;
 
     @JsonProperty("created_at")
@@ -31,7 +34,9 @@ public class PrintJob {
     @JsonProperty("status")
     public final PrintStatus printStatus;
 
-    public final List<@Valid Document> documents;
+    @SuppressWarnings("squid:S1948")
+    @Valid
+    public final List<Document> documents;
 
     @JsonProperty("case_id")
     public final String caseId;

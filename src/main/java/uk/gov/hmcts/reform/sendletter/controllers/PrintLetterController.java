@@ -55,12 +55,11 @@ public class PrintLetterController {
     })
     public ResponseEntity<PrintResponse> print(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-        @RequestHeader(name = "X-Hash") String idempotencyKey,
         @PathVariable("id") String id,
         @Valid @RequestBody PrintRequest printRequest
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
-        PrintResponse printResponse = printService.save(id, serviceName, printRequest, idempotencyKey);
+        var printResponse = printService.save(id, serviceName, printRequest);
         return ResponseEntity.ok(printResponse);
     }
 }
