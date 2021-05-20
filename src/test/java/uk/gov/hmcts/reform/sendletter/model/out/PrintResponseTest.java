@@ -80,7 +80,7 @@ class PrintResponseTest {
         assertThat(printUploadInfo.sasToken)
             .isEqualTo("?sas=sadas56tfuvydasd");
         assertThat(printUploadInfo.manifestPath)
-            .isEqualTo("manifest-33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs.json");
+            .isEqualTo("manifest-/33dffc2f-94e0-4584-a973-cc56849ecc0b-sscs.json");
     }
 
     @Test
