@@ -10,6 +10,8 @@ import javax.validation.constraints.NotEmpty;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class Document implements Serializable {
+    private static final long serialVersionUID = -8034446485215946927L;
+
     @JsonProperty("file_name")
     @NotEmpty
     public final String fileName;

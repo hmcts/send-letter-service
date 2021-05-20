@@ -12,6 +12,8 @@ import javax.validation.constraints.Size;
 
 public class PrintRequest implements Serializable {
 
+    private static final long serialVersionUID = 4312487677760800172L;
+    
     @ApiModelProperty(value = "Type to be used to print documents", required = true)
     @JsonProperty
     @NotEmpty

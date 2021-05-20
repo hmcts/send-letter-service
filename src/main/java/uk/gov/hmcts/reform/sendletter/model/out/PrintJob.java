@@ -11,6 +11,8 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 public class PrintJob implements Serializable {
+    private static final long serialVersionUID = 3711622159588476678L;
+
     public final UUID id;
 
     @JsonProperty("created_at")

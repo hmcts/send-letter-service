@@ -59,7 +59,7 @@ public class PrintLetterController {
         @Valid @RequestBody PrintRequest printRequest
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
-        PrintResponse printResponse = printService.save(id, serviceName, printRequest);
+        var printResponse = printService.save(id, serviceName, printRequest);
         return ResponseEntity.ok(printResponse);
     }
 }
