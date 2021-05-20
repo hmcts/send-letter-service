@@ -33,8 +33,6 @@ import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.springframework.util.DigestUtils.md5DigestAsHex;
-import static org.springframework.util.SerializationUtils.serialize;
 
 @SpringBootTest
 public class PrintServiceTest {

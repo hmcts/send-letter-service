@@ -51,13 +51,15 @@ public class PrintMessageTest extends FunctionalTestSuite {
         PrintResponse printResponse = objectMapper.readValue(response, PrintResponse.class);
 
         printResponse.printJob.documents.stream()
-            .forEach(document -> {
-                String filePath = String.join(
-                    "/", "src/functionalTest/resources",
-                    document.fileName
-                );
-                upload(printResponse.printUploadInfo, document.uploadToPath, filePath);
-        });
+            .forEach(
+                document -> {
+                    String filePath = String.join(
+                        "/", "src/functionalTest/resources",
+                        document.fileName
+                    );
+                    upload(printResponse.printUploadInfo, document.uploadToPath, filePath);
+                }
+            );
 
         String manifestPath = printResponse.printUploadInfo.manifestPath;
         String[] fileDetails = manifestPath.split("/");
