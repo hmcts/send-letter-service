@@ -34,7 +34,8 @@ public class PrintJob implements Serializable {
     @JsonProperty("status")
     public final PrintStatus printStatus;
 
-    public final List<@Valid Document> documents;
+    @Valid
+    public final List<Document> documents;
 
     @JsonProperty("case_id")
     public final String caseId;
