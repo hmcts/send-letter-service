@@ -136,7 +136,7 @@ public class PrintServiceTest {
         assertThat(printUploadInfo.manifestPath)
             .isEqualTo(
                 String.format(
-                    "manifest-%s-%s.json",
+                    "manifest-/%s-%s.json",
                     uuid, service
                 )
             );
