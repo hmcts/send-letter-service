@@ -14,11 +14,9 @@ import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintUploadInfo;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 import static com.google.common.io.Resources.getResource;
@@ -57,35 +55,28 @@ public class PrintMessageTest extends FunctionalTestSuite {
                         "/", "src/functionalTest/resources",
                         document.fileName
                     );
-                    upload(printResponse.printUploadInfo, document.uploadToPath, filePath);
+                    BlobClient blobClient = getBlobCLient(printResponse.printUploadInfo, document.uploadToPath);
+                    blobClient.uploadFromFile(filePath);
                 }
             );
 
-        String manifestPath = printResponse.printUploadInfo.manifestPath;
-        String[] fileDetails = manifestPath.split("/");
         String uploadDetails = objectMapper.writeValueAsString(printResponse);
-        String filePath = String.join("/", destDirectory, fileDetails[1]);
+        byte[] data = uploadDetails.getBytes(StandardCharsets.UTF_8);
 
-        Path path = Paths.get(filePath);
-        Files.write(path, uploadDetails.getBytes(StandardCharsets.UTF_8));
-
-        upload(
+        BlobClient blobCLient = getBlobCLient(
             printResponse.printUploadInfo,
-            printResponse.printUploadInfo.manifestPath,
-            filePath
-        );
+            printResponse.printUploadInfo.manifestPath
+            );
+        blobCLient.upload(new ByteArrayInputStream(data), data.length);
     }
 
-    private void upload(PrintUploadInfo printUploadInfo,
-                        String blobName,
-                        String filePath
-    ) {
-        BlobClient blobClient = new BlobClientBuilder()
+    private BlobClient getBlobCLient(PrintUploadInfo printUploadInfo,
+                              String blobName) {
+        return new BlobClientBuilder()
             .endpoint(printUploadInfo.uploadToContainer)
             .sasToken(printUploadInfo.sasToken)
             .blobName(blobName)
             .buildClient();
-        blobClient.uploadFromFile(filePath);
     }
 
     @Test
