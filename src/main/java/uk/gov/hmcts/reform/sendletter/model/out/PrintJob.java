@@ -34,6 +34,7 @@ public class PrintJob implements Serializable {
     @JsonProperty("status")
     public final PrintStatus printStatus;
 
+    @SuppressWarnings("squid:S1948")
     @Valid
     public final List<Document> documents;
 
