@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
+import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
@@ -164,5 +166,29 @@ public final class SampleData {
     }
 
     private SampleData() {
+    }
+
+    public static Print printEntity(
+        UUID id,
+        String service,
+        LocalDateTime createdAt,
+        String type,
+        String idempotencyKey,
+        JsonNode documents,
+        String caseId,
+        String caseRef,
+        String letterType
+    ) {
+        return new Print(
+            id,
+            service,
+            createdAt,
+            type,
+            idempotencyKey,
+            documents,
+            caseId,
+            caseRef,
+            letterType
+        );
     }
 }

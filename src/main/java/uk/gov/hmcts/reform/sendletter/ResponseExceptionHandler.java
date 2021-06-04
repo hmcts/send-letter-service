@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.FieldError;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.ModelValidationError;
@@ -112,5 +113,10 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleDataIntegrityViolationException(final DataIntegrityViolationException dve) {
         log.error(dve.getMessage(), dve);
         return status(CONFLICT).body("Duplicate request");
+    }
+
+    @ExceptionHandler(UnableToGenerateSasTokenException.class)
+    protected ResponseEntity<String> handleUnableToGenerateSasTokenException() {
+        return status(INTERNAL_SERVER_ERROR).body("Exception occurred while generating SAS Token");
     }
 }
