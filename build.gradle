@@ -191,9 +191,7 @@ dependencyCheck {
 repositories {
   jcenter()
   // until new projects get to jcenter
-  maven {
-    url "https://dl.bintray.com/hmcts/hmcts-maven"
-  }
+  maven { url 'https://jitpack.io' }
   mavenLocal()
 }
 
@@ -259,7 +257,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.4.0'
-  implementation group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+  implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
 
@@ -321,7 +319,8 @@ dependencies {
   contractTestImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   contractTestImplementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+  contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
+
   contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.22'
 
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
