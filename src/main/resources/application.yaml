@@ -183,6 +183,6 @@ accesstoken:
     - serviceName: fpl_case_service
       newContainerName: new-fpl
       validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: nfdivorce
+    - serviceName: nfdiv_case_api
       newContainerName: new-nfdivorce
       validity: ${SAS_TOKEN_VALIDITY:300}
