@@ -45,8 +45,8 @@ class ApplicationTest {
             .getResponse()
             .getContentAsByteArray();
 
-        FileOutputStream outputStream = new FileOutputStream("/tmp/swagger-specs.json");
-        outputStream.write(specs);
-        outputStream.close();
+        try (FileOutputStream outputStream = new FileOutputStream("/tmp/swagger-specs.json")) {
+            outputStream.write(specs);
+        }
     }
 }
