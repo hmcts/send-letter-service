@@ -285,6 +285,7 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    exclude group: 'org.springframework', module: 'spring-test'
   }
   testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.13', withoutJunit4
   testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.5'
