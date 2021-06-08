@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.blob.BlobReader;
-import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.entity.PrintRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.BlobInfo;
@@ -56,9 +55,6 @@ class UploadBlobsTaskTest {
     private PrintRepository repository;
 
     @Mock
-    private LetterRepository repo;
-
-    @Mock
     private FtpClient ftpClient;
 
     @Mock
@@ -71,13 +67,13 @@ class UploadBlobsTaskTest {
     private ServiceFolderMapping serviceFolderMapping;
 
     @Mock
-    private BlobReader blobReader;
+    private BlobReader      blobReader;
     @Mock
-    private BlobClient blobClient;
+    private BlobClient      blobClient;
     @Mock
-    private BlobClient blobClient2;
+    private BlobClient      blobClient2;
     @Mock
-    private BlobClient blobClient3;
+    private BlobClient      blobClient3;
     @Mock
     private BlobInputStream blobInputStream;
     @Mock
@@ -98,7 +94,7 @@ class UploadBlobsTaskTest {
 
     @AfterEach
     void tearDown() {
-        reset(availabilityChecker, repo, repository);
+        reset(availabilityChecker, repository, ftpClient);
     }
 
     @Test
@@ -115,7 +111,6 @@ class UploadBlobsTaskTest {
     @Test
     void should_skip_letter_if_folder_for_its_service_is_not_configured() throws IOException {
 
-
         // given
         given(repository.countByStatus(NEW)).willReturn(1);
 
@@ -129,7 +124,7 @@ class UploadBlobsTaskTest {
         given(blobClient.getBlobName()).willReturn(blob);
 
         UUID uuid = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
-        Print printEntity = getPrintEntity(uuid,"sendlettertests");
+        Print printEntity = getPrintEntity(uuid, "sendlettertests");
         given(repository.findById(any())).willReturn(Optional.of(printEntity));
 
         given(blobClient.openInputStream()).willReturn(blobInputStream);
