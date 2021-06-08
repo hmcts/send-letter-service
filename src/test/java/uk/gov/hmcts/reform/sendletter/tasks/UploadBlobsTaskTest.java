@@ -114,8 +114,8 @@ class UploadBlobsTaskTest {
 
     @Test
     void should_skip_letter_if_folder_for_its_service_is_not_configured() throws IOException {
-        UUID uuid = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
-        String blob = "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
+
+
         // given
         given(repository.countByStatus(NEW)).willReturn(1);
 
@@ -124,8 +124,11 @@ class UploadBlobsTaskTest {
         given(blobReader.retrieveBlobToProcess())
             .willReturn(Optional.of(blobInfo))
             .willReturn(Optional.empty());
+
+        String blob = "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
         given(blobClient.getBlobName()).willReturn(blob);
 
+        UUID uuid = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
         Print printEntity = getPrintEntity(uuid,"sendlettertests");
         given(repository.findById(any())).willReturn(Optional.of(printEntity));
 
@@ -157,14 +160,6 @@ class UploadBlobsTaskTest {
 
     @Test
     void should_skip_letter_if_folder_for_its_service_is_not_configured_v2() throws IOException {
-
-        UUID uuid1 = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
-        UUID uuid2 = UUID.fromString("f2d9348e-0301-4439-9738-920c58fcc90f");
-        UUID uuid3 = UUID.fromString("68b72d70-a561-4515-9593-4d6df47e6ef6");
-
-        String blob1 = "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
-        String blob2 = "BULKPRINT001_sendlettertests_07062021101650_f2d9348e-0301-4439-9738-920c58fcc90f.pgp";
-        String blob3 = "BULKPRINT001_sendlettertests_07062021101650_68b72d70-a561-4515-9593-4d6df47e6ef6.pgp";
         // given
         given(repository.countByStatus(NEW)).willReturn(3);
 
@@ -182,12 +177,22 @@ class UploadBlobsTaskTest {
             .willReturn(Optional.of(blobInfo3))
             .willReturn(Optional.empty());
 
+        String blob1 = "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
         given(blobClient.getBlobName()).willReturn(blob1);
+
+        String blob2 = "BULKPRINT001_sendlettertests_07062021101650_f2d9348e-0301-4439-9738-920c58fcc90f.pgp";
         given(blobClient2.getBlobName()).willReturn(blob2);
+
+        String blob3 = "BULKPRINT001_sendlettertests_07062021101650_68b72d70-a561-4515-9593-4d6df47e6ef6.pgp";
         given(blobClient3.getBlobName()).willReturn(blob3);
 
+        UUID uuid1 = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
         Print printEntity1 = getPrintEntity(uuid1, "sendlettertests");
+
+        UUID uuid2 = UUID.fromString("f2d9348e-0301-4439-9738-920c58fcc90f");
         Print printEntity2 = getPrintEntity(uuid2, null);
+
+        UUID uuid3 = UUID.fromString("68b72d70-a561-4515-9593-4d6df47e6ef6");
         Print printEntity3 = getPrintEntity(uuid3, "sendlettertests");
 
         given(repository.findById(any()))

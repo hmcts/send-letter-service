@@ -49,7 +49,7 @@ class BlobManagerTest {
 
         SasTokenGeneratorService tokenGeneratorService =
             new SasTokenGeneratorService(blobServiceClient, accessTokenProperties);
-        sasToken = tokenGeneratorService.generateSasToken("send_letter_service", "encrypted");
+        sasToken = tokenGeneratorService.generateSasToken("send_letter_service");
     }
 
     @Test
@@ -83,18 +83,17 @@ class BlobManagerTest {
 
 
     private void createAccessTokenConfig() {
-        BiFunction<String, String, AccessTokenProperties.TokenConfig> tokenFunction = (type, container) -> {
+        BiFunction<String, String, AccessTokenProperties.TokenConfig> tokenFunction = (serviceName, container) -> {
             AccessTokenProperties.TokenConfig tokenConfig = new AccessTokenProperties.TokenConfig();
             tokenConfig.setValidity(300);
             tokenConfig.setNewContainerName(container);
-            tokenConfig.setServiceName("send_letter_service");
-            tokenConfig.setContainerType(type);
+            tokenConfig.setServiceName(serviceName);
             return tokenConfig;
         };
         accessTokenProperties = new AccessTokenProperties();
         accessTokenProperties.setServiceConfig(
             of(
-                tokenFunction.apply("encrypted", "encrypted")
+                tokenFunction.apply("send_letter_service", "encrypted")
             )
         );
     }

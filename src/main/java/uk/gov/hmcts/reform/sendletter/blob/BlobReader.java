@@ -13,7 +13,7 @@ import java.util.Optional;
 public class BlobReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlobReader.class);
-    private static final String CONTAINER = "encrypted";
+    private static final String SERVICE_NAME = "send_letter_service";
 
     private final BlobManager           blobManager;
     private final AccessTokenProperties accessTokenProperties;
@@ -30,8 +30,7 @@ public class BlobReader {
         this.accessTokenProperties = accessTokenProperties;
         this.leaseClientProvider = leaseClientProvider;
         this.leaseTime = leaseTime;
-        this.sourceContainer = this.accessTokenProperties
-            .getContainerForGivenType("encrypted");
+        this.sourceContainer = this.accessTokenProperties.getContainerName(SERVICE_NAME);
     }
 
     public Optional<BlobInfo> retrieveBlobToProcess() {

@@ -108,7 +108,6 @@ class SasTokenGeneratorServiceTest {
         tokenConfig.setServiceName("sscs");
         tokenConfig.setNewContainerName("new-sscs");
         tokenConfig.setValidity(300);
-        tokenConfig.setContainerType("new");
         AccessTokenProperties accessTokenProperties = new AccessTokenProperties();
         accessTokenProperties.setServiceConfig(List.of(tokenConfig));
         return accessTokenProperties;

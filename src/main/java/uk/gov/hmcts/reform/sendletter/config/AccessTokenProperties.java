@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import uk.gov.hmcts.reform.sendletter.exception.ServiceConfigNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 
 import java.util.List;
 
@@ -17,21 +17,20 @@ public class AccessTokenProperties {
         this.serviceConfig = serviceConfig;
     }
 
-    public String getContainerForGivenType(String containerType) {
-        return getServiceConfig().stream()
-            .filter(tokenConfig -> tokenConfig.getContainerType().equals(containerType))
-            .map(AccessTokenProperties.TokenConfig::getNewContainerName)
+    public String getContainerName(String serviceName) {
+        return this.getServiceConfig().stream()
+            .filter(tokenConfig -> tokenConfig.getServiceName().equalsIgnoreCase(serviceName))
             .findFirst()
-            .orElseThrow(() ->
-                new ServiceConfigNotFoundException(
-                    "No service configuration found for container " + containerType));
+            .orElseThrow(
+                () -> new ServiceNotConfiguredException(
+                    "No configuration found for service " + serviceName)
+            ).getNewContainerName();
     }
 
     public static class TokenConfig {
         private String serviceName;
         private int validity;
         private String newContainerName;
-        private String containerType;
 
         public String getServiceName() {
             return serviceName;
@@ -55,14 +54,6 @@ public class AccessTokenProperties {
 
         public void setNewContainerName(String newContainerName) {
             this.newContainerName = newContainerName;
-        }
-
-        public String getContainerType() {
-            return containerType;
-        }
-
-        public void setContainerType(String containerType) {
-            this.containerType = containerType;
         }
     }
 }

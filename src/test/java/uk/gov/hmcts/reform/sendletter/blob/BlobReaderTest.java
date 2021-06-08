@@ -105,18 +105,17 @@ class BlobReaderTest {
     }
 
     private void createAccessTokenConfig() {
-        BiFunction<String, String, TokenConfig> tokenFunction = (type, container) -> {
+        BiFunction<String, String, TokenConfig> tokenFunction = (service, container) -> {
             TokenConfig tokenConfig = new TokenConfig();
             tokenConfig.setValidity(300);
-            tokenConfig.setContainerType(type);
             tokenConfig.setNewContainerName(container);
-            tokenConfig.setServiceName("send_letter_service");
+            tokenConfig.setServiceName(service);
             return tokenConfig;
         };
         accessTokenProperties = new AccessTokenProperties();
         accessTokenProperties.setServiceConfig(
                 of(
-                    tokenFunction.apply("encrypted", "encrypted")
+                    tokenFunction.apply("send_letter_service", "encrypted")
                 )
         );
     }

@@ -6,7 +6,6 @@ import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties;
 import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties.TokenConfig;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenExceptio
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-@Configuration
 @EnableConfigurationProperties(AccessTokenProperties.class)
 @Service
 public class SasTokenGeneratorService {
@@ -40,11 +38,7 @@ public class SasTokenGeneratorService {
     }
 
     public String generateSasToken(String serviceName) {
-        return generateSasToken(serviceName, "new");
-    }
-
-    public String generateSasToken(String serviceName, String containerType) {
-        var config = getTokenConfigForService(serviceName, containerType);
+        var config = getTokenConfigForService(serviceName);
         LOG.info("SAS Token request received for container '{}'", config.getNewContainerName());
 
         try {
@@ -57,11 +51,7 @@ public class SasTokenGeneratorService {
     }
 
     public String getContainerName(String serviceName) {
-        return getContainerName(serviceName, "new");
-    }
-
-    public String getContainerName(String serviceName, String containerType) {
-        return getTokenConfigForService(serviceName, containerType).getNewContainerName();
+        return getTokenConfigForService(serviceName).getNewContainerName();
     }
 
     private BlobServiceSasSignatureValues createSharedAccessPolicy(TokenConfig config) {
@@ -72,10 +62,9 @@ public class SasTokenGeneratorService {
         );
     }
 
-    private TokenConfig getTokenConfigForService(final String serviceName, final String containerType) {
+    private TokenConfig getTokenConfigForService(String serviceName) {
         return accessTokenProperties.getServiceConfig().stream()
-            .filter(tokenConfig -> (tokenConfig.getServiceName().equalsIgnoreCase(serviceName)
-                && tokenConfig.getContainerType().equalsIgnoreCase(containerType)))
+            .filter(tokenConfig -> tokenConfig.getServiceName().equalsIgnoreCase(serviceName))
             .findFirst()
             .orElseThrow(
                     () -> new ServiceNotConfiguredException(

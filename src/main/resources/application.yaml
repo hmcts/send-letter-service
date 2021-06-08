@@ -166,36 +166,27 @@ accesstoken:
     - serviceName: cmc_claim_store
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: send_letter_tests
       newContainerName: new-bulkprint
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: divorce_frontend
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: probate_backend
       newContainerName: new-probate
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: sscs
       newContainerName: new-sscs
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: finrem_document_generator
       newContainerName: new-finrem
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: fpl_case_service
       newContainerName: new-fpl
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: nfdiv_case_api
       newContainerName: new-nfdivorce
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: new
     - serviceName: send_letter_service
       newContainerName: encrypted
       validity: ${SAS_TOKEN_VALIDITY:300}
-      containerType: encrypted
