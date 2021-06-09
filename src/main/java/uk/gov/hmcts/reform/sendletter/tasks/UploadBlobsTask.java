@@ -107,7 +107,7 @@ public class UploadBlobsTask {
     }
 
     private boolean processBlob(Print print, BlobInfo blobInfo,  SFTPClient sftpClient) {
-        //BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp
+
         Optional<String> serviceFolder = serviceFolderMapping.getFolderFor(print.getService());
 
         if (serviceFolder.isPresent()) {
