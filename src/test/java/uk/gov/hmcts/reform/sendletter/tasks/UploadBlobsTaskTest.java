@@ -53,27 +53,22 @@ class UploadBlobsTaskTest {
 
     @Mock
     private PrintRepository repository;
-
     @Mock
     private FtpClient ftpClient;
-
     @Mock
     private SFTPClient sftpClient;
-
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
-
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
-
     @Mock
-    private BlobReader      blobReader;
+    private BlobReader blobReader;
     @Mock
-    private BlobClient      blobClient;
+    private BlobClient blobClient;
     @Mock
-    private BlobClient      blobClient2;
+    private BlobClient blobClient2;
     @Mock
-    private BlobClient      blobClient3;
+    private BlobClient blobClient3;
     @Mock
     private BlobInputStream blobInputStream;
     @Mock
@@ -83,7 +78,6 @@ class UploadBlobsTaskTest {
 
     @Captor
     private ArgumentCaptor<Function<SFTPClient, Integer>> captureRunWith;
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach

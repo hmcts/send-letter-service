@@ -35,16 +35,16 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 @ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class UploadBlobsTask {
 
-    private static final Logger logger     = LoggerFactory.getLogger(UploadBlobsTask.class);
-    public static final  int    BATCH_SIZE = 10;
+    public static final int BATCH_SIZE = 10;
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
+    private static final Logger logger = LoggerFactory.getLogger(UploadBlobsTask.class);
     private static final String TASK_NAME = "UploadBlobs";
 
-    private final PrintRepository         printRepository;
-    private final FtpClient               ftp;
+    private final PrintRepository printRepository;
+    private final FtpClient ftp;
     private final IFtpAvailabilityChecker availabilityChecker;
     private final ServiceFolderMapping serviceFolderMapping;
-    private final BlobReader           blobReader;
+    private final BlobReader blobReader;
 
     public UploadBlobsTask(
         PrintRepository printRepository,
