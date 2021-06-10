@@ -4,7 +4,6 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import org.testcontainers.containers.DockerComposeContainer;
-import uk.gov.hmcts.reform.sendletter.blob.BlobContainerClientProvider;
 
 import java.io.File;
 
@@ -77,14 +76,5 @@ public class TestStorageHelper {
         if (encryptedContainer != null) {
             encryptedContainer.delete();
         }
-    }
-
-    public BlobContainerClientProvider getBlobServiceClientProvider() {
-        return containerName -> {
-            var blobServiceClient = new BlobServiceClientBuilder()
-                .connectionString(String.format(STORAGE_CONN_STRING, dockerHost, 10000))
-                .buildClient();
-            return blobServiceClient.getBlobContainerClient(containerName);
-        };
     }
 }

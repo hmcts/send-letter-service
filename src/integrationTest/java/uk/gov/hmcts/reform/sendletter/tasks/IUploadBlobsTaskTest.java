@@ -92,7 +92,7 @@ class IUploadBlobsTaskTest {
         );
         mapper = new ObjectMapper();
         printService = new PrintService(printRepository, mapper, sasTokenGeneratorService);
-        blobReader =  new BlobReader(TestStorageHelper.getInstance().getBlobServiceClientProvider(),
+        blobReader =  new BlobReader(TestStorageHelper.blobServiceClient,
             accessTokenProperties, leaseClientProvider, 20);
 
     }

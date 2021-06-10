@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.blob;
 
+import com.azure.storage.blob.BlobServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,18 +16,18 @@ public class BlobReader {
     private static final Logger LOG = LoggerFactory.getLogger(BlobReader.class);
     private static final String SERVICE_NAME = "send_letter_service";
 
-    private final BlobContainerClientProvider blobContainerClientProvider;
+    private final BlobServiceClient blobServiceClient;
     private final AccessTokenProperties accessTokenProperties;
     private final LeaseClientProvider leaseClientProvider;
     private final int leaseTime;
     private final String sourceContainer;
 
     public BlobReader(
-        BlobContainerClientProvider blobContainerClientProvider,
+            BlobServiceClient blobServiceClient,
             AccessTokenProperties accessTokenProperties,
             LeaseClientProvider leaseClientProvider,
             @Value("${storage.leaseTime}") int leaseTime) {
-        this.blobContainerClientProvider =  blobContainerClientProvider;
+        this.blobServiceClient =  blobServiceClient;
         this.accessTokenProperties = accessTokenProperties;
         this.leaseClientProvider = leaseClientProvider;
         this.leaseTime = leaseTime;
@@ -35,7 +36,7 @@ public class BlobReader {
 
     public Optional<BlobInfo> retrieveBlobToProcess() {
         LOG.info("About to read blob from container {}", sourceContainer);
-        var containerClient = blobContainerClientProvider.get(sourceContainer);
+        var containerClient = blobServiceClient.getBlobContainerClient(sourceContainer);
 
         return containerClient.listBlobs().stream()
                 .map(blobItem ->

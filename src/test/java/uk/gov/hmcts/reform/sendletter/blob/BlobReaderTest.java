@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter.blob;
 import com.azure.core.http.rest.PagedIterable;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.specialized.BlobLeaseClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class BlobReaderTest {
     @Mock
-    private BlobContainerClientProvider blobContainerClientProvider;
+    private BlobServiceClient blobServiceClient;
     @Mock
     private LeaseClientProvider leaseClientProvider;
     private AccessTokenProperties accessTokenProperties;
@@ -54,7 +55,7 @@ class BlobReaderTest {
     void setUp() {
         createAccessTokenConfig();
         blobReader = new BlobReader(
-            blobContainerClientProvider,
+            blobServiceClient,
             accessTokenProperties,
             leaseClientProvider,
             20
@@ -63,7 +64,7 @@ class BlobReaderTest {
 
     @Test
     void should_return_leased_blobinfo_when_lease_acquired() {
-        given(blobContainerClientProvider.get("encrypted"))
+        given(blobServiceClient.getBlobContainerClient("encrypted"))
                 .willReturn(blobContainerClient);
         given(blobContainerClient.listBlobs()).willReturn(mockedPagedIterable);
         given(mockedBlobItemFirst.getName()).willReturn("mockedBlobItemFirst");
@@ -95,7 +96,7 @@ class BlobReaderTest {
         BlobInfo blobInfo = mayBeBlobInfo.get();
         assertThat(blobInfo.isLeased()).isTrue();
 
-        verify(blobContainerClientProvider).get("encrypted");
+        verify(blobServiceClient).getBlobContainerClient("encrypted");
         verify(blobContainerClient, times(3))
                 .getBlobClient(anyString());
         verify(leaseClientProvider, times(3))
