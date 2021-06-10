@@ -7,12 +7,10 @@ import org.testcontainers.containers.DockerComposeContainer;
 
 import java.io.File;
 
-public class TestStorageHelper {
+public class TestUploadStorageHelper {
 
-    private static TestStorageHelper INSTANCE;
-
-    public static final String CONTAINER_NAME = "new-bulkprint";
-
+    private static TestUploadStorageHelper INSTANCE;
+    public static final String CONTAINER_NAME = "encrypted";
 
     private static DockerComposeContainer<?> dockerComposeContainer;
     private static String dockerHost;
@@ -22,15 +20,14 @@ public class TestStorageHelper {
     public static BlobServiceClient blobServiceClient;
     private BlobContainerClient testContainer;
 
-    private TestStorageHelper() {
+    private TestUploadStorageHelper() {
         // empty constructor
     }
 
-    public static TestStorageHelper getInstance() {
+    public static TestUploadStorageHelper getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new TestStorageHelper();
+            INSTANCE = new TestUploadStorageHelper();
         }
-
         return INSTANCE;
     }
 
@@ -58,12 +55,13 @@ public class TestStorageHelper {
         dockerComposeContainer.stop();
     }
 
-    public void createBulkprintContainer() {
+    public BlobContainerClient createContainer() {
         testContainer = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
         testContainer.create();
+        return testContainer;
     }
 
-    public void deleteBulkprintContainer() {
+    public void deleteContainer() {
         testContainer.delete();
     }
 }

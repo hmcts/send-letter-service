@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.sendletter.services.PrintService;
 import uk.gov.hmcts.reform.sendletter.services.SasTokenGeneratorService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
-import uk.gov.hmcts.reform.sendletter.util.TestStorageHelper;
+import uk.gov.hmcts.reform.sendletter.util.TestUploadStorageHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -69,12 +69,12 @@ class IUploadBlobsTaskTest {
 
     @BeforeAll
     public static void initializeStorage() {
-        TestStorageHelper.initialize();
+        TestUploadStorageHelper.initialize();
     }
 
     @AfterAll
     public static void tearDownContainer() {
-        TestStorageHelper.stopDocker();
+        TestUploadStorageHelper.stopDocker();
     }
 
 
@@ -83,16 +83,15 @@ class IUploadBlobsTaskTest {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
         when(serviceFolderMapping.getFolderFor(any())).thenReturn(Optional.of(LocalSftpServer.SERVICE_FOLDER));
 
-        TestStorageHelper.getInstance().createBulkprintContainer();
-        container = TestStorageHelper.getInstance().createContainer();
+        container = TestUploadStorageHelper.getInstance().createContainer();
         printRepository.deleteAll();
         var sasTokenGeneratorService = new SasTokenGeneratorService(
-            TestStorageHelper.blobServiceClient,
+            TestUploadStorageHelper.blobServiceClient,
             accessTokenProperties
         );
         mapper = new ObjectMapper();
         printService = new PrintService(printRepository, mapper, sasTokenGeneratorService);
-        blobReader =  new BlobReader(TestStorageHelper.blobServiceClient,
+        blobReader =  new BlobReader(TestUploadStorageHelper.blobServiceClient,
             accessTokenProperties, leaseClientProvider, 20);
 
     }
@@ -100,7 +99,7 @@ class IUploadBlobsTaskTest {
     @AfterEach
     void afterEach() {
         printRepository.deleteAll();
-        TestStorageHelper.getInstance().deleteBulkprintContainer();
+        TestUploadStorageHelper.getInstance().deleteContainer();
     }
 
     @Test
