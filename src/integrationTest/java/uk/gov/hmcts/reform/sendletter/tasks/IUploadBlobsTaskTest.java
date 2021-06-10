@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.azure.storage.blob.BlobContainerClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +11,8 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
 import uk.gov.hmcts.reform.sendletter.blob.BlobReader;
 import uk.gov.hmcts.reform.sendletter.blob.LeaseClientProvider;
 import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties;
@@ -34,7 +35,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -44,6 +44,8 @@ import static uk.gov.hmcts.reform.sendletter.entity.PrintStatus.UPLOADED;
 @SpringBootTest
 class IUploadBlobsTaskTest {
 
+    private static final String TEST_BLOB =
+        "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
     @Autowired
     private PrintRepository printRepository;
     @Autowired
@@ -52,10 +54,8 @@ class IUploadBlobsTaskTest {
     private LeaseClientProvider leaseClientProvider;
 
     private BlobReader blobReader;
-
     private PrintService printService;
-    private ObjectMapper mapper = new ObjectMapper();
-    private SasTokenGeneratorService sasTokenGeneratorService;
+    private ObjectMapper mapper;
 
     @Autowired
     private EntityManager entityManager;
@@ -86,10 +86,11 @@ class IUploadBlobsTaskTest {
         TestStorageHelper.getInstance().createBulkprintContainer();
         container = TestStorageHelper.getInstance().createContainer();
         printRepository.deleteAll();
-        sasTokenGeneratorService = new SasTokenGeneratorService(
+        var sasTokenGeneratorService = new SasTokenGeneratorService(
             TestStorageHelper.blobServiceClient,
             accessTokenProperties
         );
+        mapper = new ObjectMapper();
         printService = new PrintService(printRepository, mapper, sasTokenGeneratorService);
         blobReader =  new BlobReader(TestStorageHelper.getInstance().getBlobServiceClientProvider(),
             accessTokenProperties, leaseClientProvider, 20);
@@ -105,20 +106,18 @@ class IUploadBlobsTaskTest {
     @Test
     void uploads_blob_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
 
-        var json = Resources.toString(getResource("print_job.json"), UTF_8);
+        var json = StreamUtils.copyToString(
+            new ClassPathResource("print_job.json").getInputStream(), UTF_8);
         var service = "sscs";
         var uuid = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
-
         var printRequest = mapper.readValue(json, PrintRequest.class);
         printService.save(uuid.toString(), service, printRequest);
 
-        var file = "BULKPRINT001_sendlettertests_07062021101650_faa987b8-5d43-457e-bdaa-37fb824f7d5f.pgp";
-
-        var blobClient = container.getBlobClient(file);
+        var blobClient = container.getBlobClient(TEST_BLOB);
         byte[] bytes = "anything".getBytes(StandardCharsets.UTF_8);
         blobClient.upload(new ByteArrayInputStream(bytes), bytes.length);
 
-        UploadBlobsTask task = new UploadBlobsTask(
+        var task = new UploadBlobsTask(
             printRepository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
