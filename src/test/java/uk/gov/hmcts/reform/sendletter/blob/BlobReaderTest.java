@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class BlobReaderTest {
     @Mock
-    private BlobManager blobManager;
+    private BlobContainerClientProvider blobContainerClientProvider;
     @Mock
     private LeaseClientProvider leaseClientProvider;
     private AccessTokenProperties accessTokenProperties;
@@ -54,16 +54,16 @@ class BlobReaderTest {
     void setUp() {
         createAccessTokenConfig();
         blobReader = new BlobReader(
-                blobManager,
-                accessTokenProperties,
-                leaseClientProvider,
-                20
+            blobContainerClientProvider,
+            accessTokenProperties,
+            leaseClientProvider,
+            20
         );
     }
 
     @Test
     void should_return_leased_blobinfo_when_lease_acquired() {
-        given(blobManager.getContainerClient("encrypted"))
+        given(blobContainerClientProvider.get("encrypted"))
                 .willReturn(blobContainerClient);
         given(blobContainerClient.listBlobs()).willReturn(mockedPagedIterable);
         given(mockedBlobItemFirst.getName()).willReturn("mockedBlobItemFirst");
@@ -95,7 +95,7 @@ class BlobReaderTest {
         BlobInfo blobInfo = mayBeBlobInfo.get();
         assertThat(blobInfo.isLeased()).isTrue();
 
-        verify(blobManager).getContainerClient("encrypted");
+        verify(blobContainerClientProvider).get("encrypted");
         verify(blobContainerClient, times(3))
                 .getBlobClient(anyString());
         verify(leaseClientProvider, times(3))

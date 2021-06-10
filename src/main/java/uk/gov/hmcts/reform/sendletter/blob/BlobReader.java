@@ -15,18 +15,18 @@ public class BlobReader {
     private static final Logger LOG = LoggerFactory.getLogger(BlobReader.class);
     private static final String SERVICE_NAME = "send_letter_service";
 
-    private final BlobManager           blobManager;
+    private final BlobContainerClientProvider blobContainerClientProvider;
     private final AccessTokenProperties accessTokenProperties;
-    private final LeaseClientProvider   leaseClientProvider;
+    private final LeaseClientProvider leaseClientProvider;
     private final int leaseTime;
     private final String sourceContainer;
 
     public BlobReader(
-            BlobManager blobManager,
+        BlobContainerClientProvider blobContainerClientProvider,
             AccessTokenProperties accessTokenProperties,
             LeaseClientProvider leaseClientProvider,
             @Value("${storage.leaseTime}") int leaseTime) {
-        this.blobManager =  blobManager;
+        this.blobContainerClientProvider =  blobContainerClientProvider;
         this.accessTokenProperties = accessTokenProperties;
         this.leaseClientProvider = leaseClientProvider;
         this.leaseTime = leaseTime;
@@ -35,7 +35,7 @@ public class BlobReader {
 
     public Optional<BlobInfo> retrieveBlobToProcess() {
         LOG.info("About to read blob from container {}", sourceContainer);
-        var containerClient = blobManager.getContainerClient(sourceContainer);
+        var containerClient = blobContainerClientProvider.get(sourceContainer);
 
         return containerClient.listBlobs().stream()
                 .map(blobItem ->

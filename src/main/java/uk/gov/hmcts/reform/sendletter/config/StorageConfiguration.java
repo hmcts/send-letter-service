@@ -6,6 +6,7 @@ import com.azure.storage.blob.specialized.BlobLeaseClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.sendletter.blob.BlobContainerClientProvider;
 import uk.gov.hmcts.reform.sendletter.blob.LeaseClientProvider;
 
 
@@ -18,6 +19,17 @@ public class StorageConfiguration {
         return new BlobServiceClientBuilder()
                 .connectionString(connection)
                 .buildClient();
+    }
+
+    @Bean
+    public BlobContainerClientProvider getBlobServiceClientProvider(
+        @Value("${storage.connection}") String connection) {
+        return containerName -> {
+            var blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connection)
+                .buildClient();
+            return blobServiceClient.getBlobContainerClient(containerName);
+        };
     }
 
     @Bean
