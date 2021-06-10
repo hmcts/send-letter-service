@@ -12,6 +12,7 @@ public class TestStorageHelper {
     private static TestStorageHelper INSTANCE;
 
     public static final String CONTAINER_NAME = "new-bulkprint";
+    public static final String ENC_CONTAINER_NAME = "encrypted";
 
 
     private static DockerComposeContainer<?> dockerComposeContainer;
@@ -21,6 +22,7 @@ public class TestStorageHelper {
         + "BlobEndpoint=http://%s:%d/devstoreaccount1;";
     public static BlobServiceClient blobServiceClient;
     private BlobContainerClient testContainer;
+    private BlobContainerClient encryptedContainer;
 
     private TestStorageHelper() {
         // empty constructor
@@ -63,7 +65,14 @@ public class TestStorageHelper {
         testContainer.create();
     }
 
+    public BlobContainerClient createContainer() {
+        encryptedContainer = blobServiceClient.getBlobContainerClient(ENC_CONTAINER_NAME);
+        encryptedContainer.create();
+        return encryptedContainer;
+    }
+
     public void deleteBulkprintContainer() {
         testContainer.delete();
+        encryptedContainer.delete();
     }
 }
