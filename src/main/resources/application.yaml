@@ -9,7 +9,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: info
+        include: info, health
   health:
     mail:
       enabled: false
