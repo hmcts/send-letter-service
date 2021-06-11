@@ -4,5 +4,7 @@ public enum PrintStatus {
     NEW,
     ENCRYPTED,
     ZIPPED,
-    PROCESSED
+    PROCESSED,
+    UPLOADED,
+    SKIPPED
 }

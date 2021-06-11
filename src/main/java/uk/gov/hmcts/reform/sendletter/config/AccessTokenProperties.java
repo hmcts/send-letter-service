@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 
 import java.util.List;
 
@@ -14,6 +15,16 @@ public class AccessTokenProperties {
 
     public void setServiceConfig(List<TokenConfig> serviceConfig) {
         this.serviceConfig = serviceConfig;
+    }
+
+    public String getContainerName(String serviceName) {
+        return this.getServiceConfig().stream()
+            .filter(tokenConfig -> tokenConfig.getServiceName().equalsIgnoreCase(serviceName))
+            .findFirst()
+            .orElseThrow(
+                () -> new ServiceNotConfiguredException(
+                    "No configuration found for service " + serviceName)
+            ).getNewContainerName();
     }
 
     public static class TokenConfig {

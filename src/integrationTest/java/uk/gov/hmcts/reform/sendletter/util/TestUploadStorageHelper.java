@@ -8,22 +8,20 @@ import org.testcontainers.containers.DockerComposeContainer;
 import java.io.File;
 
 /*
- * The Microsoft Azure storage emulator provides a local environment
- * that emulates the Azure Blob, Queue, and Table services for development purposes.
- *  Using the storage emulator, you can test your application against the
- * storage services locally, without creating an Azure subscription or incurring any costs.
- *  When you're satisfied with how your application is working in the emulator,
- *  you can switch to using an Azure storage account in the cloud.
- *
- * Note: No need to modify the secret, it was hardcoded in container
- * https://hub.docker.com/r/microsoft/azure-storage-emulator/
- * */
-public class TestStorageHelper {
+* The Microsoft Azure storage emulator provides a local environment
+* that emulates the Azure Blob, Queue, and Table services for development purposes.
+*  Using the storage emulator, you can test your application against the
+* storage services locally, without creating an Azure subscription or incurring any costs.
+*  When you're satisfied with how your application is working in the emulator,
+*  you can switch to using an Azure storage account in the cloud.
+*
+* Note: No need to modify the secret, it was hardcoded in container
+* https://hub.docker.com/r/microsoft/azure-storage-emulator/
+* */
+public class TestUploadStorageHelper {
 
-    private static TestStorageHelper INSTANCE;
-
-    public static final String CONTAINER_NAME = "new-bulkprint";
-
+    private static TestUploadStorageHelper INSTANCE;
+    public static final String CONTAINER_NAME = "encrypted";
 
     private static DockerComposeContainer<?> dockerComposeContainer;
     private static String dockerHost;
@@ -33,15 +31,14 @@ public class TestStorageHelper {
     public static BlobServiceClient blobServiceClient;
     private BlobContainerClient testContainer;
 
-    private TestStorageHelper() {
+    private TestUploadStorageHelper() {
         // empty constructor
     }
 
-    public static TestStorageHelper getInstance() {
+    public static TestUploadStorageHelper getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new TestStorageHelper();
+            INSTANCE = new TestUploadStorageHelper();
         }
-
         return INSTANCE;
     }
 
@@ -69,12 +66,13 @@ public class TestStorageHelper {
         dockerComposeContainer.stop();
     }
 
-    public void createBulkprintContainer() {
+    public BlobContainerClient createContainer() {
         testContainer = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
         testContainer.create();
+        return testContainer;
     }
 
-    public void deleteBulkprintContainer() {
+    public void deleteContainer() {
         testContainer.delete();
     }
 }
