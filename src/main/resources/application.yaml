@@ -159,6 +159,7 @@ file-upoad:
 
 storage:
   connection: ${STORAGE_ACCOUNT_CONNECTION_STRING:DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;EndpointSuffix=dev.net;}
+  leaseTime: ${BLOB_LEASE_TIME:20} #In seconds
 
 accesstoken:
   serviceConfig:
@@ -185,4 +186,7 @@ accesstoken:
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: nfdiv_case_api
       newContainerName: new-nfdivorce
+      validity: ${SAS_TOKEN_VALIDITY:300}
+    - serviceName: send_letter_service
+      newContainerName: encrypted
       validity: ${SAS_TOKEN_VALIDITY:300}
