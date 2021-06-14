@@ -68,12 +68,8 @@ public class UploadBlobsTask {
         if (!availabilityChecker.isFtpAvailable(now(ZoneId.of(EUROPE_LONDON)).toLocalTime())) {
             logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
         } else {
-            if (printRepository.countByStatus(PrintStatus.NEW) > 0) {
-                int uploadCount = processLetters();
-                logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, uploadCount);
-            } else {
-                logger.info("Completed '{}' task. No letters to upload.", TASK_NAME);
-            }
+            int uploadCount = processLetters();
+            logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, uploadCount);
         }
     }
 
@@ -84,21 +80,7 @@ public class UploadBlobsTask {
                 if (printRepository.countByStatus(PrintStatus.NEW) > 0) {
                     Optional<BlobInfo> mayBeBlobInfo = blobReader.retrieveBlobToProcess();
                     if (mayBeBlobInfo.isPresent()) {
-                        var blobInfo = mayBeBlobInfo.get();
-                        var blobClient = blobInfo.getBlobClient();
-                        String blobName = blobClient.getBlobName();
-
-                        var blobId = blobName.split("\\.")[0].split("_")[3];
-
-                        Optional<Print> printBlob = printRepository.findById(UUID.fromString(blobId));
-                        if (printBlob.isPresent()) {
-                            var uploaded = false;
-                            uploaded = processBlob(printBlob.get(), blobInfo, client);
-
-                            if (uploaded) {
-                                uploadCount++;
-                            }
-                        }
+                        uploadCount = getUploadCount(client, uploadCount, mayBeBlobInfo.get());
                     }
                 } else {
                     logger.info("Completed '{}' task. No letters to upload.", TASK_NAME);
@@ -107,6 +89,24 @@ public class UploadBlobsTask {
             }
             return uploadCount;
         });
+    }
+
+    private int getUploadCount(SFTPClient client, int uploadCount, BlobInfo blobInfo) {
+        var blobClient = blobInfo.getBlobClient();
+        String blobName = blobClient.getBlobName();
+
+        var blobId = blobName.split("\\.")[0].split("_")[3];
+
+        Optional<Print> printBlob = printRepository.findById(UUID.fromString(blobId));
+        if (printBlob.isPresent()) {
+            var uploaded = false;
+            uploaded = processBlob(printBlob.get(), blobInfo, client);
+
+            if (uploaded) {
+                uploadCount++;
+            }
+        }
+        return uploadCount;
     }
 
     private boolean processBlob(Print print, BlobInfo blobInfo,  SFTPClient sftpClient) {
