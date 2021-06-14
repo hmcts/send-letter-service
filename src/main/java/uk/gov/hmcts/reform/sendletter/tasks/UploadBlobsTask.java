@@ -81,24 +81,27 @@ public class UploadBlobsTask {
         return ftp.runWith(client -> {
             var uploadCount = 0;
             for (var i = 0; i < BATCH_SIZE; i++) {
-                Optional<BlobInfo> mayBeBlobInfo = blobReader.retrieveBlobToProcess();
-                if (mayBeBlobInfo.isPresent()) {
-                    var blobInfo = mayBeBlobInfo.get();
-                    var blobClient = blobInfo.getBlobClient();
-                    String blobName = blobClient.getBlobName();
+                if (printRepository.countByStatus(PrintStatus.NEW) > 0) {
+                    Optional<BlobInfo> mayBeBlobInfo = blobReader.retrieveBlobToProcess();
+                    if (mayBeBlobInfo.isPresent()) {
+                        var blobInfo = mayBeBlobInfo.get();
+                        var blobClient = blobInfo.getBlobClient();
+                        String blobName = blobClient.getBlobName();
 
-                    var blobId = blobName.split("\\.")[0].split("_")[3];
+                        var blobId = blobName.split("\\.")[0].split("_")[3];
 
-                    Optional<Print> printBlob = printRepository.findById(UUID.fromString(blobId));
-                    if (printBlob.isPresent()) {
-                        var uploaded = false;
-                        uploaded = processBlob(printBlob.get(), blobInfo, client);
+                        Optional<Print> printBlob = printRepository.findById(UUID.fromString(blobId));
+                        if (printBlob.isPresent()) {
+                            var uploaded = false;
+                            uploaded = processBlob(printBlob.get(), blobInfo, client);
 
-                        if (uploaded) {
-                            uploadCount++;
+                            if (uploaded) {
+                                uploadCount++;
+                            }
                         }
                     }
                 } else {
+                    logger.info("Completed '{}' task. No letters to upload.", TASK_NAME);
                     break;
                 }
             }
