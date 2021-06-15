@@ -289,7 +289,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.2'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.11.1'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
@@ -309,9 +309,6 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.0.3', {
-    exclude group: 'com.github.tomakehurst', module: 'wiremock-jre8-standalone'
-  }
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.6.0'
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.6.0'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.3'
