@@ -154,7 +154,7 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 sonarqube {
   properties {
-    property "sonar.projectName", "Reform :: Send Letter Service 2.0"
+    property "sonar.projectName", "bulkprint-send-letter-service"
     property "sonar.coverage.jacoco.xmlReportPaths", jacocoTestReport.reports.xml.destination.path
     property 'sonar.exclusions', "**/config/**, **/BasicLetterInfo.java"
   }
