@@ -134,11 +134,6 @@ pmd {
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
-def coverageExclusionList = [
-  '**uk/gov/hmcts/reform/sendletter/config/**',
-  '**uk.gov.hmcts.reform.sendletter.entity/BasicLetterInfo*'
-]
-
 jacocoTestReport {
   executionData(test, integration)
   reports {
@@ -148,20 +143,24 @@ jacocoTestReport {
   }
   afterEvaluate {
     getClassDirectories().from = getClassDirectories().files.collect {
-      fileTree(dir: it, exclude: coverageExclusionList)
+      fileTree(dir: it, exclude: [
+        'uk/gov/hmcts/reform/sendletter/config/**',
+        '**/BasicLetterInfo.java'
+      ])
     }
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+
 sonarqube {
   properties {
-    property "sonar.projectName", "Reform :: Send Letter Service 2.0"
-    property "sonar.projectKey", "HMCTS_BSP:bulkprint-send-letter-service"
-    property "sonar.exclusions", coverageExclusionList.join(", ")
-    property "sonar.coverage.exclusions", coverageExclusionList.join(", ")
+    property "sonar.projectName", "Reform :: Send Letter Service"
+    property "sonar.projectKey", "uk.gov.hmcts.reform:rpe-send-letter-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
-    property "sonar.host.url", "https://sonar.reform.hmcts.net/"
+    property 'sonar.exclusions', "**/config/**, **/BasicLetterInfo.java"
+    property "sonar.test.exclusions", sonarExclusions.join(", ")
+    property "sonar.coverage.exclusions", sonarExclusions.join(", ")
   }
 }
 
