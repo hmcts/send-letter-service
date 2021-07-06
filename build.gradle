@@ -32,36 +32,28 @@ sourceSets {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/functionalTest/java')
     }
-    resources.srcDir file('src/functionalTest/resources')
   }
 
   integrationTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/integrationTest/java')
     }
-    resources.srcDir file('src/integrationTest/resources')
   }
 
   smokeTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
     }
-    resources.srcDir file('src/smokeTest/resources')
   }
 
   contractTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/contractTest/java')
     }
-    resources.srcDir file('src/contractTest/resources')
   }
 }
 
@@ -190,6 +182,7 @@ dependencyCheck {
 
 repositories {
   jcenter()
+  mavenCentral()
   // until new projects get to jcenter
   maven { url 'https://jitpack.io' }
   mavenLocal()
@@ -256,7 +249,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-  implementation group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.4.0'
+  implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.4.0'
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
@@ -306,12 +299,12 @@ dependencies {
   functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
-  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  contractTestCompile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
@@ -323,9 +316,9 @@ dependencies {
 
   contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
 
-  contractTestCompile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-  contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
-  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+  contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
 }
 
 processFunctionalTestResources {
@@ -348,9 +341,7 @@ bootJar {
   }
 }
 
-import org.flywaydb.gradle.task.FlywayMigrateTask
-
-task migratePostgresDatabase(type: FlywayMigrateTask) {
+task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
   baselineOnMigrate = true
   if (project.hasProperty("dburl")) {
     url = "jdbc:postgresql://${dburl}"

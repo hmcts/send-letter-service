@@ -18,6 +18,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders.SYNTHETIC_TEST_SOURCE;
 
 @TestPropertySource("classpath:application.properties")
 class SmokeTestSuite {
@@ -72,7 +73,7 @@ class SmokeTestSuite {
             .given()
             .baseUri(testUrl)
             .relaxedHTTPSValidation()
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE);
+            .header(CONTENT_TYPE, "application/json")
+            .header(SYNTHETIC_TEST_SOURCE, SYNTHETIC_SOURCE_HEADER_VALUE);
     }
 }
