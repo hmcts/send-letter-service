@@ -57,7 +57,8 @@ class SendLetterWithPdfsAndCopiesControllerTest {
 
         // when
         mockMvc.perform(
-            post("/letters?async="+async)
+            post("/letters")
+                .queryParam("async", async)
                 .contentType(MediaTypes.LETTER_V3)
                 .header("ServiceAuthorization", authHeader)
                 .content(getLetterJson("controller/letter/v3/valid_letter.json"))
