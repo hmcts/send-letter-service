@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-public class DateCalculatorTest {
+class DateCalculatorTest {
 
     private BankHolidaysClient bankHolidaysClient;
 
@@ -35,7 +35,7 @@ public class DateCalculatorTest {
 
     @ParameterizedTest
     @MethodSource("provideTestCaseData")
-    public void subtractBusinessDays_should_subtract_the_right_number_of_week_days(
+    void subtractBusinessDays_should_subtract_the_right_number_of_week_days(
         String baseDate,
         int daysToSubtract,
         String expectResult

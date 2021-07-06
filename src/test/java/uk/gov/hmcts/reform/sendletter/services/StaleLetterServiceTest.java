@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.sendletter.services.StaleLetterService.LETTER_
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @ExtendWith(MockitoExtension.class)
-public class StaleLetterServiceTest {
+class StaleLetterServiceTest {
 
     @Mock
     private DateCalculator dateCalculator;
@@ -56,11 +56,11 @@ public class StaleLetterServiceTest {
         given(dateCalculator.subtractBusinessDays(any(), anyInt())).willReturn(ZonedDateTime.now());
 
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of(EUROPE_LONDON));
-        setCurrentTimeAndZone(EUROPE_LONDON, now);
+        setCurrentTimeAndZone(now);
     }
 
     @Test
-    public void getStaleLetters_should_call_date_calculator_with_current_time_when_before_ftp_downtime_start() {
+    void getStaleLetters_should_call_date_calculator_with_current_time_when_before_ftp_downtime_start() {
         // given
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         String ftpDowntimeStartTime = "16:00";
@@ -70,7 +70,7 @@ public class StaleLetterServiceTest {
             .atTime(15, 59) // currently it's before FTP downtime
             .atZone((ZoneId.of(EUROPE_LONDON)));
 
-        setCurrentTimeAndZone(EUROPE_LONDON, now);
+        setCurrentTimeAndZone(now);
 
         // when
         staleLetterService(ftpDowntimeStartTime, minStaleLetterAgeInBusinessDays).getStaleLetters();
@@ -80,7 +80,7 @@ public class StaleLetterServiceTest {
     }
 
     @Test
-    public void getStaleLetters_should_call_date_calculator_with_ftp_downtime_start_time_when_after() {
+    void getStaleLetters_should_call_date_calculator_with_ftp_downtime_start_time_when_after() {
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         // given
         String ftpDowntimeStartTime = "16:00";
@@ -90,7 +90,7 @@ public class StaleLetterServiceTest {
             .atTime(16, 1) // currently it's after FTP downtime start time
             .atZone((ZoneId.of(EUROPE_LONDON)));
 
-        setCurrentTimeAndZone(EUROPE_LONDON, now);
+        setCurrentTimeAndZone(now);
 
         // when
         staleLetterService(ftpDowntimeStartTime, minStaleLetterAgeInBusinessDays).getStaleLetters();
@@ -107,7 +107,7 @@ public class StaleLetterServiceTest {
     }
 
     @Test
-    public void getStaleLetters_should_return_call_the_repository_with_calculated_cut_off_date() {
+    void getStaleLetters_should_return_call_the_repository_with_calculated_cut_off_date() {
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         // given
         ZonedDateTime cutOffTime = LocalDateTime.parse("2019-05-01T15:34:56.123").atZone(ZoneId.of(EUROPE_LONDON));
@@ -146,7 +146,7 @@ public class StaleLetterServiceTest {
     }
 
     @Test
-    public void getStaleLetters_should_return_all_letters_returned_by_repository() {
+    void getStaleLetters_should_return_all_letters_returned_by_repository() {
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         reset(letterRepository);
 
@@ -220,8 +220,8 @@ public class StaleLetterServiceTest {
         );
     }
 
-    private void setCurrentTimeAndZone(String zone, ZonedDateTime dateTime) {
-        ZoneId zoneId = ZoneId.of(zone);
+    private void setCurrentTimeAndZone(ZonedDateTime dateTime) {
+        ZoneId zoneId = ZoneId.of(uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON);
         given(clock.instant()).willReturn(dateTime.toInstant());
         given(clock.getZone()).willReturn(zoneId);
     }
