@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import com.google.common.io.Resources;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.StreamUtils;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
@@ -16,8 +17,9 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRe
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
+import java.io.IOException;
+
 import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static java.lang.String.join;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SendLetterController.class)
-public class SendLetterWithPdfsAndCopiesControllerTest {
+class SendLetterWithPdfsAndCopiesControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
@@ -41,7 +43,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
         // when
-        sendLetter(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8), async);
+        sendLetter(getLetterJson("controller/letter/v3/valid_letter.json"), async);
 
         // then
         verify(letterService).save(any(LetterWithPdfsAndNumberOfCopiesRequest.class), anyString(), eq(async));
@@ -56,13 +58,14 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
         // when
         mockMvc.perform(
             post("/letters")
+                .queryParam("async", async)
                 .contentType(MediaTypes.LETTER_V3)
                 .header("ServiceAuthorization", authHeader)
-                .content(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8))
+                .content(getLetterJson("controller/letter/v3/valid_letter.json"))
         );
 
         // then
-        verify(authService).authenticate(eq(authHeader));
+        verify(authService).authenticate(authHeader);
     }
 
     @ParameterizedTest
@@ -70,7 +73,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
     void should_validate_number_of_copies(String async) throws Exception {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
-        sendLetter(Resources.toString(getResource("controller/letter/v3/invalid_copies.json"), UTF_8), async)
+        sendLetter(getLetterJson("controller/letter/v3/invalid_copies.json"), async)
             .andExpect(status().isBadRequest());
     }
 
@@ -81,7 +84,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
         given(letterService.save(any(), any(), eq(async)))
                 .willThrow(new ServiceNotConfiguredException("invalid service"));
 
-        sendLetter(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8), async)
+        sendLetter(getLetterJson("controller/letter/v3/valid_letter.json"), async)
             .andExpect(status().isForbidden());
     }
 
@@ -90,7 +93,7 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
     void should_return_401_if_service_throws_UnauthenticatedException(String async) throws Exception {
         given(authService.authenticate(anyString())).willThrow(new UnauthenticatedException("Hello"));
 
-        sendLetter(Resources.toString(getResource("controller/letter/v3/valid_letter.json"), UTF_8), async)
+        sendLetter(getLetterJson("controller/letter/v3/valid_letter.json"), async)
             .andExpect(status().isUnauthorized());
     }
 
@@ -110,5 +113,10 @@ public class SendLetterWithPdfsAndCopiesControllerTest {
                 .header("ServiceAuthorization", "auth-header-value")
                 .content(json)
         );
+    }
+
+    private String getLetterJson(String path) throws IOException {
+        return StreamUtils.copyToString(
+            new ClassPathResource(path).getInputStream(), UTF_8);
     }
 }

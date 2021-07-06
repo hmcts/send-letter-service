@@ -11,12 +11,20 @@ import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public final class CsvWriter {
     private static final Logger logger = LoggerFactory.getLogger(CsvWriter.class);
+
+    private static final FileAttribute<Set<PosixFilePermission>> ATTRIBUTE = PosixFilePermissions
+        .asFileAttribute(PosixFilePermissions.fromString("rwx------"));
 
     private static final String[] LETTERS_COUNT_SUMMARY_CSV_HEADERS = {
         "Service", "Letters Uploaded"
@@ -34,9 +42,6 @@ public final class CsvWriter {
         "FileName", "ServiceName", "ReceivedDate", "UploadedDate"
     };
 
-
-
-
     private CsvWriter() {
         // utility class constructor
     }
@@ -44,11 +49,12 @@ public final class CsvWriter {
     public static File writeLettersCountSummaryToCsv(
         List<LettersCountSummary> lettersCountSummary
     ) throws IOException {
-        File csvFile = File.createTempFile("Letters-count-summary-", ".csv");
+        var path = Files.createTempFile("Letters-count-summary-", ".csv", ATTRIBUTE);// Compliant
+        var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS);
 
-        try (FileWriter fileWriter = new FileWriter(csvFile);
-             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (var fileWriter = new FileWriter(csvFile);
+             var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             for (LettersCountSummary summary : lettersCountSummary) {
                 printer.printRecord(summary.serviceName, summary.uploaded);
             }
@@ -57,11 +63,12 @@ public final class CsvWriter {
     }
 
     public static File writeStaleLettersToCsv(List<BasicLetterInfo> staleLetters) throws IOException {
-        File csvFile = File.createTempFile("Stale-letters-", ".csv");
+        var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
+        var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_CSV_HEADERS);
 
-        try (FileWriter fileWriter = new FileWriter(csvFile);
-            CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (var fileWriter = new FileWriter(csvFile);
+            var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             for (BasicLetterInfo staleLetter : staleLetters) {
                 printer.printRecord(staleLetter.getId(), staleLetter.getStatus(),
                         staleLetter.getService(), staleLetter.getCreatedAt(), staleLetter.getSentToPrintAt());
@@ -72,31 +79,33 @@ public final class CsvWriter {
     }
 
     public static File writeDelayedPostedLettersToCsv(Stream<BasicLetterInfo> letters) throws IOException {
-        File csvFIle = File.createTempFile("Deplayed-letters-", ".csv");
+        var path = Files.createTempFile("Deplayed-letters-", ".csv", ATTRIBUTE);// Compliant
+        var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS);
-        AtomicInteger count = new AtomicInteger(0);
+        var count = new AtomicInteger(0);
 
-        try (FileWriter fileWriter = new FileWriter(csvFIle);
-             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (var fileWriter = new FileWriter(csvFile);
+             var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             letters.forEach(letter -> printDelayRecords(letter, printer, count));
         }
 
         logger.info("Number of weekly delayed print letters {}", count.get());
-        return csvFIle;
+        return csvFile;
     }
 
     public static File writeStaleLettersReport(Stream<BasicLetterInfo> letters) throws IOException {
-        File csvFIle = File.createTempFile("Stale-letters-", ".csv");
+        var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
+        var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_EMAIL_CSV_HEADERS);
-        AtomicInteger count = new AtomicInteger(0);
+        var count = new AtomicInteger(0);
 
-        try (FileWriter fileWriter = new FileWriter(csvFIle);
-             CSVPrinter printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+        try (var fileWriter = new FileWriter(csvFile);
+             var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
             letters.forEach(letter -> printStaleRecords(letter, printer, count));
         }
 
         logger.info("Number of weekly stale letters {}", count.get());
-        return csvFIle;
+        return csvFile;
     }
 
     private static void printStaleRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {

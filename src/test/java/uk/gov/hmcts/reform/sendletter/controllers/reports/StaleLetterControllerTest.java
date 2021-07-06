@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StaleLetterController.class)
-public class StaleLetterControllerTest {
+class StaleLetterControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,7 +37,7 @@ public class StaleLetterControllerTest {
     private StaleLetterService staleLetterService;
 
     @Test
-    public void should_return_letters_from_stale_letter_service() throws Exception {
+    void should_return_letters_from_stale_letter_service() throws Exception {
         List<BasicLetterInfo> letters = Arrays.asList(
             letter(
                 UUID.fromString("767cf17e-0ec0-452b-a457-bc173d51ff40"),
@@ -107,7 +107,7 @@ public class StaleLetterControllerTest {
 
 
     @Test
-    public void should_return_server_error_when_stale_letter_service_throws_exception() throws Exception {
+    void should_return_server_error_when_stale_letter_service_throws_exception() throws Exception {
         given(staleLetterService.getStaleLetters()).willThrow(RuntimeException.class);
 
         mockMvc
