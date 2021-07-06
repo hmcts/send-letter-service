@@ -23,8 +23,8 @@ import java.util.stream.Stream;
 public final class CsvWriter {
     private static final Logger logger = LoggerFactory.getLogger(CsvWriter.class);
 
-    private static final FileAttribute<Set<PosixFilePermission>> ATTRIBUTE = PosixFilePermissions.
-        asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+    private static final FileAttribute<Set<PosixFilePermission>> ATTRIBUTE = PosixFilePermissions
+        .asFileAttribute(PosixFilePermissions.fromString("rwx------"));
 
     private static final String[] LETTERS_COUNT_SUMMARY_CSV_HEADERS = {
         "Service", "Letters Uploaded"
