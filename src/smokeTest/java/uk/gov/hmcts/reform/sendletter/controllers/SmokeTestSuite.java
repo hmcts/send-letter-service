@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -48,7 +45,7 @@ class SmokeTestSuite {
             "oneTimePassword", new GoogleAuthenticator().getTotpPassword(this.s2sSecret)
         );
 
-        Response response = RestAssured
+        var response = RestAssured
             .given()
             .relaxedHTTPSValidation()
             .baseUri(this.s2sUrl)
@@ -65,7 +62,7 @@ class SmokeTestSuite {
     }
 
     String sampleLetterJson(String fileName) throws IOException {
-        return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+        return Resources.toString(Resources.getResource(fileName), UTF_8);
     }
 
     RequestSpecification getCommonRequestSpec() {
