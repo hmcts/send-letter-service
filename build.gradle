@@ -254,7 +254,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.4.0'
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.9.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.3'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
 
