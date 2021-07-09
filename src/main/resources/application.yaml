@@ -106,7 +106,7 @@ ftp:
       folder: CMC
     - service: send_letter_tests
       folder: BULKPRINT
-    - service: nfdiv_cos
+    - service: nfdiv_case_api
       folder: DIVORCE
     - service: divorce_frontend
       folder: DIVORCE
