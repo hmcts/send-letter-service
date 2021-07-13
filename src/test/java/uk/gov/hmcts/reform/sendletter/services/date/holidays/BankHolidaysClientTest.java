@@ -17,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class BankHolidaysClientTest {
+class BankHolidaysClientTest {
 
     private BankHolidaysClient client;
     private WireMockServer api;
@@ -35,7 +35,7 @@ public class BankHolidaysClientTest {
     }
 
     @Test
-    public void should_fetch_holidays() {
+    void should_fetch_holidays() {
         // given
         api.stubFor(get("/").willReturn(
             okJson("{"
@@ -71,7 +71,7 @@ public class BankHolidaysClientTest {
     }
 
     @Test
-    public void should_throw_exception_if_error_occurred() {
+    void should_throw_exception_if_error_occurred() {
         // given
         api.stubFor(get("/").willReturn(notFound()));
 
