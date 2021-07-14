@@ -95,7 +95,7 @@ class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
-    void should_throw_ConflictException()  {
+    void may_throw_ConflictException()  {
         executeMultiRequest(this::getLetterRequest);
     }
 
