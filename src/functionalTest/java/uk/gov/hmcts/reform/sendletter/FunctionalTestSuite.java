@@ -44,7 +44,6 @@ import static org.apache.commons.lang.time.DateUtils.addSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.util.DateUtil.now;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -314,11 +313,14 @@ abstract class FunctionalTestSuite {
     void executeMultiRequest(Supplier<String> letterRequest) {
         List<CompletableFuture<String>> letters = IntStream.rangeClosed(0, 1)
                 .mapToObj(i -> invokeAsyncSendLetter(letterRequest)).collect(Collectors.toList());
-        CompletionException completionException =
-                assertThrows(CompletionException.class, () -> letters.stream()
-                        .map(CompletableFuture::join).forEach(logger::info));
-        logger.info("completionException is {} ", completionException.getMessage());
-        assertThat(completionException.getMessage()).contains("Expected status code <200> but was <409>");
+        try {
+            letters.stream()
+                .map(CompletableFuture::join)
+                .forEach(logger::info);
+        } catch (CompletionException e) {
+            logger.info("completionException is {} ", e.getMessage());
+            assertThat(e.getMessage()).contains("Expected status code <200> but was <409>");
+        }
     }
 
     private CompletableFuture<String> invokeAsyncSendLetter(Supplier<String> letterRequest) {

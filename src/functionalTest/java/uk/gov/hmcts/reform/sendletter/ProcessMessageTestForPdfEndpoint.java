@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     private static Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpoint.class);
-    
+
     @Test
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
@@ -36,7 +36,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
-    void should_throw_ConflictException()  {
+    void may_throw_ConflictException()  {
         executeMultiRequest(this::getLetterRequest);
     }
 
