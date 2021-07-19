@@ -105,7 +105,7 @@ class BaseTest {
     ) throws Throwable {
         try (LocalSftpServer server = LocalSftpServer.create()) {
 
-            // sftp servers is up, now the background jobs can start connecting to it
+            // sftp servers is ups, now the background jobs can start connecting to it
             fakeFtpAvailabilityChecker.setAvailable(true);
 
             mvc.perform(request)
