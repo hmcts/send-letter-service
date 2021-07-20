@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Resources;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
@@ -16,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -84,9 +85,11 @@ class BaseTest {
     @Autowired
     private WebApplicationContext wac;
 
+    private static String SCHEDULE = "Schedule /";
+
     @BeforeEach
     void setUp() {
-        WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
+        var filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
         repository.deleteAll();
@@ -103,9 +106,9 @@ class BaseTest {
         MockHttpServletRequestBuilder request,
         Boolean isEncryptionEnabled
     ) throws Throwable {
-        try (LocalSftpServer server = LocalSftpServer.create()) {
+        try (var server = LocalSftpServer.create()) {
 
-            // sftp servers is up, now the background jobs can start connecting to it
+            // sftp servers is ups, now the background jobs can start connecting to it
             fakeFtpAvailabilityChecker.setAvailable(true);
 
             mvc.perform(request)
@@ -114,7 +117,7 @@ class BaseTest {
 
             // Wait for letter to be uploaded.
             await()
-                .atMost(15, SECONDS)
+                .atMost(25, SECONDS)
                 .untilAsserted(() -> {
                     assertThat(server.lettersFolder.listFiles())
                         .as("Files on FTP")
@@ -148,9 +151,9 @@ class BaseTest {
                 requestTelemetry.isSuccess()
             ))
             .containsAnyElementsOf(ImmutableList.of(
-                tuple("Schedule /" + UploadLettersTask.class.getSimpleName(), true),
-                tuple("Schedule /" + MarkLettersPostedTask.class.getSimpleName(), true),
-                tuple("Schedule /" + StaleLettersTask.class.getSimpleName(), true)
+                tuple(SCHEDULE + UploadLettersTask.class.getSimpleName(), true),
+                tuple(SCHEDULE + MarkLettersPostedTask.class.getSimpleName(), true),
+                tuple(SCHEDULE + StaleLettersTask.class.getSimpleName(), true)
             ));
 
         verify(telemetryClient, atLeastOnce()).trackDependency(dependencyTelemetryCaptor.capture());
@@ -169,7 +172,8 @@ class BaseTest {
     }
 
     String readResource(final String fileName) throws IOException {
-        return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+        return StreamUtils.copyToString(
+            new ClassPathResource(fileName).getInputStream(), UTF_8);
     }
 
     private void createCsvReport(LocalSftpServer server) throws IOException {
