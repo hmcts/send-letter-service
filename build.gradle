@@ -239,7 +239,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.3'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.25.0'
