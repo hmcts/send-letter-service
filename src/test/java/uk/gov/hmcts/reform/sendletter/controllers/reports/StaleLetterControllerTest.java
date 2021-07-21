@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers.reports;
 
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,8 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -26,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @WebMvcTest(StaleLetterController.class)
 class StaleLetterControllerTest {
@@ -62,10 +60,8 @@ class StaleLetterControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
             .andExpect(
-                content().json(
-                    Resources.toString(
-                        getResource("controller/stale-letters/stale-letters-response.json"),
-                        UTF_8
+                content().json(loadJson(
+                    "controller/stale-letters/stale-letters-response.json"
                     ),
                     false
                 )

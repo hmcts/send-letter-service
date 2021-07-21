@@ -1,25 +1,22 @@
 package uk.gov.hmcts.reform.sendletter.model.in.print;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
-import java.io.IOException;
 import java.util.List;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 
 class PrintRequestTest {
 
     @Test
-    void should_serialize_when_request_parsed() throws IOException {
-        String json = Resources.toString(getResource("print_job.json"), UTF_8);
+    void should_serialize_when_request_parsed() throws Exception {
+        String json = loadJson("print_job.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);

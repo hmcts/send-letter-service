@@ -5,10 +5,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.util.StreamUtils;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
@@ -17,9 +15,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRe
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
-import java.io.IOException;
-
-import static com.google.common.base.Charsets.UTF_8;
 import static java.lang.String.join;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,6 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @WebMvcTest(SendLetterController.class)
 class SendLetterWithPdfsAndCopiesControllerTest {
@@ -115,8 +111,7 @@ class SendLetterWithPdfsAndCopiesControllerTest {
         );
     }
 
-    private String getLetterJson(String path) throws IOException {
-        return StreamUtils.copyToString(
-            new ClassPathResource(path).getInputStream(), UTF_8);
+    private String getLetterJson(String path) throws Exception {
+        return loadJson(path);
     }
 }

@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.sendletter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.io.Resources;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
@@ -24,25 +22,25 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static com.google.common.io.Resources.getResource;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 public final class SampleData {
     private static final String ENCODED_PDF_FILE = "encodedPdfFile.txt";
     private static final String ENCODED_PDF_FILE2 = "encodedPdfFile2.txt";
     public static final Supplier<String> checkSumSupplier = () -> UUID.randomUUID().toString();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static LetterRequest letterRequest() {
         try {
             return new LetterRequest(
                 singletonList(
                     new Document(
-                        Resources.toString(getResource("template.html"), UTF_8),
+                        loadJson("template.html"),
                         ImmutableMap.of(
                             "name", "John",
                             "reference", UUID.randomUUID()
@@ -52,7 +50,7 @@ public final class SampleData {
                 "someType",
                 Maps.newHashMap()
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -68,13 +66,11 @@ public final class SampleData {
     }
 
     public static LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfAndCopiesRequest(int copies1, int copies2)
-            throws IOException {
+        throws Exception {
         return new LetterWithPdfsAndNumberOfCopiesRequest(
             asList(
-                new Doc(Base64.getDecoder().decode(Resources.toString(getResource(ENCODED_PDF_FILE),
-                                Charsets.UTF_8)), copies1),
-                new Doc(Base64.getDecoder().decode(Resources.toString(getResource(ENCODED_PDF_FILE2),
-                            Charsets.UTF_8)), copies2)
+                new Doc(Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE)), copies1),
+                new Doc(Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE2)), copies2)
             ),
             "some_type",
             Map.of("caseid",1111)
@@ -143,22 +139,20 @@ public final class SampleData {
         return parsedReport(filename, asList(UUID.randomUUID(), UUID.randomUUID()), allParsed);
     }
 
-    public static LetterWithPdfsRequest letterWithPdfsRequestWithAdditionalData() throws IOException {
+    public static LetterWithPdfsRequest letterWithPdfsRequestWithAdditionalData() throws Exception {
         return new LetterWithPdfsRequest(
                 singletonList(
-                        Base64.getDecoder().decode(Resources.toString(getResource(ENCODED_PDF_FILE),
-                                Charsets.UTF_8))), "someType",
+                        Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE))), "someType",
                 Map.of("reference", "ABD-123-WAZ",
                         "count", 10,
                         "additionInfo", "present")
         );
     }
 
-    public static LetterWithPdfsRequest letterWithPdfsRequestWithNoAdditionalData() throws IOException {
+    public static LetterWithPdfsRequest letterWithPdfsRequestWithNoAdditionalData() throws Exception {
         return new LetterWithPdfsRequest(
                 singletonList(
-                        Base64.getDecoder().decode(Resources.toString(getResource(ENCODED_PDF_FILE),
-                                Charsets.UTF_8))
+                        Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE))
                 ),
                 "someType",
                 null
