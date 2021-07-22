@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.e2e;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -21,7 +22,8 @@ class EndToEndTest extends BaseTest {
 
     private static final Boolean IS_ENCRYPTION_ENABLED = false;
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"false","true"})
     void should_handle_old_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
@@ -32,7 +34,8 @@ class EndToEndTest extends BaseTest {
         );
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"false","true"})
     void should_handle_new_letter_model() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
