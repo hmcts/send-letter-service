@@ -85,8 +85,6 @@ class BaseTest {
     @Autowired
     private WebApplicationContext wac;
 
-    private static String SCHEDULE = "Schedule /";
-
     @BeforeEach
     void setUp() {
         var filter = new WebRequestTrackingFilter();
@@ -117,7 +115,7 @@ class BaseTest {
 
             // Wait for letter to be uploaded.
             await()
-                .atMost(25, SECONDS)
+                .forever()
                 .untilAsserted(() -> {
                     assertThat(server.lettersFolder.listFiles())
                         .as("Files on FTP")
@@ -145,15 +143,16 @@ class BaseTest {
         }
 
         verify(telemetryClient, atLeastOnce()).trackRequest(requestTelemetryCaptor.capture());
+        var schedule = "Schedule /";
         assertThat(requestTelemetryCaptor.getAllValues())
             .extracting(requestTelemetry -> tuple(
                 requestTelemetry.getName(),
                 requestTelemetry.isSuccess()
             ))
             .containsAnyElementsOf(ImmutableList.of(
-                tuple(SCHEDULE + UploadLettersTask.class.getSimpleName(), true),
-                tuple(SCHEDULE + MarkLettersPostedTask.class.getSimpleName(), true),
-                tuple(SCHEDULE + StaleLettersTask.class.getSimpleName(), true)
+                tuple(schedule + UploadLettersTask.class.getSimpleName(), true),
+                tuple(schedule + MarkLettersPostedTask.class.getSimpleName(), true),
+                tuple(schedule + StaleLettersTask.class.getSimpleName(), true)
             ));
 
         verify(telemetryClient, atLeastOnce()).trackDependency(dependencyTelemetryCaptor.capture());
