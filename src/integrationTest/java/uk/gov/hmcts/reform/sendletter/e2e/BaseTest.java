@@ -116,6 +116,7 @@ class BaseTest {
 
             // Wait for letter to be uploaded.
             await()
+                .atLeast(30, SECONDS)
                 .atMost(1, MINUTES)
                 .untilAsserted(() -> {
                     assertThat(server.lettersFolder.listFiles())
