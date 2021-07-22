@@ -20,29 +20,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 })
 class EndToEndTest extends BaseTest {
 
-    private static final Boolean IS_ENCRYPTION_ENABLED = false;
-
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
-    void should_handle_old_letter_model() throws Throwable {
+    @ValueSource(booleans = {false,true})
+    void shouldHandleOldLetterModel(boolean isEncryptionEnabled) throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readResource("letter.json")),
-            IS_ENCRYPTION_ENABLED
+            isEncryptionEnabled
         );
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
-    void should_handle_new_letter_model() throws Throwable {
+    @ValueSource(booleans = {false,true})
+    void shouldHandleNewLetterModel(boolean isEncryptionEnabled) throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(readResource("letter-with-pdf.json")),
-            IS_ENCRYPTION_ENABLED
+            isEncryptionEnabled
         );
     }
 }
