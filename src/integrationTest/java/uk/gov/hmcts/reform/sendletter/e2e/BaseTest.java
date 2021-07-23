@@ -95,7 +95,7 @@ class BaseTest {
     @AfterEach
     public void cleanUp() {
         // This test commits transactions to the database
-        // so we must clean up afterwards
+        // so we must clean up afterwards.
         repository.deleteAll();
     }
 
