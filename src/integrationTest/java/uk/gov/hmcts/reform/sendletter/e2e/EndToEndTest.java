@@ -33,7 +33,7 @@ class EndToEndTest extends BaseTest {
     }
 
     @Test
-    void should_handle_new_letter_model() throws Throwable {
+    void shouldHandleNewLetterModel() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
