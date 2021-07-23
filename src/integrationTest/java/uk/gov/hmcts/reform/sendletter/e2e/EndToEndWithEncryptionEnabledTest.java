@@ -24,7 +24,7 @@ class EndToEndWithEncryptionEnabledTest extends BaseTest {
 
     @Test
     void should_handle_old_letter_model() throws Throwable {
-        should_upload_letter_and_mark_posted(
+        shouldUploadLetterAndMarkPosted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -35,7 +35,7 @@ class EndToEndWithEncryptionEnabledTest extends BaseTest {
 
     @Test
     void should_handle_new_letter_model() throws Throwable {
-        should_upload_letter_and_mark_posted(
+        shouldUploadLetterAndMarkPosted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
