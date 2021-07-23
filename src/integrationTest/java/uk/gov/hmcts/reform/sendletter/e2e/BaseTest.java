@@ -135,7 +135,7 @@ class BaseTest {
                 });
 
             // Wait for the csv report to be deleted so that we don't stop the FTP server before the send letters
-            // task has finished using it.
+            // task has finished using it
             await().forever().untilAsserted(
                 () -> assertThat(server.reportFolder.listFiles()).as("CSV reports on FTP").isEmpty()
             );
