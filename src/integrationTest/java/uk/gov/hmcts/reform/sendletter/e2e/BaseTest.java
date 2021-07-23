@@ -44,7 +44,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
@@ -128,7 +127,7 @@ class BaseTest {
 
             // The report should be processed and the letter marked posted.
             await()
-                .atMost(15, SECONDS)
+                .forever()
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
                     assertThat(letters).as("Letters in DB").hasSize(1);
@@ -137,7 +136,7 @@ class BaseTest {
 
             // Wait for the csv report to be deleted so that we don't stop the FTP server before the send letters
             // task has finished using it.
-            await().atMost(15, SECONDS).untilAsserted(
+            await().forever().untilAsserted(
                 () -> assertThat(server.reportFolder.listFiles()).as("CSV reports on FTP").isEmpty()
             );
         }
