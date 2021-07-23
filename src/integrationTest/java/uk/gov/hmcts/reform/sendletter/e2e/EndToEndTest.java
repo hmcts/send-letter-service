@@ -22,7 +22,7 @@ class EndToEndTest extends BaseTest {
     private static final Boolean IS_ENCRYPTION_ENABLED = false;
 
     @Test
-    void should_handle_old_letter_model() throws Throwable {
+    void shouldHandleOldLetterModel() throws Throwable {
         should_upload_letter_and_mark_posted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
