@@ -191,7 +191,7 @@ class BaseTest {
             }
             if (isEncryptionEnabled) {
                 // Decrypt encrypted zip file so that we can confirm if we are able to decrypt the encrypted zip
-                // using private key and passphrase
+                // using private key and passphrase.
                 PgpDecryptionHelper.DecryptedFile decryptedFile = PgpDecryptionHelper.decryptFile(
                     content,
                     getClass().getResourceAsStream("/encryption/privatekey.asc"),
