@@ -23,7 +23,7 @@ class EndToEndTest extends BaseTest {
 
     @Test
     void shouldHandleOldLetterModel() throws Throwable {
-        should_upload_letter_and_mark_posted(
+        shouldUploadLetterAndMarkPosted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -34,7 +34,7 @@ class EndToEndTest extends BaseTest {
 
     @Test
     void shouldHandleNewLetterModel() throws Throwable {
-        should_upload_letter_and_mark_posted(
+        shouldUploadLetterAndMarkPosted(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)

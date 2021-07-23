@@ -100,7 +100,7 @@ class BaseTest {
         repository.deleteAll();
     }
 
-    void should_upload_letter_and_mark_posted(
+    void shouldUploadLetterAndMarkPosted(
         MockHttpServletRequestBuilder request,
         Boolean isEncryptionEnabled
     ) throws Throwable {
