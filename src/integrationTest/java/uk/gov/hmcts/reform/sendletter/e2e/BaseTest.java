@@ -44,7 +44,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
@@ -85,8 +84,6 @@ class BaseTest {
     @Autowired
     private WebApplicationContext wac;
 
-    private static String SCHEDULE = "Schedule /";
-
     @BeforeEach
     void setUp() {
         var filter = new WebRequestTrackingFilter();
@@ -98,11 +95,11 @@ class BaseTest {
     @AfterEach
     public void cleanUp() {
         // This test commits transactions to the database
-        // so we must clean up afterwards.
+        // so we must clean up afterwards
         repository.deleteAll();
     }
 
-    void should_upload_letter_and_mark_posted(
+    void shouldUploadLetterAndMarkPosted(
         MockHttpServletRequestBuilder request,
         Boolean isEncryptionEnabled
     ) throws Throwable {
@@ -117,7 +114,7 @@ class BaseTest {
 
             // Wait for letter to be uploaded.
             await()
-                .atMost(25, SECONDS)
+                .forever()
                 .untilAsserted(() -> {
                     assertThat(server.lettersFolder.listFiles())
                         .as("Files on FTP")
@@ -130,7 +127,7 @@ class BaseTest {
 
             // The report should be processed and the letter marked posted.
             await()
-                .atMost(15, SECONDS)
+                .forever()
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
                     assertThat(letters).as("Letters in DB").hasSize(1);
@@ -139,21 +136,22 @@ class BaseTest {
 
             // Wait for the csv report to be deleted so that we don't stop the FTP server before the send letters
             // task has finished using it.
-            await().atMost(15, SECONDS).untilAsserted(
+            await().forever().untilAsserted(
                 () -> assertThat(server.reportFolder.listFiles()).as("CSV reports on FTP").isEmpty()
             );
         }
 
         verify(telemetryClient, atLeastOnce()).trackRequest(requestTelemetryCaptor.capture());
+        var schedule = "Schedule /";
         assertThat(requestTelemetryCaptor.getAllValues())
             .extracting(requestTelemetry -> tuple(
                 requestTelemetry.getName(),
                 requestTelemetry.isSuccess()
             ))
             .containsAnyElementsOf(ImmutableList.of(
-                tuple(SCHEDULE + UploadLettersTask.class.getSimpleName(), true),
-                tuple(SCHEDULE + MarkLettersPostedTask.class.getSimpleName(), true),
-                tuple(SCHEDULE + StaleLettersTask.class.getSimpleName(), true)
+                tuple(schedule + UploadLettersTask.class.getSimpleName(), true),
+                tuple(schedule + MarkLettersPostedTask.class.getSimpleName(), true),
+                tuple(schedule + StaleLettersTask.class.getSimpleName(), true)
             ));
 
         verify(telemetryClient, atLeastOnce()).trackDependency(dependencyTelemetryCaptor.capture());
@@ -193,7 +191,7 @@ class BaseTest {
             }
             if (isEncryptionEnabled) {
                 // Decrypt encrypted zip file so that we can confirm if we are able to decrypt the encrypted zip
-                // using private key and passphrase
+                // using private key and passphrase.
                 PgpDecryptionHelper.DecryptedFile decryptedFile = PgpDecryptionHelper.decryptFile(
                     content,
                     getClass().getResourceAsStream("/encryption/privatekey.asc"),
