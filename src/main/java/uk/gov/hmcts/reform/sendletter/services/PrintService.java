@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -43,6 +44,11 @@ public class PrintService {
 
     @Transactional
     public PrintResponse save(String id, String service, PrintRequest request) {
+        try {
+            LOG.info("PrintService PrintRequest {}", mapper.writeValueAsString(request));
+        } catch (JsonProcessingException jpe) {
+            LOG.info("PrintService JsonProcessingException {}", jpe.getMessage(), jpe);
+        }
         String checksum = LetterChecksumGenerator.generateChecksum(request);
         var printRequest = new Print(
             UUID.fromString(id),
