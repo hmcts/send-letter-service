@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
+import java.util.Collections;
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +56,7 @@ class StaleLettersTaskTest {
         // given
         BasicLetterInfo letter = staleLetter();
 
-        given(staleLetterService.getStaleLetters()).willReturn(asList(letter));
+        given(staleLetterService.getStaleLetters()).willReturn(Collections.singletonList(letter));
 
         // when
         task.run();

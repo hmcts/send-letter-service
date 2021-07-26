@@ -37,7 +37,7 @@ class PendingLettersTaskTest {
     ArgumentCaptor<BasicLetterInfo> basicLetterCaptor;
 
     private PendingLettersTask task;
-    private int lettersBeforeMinutes = 5;
+    private final int lettersBeforeMinutes = 5;
 
     @BeforeEach
     void setUp() {

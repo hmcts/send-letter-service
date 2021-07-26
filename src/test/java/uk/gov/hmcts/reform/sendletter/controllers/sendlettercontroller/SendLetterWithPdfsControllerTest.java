@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,8 +15,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static java.lang.String.join;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,6 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @WebMvcTest(SendLetterController.class)
 class SendLetterWithPdfsControllerTest {
@@ -39,7 +37,7 @@ class SendLetterWithPdfsControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        this.validJson = Resources.toString(getResource("controller/letter/v2/letter.json"), UTF_8);
+        this.validJson = loadJson("controller/letter/v2/letter.json");
     }
 
     @ParameterizedTest
@@ -69,7 +67,7 @@ class SendLetterWithPdfsControllerTest {
         );
 
         // then
-        verify(authService).authenticate(eq(authHeader));
+        verify(authService).authenticate(authHeader);
     }
 
     @ParameterizedTest
