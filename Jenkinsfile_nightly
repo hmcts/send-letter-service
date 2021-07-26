@@ -13,6 +13,21 @@ def component = "send-letter-service"
 
 def channel = '#bulk-print-build-notices'
 
+secrets = [
+  's2s-${env}': [
+    secret('microservicekey-send-letter-tests', 'TEST_S2S_SECRET')
+  ],
+  'rpe-send-letter-${env}': [
+    secret('fortify-on-demand-username', 'FORTIFY_USER_NAME'),
+    secret('fortify-on-demand-password', 'FORTIFY_PASSWORD')
+  ]
+]
+
 withNightlyPipeline(type, product, component) {
+  loadVaultSecrets(secrets)
+  enableFortifyScan()
   enableSlackNotifications(channel)
+  after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
 }
