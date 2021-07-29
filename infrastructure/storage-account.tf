@@ -29,6 +29,8 @@ locals {
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
 
+  valid_subnets = var.env == "aat" ? concat(valid_subnets, [preview_aks_00_subnet, preview_aks_01_subnet]) : valid_subnets
+
   short_component = replace(var.component, "-service", "")
 
   keda_mi_object_id = data.azurerm_user_assigned_identity.keda_mi.principal_id
