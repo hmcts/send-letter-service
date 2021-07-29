@@ -21,7 +21,7 @@ locals {
     "new-bulkprint"
   ]
 
-  valid_subnets = [
+  standard_subnets = [
     data.azurerm_subnet.jenkins_subnet.id,
     data.azurerm_subnet.jenkins_aks_00.id,
     data.azurerm_subnet.jenkins_aks_01.id,
@@ -29,7 +29,7 @@ locals {
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
 
-  valid_subnets = var.env == "aat" ? concat(valid_subnets, [preview_aks_00_subnet, preview_aks_01_subnet]) : valid_subnets
+  valid_subnets = var.env == "aat" ? concat(standard_subnets, [preview_aks_00_subnet, preview_aks_01_subnet]) : standard_subnets
 
   short_component = replace(var.component, "-service", "")
 
