@@ -29,7 +29,8 @@ locals {
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
 
-  valid_subnets = var.env == "aat" ? concat(standard_subnets, [preview_aks_00_subnet, preview_aks_01_subnet]) : standard_subnets
+  preview_subnets = var.env == "aat" ? [data.azurerm_subnet.preview_aks_00_subnet.id, data.azurerm_subnet.preview_aks_01_subnet.id] : []
+  all_valid_subnets =  concat(local.standard_subnets, local.preview_subnets)
 
   short_component = replace(var.component, "-service", "")
 
@@ -45,7 +46,7 @@ module "storage_account" {
   account_kind             = "StorageV2"
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  sa_subnets               = local.valid_subnets
+  sa_subnets               = local.all_valid_subnets
   managed_identity_object_id = local.keda_mi_object_id
   role_assignments           = [
     "Storage Blob Data Reader"
