@@ -221,7 +221,7 @@ dependencyManagement {
       entry 'groovy-xml'
     }
     //CVE-2019-14900
-    dependencySet(group: 'org.hibernate', version: '5.5.4.Final') {
+    dependencySet(group: 'org.hibernate', version: '5.5.5.Final') {
       entry 'hibernate-core'
     }
     // avoid CVE-2021-29425
