@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionRepository;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +28,7 @@ class ExceptionLetterServiceTest {
     @Test
     void should_invoke_save() {
         service.save(exceptionLetter);
-        verify(repository).save(eq(exceptionLetter));
+        verify(repository).save(exceptionLetter);
     }
 
 }

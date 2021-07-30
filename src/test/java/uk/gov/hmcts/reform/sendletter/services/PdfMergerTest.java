@@ -8,21 +8,20 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.PdfMerger;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class PdfMergerTest {
 
     @Test
-    void should_return_a_merged_pdf_when_multiple_documents_are_sent() throws IOException {
+    void should_return_a_merged_pdf_when_multiple_documents_are_sent() throws Exception {
         //given
-        byte[] test1Pdf = toByteArray(getResource("test1.pdf"));
-        byte[] test2Pdf = toByteArray(getResource("test2.pdf"));
-        byte[] expectedMergedPdf = toByteArray(getResource("merged.pdf"));
+        byte[] test1Pdf = loadResource("test1.pdf");
+        byte[] test2Pdf = loadResource("test2.pdf");
+        byte[] expectedMergedPdf = loadResource("merged.pdf");
 
         //when
         byte[] actualMergedPdf = PdfMerger.mergeDocuments(asList(test1Pdf, test2Pdf));
@@ -41,9 +40,9 @@ class PdfMergerTest {
     }
 
     @Test
-    void should_return_a_merged_pdf_same_as_original_pdf_when_single_pdf_is_sent() throws IOException {
+    void should_return_a_merged_pdf_same_as_original_pdf_when_single_pdf_is_sent() throws Exception {
         //given
-        byte[] testPdf = toByteArray(getResource("test1.pdf"));
+        byte[] testPdf = loadResource("test1.pdf");
 
         //when
         byte[] actualMergedPdf = PdfMerger.mergeDocuments(singletonList(testPdf));

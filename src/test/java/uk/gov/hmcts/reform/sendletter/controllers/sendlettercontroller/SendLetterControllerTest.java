@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -20,7 +18,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +35,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @WebMvcTest(SendLetterController.class)
 class SendLetterControllerTest {
@@ -201,7 +199,7 @@ class SendLetterControllerTest {
         );
     }
 
-    private String readResource(final String fileName) throws IOException {
-        return Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+    private String readResource(final String fileName) throws Exception {
+        return loadJson(fileName);
     }
 }

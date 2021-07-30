@@ -17,8 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 @ExtendWith(MockitoExtension.class)
 class PdfCreatorTest {
@@ -52,8 +51,8 @@ class PdfCreatorTest {
     @Test
     void should_handle_documents_with_number_of_copies_specified() throws Exception {
         // given
-        byte[] test1Pdf = toByteArray(getResource("test1.pdf"));
-        byte[] test2Pdf = toByteArray(getResource("test2.pdf"));
+        byte[] test1Pdf = loadResource("test1.pdf");
+        byte[] test2Pdf = loadResource("test2.pdf");
 
         given(duplexPreparator.prepare(test1Pdf)).willReturn(test1Pdf);
         given(duplexPreparator.prepare(test2Pdf)).willReturn(test2Pdf);
@@ -65,8 +64,8 @@ class PdfCreatorTest {
         byte[] result = pdfCreator.createFromBase64PdfWithCopies(asList(doc1, doc2));
 
         // then
-        verify(duplexPreparator, times(1)).prepare(eq(doc1.content));
-        verify(duplexPreparator, times(1)).prepare(eq(doc2.content));
+        verify(duplexPreparator, times(1)).prepare(doc1.content);
+        verify(duplexPreparator, times(1)).prepare(doc2.content);
 
         try (PDDocument doc = PDDocument.load(result)) {
             assertThat(doc.getNumberOfPages()).isEqualTo(doc1.copies + doc2.copies);
@@ -75,9 +74,9 @@ class PdfCreatorTest {
 
     @Test
     void should_return_a_merged_pdf_when_multiple_documents_are_passed() throws Exception {
-        byte[] test1Pdf = toByteArray(getResource("test1.pdf"));
-        byte[] test2Pdf = toByteArray(getResource("test2.pdf"));
-        byte[] expectedMergedPdf = toByteArray(getResource("merged.pdf"));
+        byte[] test1Pdf = loadResource("test1.pdf");
+        byte[] test2Pdf = loadResource("test2.pdf");
+        byte[] expectedMergedPdf = loadResource("merged.pdf");
 
         given(duplexPreparator.prepare(test1Pdf)).willReturn(test1Pdf);
         given(duplexPreparator.prepare(test2Pdf)).willReturn(test2Pdf);

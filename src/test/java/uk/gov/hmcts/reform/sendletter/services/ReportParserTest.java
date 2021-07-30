@@ -10,10 +10,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class ReportParserTest {
 
@@ -67,7 +66,7 @@ class ReportParserTest {
 
     @Test
     void should_parse_sample_report() throws Exception {
-        byte[] report = toByteArray(getResource("report.csv"));
+        byte[] report = loadResource("report.csv");
 
         ParsedReport result = new ReportParser().parse(new Report("a.csv", report));
 
@@ -90,7 +89,7 @@ class ReportParserTest {
     }
 
     private String formatReport(Object... ids) {
-        StringBuffer report = new StringBuffer(
+        StringBuilder report = new StringBuilder(
             "\"StartDate\",\"StartTime\",\"InputFileName\"\n");
         for (Object id : ids) {
             report.append(formatRecord(id));
