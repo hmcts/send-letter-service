@@ -45,7 +45,8 @@ public class PrintService {
     @Transactional
     public PrintResponse save(String id, String service, PrintRequest request) {
         try {
-            LOG.info("PrintService PrintRequest {}", mapper.writeValueAsString(request));
+            var req =  mapper.writeValueAsString(request);
+            LOG.info("PrintService PrintRequest {}", req);
         } catch (JsonProcessingException jpe) {
             LOG.info("PrintService JsonProcessingException {}", jpe.getMessage(), jpe);
         }
@@ -61,7 +62,7 @@ public class PrintService {
             request.caseRef,
             request.letterType
         );
-        Print printSaved = repository.save(printRequest);
+        var printSaved = repository.save(printRequest);
 
         return getResponse(printSaved, service);
     }
@@ -117,7 +118,6 @@ public class PrintService {
         );
 
         return documents.stream()
-            .peek(doc -> LOG.info("Print Response fileName: {}", doc.fileName))
             .map(document -> new Document(
                 document.fileName,
                 String.join("-",
