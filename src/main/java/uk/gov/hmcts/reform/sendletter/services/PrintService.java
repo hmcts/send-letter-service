@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
@@ -27,7 +24,6 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class PrintService {
-    private static final Logger LOG = LoggerFactory.getLogger(PrintService.class);
     private final PrintRepository repository;
     private final ObjectMapper mapper;
     private final SasTokenGeneratorService sasTokenGeneratorService;
@@ -44,12 +40,6 @@ public class PrintService {
 
     @Transactional
     public PrintResponse save(String id, String service, PrintRequest request) {
-        try {
-            var req =  mapper.writeValueAsString(request);
-            LOG.info("PrintService PrintRequest {}", req);
-        } catch (JsonProcessingException jpe) {
-            LOG.info("PrintService JsonProcessingException {}", jpe.getMessage(), jpe);
-        }
         String checksum = LetterChecksumGenerator.generateChecksum(request);
         var printRequest = new Print(
             UUID.fromString(id),
@@ -63,7 +53,6 @@ public class PrintService {
             request.letterType
         );
         var printSaved = repository.save(printRequest);
-
         return getResponse(printSaved, service);
     }
 
