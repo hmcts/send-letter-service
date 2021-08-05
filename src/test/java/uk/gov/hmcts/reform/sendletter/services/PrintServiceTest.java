@@ -22,9 +22,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
@@ -224,6 +227,27 @@ class PrintServiceTest {
         assertThat(printJob.containerName)
             .isEqualTo("new-sscs");
 
+    }
+
+    @Test
+    void shouldThrowJsonProcessingException() throws Exception {
+        var service = "sscs";
+        var uuid = UUID.randomUUID();
+
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        PrintRequest mockRequest = mock(PrintRequest.class);
+
+        given(mockMapper.writeValueAsString(any()))
+            .willThrow(mock(JsonProcessingException.class));
+
+        PrintService mockService = new PrintService(repository, mockMapper, sasTokenGeneratorService);
+
+        assertThatThrownBy(() -> mockService.save(
+            uuid.toString(),
+            service,
+            mockRequest
+        )).isInstanceOf(NullPointerException.class)
+            .hasMessage(null);
     }
 
     private JsonNode getDocuments() throws JsonProcessingException {
