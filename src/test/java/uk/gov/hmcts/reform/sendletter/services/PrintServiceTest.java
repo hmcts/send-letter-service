@@ -232,7 +232,7 @@ class PrintServiceTest {
     @Test
     void shouldThrowJsonProcessingException() throws Exception {
         var service = "sscs";
-        var uuid = UUID.randomUUID();
+        var letterId = UUID.randomUUID().toString();
 
         ObjectMapper mockMapper = mock(ObjectMapper.class);
         PrintRequest mockRequest = mock(PrintRequest.class);
@@ -243,7 +243,7 @@ class PrintServiceTest {
         PrintService mockService = new PrintService(repository, mockMapper, sasTokenGeneratorService);
 
         assertThatThrownBy(() -> mockService.save(
-            uuid.toString(),
+            letterId,
             service,
             mockRequest
         )).isInstanceOf(NullPointerException.class)
