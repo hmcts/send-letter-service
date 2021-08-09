@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,17 +18,18 @@ import uk.gov.hmcts.reform.sendletter.model.out.PrintJob;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PrintUploadInfo;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @ExtendWith(MockitoExtension.class)
 class PrintServiceTest {
@@ -41,7 +41,7 @@ class PrintServiceTest {
     @Captor
     private ArgumentCaptor<Print> printArgumentCaptor;
     private PrintService printService;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -49,8 +49,8 @@ class PrintServiceTest {
     }
 
     @Test
-    void should_save_print_request_when_request_is_valid() throws IOException {
-        String json = Resources.toString(getResource("print_job.json"), UTF_8);
+    void should_save_print_request_when_request_is_valid() throws Exception {
+        String json = loadJson("print_job.json");
         String service = "sscs";
         UUID uuid = UUID.randomUUID();
 
@@ -83,7 +83,7 @@ class PrintServiceTest {
         given(sasTokenGeneratorService.getContainerName(service))
             .willReturn(containerName);
 
-        PrintResponse printResponse = printService.save(
+        printService.save(
             uuid.toString(),
             service,
             printRequest
@@ -125,8 +125,8 @@ class PrintServiceTest {
     }
 
     @Test
-    void should_return_print_response_when_request_is_valid() throws IOException {
-        String json = Resources.toString(getResource("print_job.json"), UTF_8);
+    void should_return_print_response_when_request_is_valid() throws Exception {
+        String json = loadJson("print_job.json");
         String service = "sscs";
 
         UUID uuid = UUID.randomUUID();
@@ -186,7 +186,6 @@ class PrintServiceTest {
             );
 
         PrintJob printJob = printResponse.printJob;
-
         assertThat(printJob.id)
             .isEqualTo(uuid);
 
@@ -228,6 +227,27 @@ class PrintServiceTest {
         assertThat(printJob.containerName)
             .isEqualTo("new-sscs");
 
+    }
+
+    @Test
+    void shouldThrowJsonProcessingException() throws Exception {
+        var service = "sscs";
+        var letterId = UUID.randomUUID().toString();
+
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        PrintRequest mockRequest = mock(PrintRequest.class);
+
+        given(mockMapper.writeValueAsString(any()))
+            .willThrow(mock(JsonProcessingException.class));
+
+        PrintService mockService = new PrintService(repository, mockMapper, sasTokenGeneratorService);
+
+        assertThatThrownBy(() -> mockService.save(
+            letterId,
+            service,
+            mockRequest
+        )).isInstanceOf(NullPointerException.class)
+            .hasMessage(null);
     }
 
     private JsonNode getDocuments() throws JsonProcessingException {

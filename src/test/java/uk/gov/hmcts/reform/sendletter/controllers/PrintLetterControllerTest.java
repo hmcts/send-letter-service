@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,8 +14,6 @@ import uk.gov.hmcts.reform.sendletter.services.PrintService;
 
 import java.util.UUID;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.google.common.io.Resources.getResource;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
@@ -24,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 
 @WebMvcTest(PrintLetterController.class)
 class PrintLetterControllerTest {
@@ -42,7 +40,7 @@ class PrintLetterControllerTest {
         String serviceName = "sscs";
         UUID uuid = UUID.randomUUID();
 
-        String responseJson = Resources.toString(getResource("print_job_response.json"), UTF_8);
+        String responseJson = loadJson("print_job_response.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -55,7 +53,7 @@ class PrintLetterControllerTest {
         given(printService.save(eq(uuid.toString()), eq(serviceName), isA(PrintRequest.class)))
             .willReturn(printResponse);
 
-        String requestJson = Resources.toString(getResource("print_job.json"), UTF_8);
+        String requestJson = loadJson("print_job.json");
         mockMvc.perform(put("/print-jobs/{id}", uuid)
             .header("ServiceAuthorization", serviceAuthorization)
             .contentType(MediaTypes.PRINT_V1)

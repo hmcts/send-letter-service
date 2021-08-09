@@ -6,16 +6,15 @@ import uk.gov.hmcts.reform.sendletter.model.PdfDoc;
 import java.io.ByteArrayInputStream;
 import java.util.zip.ZipInputStream;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class ZipperTest {
 
     @Test
     void should_zip_file() throws Exception {
-        byte[] fileContent = toByteArray(getResource("hello.pdf"));
-        byte[] expectedZipFileContent = toByteArray(getResource("hello.zip"));
+        byte[] fileContent = loadResource("hello.pdf");
+        byte[] expectedZipFileContent = loadResource("hello.zip");
 
         byte[] result = new Zipper().zip(
             new PdfDoc("hello.pdf", fileContent)
