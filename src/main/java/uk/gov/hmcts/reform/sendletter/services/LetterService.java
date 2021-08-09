@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.sendletter.services.encryption.PgpEncryptionUtil;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
-import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
 import java.time.LocalDateTime;
@@ -222,7 +221,7 @@ public class LetterService {
         LocalDateTime createdAt
     ) {
         Asserts.notNull(pgpPublicKey, "pgpPublicKey");
-        String zipFileName = FinalPackageFileNameHelper.generateName(
+        String zipFileName = FileNameHelper.generateName(
             letter.getType(),
             serviceName,
             createdAt,

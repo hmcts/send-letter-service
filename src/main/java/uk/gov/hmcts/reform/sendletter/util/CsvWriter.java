@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
-import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
+import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -110,7 +110,7 @@ public final class CsvWriter {
 
     private static void printStaleRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
-            printer.printRecord(FinalPackageFileNameHelper.generateName(letter.getType(),
+            printer.printRecord(FileNameHelper.generateName(letter.getType(),
                 letter.getService(), letter.getCreatedAt(), letter.getId(), true),
                     letter.getService(), letter.getCreatedAt(),
                     letter.getSentToPrintAt());
@@ -122,7 +122,7 @@ public final class CsvWriter {
 
     private static void printDelayRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
-            printer.printRecord(FinalPackageFileNameHelper.generateName(letter.getType(),
+            printer.printRecord(FileNameHelper.generateName(letter.getType(),
                 letter.getService(), letter.getCreatedAt(), letter.getId(), true),
                     letter.getService(), letter.getCreatedAt(),
                     letter.getSentToPrintAt(), letter.getPrintedAt());

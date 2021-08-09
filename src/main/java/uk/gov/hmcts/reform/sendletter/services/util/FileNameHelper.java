@@ -4,10 +4,15 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.File
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 public final class FileNameHelper {
 
+    public static final DateTimeFormatter dateTimeFormatter = ofPattern("ddMMyyyyHHmmss");
     private static final String SEPARATOR = "_";
 
     public static String generatePdfName(Letter letter) {
@@ -30,6 +35,33 @@ public final class FileNameHelper {
                 throw new UnableToExtractIdFromFileNameException(e);
             }
         }
+    }
+
+    public static String generateName(Letter letter) {
+        return generateName(
+            letter.getType(),
+            letter.getService(),
+            letter.getCreatedAt(),
+            letter.getId(),
+            letter.isEncrypted()
+        );
+    }
+
+    public static String generateName(
+        String type,
+        String service,
+        LocalDateTime createdAtDateTime,
+        UUID id,
+        Boolean isEncrypted
+    ) {
+        return String.format(
+            "%s_%s_%s_%s.%s",
+            type.replace("_", ""),
+            service.replace("_", ""),
+            createdAtDateTime.format(dateTimeFormatter),
+            id,
+            isEncrypted ? "pgp" : "zip"
+        );
     }
 
     private FileNameHelper() {

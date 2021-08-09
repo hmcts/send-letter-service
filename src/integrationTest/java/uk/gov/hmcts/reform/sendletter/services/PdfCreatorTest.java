@@ -8,13 +8,13 @@ import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 
+import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class PdfCreatorTest {
 
@@ -30,8 +30,8 @@ class PdfCreatorTest {
         // given
 
         List<byte[]> pdfs = asList(
-            toByteArray(getResource("pdfs/test1.pdf")),
-            toByteArray(getResource("pdfs/test2.pdf"))
+            loadResource("pdfs/test1.pdf"),
+            loadResource("pdfs/test2.pdf")
         );
 
         // when
@@ -46,8 +46,8 @@ class PdfCreatorTest {
     void should_handle_base64_encoded_pdfs_with_number_of_copies() throws Exception {
         // given
         List<Doc> docs = asList(
-            new Doc(toByteArray(getResource("pdfs/test1.pdf")), 1),
-            new Doc(toByteArray(getResource("pdfs/test2.pdf")), 10)
+            new Doc(loadResource("pdfs/test1.pdf"), 1),
+            new Doc(loadResource("pdfs/test2.pdf"), 10)
         );
 
         // when
@@ -61,12 +61,12 @@ class PdfCreatorTest {
     @Test
     void should_throw_an_exception_if_bytes_do_not_represent_pdf() {
         // given
-        List<byte[]> pdfs = asList(
+        List<byte[]> pdfs = Collections.singletonList(
             "clearly not a pdf".getBytes()
         );
 
         // when
-        Throwable exc = catchThrowable(() -> pdfCreator.createFromBase64Pdfs(pdfs));
+        var exc = catchThrowable(() -> pdfCreator.createFromBase64Pdfs(pdfs));
 
         // then
         assertThat(exc)

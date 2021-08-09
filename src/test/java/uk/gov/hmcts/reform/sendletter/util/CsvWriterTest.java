@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
-import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
+import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.io.File;
 import java.io.FileReader;
@@ -254,7 +254,7 @@ class CsvWriterTest {
                 "%s_%s_%s_%s.%s",
                 type.replace("_", ""),
                 service.replace("_", ""),
-                createdAtDateTime.format(FinalPackageFileNameHelper.dateTimeFormatter),
+                createdAtDateTime.format(FileNameHelper.dateTimeFormatter),
                 id,
                 isEncrypted ? "pgp" : "zip"
         );
