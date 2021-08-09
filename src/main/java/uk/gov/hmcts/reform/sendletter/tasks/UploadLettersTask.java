@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
-import uk.gov.hmcts.reform.sendletter.services.util.FinalPackageFileNameHelper;
+import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -117,7 +117,7 @@ public class UploadLettersTask {
 
     private void uploadLetter(Letter letter, String folder, SFTPClient sftpClient) {
         FileToSend file = new FileToSend(
-            FinalPackageFileNameHelper.generateName(letter),
+            FileNameHelper.generateName(letter),
             letter.getFileContent(),
             isSmokeTest(letter)
         );
