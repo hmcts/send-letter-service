@@ -20,11 +20,13 @@ public class DuplexPreparator {
      */
     public byte[] prepare(byte[] pdf) {
         logger.info("File size is {} KB", pdf.length / 1024);
-        try (PDDocument pdDoc = PDDocument.load(pdf)) {
-            if (pdDoc.getNumberOfPages() % 2 == 1) {
-                PDRectangle lastPageMediaBox = pdDoc.getPage(pdDoc.getNumberOfPages() - 1).getMediaBox();
+        try (var pdDoc = PDDocument.load(pdf)) {
+            int numberOfPages = pdDoc.getNumberOfPages();
+            logger.info("File has {} pages.", numberOfPages);
+            if (numberOfPages % 2 == 1) {
+                PDRectangle lastPageMediaBox = pdDoc.getPage(numberOfPages - 1).getMediaBox();
                 pdDoc.addPage(new PDPage(lastPageMediaBox));
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                var out = new ByteArrayOutputStream();
                 pdDoc.save(out);
 
                 return out.toByteArray();
