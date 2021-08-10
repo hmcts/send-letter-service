@@ -5,17 +5,16 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 
-import static com.google.common.io.Resources.getResource;
-import static com.google.common.io.Resources.toByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class DuplexPreparatorTest {
 
     @Test
     void should_add_blank_page_if_total_number_of_pages_is_odd() throws Exception {
         // given
-        byte[] before = toByteArray(getResource("single_page.pdf"));
+        byte[] before = loadResource("single_page.pdf");
 
         // when
         byte[] after = new DuplexPreparator().prepare(before);
@@ -30,7 +29,7 @@ class DuplexPreparatorTest {
     @Test
     void should_not_add_a_blank_page_if_total_number_of_pages_is_even() throws Exception {
         // given
-        byte[] before = toByteArray(getResource("two_pages.pdf"));
+        byte[] before = loadResource("two_pages.pdf");
 
         // when
         byte[] after = new DuplexPreparator().prepare(before);
@@ -41,7 +40,11 @@ class DuplexPreparatorTest {
 
     @Test
     void should_throw_duplex_exception_when_stream_is_not_pdf() {
-        assertThatThrownBy(() -> new DuplexPreparator().prepare("corruptedStream".getBytes()))
+        assertThatThrownBy(DuplexPreparatorTest::prepare)
             .isInstanceOf(DuplexException.class);
+    }
+
+    private static void prepare() {
+        new DuplexPreparator().prepare("corruptedStream".getBytes());
     }
 }

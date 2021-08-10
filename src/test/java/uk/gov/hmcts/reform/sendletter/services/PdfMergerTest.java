@@ -53,11 +53,15 @@ class PdfMergerTest {
 
     @Test
     void should_throw_pdf_merge_exception_when_doc_is_not_pdf_stream() {
-        assertThatThrownBy(() -> PdfMerger.mergeDocuments(asList("test1".getBytes(), "test2".getBytes())))
+        assertThatThrownBy(PdfMergerTest::merge)
             .isInstanceOf(PdfMergeException.class);
     }
 
     private InputStream getPdfPageContents(byte[] pdf, int pageNumber) throws IOException {
         return PDDocument.load(pdf).getPage(pageNumber).getContents();
+    }
+
+    private static void merge() {
+        PdfMerger.mergeDocuments(asList("test1".getBytes(), "test2".getBytes()));
     }
 }

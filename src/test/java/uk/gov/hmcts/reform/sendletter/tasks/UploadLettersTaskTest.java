@@ -58,12 +58,12 @@ class UploadLettersTaskTest {
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
-    private ArgumentCaptor<FileToSend> captureFileToSend = ArgumentCaptor.forClass(FileToSend.class);
+    private final ArgumentCaptor<FileToSend> captureFileToSend = ArgumentCaptor.forClass(FileToSend.class);
 
     @Captor
     private ArgumentCaptor<Function<SFTPClient, Integer>> captureRunWith;
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -81,7 +81,7 @@ class UploadLettersTaskTest {
         // given
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
 
-        given(repo.countByStatus(eq(Created))).willReturn(2);
+        given(repo.countByStatus(Created)).willReturn(2);
 
         given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
             .willReturn(Optional.of(letterOfType(SMOKE_TEST_LETTER_TYPE, Map.of("Document_1", 1))))
@@ -122,7 +122,7 @@ class UploadLettersTaskTest {
         task().run();
 
         verify(ftpClient, never()).runWith(any());
-        verify(repo, never()).countByStatus(eq(Created));
+        verify(repo, never()).countByStatus(Created);
     }
 
     @Test
@@ -132,7 +132,7 @@ class UploadLettersTaskTest {
         Letter letterB = letterForService("service_B", Map.of("Document_1", 1));
         Letter letterC = letterForService("service_C", Map.of("Document_1", 1));
 
-        given(repo.countByStatus(eq(Created))).willReturn(3);
+        given(repo.countByStatus(Created)).willReturn(3);
 
         given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
             .willReturn(Optional.of(letterA))
