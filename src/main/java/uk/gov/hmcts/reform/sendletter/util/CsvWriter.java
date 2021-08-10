@@ -51,7 +51,7 @@ public final class CsvWriter {
     ) throws IOException {
         var path = Files.createTempFile("Letters-count-summary-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
-        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(LETTERS_COUNT_SUMMARY_CSV_HEADERS).build();
 
         try (var fileWriter = new FileWriter(csvFile);
              var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
@@ -65,7 +65,7 @@ public final class CsvWriter {
     public static File writeStaleLettersToCsv(List<BasicLetterInfo> staleLetters) throws IOException {
         var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
-        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_CSV_HEADERS);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(STALE_LETTERS_CSV_HEADERS).build();
 
         try (var fileWriter = new FileWriter(csvFile);
             var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
@@ -81,7 +81,7 @@ public final class CsvWriter {
     public static File writeDelayedPostedLettersToCsv(Stream<BasicLetterInfo> letters) throws IOException {
         var path = Files.createTempFile("Deplayed-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
-        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS).build();
         var count = new AtomicInteger(0);
 
         try (var fileWriter = new FileWriter(csvFile);
@@ -96,7 +96,7 @@ public final class CsvWriter {
     public static File writeStaleLettersReport(Stream<BasicLetterInfo> letters) throws IOException {
         var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
-        CSVFormat csvFileHeader = CSVFormat.DEFAULT.withHeader(STALE_LETTERS_EMAIL_CSV_HEADERS);
+        CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(STALE_LETTERS_EMAIL_CSV_HEADERS).build();
         var count = new AtomicInteger(0);
 
         try (var fileWriter = new FileWriter(csvFile);

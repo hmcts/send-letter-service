@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.sendletter.services.encryption;
 
-import com.google.common.io.Resources;
 import org.assertj.core.api.Assertions;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class PgpEncryptionUtilTest {
 
@@ -19,7 +17,7 @@ class PgpEncryptionUtilTest {
         //Given
         String inputFileName = "unencrypted.zip";
 
-        byte[] inputZipFile = Resources.toByteArray(getResource(inputFileName));
+        byte[] inputZipFile = loadResource(inputFileName);
 
         PGPPublicKey pgpPublicKey = PgpEncryptionUtil.loadPublicKey(loadPublicKey());
 
@@ -53,8 +51,8 @@ class PgpEncryptionUtilTest {
             .isInstanceOf(UnableToLoadPgpPublicKeyException.class);
     }
 
-    private byte[] loadPublicKey() throws IOException {
-        return Resources.toByteArray(getResource("encryption/pubkey.asc"));
+    private byte[] loadPublicKey() throws Exception {
+        return loadResource("encryption/pubkey.asc");
     }
 
     private InputStream loadPrivateKey() {

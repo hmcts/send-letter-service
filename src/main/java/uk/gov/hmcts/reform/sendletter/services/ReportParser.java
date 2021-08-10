@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -38,8 +39,8 @@ public class ReportParser {
 
             return new ParsedReport(
                 report.path,
-                statuses.stream().filter(status -> status != null).collect(toList()),
-                statuses.stream().allMatch(status -> status != null)
+                statuses.stream().filter(Objects::nonNull).collect(toList()),
+                statuses.stream().allMatch(Objects::nonNull)
             );
 
         } catch (IOException exc) {
@@ -50,7 +51,7 @@ public class ReportParser {
     private CSVParser parserFor(byte[] csv) throws IOException {
         return CSVFormat
             .DEFAULT
-            .withHeader()
+            .builder().setHeader().build()
             .parse(new InputStreamReader(new ByteArrayInputStream(csv)));
     }
 
@@ -58,15 +59,15 @@ public class ReportParser {
      * Converts cvs row into a letter print status object.
      * Returns null if conversion fails.
      */
-    private LetterPrintStatus toPrintStatus(CSVRecord record) {
+    private LetterPrintStatus toPrintStatus(CSVRecord csvRecord) {
         try {
             return new LetterPrintStatus(
-                FileNameHelper.extractIdFromPdfName(record.get("InputFileName")),
-                ZonedDateTime.parse(record.get("StartDate") + "T" + record.get("StartTime") + "Z",
+                FileNameHelper.extractIdFromPdfName(csvRecord.get("InputFileName")),
+                ZonedDateTime.parse(csvRecord.get("StartDate") + "T" + csvRecord.get("StartTime") + "Z",
                     DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm'Z'").withZone(ZoneOffset.UTC))
             );
         } catch (Exception exc) {
-            logger.error("Error parsing row: {}", record, exc);
+            logger.error("Error parsing row: {}", csvRecord, exc);
             return null;
         }
     }
