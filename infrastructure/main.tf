@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "=2.49.0"
+  version = "=2.72.0"
   features {}
 }
 
@@ -17,15 +17,7 @@ locals {
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
   product = "bulk-print"
-  tags = merge(
-    var.common_tags,
-    map(
-      "Team Contact", "#bulk-print-build-notices",
-      "Team Name", "Bulk Print",
-      "contactSlackChannel", "#bulk-print-build-notices",
-      "managedBy", "Bulk Print"
-    )
-  )
+  tags = var.common_tags
 }
 
 module "db-v11" {
