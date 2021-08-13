@@ -107,7 +107,7 @@ variable upload_summary_report_cron {
   description = "Cron signature for job to send daily summary report of uploaded letters"
 }
 
-variable "upload_summary_report_enabled" {
+variable upload_summary_report_enabled {
   default = false
 }
 
@@ -133,6 +133,6 @@ variable num_staging_dbs {
   default = 0
 }
 
-variable "mgmt_subscription_id" {}
+variable mgmt_subscription_id {}
 
-variable "aks_subscription_id" {}
+variable aks_subscription_id {}
