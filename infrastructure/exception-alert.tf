@@ -3,7 +3,7 @@ module "send-letter-service-exception-alert" {
   location          = azurerm_application_insights.appinsights.location
   app_insights_name = azurerm_application_insights.appinsights.name
 
-  enabled    = "${var.env == "prod"}"
+  enabled    = var.env == "prod"
   alert_name = "Send_Letter_Service_exception_-_BSP"
   alert_desc = "Triggers when send letter service receive at least one exception within a 15 minutes window timeframe."
 

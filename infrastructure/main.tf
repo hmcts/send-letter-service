@@ -1,15 +1,4 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.72.0"
-    }
-  }
-}
 
-provider "azurerm" {
-  features {}
-}
 
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
@@ -25,7 +14,7 @@ locals {
   encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
 
   product = "bulk-print"
-  tags = var.common_tags
+  tags    = var.common_tags
 }
 
 module "db-v11" {

@@ -29,8 +29,8 @@ locals {
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
 
-  preview_subnets = var.env == "aat" ? [data.azurerm_subnet.preview_aks_00_subnet.id, data.azurerm_subnet.preview_aks_01_subnet.id] : []
-  all_valid_subnets =  concat(local.standard_subnets, local.preview_subnets)
+  preview_subnets   = var.env == "aat" ? [data.azurerm_subnet.preview_aks_00_subnet.id, data.azurerm_subnet.preview_aks_01_subnet.id] : []
+  all_valid_subnets = concat(local.standard_subnets, local.preview_subnets)
 
   short_component = replace(var.component, "-service", "")
 
@@ -38,21 +38,21 @@ locals {
 }
 
 module "storage_account" {
-  source                   = "git@github.com:hmcts/cnp-module-storage-account?ref=master"
-  env                      = var.env
-  storage_account_name     = replace("${var.product}${local.short_component}${var.env}", "-", "")
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  sa_subnets               = local.all_valid_subnets
+  source                     = "git@github.com:hmcts/cnp-module-storage-account?ref=master"
+  env                        = var.env
+  storage_account_name       = replace("${var.product}${local.short_component}${var.env}", "-", "")
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
+  account_kind               = "StorageV2"
+  account_tier               = "Standard"
+  account_replication_type   = "LRS"
+  sa_subnets                 = local.all_valid_subnets
   managed_identity_object_id = local.keda_mi_object_id
-  role_assignments           = [
+  role_assignments = [
     "Storage Blob Data Reader"
   ]
 
-  common_tags                = local.tags
+  common_tags = local.tags
 }
 
 resource "azurerm_storage_container" "service_containers" {
