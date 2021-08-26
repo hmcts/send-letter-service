@@ -172,7 +172,7 @@ accesstoken:
       newContainerName: new-bulkprint
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: divorce_frontend
-      newContainerName: new-cmc
+      newContainerName: new-divorce
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: probate_backend
       newContainerName: new-probate
