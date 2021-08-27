@@ -7,8 +7,8 @@ locals {
   aat_cft_vnet_name           = "cft-aat-vnet"
   aat_cft_vnet_resource_group = "cft-aat-network-rg"
 
-  app_aks_network_name    = var.env == "aat" ? local.aat_cft_vnet_name : "core-${local.aks_env}-vnet"
-  app_aks_network_rg_name = var.env == "aat" ? local.aat_cft_vnet_resource_group : "aks-infra-${local.aks_env}-rg"
+  app_aks_network_name    = var.env == "sbox" || var.env == "perftest" || var.env == "aat" || var.env == "ithc" ? "cft-${local.aks_env}-vnet" : "core-${local.aks_env}-vnet"
+  app_aks_network_rg_name = var.env == "sbox" || var.env == "perftest" || var.env == "aat" || var.env == "ithc" ? "cft-${local.aks_env}-network-rg" : "aks-infra-${local.aks_env}-rg"
 }
 
 data "azurerm_subnet" "jenkins_subnet" {
