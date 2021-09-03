@@ -60,7 +60,7 @@ public final class FileNameHelper {
             service.replace("_", ""),
             createdAtDateTime.format(dateTimeFormatter),
             id,
-            isEncrypted ? "pgp" : "zip"
+            Boolean.TRUE.equals(isEncrypted) ? "pgp" : "zip"
         );
     }
 
