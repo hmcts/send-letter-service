@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
@@ -50,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
@@ -440,22 +440,20 @@ class LetterServiceTest {
     }
 
     @Test
-    void should_throw_LetterNotFoundException() {
+    void should_return_null_status_and_no_interaction_with_duplicate_service() {
         createLetterService(false, null);
         UUID id = UUID.randomUUID();
-        assertThrows(LetterNotFoundException.class, () -> {
-            service.getStatus(id, "false", "false");
-        });
+        LetterStatus status = service.getStatus(id, "false", "false");
+        assertNull(status);
         verify(duplicateLetterService, never()).isDuplicate(isA(UUID.class));
     }
 
     @Test
-    void should_throw_LetterNotFoundException_for_json_copies() {
+    void should_return_null_status() {
         createLetterService(false, null);
         UUID id = UUID.randomUUID();
-        assertThrows(LetterNotFoundException.class, () -> {
-            service.getLatestStatus(id);
-        });
+        LetterStatus status = service.getLatestStatus(id);
+        assertNull(status);
     }
 
     @Test

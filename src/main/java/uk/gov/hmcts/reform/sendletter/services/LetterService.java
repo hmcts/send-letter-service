@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
@@ -309,7 +308,10 @@ public class LetterService {
                         additionDataFunction.apply(letter.getAdditionalData()),
                         null
                 ))
-                .orElseThrow(() -> new LetterNotFoundException(id));
+                .orElseGet(() -> {
+                    log.info("Letter with Id {} not found.", id);
+                    return null;
+                });
         log.info("Returning  letter status for letter {} ", letterStatus);
         return letterStatus;
     }
@@ -330,7 +332,10 @@ public class LetterService {
                         mapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){}),
                         mapper.convertValue(letter.getCopies(), new TypeReference<>(){})
                 ))
-                .orElseThrow(() -> new LetterNotFoundException(id));
+                .orElseGet(() -> {
+                    log.info("Letter with Id {} not found.", id);
+                    return null;
+                });
         log.info("Returning v2 letter status for letter {} ", letterStatus);
         return letterStatus;
     }

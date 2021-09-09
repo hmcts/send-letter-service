@@ -90,8 +90,8 @@ class GetLetterStatusTest {
     }
 
     @Test
-    void should_return_404_when_letter_is_not_found() throws Exception {
-        getLetterStatus(UUID.randomUUID()).andExpect(status().isNotFound());
+    void should_return_200_when_letter_is_not_found() throws Exception {
+        getLetterStatus(UUID.randomUUID()).andExpect(status().isOk());
     }
 
     @Test

@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
-import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
@@ -96,10 +95,10 @@ class GetLetterStatusControllerTest {
     }
 
     @Test
-    void should_return_404_client_error_when_letter_is_not_found_in_database() throws Exception {
-        willThrow(LetterNotFoundException.class).given(service).getStatus(letterStatus.id, "false", "false");
+    void should_log_message_when_letter_is_not_found_in_database() throws Exception {
+        given(service.getStatus(letterStatus.id, "false", "false")).willReturn(null);
 
-        getLetter(letterStatus.id, "false", "false").andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+        getLetter(letterStatus.id, "false", "false").andExpect(status().is(HttpStatus.OK.value()));
     }
 
     @Test
