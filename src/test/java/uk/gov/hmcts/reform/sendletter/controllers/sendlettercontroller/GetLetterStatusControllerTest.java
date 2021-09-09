@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +53,7 @@ class GetLetterStatusControllerTest {
     @Test
     void should_return_letter_status_when_it_is_found_in_database() throws Exception {
 
-        given(service.getStatus(letterStatus.id, "true", "false")).willReturn(letterStatus);
+        given(service.getStatus(letterStatus.id, "true", "false")).willReturn(Optional.ofNullable(letterStatus));
 
         getLetter(letterStatus.id, "true", "false")
             .andExpect(status().isOk())
@@ -76,7 +78,7 @@ class GetLetterStatusControllerTest {
         LetterStatusV2 letterStatus =
                 new LetterStatusV2(UUID.randomUUID(), "Created",
                 "some-message-id", now, now, now, null, detailCopies);
-        given(service.getLatestStatus(letterStatus.id)).willReturn(letterStatus);
+        given(service.getLatestStatus(letterStatus.id)).willReturn(Optional.ofNullable(letterStatus));
 
         mockMvc.perform(
                 get("/letters/v2/" + letterStatus.id))
@@ -95,10 +97,10 @@ class GetLetterStatusControllerTest {
     }
 
     @Test
-    void should_log_message_when_letter_is_not_found_in_database() throws Exception {
-        given(service.getStatus(letterStatus.id, "false", "false")).willReturn(null);
+    void should_return_404_client_error_when_letter_is_not_found_in_database() throws Exception {
+        willThrow(LetterNotFoundException.class).given(service).getStatus(letterStatus.id, "false", "false");
 
-        getLetter(letterStatus.id, "false", "false").andExpect(status().is(HttpStatus.OK.value()));
+        getLetter(letterStatus.id, "false", "false").andExpect(status().is(HttpStatus.NOT_FOUND.value()));
     }
 
     @Test
@@ -119,7 +121,8 @@ class GetLetterStatusControllerTest {
 
     @Test
     void shouldInvokeGetStatusServiceWithDefaultValueWhenIncludeAdditionalInfoIsNull() throws Exception {
-        given(service.getStatus(letterStatus.id, "false", "false")).willReturn(letterStatus);
+        given(service.getStatus(letterStatus.id, "false", "false"))
+            .willReturn(Optional.ofNullable(letterStatus));
 
         getLetter(letterStatus.id, null, null)
                 .andExpect(status().isOk())
@@ -138,7 +141,8 @@ class GetLetterStatusControllerTest {
 
     @Test
     void shouldInvokeGetStatusServiceWithNoAdditionalInfoInRequestParam() throws Exception {
-        given(service.getStatus(letterStatus.id, "false","false")).willReturn(letterStatus);
+        given(service.getStatus(letterStatus.id, "false","false"))
+            .willReturn(Optional.ofNullable(letterStatus));
 
         mockMvc.perform(
                 get("/letters/" + letterStatus.id)

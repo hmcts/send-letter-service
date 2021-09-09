@@ -281,7 +281,7 @@ public class LetterService {
         return String.join("_","Document", String.valueOf(count));
     }
 
-    public uk.gov.hmcts.reform.sendletter.model.out.LetterStatus
+    public Optional<uk.gov.hmcts.reform.sendletter.model.out.LetterStatus>
         getStatus(UUID id, String isAdditonalDataRequired, String isDuplicate) {
         log.info("Getting letter status for id {} ", id);
         exceptionCheck(id);
@@ -296,7 +296,7 @@ public class LetterService {
             return null;
         };
 
-        LetterStatus letterStatus = letterRepository
+        Optional<LetterStatus> letterStatus = letterRepository
                 .findById(id)
                 .map(letter -> new LetterStatus(
                         id,
@@ -307,20 +307,19 @@ public class LetterService {
                         toDateTime(letter.getPrintedAt()),
                         additionDataFunction.apply(letter.getAdditionalData()),
                         null
-                ))
-                .orElseGet(() -> {
-                    log.info("Letter with Id {} not found.", id);
-                    return null;
-                });
-        log.info("Returning  letter status for letter {} ", letterStatus);
+                ));
+
+        var message = letterStatus
+            .map(status -> String.format("Returning  letter status %s for letter %s",status, id))
+            .orElse(String.format("Letter with ID %s not found.", id));
+        log.info(message);
         return letterStatus;
     }
 
-    public LetterStatusV2
-        getLatestStatus(UUID id) {
+    public Optional<LetterStatusV2> getLatestStatus(UUID id) {
         log.info("Getting v2 letter status for id {} ", id);
 
-        LetterStatusV2 letterStatus = letterRepository
+        Optional<LetterStatusV2> letterStatus = letterRepository
                 .findById(id)
                 .map(letter -> new LetterStatusV2(
                         id,
@@ -331,12 +330,13 @@ public class LetterService {
                         toDateTime(letter.getPrintedAt()),
                         mapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){}),
                         mapper.convertValue(letter.getCopies(), new TypeReference<>(){})
-                ))
-                .orElseGet(() -> {
-                    log.info("Letter with Id {} not found.", id);
-                    return null;
-                });
-        log.info("Returning v2 letter status for letter {} ", letterStatus);
+                ));
+
+        var message = letterStatus
+            .map(status -> String.format("Returning v2 letter status %s for letter %s",status, id))
+            .orElse(String.format("Letter with ID %s not found.", id));
+        log.info(message);
+
         return letterStatus;
     }
 

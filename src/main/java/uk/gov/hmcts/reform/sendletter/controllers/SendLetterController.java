@@ -25,9 +25,11 @@ import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
+import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 
+import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -119,9 +121,9 @@ public class SendLetterController {
         @RequestParam(name = "include-additional-info", defaultValue = "false") String isAdditionalInfoRequired,
         @RequestParam(name = "check-duplicate", defaultValue = "false") String isDuplicate
     ) {
-        LetterStatus letterStatus = letterService.getStatus(getLetterIdFromString(id),
+        Optional<LetterStatus> letterStatus = letterService.getStatus(getLetterIdFromString(id),
                 isAdditionalInfoRequired, isDuplicate);
-        return ok(letterStatus);
+        return of(letterStatus);
     }
 
     @GetMapping(path = "/v2/{id}")
@@ -133,9 +135,9 @@ public class SendLetterController {
     public ResponseEntity<LetterStatusV2> getLatestLetterStatus(
         @PathVariable String id
     ) {
-        LetterStatusV2 letterStatus =
+        Optional<LetterStatusV2> letterStatus =
                 letterService.getLatestStatus(getLetterIdFromString(id));
-        return ok(letterStatus);
+        return of(letterStatus);
     }
 
     private UUID getLetterIdFromString(String letterId) {

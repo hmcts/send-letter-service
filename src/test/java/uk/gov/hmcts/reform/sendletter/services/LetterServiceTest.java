@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,22 +33,17 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
@@ -59,6 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 @ExtendWith(MockitoExtension.class)
 class LetterServiceTest {
@@ -232,7 +227,7 @@ class LetterServiceTest {
         final LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfsAndNumberOfCopiesRequest =
                 SampleData.letterWithPdfAndCopiesRequest(5, 10);
 
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+        byte[] inputZipFile = loadResource("unencrypted.zip");
 
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
@@ -267,7 +262,7 @@ class LetterServiceTest {
 
         LetterRequest letter = SampleData.letterRequest();
 
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+        byte[] inputZipFile = loadResource("unencrypted.zip");
 
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
@@ -303,7 +298,7 @@ class LetterServiceTest {
 
         LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequest();
 
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
+        byte[] inputZipFile = loadResource("unencrypted.zip");
 
         when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
 
@@ -338,7 +333,7 @@ class LetterServiceTest {
 
         LetterWithPdfsAndNumberOfCopiesRequest letter = SampleData.letterWithPdfAndCopiesRequest(3, 8);
 
-        when(zipper.zip(any(PdfDoc.class))).thenReturn(Resources.toByteArray(getResource("unencrypted.zip")));
+        when(zipper.zip(any(PdfDoc.class))).thenReturn(loadResource("unencrypted.zip"));
 
         // when
         service.save(letter, "some_service", async);
@@ -419,10 +414,7 @@ class LetterServiceTest {
         given(duplicateLetterService.isDuplicate(isA(UUID.class))).willReturn(Optional.of(duplicateLetter));
         createLetterService(false, null);
         UUID uuid = UUID.randomUUID();
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            service.getStatus(uuid, "false",
-                    "true");
-        });
+        assertThrows(DataIntegrityViolationException.class, () -> service.getStatus(uuid, "false", "true"));
         verify(duplicateLetterService).isDuplicate(isA(UUID.class));
     }
 
@@ -432,38 +424,35 @@ class LetterServiceTest {
         given(exceptionLetterService.isException(isA(UUID.class))).willReturn(Optional.of(exceptionLetter));
         createLetterService(false, null);
         UUID uuid = UUID.randomUUID();
-        assertThrows(LetterSaveException.class, () -> {
-            service.getStatus(uuid, "false",
-                    "true");
-        });
+        assertThrows(LetterSaveException.class, () -> service.getStatus(uuid, "false",
+            "true"));
         verify(exceptionLetterService).isException(isA(UUID.class));
     }
 
     @Test
-    void should_return_null_status_and_no_interaction_with_duplicate_service() {
+    void should_return_empty_status() {
         createLetterService(false, null);
         UUID id = UUID.randomUUID();
-        LetterStatus status = service.getStatus(id, "false", "false");
-        assertNull(status);
+        Optional<LetterStatus> status = service.getStatus(id, "false", "false");
+        assertThat(status).isEmpty();
         verify(duplicateLetterService, never()).isDuplicate(isA(UUID.class));
     }
 
     @Test
-    void should_return_null_status() {
+    void shouldReturnEmptyStatusForJsonCopies() {
         createLetterService(false, null);
-        UUID id = UUID.randomUUID();
-        LetterStatus status = service.getLatestStatus(id);
-        assertNull(status);
+        var id = UUID.randomUUID();
+        Optional<LetterStatusV2> latestStatus = service.getLatestStatus(id);
+        assertThat(latestStatus).isEmpty();
     }
 
     @Test
     void should_return_letter() {
         createLetterService(false, null);
-        ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
         Optional<Letter> letter = Optional.of(createLetter());
         given(letterRepository.findById(isA(UUID.class))).willReturn(letter);
-        LetterStatus status = service.getStatus(UUID.randomUUID(), "false", "true");
-        assertNotNull(status);
+        Optional<LetterStatus> status = service.getStatus(UUID.randomUUID(), "false", "true");
+        assertNotNull(status.orElse(null));
         verify(letterRepository).findById(isA(UUID.class));
         verify(duplicateLetterService).isDuplicate(isA(UUID.class));
     }
@@ -471,17 +460,15 @@ class LetterServiceTest {
     @Test
     void should_return_letter_json_copies() {
         createLetterService(false, null);
-        ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
         Letter letter = createLetter();
         JsonNode copies = objectMapper.valueToTree(Map.of("Document_1", 20, "Document_2", 40));
 
         given(letter.getCopies()).willReturn(copies);
         given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.of(letter));
 
-        LetterStatusV2 status
-                = service.getLatestStatus(UUID.randomUUID());
+        Optional<LetterStatusV2> status = service.getLatestStatus(UUID.randomUUID());
 
-        assertNotNull(status);
+        assertThat(status).isNotEmpty();
         verify(letterRepository).findById(isA(UUID.class));
     }
 
@@ -512,8 +499,8 @@ class LetterServiceTest {
             exceptionLetterService);
     }
 
-    private byte[] loadPublicKey() throws IOException {
-        return Resources.toByteArray(getResource("encryption/pubkey.asc"));
+    private byte[] loadPublicKey() throws Exception {
+        return loadResource("encryption/pubkey.asc");
     }
 
     private static class DummyLetterRequest implements ILetterRequest, Serializable {
