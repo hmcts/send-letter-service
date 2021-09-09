@@ -43,6 +43,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
@@ -310,8 +311,8 @@ public class LetterService {
                 ));
 
         var message = letterStatus
-            .map(status -> String.format("Returning  letter status %s for letter %s",status, id))
-            .orElse(String.format("Letter with ID %s not found.", id));
+            .map(status -> format("Returning  letter status '%s' for letter Id '%s'",status, id))
+            .orElse(format("Letter with Id '%s' not found.", id));
         log.info(message);
         return letterStatus;
     }
@@ -333,8 +334,8 @@ public class LetterService {
                 ));
 
         var message = letterStatus
-            .map(status -> String.format("Returning v2 letter status %s for letter %s",status, id))
-            .orElse(String.format("Letter with ID %s not found.", id));
+            .map(status -> format("Returning v2 letter status '%s' for letter id '%s'",status, id))
+            .orElse(format("Letter with Id '%s' not found.", id));
         log.info(message);
 
         return letterStatus;

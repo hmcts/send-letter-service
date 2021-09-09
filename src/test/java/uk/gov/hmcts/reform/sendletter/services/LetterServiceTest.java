@@ -43,7 +43,6 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
@@ -430,7 +429,7 @@ class LetterServiceTest {
     }
 
     @Test
-    void should_return_empty_status() {
+    void should_return_optional_status() {
         createLetterService(false, null);
         UUID id = UUID.randomUUID();
         Optional<LetterStatus> status = service.getStatus(id, "false", "false");
@@ -452,7 +451,9 @@ class LetterServiceTest {
         Optional<Letter> letter = Optional.of(createLetter());
         given(letterRepository.findById(isA(UUID.class))).willReturn(letter);
         Optional<LetterStatus> status = service.getStatus(UUID.randomUUID(), "false", "true");
-        assertNotNull(status.orElse(null));
+        LetterStatus letterStatus = status.orElse(null);
+        assert letterStatus != null;
+        assertThat(letterStatus.status).isEqualTo("Created");
         verify(letterRepository).findById(isA(UUID.class));
         verify(duplicateLetterService).isDuplicate(isA(UUID.class));
     }
