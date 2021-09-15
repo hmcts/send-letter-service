@@ -17,6 +17,7 @@ public final class CsvReportWriter {
     private static final String[] CSV_HEADER = {
         "StartDate", "StartTime", "InputFileName"
     };
+
     public static void writeReport(Stream<UUID> letterIds, File reportFolder) throws IOException {
         // We expect these columns in csv reports
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADER).build();
