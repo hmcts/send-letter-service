@@ -113,7 +113,7 @@ tasks.withType(Test) {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
@@ -137,9 +137,9 @@ pmd {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.required = true
+    csv.required = false
+    xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
   afterEvaluate {
     getClassDirectories().from = getClassDirectories().files.collect {
@@ -190,10 +190,9 @@ dependencyCheck {
 
 repositories {
   jcenter()
-  mavenCentral()
-  // until new projects get to jcenter
-  maven { url 'https://jitpack.io' }
   mavenLocal()
+  mavenCentral()
+  maven { url 'https://jitpack.io' }
 }
 
 def versions = [

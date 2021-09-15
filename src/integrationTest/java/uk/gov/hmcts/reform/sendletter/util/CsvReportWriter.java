@@ -14,14 +14,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class CsvReportWriter {
+    private static final String[] CSV_HEADER = {
+        "StartDate", "StartTime", "InputFileName"
+    };
+
     public static void writeReport(Stream<UUID> letterIds, File reportFolder) throws IOException {
         // We expect these columns in csv reports
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(
-            "StartDate",
-            "StartTime",
-            "InputFileName"
-        );
-
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADER).build();
         // Prepare a record for each of our letters.
         List<List<String>> records = letterIds.map(id -> Lists.newArrayList(
             "01-01-2018",
