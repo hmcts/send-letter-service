@@ -61,7 +61,7 @@ public class UploadBlobsTask {
     }
 
     @SchedulerLock(name = TASK_NAME)
-    @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
+    @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-blob-ms}")
     public void run() {
         logger.info("Started '{}' task ", TASK_NAME);
 
@@ -86,11 +86,12 @@ public class UploadBlobsTask {
                     var blobInfo = mayBeBlobInfo.get();
                     var blobClient = blobInfo.getBlobClient();
                     String blobName = blobClient.getBlobName();
-
+                    logger.info("UploadBlobsTask:: processing blob {}", blobName);
                     var blobId = blobName.split("\\.")[0].split("_")[3];
 
                     Optional<Print> printBlob = printRepository.findById(UUID.fromString(blobId));
                     if (printBlob.isPresent()) {
+                        logger.info("UploadBlobsTask:: blob found in repo with blobId {}", blobId);
                         var uploaded = false;
                         uploaded = processBlob(printBlob.get(), blobInfo, client);
 
