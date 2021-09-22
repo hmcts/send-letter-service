@@ -61,7 +61,7 @@ public class UploadBlobsTask {
     }
 
     @SchedulerLock(name = TASK_NAME)
-    @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
+    @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-blob-ms}")
     public void run() {
         logger.info("Started '{}' task ", TASK_NAME);
 
