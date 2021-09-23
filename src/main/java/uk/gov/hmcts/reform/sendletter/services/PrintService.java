@@ -44,6 +44,7 @@ public class PrintService {
 
     @Transactional
     public PrintResponse save(String id, String service, PrintRequest request) {
+        LOG.info("PrintService letterId {}", id);
         try {
             var req =  mapper.writeValueAsString(request);
             LOG.info("PrintService PrintRequest {}", req);
@@ -63,11 +64,13 @@ public class PrintService {
             request.letterType
         );
         var printSaved = repository.save(printRequest);
+        LOG.info("PrintService printSaved {}", printSaved);
         return getResponse(printSaved, service);
     }
 
     private PrintResponse getResponse(Print print, String service) {
         String containerName = sasTokenGeneratorService.getContainerName(service);
+        LOG.info("PrintService containerName {}", containerName);
         return new PrintResponse(
            getPrintJob(print, containerName),
            getPrintUploadInfo(print, service, containerName)
