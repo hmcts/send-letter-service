@@ -227,10 +227,6 @@ dependencyManagement {
     dependencySet(group: 'commons-io', version: '2.11.0') {
       entry 'commons-io'
     }
-    // avoid CVE-2020-15522
-    dependencySet(group: 'org.bouncycastle', version: '1.69') {
-      entry 'bcprov-jdk15on'
-    }
   }
 }
 
