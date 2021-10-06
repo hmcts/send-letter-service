@@ -60,4 +60,9 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2020-0822</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: bcprov-jdk15on-1.64.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+        <cve>CVE-2020-15522</cve>
+    </suppress>
 </suppressions>
