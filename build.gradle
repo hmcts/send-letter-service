@@ -189,7 +189,6 @@ dependencyCheck {
 }
 
 repositories {
-  jcenter()
   mavenLocal()
   mavenCentral()
   maven { url 'https://jitpack.io' }
@@ -199,7 +198,7 @@ def versions = [
   bouncycastle: '1.64',
   junit: '5.7.1',
   junitPlatform: '1.7.1',
-  reformLogging: '5.1.5',
+  reformLogging: '5.1.7',
   springfoxSwagger: '2.9.2',
   pact_version: '4.1.7'
 ]
@@ -253,9 +252,9 @@ dependencies {
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
   implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.4.0'
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
@@ -311,7 +310,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
   contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
