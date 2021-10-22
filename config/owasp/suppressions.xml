@@ -11,11 +11,6 @@
         <cpe>cpe:/a:apache:sling</cpe>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: spring-security-crypto-5.3.4.RELEASE.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
-        <cpe>cpe:/a:pivotal_software:spring_security</cpe>
-    </suppress>
-    <suppress>
         <notes><![CDATA[file name: wiremock-jre8-2.27.0.jar: jquery-3.4.1.min.js]]></notes>
         <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
         <cve>CVE-2020-11022</cve>
@@ -24,16 +19,6 @@
         <notes><![CDATA[file name: wiremock-jre8-2.27.0.jar: jquery-3.4.1.min.js]]></notes>
         <packageUrl regex="true">^pkg:javascript/jquery@.*$</packageUrl>
         <cve>CVE-2020-11023</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: tomcat-embed-core-9.0.53.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-        <cve>CVE-2021-42340</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: tomcat-embed-websocket-9.0.53.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-        <cve>CVE-2021-42340</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: httpclient-4.5.12.jar]]></notes>
@@ -49,16 +34,6 @@
         <notes><![CDATA[file name: hibernate-validator-6.2.0.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-10693</vulnerabilityName>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: tomcat-embed-core-9.0.52.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-        <cve>CVE-2020-0822</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: tomcat-embed-websocket-9.0.52.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-        <cve>CVE-2020-0822</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: bcprov-jdk15on-1.64.jar]]></notes>
