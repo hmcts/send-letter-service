@@ -33,7 +33,6 @@ public final class PgpDecryptionHelper {
     /**
      * decrypt the passed in message stream.
      */
-    @SuppressWarnings("unchecked")
     public static DecryptedFile decryptFile(
         byte[] in,
         InputStream keyIn,
