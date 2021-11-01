@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.services.encryption;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
+import org.bouncycastle.openpgp.PGPEncryptedData;
 import org.bouncycastle.openpgp.PGPEncryptedDataList;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPLiteralData;
@@ -32,7 +33,6 @@ public final class PgpDecryptionHelper {
     /**
      * decrypt the passed in message stream.
      */
-    @SuppressWarnings("unchecked")
     public static DecryptedFile decryptFile(
         byte[] in,
         InputStream keyIn,
@@ -56,12 +56,12 @@ public final class PgpDecryptionHelper {
         //
         // find the secret key
         //
-        Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
+        Iterator<PGPEncryptedData> it = enc.getEncryptedDataObjects();
         PGPPrivateKey pgpPrivateKey = null;
         PGPPublicKeyEncryptedData pbe = null;
 
         while (pgpPrivateKey == null && it.hasNext()) {
-            pbe = it.next();
+            pbe = (PGPPublicKeyEncryptedData) it.next();
 
             pgpPrivateKey = findPrivateKey(keyIn, pbe.getKeyID(), passwd);
         }
