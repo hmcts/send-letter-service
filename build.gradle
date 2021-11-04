@@ -6,7 +6,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.flywaydb.flyway' version '8.0.2'
+  id 'org.flywaydb.flyway' version '8.0.3'
   id 'org.springframework.boot' version '2.5.5'
   id 'org.owasp.dependencycheck' version '6.4.1.1'
   id 'com.github.ben-manes.versions' version '0.39.0'
@@ -232,6 +232,31 @@ dependencyManagement {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-websocket'
     }
+
+    //CVE-2021-22096
+    dependencySet(group: 'org.springframework', version: '5.3.12') {
+      entry 'spring-aop'
+      entry 'spring-aspects'
+      entry 'spring-beans'
+      entry 'spring-context'
+      entry 'spring-core'
+      entry 'spring-expression'
+      entry 'spring-jcl'
+      entry 'spring-jdbc'
+      entry 'spring-orm'
+      entry 'spring-tx'
+      entry 'spring-web'
+      entry 'spring-webmvc'
+      entry 'spring-context-support'
+      entry 'spring-test'
+      entry 'spring-webflux'
+    }
+
+    //CVE-2021-22044
+    dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+      entry 'spring-cloud-openfeign-core'
+      entry 'spring-cloud-starter-openfeign'
+    }
   }
 }
 
@@ -266,14 +291,14 @@ dependencies {
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.9.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.4'
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.4'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.32.0'
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.13.0'
+  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.14.0'
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
