@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.StreamUtils;
 import uk.gov.hmcts.reform.sendletter.blob.BlobReader;
 import uk.gov.hmcts.reform.sendletter.blob.LeaseClientProvider;
 import uk.gov.hmcts.reform.sendletter.config.AccessTokenProperties;
@@ -24,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.services.PrintService;
 import uk.gov.hmcts.reform.sendletter.services.SasTokenGeneratorService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
+import uk.gov.hmcts.reform.sendletter.util.ResourceLoader;
 import uk.gov.hmcts.reform.sendletter.util.TestUploadStorageHelper;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +33,6 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -103,10 +101,8 @@ class IUploadBlobsTaskTest {
     }
 
     @Test
-    void uploads_blob_to_sftp_and_sets_letter_status_to_uploaded() throws Exception {
-
-        var json = StreamUtils.copyToString(
-            new ClassPathResource("print_job.json").getInputStream(), UTF_8);
+    void uploadsBlobToSftpAndSetsLetterStatusToUploaded() throws Exception {
+        var json = ResourceLoader.loadJson("print_job.json");
         var service = "sscs";
         var uuid = UUID.fromString("faa987b8-5d43-457e-bdaa-37fb824f7d5f");
         var printRequest = mapper.readValue(json, PrintRequest.class);
