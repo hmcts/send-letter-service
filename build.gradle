@@ -327,7 +327,7 @@ dependencies {
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.7.0'
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.7.0'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.16.2'
-  integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.0', withoutJunit4
+  integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.1', withoutJunit4
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
