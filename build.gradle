@@ -233,25 +233,6 @@ dependencyManagement {
       entry 'tomcat-embed-websocket'
     }
 
-    //CVE-2021-22096
-    dependencySet(group: 'org.springframework', version: '5.3.13') {
-      entry 'spring-aop'
-      entry 'spring-aspects'
-      entry 'spring-beans'
-      entry 'spring-context'
-      entry 'spring-core'
-      entry 'spring-expression'
-      entry 'spring-jcl'
-      entry 'spring-jdbc'
-      entry 'spring-orm'
-      entry 'spring-tx'
-      entry 'spring-web'
-      entry 'spring-webmvc'
-      entry 'spring-context-support'
-      entry 'spring-test'
-      entry 'spring-webflux'
-    }
-
     //CVE-2021-22044
     dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
       entry 'spring-cloud-openfeign-core'
