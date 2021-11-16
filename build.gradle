@@ -211,17 +211,7 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '31.0.1-jre') {
       entry 'guava'
     }
-    // force junit5 deps to use groovy v3 which fixes reflective call errors for java 11
-    // rest assured 4.1 -> 4.3 jumps to groovy v3. junit v5.6 still on v2.5
-    dependencySet(group: 'org.codehaus.groovy', version: '3.0.9') {
-      entry 'groovy'
-      entry 'groovy-json'
-      entry 'groovy-xml'
-    }
-    //CVE-2019-14900
-    dependencySet(group: 'org.hibernate', version: '5.6.1.Final') {
-      entry 'hibernate-core'
-    }
+
     // avoid CVE-2021-29425
     dependencySet(group: 'commons-io', version: '2.11.0') {
       entry 'commons-io'
@@ -231,25 +221,6 @@ dependencyManagement {
     dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.54') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-websocket'
-    }
-
-    //CVE-2021-22096
-    dependencySet(group: 'org.springframework', version: '5.3.13') {
-      entry 'spring-aop'
-      entry 'spring-aspects'
-      entry 'spring-beans'
-      entry 'spring-context'
-      entry 'spring-core'
-      entry 'spring-expression'
-      entry 'spring-jcl'
-      entry 'spring-jdbc'
-      entry 'spring-orm'
-      entry 'spring-tx'
-      entry 'spring-web'
-      entry 'spring-webmvc'
-      entry 'spring-context-support'
-      entry 'spring-test'
-      entry 'spring-webflux'
     }
 
     //CVE-2021-22044
@@ -303,7 +274,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.11.1'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.14.1'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
