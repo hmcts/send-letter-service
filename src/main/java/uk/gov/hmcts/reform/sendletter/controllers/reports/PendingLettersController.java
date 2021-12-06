@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers.reports;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.sendletter.model.out.PendingLetter;
@@ -21,7 +21,7 @@ public class PendingLettersController {
     }
 
     @GetMapping(path = "/pending-letters")
-    @ApiOperation("Retrieves letters that were not uploaded to SFTP yet.")
+    @Operation(description = "Retrieves letters that were not uploaded to SFTP yet.")
     public PendingLettersResponse getPendingLetters() {
         List<PendingLetter> pendingLetters =
             service

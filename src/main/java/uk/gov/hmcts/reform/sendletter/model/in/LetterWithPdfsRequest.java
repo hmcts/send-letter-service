@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.model.in;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,15 +17,15 @@ public class LetterWithPdfsRequest implements Serializable, ILetterRequest {
     /**
      * Base64 encoded pdfs.
      */
-    @ApiModelProperty(value = "List of base64 encoded pdfs to be printed. Maximum allowed is 30", required = true)
+    @Schema(description = "List of base64 encoded pdfs to be printed. Maximum allowed is 30", required = true)
     @Size(min = 1, max = 30)
     public final List<byte[]> documents;
 
-    @ApiModelProperty(value = "Type to be used to print documents", required = true)
+    @Schema(description = "Type to be used to print documents", required = true)
     @NotEmpty
     public final String type;
 
-    @ApiModelProperty(value = "Optional field where services can store any additional information about the letter")
+    @Schema(description = "Optional field where services can store any additional information about the letter")
     @JsonProperty("additional_data")
     public final Map<String, Object> additionalData;
 

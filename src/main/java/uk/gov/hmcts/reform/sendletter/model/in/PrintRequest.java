@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.model.in;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
 import java.io.Serializable;
@@ -13,8 +13,8 @@ import javax.validation.constraints.Size;
 public class PrintRequest implements Serializable {
 
     private static final long serialVersionUID = 4312487677760800172L;
-    
-    @ApiModelProperty(value = "Type to be used to print documents", required = true)
+
+    @Schema(description = "Type to be used to print documents", required = true)
     @JsonProperty
     @NotEmpty
     public final String type;

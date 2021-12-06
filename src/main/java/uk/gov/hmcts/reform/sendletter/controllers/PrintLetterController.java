@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -46,12 +48,14 @@ public class PrintLetterController {
         consumes = MediaTypes.PRINT_V1,
         path = {"/{id}"}
     )
-    @ApiOperation(value = "Send letter to print and post service")
+    @Operation(description = "Send letter to print and post service")
     @ApiResponses({
-        @ApiResponse(code = 200, response = PrintResponse.class, message = "Successfully sent letter"),
-        @ApiResponse(code = 400, message = RESPONSE_400),
-        @ApiResponse(code = 401, message = RESPONSE_401),
-        @ApiResponse(code = 403, message = RESPONSE_403)
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = PrintResponse.class)),
+            description = "Successfully sent letter"),
+        @ApiResponse(responseCode = "400", description = RESPONSE_400),
+        @ApiResponse(responseCode = "401", description = RESPONSE_401),
+        @ApiResponse(responseCode = "403", description = RESPONSE_403)
     })
     public ResponseEntity<PrintResponse> print(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,

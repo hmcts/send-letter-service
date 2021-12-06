@@ -7,7 +7,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.flywaydb.flyway' version '8.2.0'
-  id 'org.springframework.boot' version '2.5.6'
+  id 'org.springframework.boot' version '2.6.1'
   id 'org.owasp.dependencycheck' version '6.5.0.1'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.3'
@@ -224,7 +224,7 @@ dependencyManagement {
     }
 
     //CVE-2021-22044
-    dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+    dependencySet(group: 'org.springframework.cloud', version: '3.1.0') {
       entry 'spring-cloud-openfeign-core'
       entry 'spring-cloud-starter-openfeign'
     }
@@ -251,8 +251,7 @@ dependencies {
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.29.0'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.29.0'
 
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.13'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -261,7 +260,7 @@ dependencies {
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.4'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.0'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.32.0'

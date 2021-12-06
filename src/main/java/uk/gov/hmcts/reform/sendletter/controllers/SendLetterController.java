@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -53,16 +56,17 @@ public class SendLetterController {
         consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.LETTER_V1},
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ApiOperation(value = "Send letter to print and post service")
+    @Operation(description = "Send letter to print and post service")
     @ApiResponses({
-        @ApiResponse(code = 200, response = SendLetterResponse.class, message = "Successfully sent letter"),
-        @ApiResponse(code = 401, message = ControllerResponseMessage.RESPONSE_401),
-        @ApiResponse(code = 403, message = ControllerResponseMessage.RESPONSE_403)
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class))),
+        @ApiResponse(responseCode = "401", description =  ControllerResponseMessage.RESPONSE_401),
+        @ApiResponse(responseCode = "403", description = ControllerResponseMessage.RESPONSE_403)
     })
     public ResponseEntity<SendLetterResponse> sendLetter(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestParam(name = "isAsync", defaultValue = "false") String isAsync,
-        @ApiParam(value = "Letter consisting of documents and type", required = true)
+        @Parameter(description = "Letter consisting of documents and type", required = true)
         @Valid @RequestBody LetterRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
@@ -72,16 +76,18 @@ public class SendLetterController {
     }
 
     @PostMapping(consumes = MediaTypes.LETTER_V2, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Send letter to print and post service")
+    @Operation(description = "Send letter to print and post service")
     @ApiResponses({
-        @ApiResponse(code = 200, response = SendLetterResponse.class, message = "Successfully sent letter"),
-        @ApiResponse(code = 401, message = ControllerResponseMessage.RESPONSE_401),
-        @ApiResponse(code = 403, message = ControllerResponseMessage.RESPONSE_403)
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class)),
+            description = "Successfully sent letter"),
+        @ApiResponse(responseCode = "401", description = ControllerResponseMessage.RESPONSE_401),
+        @ApiResponse(responseCode = "403", description = ControllerResponseMessage.RESPONSE_403)
     })
     public ResponseEntity<SendLetterResponse> sendLetter(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestParam(name = "isAsync", defaultValue = "false") String isAsync,
-        @ApiParam(value = "Letter consisting of documents and type", required = true)
+        @Parameter(description = "Letter consisting of documents and type", required = true)
         @Valid @RequestBody LetterWithPdfsRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
@@ -91,11 +97,12 @@ public class SendLetterController {
     }
 
     @PostMapping(consumes = MediaTypes.LETTER_V3, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Send letter to print and post service")
+    @Operation(description = "Send letter to print and post service")
     @ApiResponses({
-        @ApiResponse(code = 200, response = SendLetterResponse.class, message = "Successfully sent letter"),
-        @ApiResponse(code = 401, message = ControllerResponseMessage.RESPONSE_401),
-        @ApiResponse(code = 403, message = ControllerResponseMessage.RESPONSE_403)
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class))),
+        @ApiResponse(responseCode = "401", description = ControllerResponseMessage.RESPONSE_401),
+        @ApiResponse(responseCode = "403", description = ControllerResponseMessage.RESPONSE_403)
     })
     public ResponseEntity<SendLetterResponse> sendLetter(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
@@ -109,10 +116,11 @@ public class SendLetterController {
     }
 
     @GetMapping(path = "/{id}")
-    @ApiOperation(value = "Get letter status")
+    @Operation(description = "Get letter status")
     @ApiResponses({
-        @ApiResponse(code = 200, response = LetterStatus.class, message = "Success"),
-        @ApiResponse(code = 404, message = "Letter not found")
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Letter not found")
     })
     public ResponseEntity<LetterStatus> getLetterStatus(
         @PathVariable String id,
@@ -125,10 +133,11 @@ public class SendLetterController {
     }
 
     @GetMapping(path = "/v2/{id}")
-    @ApiOperation(value = "Get letter status with copies requested")
+    @Operation(description = "Get letter status with copies requested")
     @ApiResponses({
-        @ApiResponse(code = 200, response = LetterStatus.class, message = "Success"),
-        @ApiResponse(code = 404, message = "Letter not found")
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class)), description = "Success"),
+        @ApiResponse(responseCode = "404", description = "Letter not found")
     })
     public ResponseEntity<LetterStatusV2> getLatestLetterStatus(
         @PathVariable String id
