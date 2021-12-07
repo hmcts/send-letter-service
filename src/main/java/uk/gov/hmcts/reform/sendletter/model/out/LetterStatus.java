@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.sendletter.model.out;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class LetterStatus {
 
     public final String status;
 
-    @ApiModelProperty(notes = "This field is deprecated, please use `checksum` instead")
+    @Schema(description = "This field is deprecated, please use `checksum` instead")
     @JsonProperty("message_id")
     public final String messageId;
 
@@ -30,7 +30,7 @@ public class LetterStatus {
     @JsonProperty("printed_at")
     public final ZonedDateTime printedAt;
 
-    @ApiModelProperty(value = "Additional information about the letter")
+    @Schema(description = "Additional information about the letter")
     @JsonProperty("additional_data")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Map<String, Object> additionalData;

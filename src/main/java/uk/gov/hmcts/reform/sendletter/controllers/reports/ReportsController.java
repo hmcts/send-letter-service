@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.controllers.reports;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,10 +37,12 @@ public class ReportsController {
     }
 
     @GetMapping(path = "/count-summary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @ApiOperation("Retrieves uploaded letters count summary report")
+    @Operation(description = "Retrieves uploaded letters count summary report")
     @ApiResponses({
-        @ApiResponse(code = 200, response = SendLetterResponse.class, message = "Successfully generated csv report"),
-        @ApiResponse(code = 500, message = "Error occurred while generating csv report")
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class)),
+            description = "Successfully generated csv report"),
+        @ApiResponse(responseCode = "500", description = "Error occurred while generating csv report")
     })
     public ResponseEntity<byte[]> getCountSummary(
         @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date
