@@ -197,3 +197,5 @@ accesstoken:
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.sendletter
   pathsToMatch: /**
+  swagger-ui:
+    use-root-path: true
