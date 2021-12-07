@@ -39,7 +39,7 @@ class ApplicationTest {
 
     @Test
     void should_generate_swagger_docs() throws Exception {
-        byte[] specs = mvc.perform(get("/v2/api-docs"))
+        byte[] specs = mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()

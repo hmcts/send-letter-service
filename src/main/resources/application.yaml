@@ -193,3 +193,7 @@ accesstoken:
     - serviceName: send_letter_service
       newContainerName: encrypted
       validity: ${SAS_TOKEN_VALIDITY:300}
+
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.sendletter
+  pathsToMatch: /**

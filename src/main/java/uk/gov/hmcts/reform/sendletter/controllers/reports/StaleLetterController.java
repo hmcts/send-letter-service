@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.controllers.reports;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +34,12 @@ public class StaleLetterController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Retrieves stale letters")
+    @Operation(description = "Retrieves stale letters")
     @ApiResponses({
-        @ApiResponse(code = 200, response = StaleLetterResponse.class, message = "Retrieved stale letters"),
-        @ApiResponse(code = 500, message = "Error occurred while retrieving stale letters")
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = StaleLetterResponse.class)),
+            description = "Retrieved stale letters"),
+        @ApiResponse(responseCode = "500", description = "Error occurred while retrieving stale letters")
     })
     public StaleLetterResponse getStaleLetters() {
         List<StaleLetter> staleLetters =
@@ -50,10 +54,12 @@ public class StaleLetterController {
 
 
     @GetMapping(value = "download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @ApiOperation("Downloads file with stale letters")
+    @Operation(description = "Downloads file with stale letters")
     @ApiResponses({
-            @ApiResponse(code = 200, response = StaleLetterResponse.class, message = "Retrieved stale letters file"),
-            @ApiResponse(code = 500, message = "Error occurred while retrieving stale letters file")
+            @ApiResponse(responseCode = "200",
+                content = @Content(schema = @Schema(implementation = StaleLetterResponse.class)),
+                description = "Retrieved stale letters file"),
+            @ApiResponse(responseCode = "500", description = "Error occurred while retrieving stale letters file")
     })
     public ResponseEntity<byte[]> getFileWithStaleLetters() throws IOException {
         File csvFile = staleLetterService.getDownloadFile();
