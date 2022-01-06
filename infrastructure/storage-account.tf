@@ -45,7 +45,7 @@ module "storage_account" {
   location                   = azurerm_resource_group.rg.location
   account_kind               = "StorageV2"
   account_tier               = "Standard"
-  account_replication_type   = "LRS"
+  account_replication_type   = "ZRS"
   sa_subnets                 = local.all_valid_subnets
   managed_identity_object_id = local.keda_mi_object_id
   role_assignments = [
