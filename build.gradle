@@ -243,7 +243,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.4.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.4.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.31.0'
@@ -294,7 +294,7 @@ dependencies {
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.8.0'
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.8.0'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.16.2'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.16.3'
   integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.1', withoutJunit4
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
