@@ -25,6 +25,7 @@ locals {
     data.azurerm_subnet.jenkins_subnet.id,
     data.azurerm_subnet.jenkins_aks_00.id,
     data.azurerm_subnet.jenkins_aks_01.id,
+    data.azurerm_subnet.aks_app_gw.id,
     data.azurerm_subnet.app_aks_00_subnet.id,
     data.azurerm_subnet.app_aks_01_subnet.id
   ]
