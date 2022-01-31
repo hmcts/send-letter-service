@@ -310,7 +310,7 @@ public class LetterService {
                         null
                 ))
                 .orElseThrow(() -> new LetterNotFoundException(id));
-        log.info("Returning  letter status for letter {} ", letterStatus);
+        log.info("Returning  letter status for letter {} ", letterStatus.status);
         return letterStatus;
     }
 
