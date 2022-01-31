@@ -1,6 +1,6 @@
 locals {
-  mgmt_network_name    = "core-cftptl-intsvc-vnet"
-  mgmt_network_rg_name = "aks-infra-cftptl-intsvc-rg"
+  mgmt_network_name    = "cft-ptl-vnet"
+  mgmt_network_rg_name = "cft-ptl-network-rg"
 
   aks_env = var.env == "sandbox" ? "sbox" : var.env
 
