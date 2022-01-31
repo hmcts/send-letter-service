@@ -1,6 +1,6 @@
 locals {
-  mgmt_network_name    = "core-cftptl-intsvc-vnet"
-  mgmt_network_rg_name = "aks-infra-cftptl-intsvc-rg"
+  mgmt_network_name    = "cft-ptl-vnet"
+  mgmt_network_rg_name = "cft-ptl-network-rg"
 
   aks_env = var.env == "sandbox" ? "sbox" : var.env
 
@@ -31,6 +31,13 @@ data "azurerm_subnet" "jenkins_aks_01" {
   name                 = "aks-01"
   virtual_network_name = local.mgmt_network_name
   resource_group_name  = local.mgmt_network_rg_name
+}
+
+data "azurerm_subnet" "aks_app_gw" {
+  provider             = "azurerm.mgmt"
+  name                 = "aks-appgw"
+  virtual_network_name = "${local.mgmt_network_name}"
+  resource_group_name  = "${local.mgmt_network_rg_name}"
 }
 
 data "azurerm_subnet" "app_aks_00_subnet" {
