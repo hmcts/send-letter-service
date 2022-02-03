@@ -16,3 +16,9 @@ provider "azurerm" {
   alias           = "aks_preview"
   subscription_id = "8b6ea922-0862-443e-af15-6056e1c9b9a4"
 }
+
+provider "azurerm" {
+  features {}
+  alias           = "aks_perftest_mgmt"
+  subscription_id = "7a4e3bd5-ae3a-4d0c-b441-2188fee3ff1c"
+}
