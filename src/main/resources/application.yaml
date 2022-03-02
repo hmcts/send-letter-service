@@ -107,7 +107,7 @@ ftp:
     - service: send_letter_tests
       folder: BULKPRINT
     - service: nfdiv_case_api
-      folder: NFDIVORCE
+      folder: ${NFD_SERVICE_FOLDER:DIVORCE}
     - service: divorce_frontend
       folder: DIVORCE
     - service: probate_backend
