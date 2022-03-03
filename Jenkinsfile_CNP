@@ -41,6 +41,8 @@ env.PACT_BROKER_PORT = "443"
 env.PACT_BROKER_SCHEME = "https"
 
 withPipeline(type , product, component) {
+  env.PREVIEW_AKS_CLUSTER_NAME = "cft-preview-01-aks"
+  env.PREVIEW_AKS_RESOURCE_GROUP = "cft-preview-01-rg"  
   after('akschartsinstall'){
     // vars needed for AKS testing
     env.TEST_S2S_NAME = 'send_letter_tests'
