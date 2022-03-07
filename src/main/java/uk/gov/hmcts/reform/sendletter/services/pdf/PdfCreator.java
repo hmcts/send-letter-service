@@ -40,6 +40,9 @@ public class PdfCreator {
     public byte[] createFromBase64Pdfs(List<byte[]> base64decodedDocs) {
         Asserts.notNull(base64decodedDocs, "base64decodedDocs");
 
+        logger.info(
+                "createFromBase64Pdfs size {}, thread id {}", base64decodedDocs.size(), Thread.currentThread().getId()
+        );
         List<byte[]> docs = base64decodedDocs
             .stream()
             .map(duplexPreparator::prepare)

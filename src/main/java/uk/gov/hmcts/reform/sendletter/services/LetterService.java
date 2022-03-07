@@ -110,7 +110,7 @@ public class LetterService {
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
         UUID id = UUID.randomUUID();
-        log.info("letterId {}", id);
+        log.info("letterId {}, thread id {}", id, Thread.currentThread().getId());
         byte[] zipContent = zipper.zip(
                 new PdfDoc(
                         FileNameHelper.generatePdfName(letter.getType(), serviceName, id),
