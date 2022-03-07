@@ -22,7 +22,7 @@ public class TestStorageHelper {
 
     private static TestStorageHelper INSTANCE;
 
-    public static final String CONTAINER_NAME = "new-bulkprint";
+    public static final String CONTAINER_NAME = "new-preview";
 
 
     private static DockerComposeContainer<?> dockerComposeContainer;
