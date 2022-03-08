@@ -41,7 +41,7 @@ public class PdfCreator {
         Asserts.notNull(base64decodedDocs, "base64decodedDocs");
 
         logger.info(
-                "createFromBase64Pdfs size {}, thread id {}", base64decodedDocs.size(), Thread.currentThread().getId()
+                "createFromBase64Pdfs size {}, thread id {}", base64decodedDocs.size(), Thread.currentThread().getName()
         );
         List<byte[]> docs = base64decodedDocs
             .stream()
