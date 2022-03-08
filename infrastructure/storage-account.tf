@@ -18,7 +18,12 @@ locals {
     "processed",
     "zipped",
     "encrypted",
-    "new-bulkprint"
+    "new-bulkprint",
+    "new-preview",
+    "backup-preview",
+    "processed-preview",
+    "zipped-preview",
+    "encrypted-preview"
   ]
 
   standard_subnets = [
