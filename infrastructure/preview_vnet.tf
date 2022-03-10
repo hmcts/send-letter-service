@@ -1,6 +1,6 @@
 locals {
-  preview_vnet_name           = "core-preview-vnet"
-  preview_vnet_resource_group = "aks-infra-preview-rg"
+  preview_vnet_name           = "cft-preview-vnet"
+  preview_vnet_resource_group = "cft-preview-network-rg"
 }
 
 data "azurerm_subnet" "preview_aks_00_subnet" {
