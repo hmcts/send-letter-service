@@ -92,6 +92,8 @@ public class LetterService {
         String checksum = generateChecksum(letter);
         Asserts.notEmpty(serviceName, "serviceName");
 
+        log.info("Saving letter, service {}, messageId {}", serviceName, checksum);
+
         if (serviceFolderMapping.getFolderFor(serviceName).isEmpty()) {
             String message = "No configuration for service " + serviceName + " found";
             log.error(message);
@@ -102,7 +104,12 @@ public class LetterService {
             .findByChecksumAndStatusOrderByCreatedAtDesc(checksum, Created)
             .map(duplicate -> {
                 UUID id = duplicate.getId();
-                log.info("Same message found already created. Returning letter id {} instead", id);
+                log.info(
+                        "Same message found already created. Returning letter id {} instead. Service {}, messageId {}",
+                        id,
+                        serviceName,
+                        checksum
+                );
                 return id;
             })
             .orElseGet(() -> saveNewLetter(letter, checksum, serviceName, isAsync));
@@ -110,7 +117,7 @@ public class LetterService {
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
         UUID id = UUID.randomUUID();
-        log.info("letterId {}", id);
+        log.info("letterId {}, service {}, messageId {}", id, serviceName, messageId);
         byte[] zipContent = zipper.zip(
                 new PdfDoc(
                         FileNameHelper.generatePdfName(letter.getType(), serviceName, id),
@@ -123,30 +130,49 @@ public class LetterService {
 
         if (letter instanceof LetterRequest) {
             log.info(
-                "Team {} is still using the v1 api call and renders pdf templates. Letter id = {}",
+                "Team {} is still using the v1 api call and renders pdf templates. Letter id = {}, messageId {}",
                 serviceName,
-                id
+                id,
+                messageId
             );
         }
 
         if (Boolean.parseBoolean(isAsync)) {
-            Runnable logger = () -> log.info("Saving letter id {} in async mode as flag value is {}", id, isAsync);
+            Runnable logger = () -> log.info(
+                    "Saving letter id {} in async mode as flag value is {}, service {}, messageId {}",
+                    id,
+                    isAsync,
+                    serviceName,
+                    messageId
+            );
             asynService.run(() -> saveLetter(letter, messageId, serviceName, id, fileContent), logger,
                 () -> saveDuplicate(letter, id, messageId, serviceName, isAsync),
                 message -> saveExcepton(letter, id, serviceName, message, isAsync));
         } else {
             try {
-                log.info("Saving letter id {} in sync mode as flag value is {}", id, isAsync);
+                log.info(
+                        "Saving letter id {} in sync mode as flag value is {}, service {}, messageId {}",
+                        id,
+                        isAsync,
+                        serviceName,
+                        messageId
+                );
                 asynService.execute(() -> saveLetter(letter, messageId, serviceName, id, fileContent));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
-                Runnable logger = () -> log.error("Duplicate record ", dataIntegrityViolationException);
+                Runnable logger = () -> log.error(
+                        "Duplicate record, letter id {}, service {}, messageId {}",
+                        id,
+                        serviceName,
+                        messageId,
+                        dataIntegrityViolationException
+                );
                 asynService.run(() -> saveDuplicate(letter, id, messageId, serviceName, isAsync), logger,
                     () -> {}, message -> saveExcepton(letter, id, serviceName,
                                 zipContent.length + ":" + message, isAsync));
                 throw dataIntegrityViolationException;
             }
         }
-        log.info("Returning letter id {} for service {}", id, serviceName);
+        log.info("Returning letter id {} for service {}, messageId {}", id, serviceName, messageId);
 
         return id;
     }
@@ -169,7 +195,7 @@ public class LetterService {
         );
 
         letterRepository.save(dbLetter);
-        log.info("Created new letter record with id {} for service {}", id, serviceName);
+        log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
 
     @Transactional
@@ -310,7 +336,7 @@ public class LetterService {
                         null
                 ))
                 .orElseThrow(() -> new LetterNotFoundException(id));
-        log.info("Returning  letter status for letter {} ", letterStatus.status);
+        log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
         return letterStatus;
     }
 
@@ -331,7 +357,7 @@ public class LetterService {
                         mapper.convertValue(letter.getCopies(), new TypeReference<>(){})
                 ))
                 .orElseThrow(() -> new LetterNotFoundException(id));
-        log.info("Returning v2 letter status for letter {} ", letterStatus);
+        log.info("Returning v2 letter status for letter {}, letter id {}", letterStatus, id);
         return letterStatus;
     }
 

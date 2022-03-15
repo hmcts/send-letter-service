@@ -30,7 +30,6 @@ public class DuplexPreparator {
                 pdDoc.save(out);
 
                 return out.toByteArray();
-
             } else {
                 return pdf;
             }
