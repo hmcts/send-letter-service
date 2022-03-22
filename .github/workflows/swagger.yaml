@@ -20,6 +20,10 @@ jobs:
           java-version: 11
       - name: Run Swagger Publisher
         run: ./gradlew integration --tests uk.gov.hmcts.reform.sendletter.ApplicationTest
+      - name: Run Backstage API gen
+        run: |
+          echo "$(cat api.yaml)" > /tmp/send-letter-service-api.yaml
+          echo "    $(cat /tmp/swagger-specs.json)" >> /tmp/send-letter-service-api.yaml
       - name: Commit to repository
         run: |
           mkdir swagger-staging
@@ -30,7 +34,11 @@ jobs:
           git remote add upstream "https://jenkins-reform-hmcts:${{ secrets.SWAGGER_PUBLISHER_API_TOKEN }}@github.com/hmcts/reform-api-docs.git"
           git pull upstream master
           repo=`echo "$GITHUB_REPOSITORY" | cut -f2- -d/`
+          mkdir -p docs/specs
+          mkdir -p docs/backstage
           echo "$(cat /tmp/swagger-specs.json)" > "docs/specs/send-letter-service.json"
+          echo "$(cat /tmp/labs-jackmaloney2-api.yaml)" > "docs/backstage/send-letter-service-api.yaml"
           git add "docs/specs/send-letter-service.json"
+          git add "docs/backstage/send-letter-service-api.yaml"
           # Only commit and push if we have changes.
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update spec for $repo#${GITHUB_SHA:7}"; git push --set-upstream upstream master)

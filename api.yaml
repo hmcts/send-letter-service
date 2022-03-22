@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: send-letter-service 
+  description: Send Letter Service API
+spec:
+  type: openapi
+  system: send-letter-service
+  lifecycle: production
+  owner: dcd_group_bulkscan_v2
+  definition: |
