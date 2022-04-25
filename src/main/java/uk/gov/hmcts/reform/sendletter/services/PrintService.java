@@ -44,12 +44,12 @@ public class PrintService {
 
     @Transactional
     public PrintResponse save(String id, String service, PrintRequest request) {
-        LOG.info("PrintService letterId {}", id);
+        LOG.info("PrintService letterId {}, service {}", id, service);
         try {
             var req =  mapper.writeValueAsString(request);
-            LOG.info("PrintService PrintRequest {}", req);
+            LOG.info("PrintService PrintRequest {}, service {}", req, service);
         } catch (JsonProcessingException jpe) {
-            LOG.info("PrintService JsonProcessingException {}", jpe.getMessage(), jpe);
+            LOG.info("PrintService JsonProcessingException {}, service {}", jpe.getMessage(), service, jpe);
         }
         String checksum = LetterChecksumGenerator.generateChecksum(request);
         var printRequest = new Print(
@@ -64,13 +64,13 @@ public class PrintService {
             request.letterType
         );
         var printSaved = repository.save(printRequest);
-        LOG.info("PrintService printSaved {}", printSaved);
+        LOG.info("PrintService printSaved {}, service {}", printSaved, service);
         return getResponse(printSaved, service);
     }
 
     private PrintResponse getResponse(Print print, String service) {
         String containerName = sasTokenGeneratorService.getContainerName(service);
-        LOG.info("PrintService containerName {}", containerName);
+        LOG.info("PrintService containerName {}, service {}", containerName, service);
         return new PrintResponse(
            getPrintJob(print, containerName),
            getPrintUploadInfo(print, service, containerName)

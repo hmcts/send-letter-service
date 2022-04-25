@@ -18,7 +18,12 @@ locals {
     "processed",
     "zipped",
     "encrypted",
-    "new-bulkprint"
+    "new-bulkprint",
+    "new-preview",
+    "backup-preview",
+    "processed-preview",
+    "zipped-preview",
+    "encrypted-preview"
   ]
 
   standard_subnets = [
@@ -30,7 +35,8 @@ locals {
   ]
 
   preview_subnets   = var.env == "aat" ? [data.azurerm_subnet.preview_aks_00_subnet.id, data.azurerm_subnet.preview_aks_01_subnet.id] : []
-  all_valid_subnets = concat(local.standard_subnets, local.preview_subnets)
+  perftest_subnets  = var.env == "perftest" ? [data.azurerm_subnet.perftest_mgmt_subnet.id] : []
+  all_valid_subnets = concat(local.standard_subnets, local.preview_subnets, local.perftest_subnets)
 
   short_component = replace(var.component, "-service", "")
 
