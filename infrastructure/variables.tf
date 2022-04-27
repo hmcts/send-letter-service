@@ -136,3 +136,7 @@ variable num_staging_dbs {
 variable mgmt_subscription_id {}
 
 variable aks_subscription_id {}
+
+variable storage_account_repl_type {
+  default = "LRS"
+}
