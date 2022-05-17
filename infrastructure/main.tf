@@ -4,6 +4,7 @@
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = var.location_app
+  tags     = var.common_tags
 }
 
 locals {
