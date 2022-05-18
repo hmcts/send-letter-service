@@ -32,7 +32,7 @@ import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @Component
-@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduling.ftp.task.enabled", matchIfMissing = true)
 public class UploadBlobsTask {
 
     public static final int BATCH_SIZE = 10;

@@ -51,6 +51,7 @@ java:
 
     # schedules
     SCHEDULING_ENABLED: "true"
+    SCHEDULING_FTP_TASK_ENABLED: "false"
     SCHEDULING_LOCK_AT_MOST_FOR: "PT10M"
 
     # inherited

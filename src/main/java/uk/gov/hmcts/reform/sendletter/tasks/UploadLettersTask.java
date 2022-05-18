@@ -26,7 +26,7 @@ import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @Component
-@ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduling.ftp.task.enabled", matchIfMissing = true)
 public class UploadLettersTask {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadLettersTask.class);
