@@ -205,9 +205,12 @@ abstract class FunctionalTestSuite {
     SSHClient getSshClient() throws IOException {
         SSHClient ssh = new SSHClient();
 
+        logger.info("FTP fingerPrint {}, ftp hostName {}", ftpFingerprint, ftpHostname);
         ssh.addHostKeyVerifier(ftpFingerprint);
         ssh.connect(ftpHostname, ftpPort);
 
+        logger.info("FTP connectoion check: "
+            + "ftpUser {} \n ftpPrivateKey {}\n ftpPublicKey {} ", ftpUser, ftpPrivateKey, ftpPublicKey);
         ssh.authPublickey(
             ftpUser,
             ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
