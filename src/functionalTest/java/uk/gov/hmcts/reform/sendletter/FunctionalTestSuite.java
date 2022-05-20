@@ -213,7 +213,7 @@ abstract class FunctionalTestSuite {
             + "ftpUser {} \n ftpPrivateKey {}\n ftpPublicKey {} ", ftpUser, ftpPrivateKey, ftpPublicKey);
         ssh.authPublickey(
             ftpUser,
-            ssh.loadKeys(ftpPrivateKey, null, null)
+            ssh.loadKeys(ftpPrivateKey, ftpPublicKey, null)
         );
 
         return ssh;
