@@ -161,7 +161,7 @@ file-upoad:
   wait-time-in-ms: ${DEFAULT_WAIT_TIME_IN_MS:2000}
 
 storage:
-  connection: ${STORAGE_ACCOUNT_CONNECTION_STRING:DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;EndpointSuffix=dev.net;}
+  connection: ${STORAGE_ACCOUNT_CONNECTION_STRING}
   leaseTime: ${BLOB_LEASE_TIME:15} #In seconds
 
 accesstoken:
