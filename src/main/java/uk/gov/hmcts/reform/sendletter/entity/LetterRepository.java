@@ -80,11 +80,4 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
 
     Stream<BasicLetterInfo> findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(LetterStatus status, LocalDateTime from, LocalDateTime to);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE Letter l"
-            + " SET l.status = 'NotSent'"
-            + " WHERE l.id = :id AND l.status = 'Uploaded'"
-    )
-    int markStaleLetterAsNotSent(@Param("id") UUID id);
 }
