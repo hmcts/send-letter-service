@@ -205,6 +205,11 @@ def versions = [
 
 ext["rest-assured.version"] = '4.3.0'
 
+configurations.all {
+  exclude group: 'org.springframework.security', module: 'spring-security-rsa'
+  exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
+}
+
 dependencyManagement {
   dependencies {
     // CVE-2018-10237 - Unbounded memory allocation
