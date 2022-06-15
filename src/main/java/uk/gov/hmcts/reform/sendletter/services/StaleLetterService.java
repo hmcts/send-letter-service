@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
 import uk.gov.hmcts.reform.sendletter.services.date.DateCalculator;
 import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 import uk.gov.hmcts.reform.sendletter.util.CsvWriter;
@@ -20,9 +23,12 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.UTC;
 
@@ -78,7 +84,29 @@ public class StaleLetterService {
         }
     }
 
+    @Transactional
+    public int markStaleLetterAsNotSent(UUID id) {
+        log.info("Marking stale letter as not sent {}", id);
 
+        Optional<Letter> letterOpt = letterRepository.findById(id);
+
+        if (letterOpt.isEmpty()) {
+            throw new LetterNotFoundException(id);
+        }
+
+        LocalDateTime localDateTime = calculateCutOffCreationDate()
+                .withZoneSameInstant(DB_TIME_ZONE_ID)
+                .toLocalDateTime();
+        if (!isStaleLetter(letterOpt.get(), localDateTime)) {
+            throw new LetterNotStaleException(id);
+        }
+
+        return letterRepository.markStaleLetterAsNotSent(id);
+    }
+
+    private boolean isStaleLetter(Letter letter, LocalDateTime localDateTime) {
+        return letter.getStatus() == Uploaded && letter.getCreatedAt().isBefore(localDateTime);
+    }
 
     /**
      * Calculates the cut-off creation date for stale letters.
