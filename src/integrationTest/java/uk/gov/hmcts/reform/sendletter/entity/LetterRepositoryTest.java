@@ -53,7 +53,7 @@ class LetterRepositoryTest {
                 )
                 .containsExactly(
                         tuple(savedLetter.getId(), NotSent)
-                );
+            );
     }
 
     @Test
