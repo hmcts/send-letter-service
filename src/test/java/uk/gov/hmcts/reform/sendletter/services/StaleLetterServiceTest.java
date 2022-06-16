@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
 import uk.gov.hmcts.reform.sendletter.services.date.DateCalculator;
 import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 
@@ -22,12 +23,14 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,6 +39,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.services.StaleLetterService.LETTER_STATUS_TO_IGNORE;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
@@ -51,17 +57,10 @@ class StaleLetterServiceTest {
     @Mock
     private Clock clock;
 
-    @BeforeEach
-    public void setUp() {
-        given(dateCalculator.subtractBusinessDays(any(), anyInt())).willReturn(ZonedDateTime.now());
-
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of(EUROPE_LONDON));
-        setCurrentTimeAndZone(now);
-    }
-
     @Test
     void getStaleLetters_should_call_date_calculator_with_current_time_when_before_ftp_downtime_start() {
         // given
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         String ftpDowntimeStartTime = "16:00";
         int minStaleLetterAgeInBusinessDays = 123;
@@ -81,6 +80,7 @@ class StaleLetterServiceTest {
 
     @Test
     void getStaleLetters_should_call_date_calculator_with_ftp_downtime_start_time_when_after() {
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         // given
         String ftpDowntimeStartTime = "16:00";
@@ -108,6 +108,7 @@ class StaleLetterServiceTest {
 
     @Test
     void getStaleLetters_should_return_call_the_repository_with_calculated_cut_off_date() {
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         // given
         ZonedDateTime cutOffTime = LocalDateTime.parse("2019-05-01T15:34:56.123").atZone(ZoneId.of(EUROPE_LONDON));
@@ -127,6 +128,8 @@ class StaleLetterServiceTest {
     @Test
     void should_return_weeky_stale_letters_repository_with_calculated_cut_off_date() throws IOException {
         // given
+        setUpDateTime();
+
         ZonedDateTime cutOffTime = LocalDateTime.parse("2019-05-01T15:34:56.123").atZone(ZoneId.of(EUROPE_LONDON));
 
         given(dateCalculator.subtractBusinessDays(any(), anyInt())).willReturn(cutOffTime);
@@ -147,6 +150,7 @@ class StaleLetterServiceTest {
 
     @Test
     void getStaleLetters_should_return_all_letters_returned_by_repository() {
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         reset(letterRepository);
 
@@ -168,6 +172,7 @@ class StaleLetterServiceTest {
 
     @Test
     void getStaleLetters_should_file_with_all_letters_returned_by_repository() throws IOException {
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         reset(letterRepository);
 
@@ -176,11 +181,11 @@ class StaleLetterServiceTest {
                 LocalDateTime.now().plusHours(2)};
         //given
         List<BasicLetterInfo> repositoryLetters = Arrays.asList(
-                new BasicLetterInfo(uuids[0], null, "Test", LetterStatus.Uploaded,
+                new BasicLetterInfo(uuids[0], null, "Test", Uploaded,
                         null, null, localDateTimes[0], localDateTimes[0], null),
-                new BasicLetterInfo(uuids[1], null, "Test", LetterStatus.Uploaded,
+                new BasicLetterInfo(uuids[1], null, "Test", Uploaded,
                         null, null, localDateTimes[1], localDateTimes[1], null),
-                new BasicLetterInfo(uuids[2], null, "Test", LetterStatus.Uploaded,
+                new BasicLetterInfo(uuids[2], null, "Test", Uploaded,
                         null, null, localDateTimes[2], localDateTimes[2], null)
         );
 
@@ -196,6 +201,7 @@ class StaleLetterServiceTest {
 
     @Test
     void should_get_stale_letter_file_when_record_present() throws IOException {
+        setUpDateTime();
         given(letterRepository.findStaleLetters(any())).willReturn(emptyList());
         reset(letterRepository);
 
@@ -208,6 +214,165 @@ class StaleLetterServiceTest {
         // then
         assertThat(downloadFile).isNotEmpty();
 
+    }
+
+    @Test
+    void should_update_stale_letter_when_record_present() {
+        // given
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+                .atTime(15, 59) // currently it's before FTP downtime
+                .atZone((ZoneId.of(EUROPE_LONDON)));
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+                letterId,
+                letterId.toString(),
+                "cmc",
+                null,
+                "type",
+                null,
+                false,
+                null,
+                now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+                null
+        );
+        letter.setStatus(Uploaded);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+        given(letterRepository.markStaleLetterAsNotSent(letterId)).willReturn(1);
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        int res = staleLetterService(
+                ftpDowntimeStartTime,
+                minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsNotSent(letterId);
+
+        // then
+        assertThat(res).isEqualTo(1);
+        verify(letterRepository).markStaleLetterAsNotSent(letterId);
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_record_not_present() {
+        // given
+        String ftpDowntimeStartTime = "16:00";
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        UUID letterId = UUID.randomUUID();
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> staleLetterService(
+                ftpDowntimeStartTime,
+                minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsNotSent(letterId))
+                .isInstanceOf(LetterNotFoundException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_letter_not_uploaded() {
+        // given
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+                .atTime(15, 59) // currently it's before FTP downtime
+                .atZone((ZoneId.of(EUROPE_LONDON)));
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+                letterId,
+                letterId.toString(),
+                "cmc",
+                null,
+                "type",
+                null,
+                false,
+                null,
+                now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+                null
+        );
+        letter.setStatus(Created);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        assertThatThrownBy(() -> staleLetterService(
+                ftpDowntimeStartTime,
+                minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsNotSent(letterId))
+                .isInstanceOf(LetterNotStaleException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_letter_not_stale() {
+        // given
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+                .atTime(15, 59) // currently it's before FTP downtime
+                .atZone((ZoneId.of(EUROPE_LONDON)));
+
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+                letterId,
+                letterId.toString(),
+                "cmc",
+                null,
+                "type",
+                null,
+                false,
+                null,
+                now.minusDays(minStaleLetterAgeInBusinessDays - 1).toLocalDateTime(),
+                null
+        );
+        letter.setStatus(Uploaded);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        assertThatThrownBy(() -> staleLetterService(
+                ftpDowntimeStartTime,
+                minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsNotSent(letterId))
+                .isInstanceOf(LetterNotStaleException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    private void setUpDateTime() {
+        given(dateCalculator.subtractBusinessDays(any(), anyInt())).willReturn(ZonedDateTime.now());
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of(EUROPE_LONDON));
+        setCurrentTimeAndZone(now);
     }
 
     private StaleLetterService staleLetterService(String ftpDowntimeStart, int minStaleLetterAgeInBusinessDays) {
