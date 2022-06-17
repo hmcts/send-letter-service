@@ -12,11 +12,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
+import uk.gov.hmcts.reform.sendletter.exception.InvalidApiKeyException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
@@ -118,5 +121,17 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnableToGenerateSasTokenException.class)
     protected ResponseEntity<String> handleUnableToGenerateSasTokenException() {
         return status(INTERNAL_SERVER_ERROR).body("Exception occurred while generating SAS Token");
+    }
+
+    @ExceptionHandler(LetterNotStaleException.class)
+    protected ResponseEntity<Void> handleLetterNotStaleException(LetterNotStaleException exc) {
+        log.warn(exc.getMessage(), exc);
+        return status(BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler(InvalidApiKeyException.class)
+    protected ResponseEntity<Void> handleInvalidApiKeyException(InvalidApiKeyException exc) {
+        log.warn(exc.getMessage(), exc);
+        return status(UNAUTHORIZED).build();
     }
 }
