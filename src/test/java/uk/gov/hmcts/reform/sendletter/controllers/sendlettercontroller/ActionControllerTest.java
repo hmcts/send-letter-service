@@ -119,4 +119,97 @@ class ActionControllerTest {
 
         verifyNoInteractions(staleLetterService);
     }
+
+    @Test
+    void should_return_ok_when_letter_is_successfully_marked_as_created() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willReturn(1);
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+            )
+                .andExpect(status().isOk());
+
+        verify(staleLetterService).markStaleLetterAsCreated(letterId);
+        verifyNoMoreInteractions(staleLetterService);
+    }
+
+    @Test
+    void should_return_not_found_when_marking_letter_created_and_letter_not_found() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotFoundException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+            )
+                .andExpect(status().isNotFound());
+
+        verify(staleLetterService).markStaleLetterAsCreated(letterId);
+        verifyNoMoreInteractions(staleLetterService);
+    }
+
+    @Test
+    void should_return_bad_request_when_marking_letter_created_and_letter_not_stale() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+            )
+                .andExpect(status().isBadRequest());
+
+        verify(staleLetterService).markStaleLetterAsCreated(letterId);
+        verifyNoMoreInteractions(staleLetterService);
+    }
+
+    @Test
+    void should_return_bad_request_when_marking_letter_created_and_letter_id_is_corrupted() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+            )
+                .andExpect(status().isBadRequest());
+
+        verify(staleLetterService).markStaleLetterAsCreated(letterId);
+        verifyNoMoreInteractions(staleLetterService);
+    }
+
+    @Test
+    void should_return_unauthorized_when_marking_letter_created_and_header_is_missing() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+            )
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(staleLetterService);
+    }
+
+    @Test
+    void should_return_unauthorized_when_marking_letter_created_and_header_is_invalid() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer invalid-report-api-key")
+        )
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(staleLetterService);
+    }
 }
