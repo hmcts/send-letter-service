@@ -104,6 +104,26 @@ public class StaleLetterService {
         return letterRepository.markStaleLetterAsNotSent(id);
     }
 
+    @Transactional
+    public int markStaleLetterAsCreated(UUID id) {
+        log.info("Marking the letter id {} as created to re-upload to FTP server", id);
+
+        Optional<Letter> letterOpt = letterRepository.findById(id);
+
+        if (letterOpt.isEmpty()) {
+            throw new LetterNotFoundException(id);
+        }
+
+        LocalDateTime localDateTime = calculateCutOffCreationDate()
+            .withZoneSameInstant(DB_TIME_ZONE_ID)
+            .toLocalDateTime();
+        if (!isStaleLetter(letterOpt.get(), localDateTime)) {
+            throw new LetterNotStaleException(id);
+        }
+
+        return letterRepository.markStaleLetterAsCreated(id, LocalDateTime.now());
+    }
+
     private boolean isStaleLetter(Letter letter, LocalDateTime localDateTime) {
         return letter.getStatus() == Uploaded && letter.getCreatedAt().isBefore(localDateTime);
     }

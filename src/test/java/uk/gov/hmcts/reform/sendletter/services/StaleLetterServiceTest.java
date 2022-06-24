@@ -368,6 +368,158 @@ class StaleLetterServiceTest {
         verifyNoMoreInteractions(letterRepository);
     }
 
+    @Test
+    void should_update_stale_letter_status_as_created_when_letter_exists() {
+        // given
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+            null
+        );
+        letter.setStatus(Uploaded);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+        given(letterRepository.markStaleLetterAsCreated(eq(letterId), any(LocalDateTime.class))).willReturn(1);
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        int res = staleLetterService(
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsCreated(letterId);
+
+        // then
+        assertThat(res).isEqualTo(1);
+        verify(letterRepository).markStaleLetterAsCreated(eq(letterId), any(LocalDateTime.class));
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_record_not_present1() {
+        // given
+        String ftpDowntimeStartTime = "16:00";
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        UUID letterId = UUID.randomUUID();
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> staleLetterService(
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsCreated(letterId))
+            .isInstanceOf(LetterNotFoundException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_re_uploading_the_letter_but_status_not_uploaded() {
+        // given
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+            null
+        );
+        letter.setStatus(Created);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        assertThatThrownBy(() -> staleLetterService(
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsCreated(letterId))
+            .isInstanceOf(LetterNotStaleException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_re_uploading_the_letter_but_letter_not_stale() {
+        // given
+        ZonedDateTime now = LocalDate.parse("2019-05-03")
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
+
+        int minStaleLetterAgeInBusinessDays = 123;
+
+        given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+        setCurrentTimeAndZone(now);
+
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays - 1).toLocalDateTime(),
+            null
+        );
+        letter.setStatus(Uploaded);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        String ftpDowntimeStartTime = "16:00";
+
+        // when
+        assertThatThrownBy(() -> staleLetterService(
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
+        ).markStaleLetterAsCreated(letterId))
+            .isInstanceOf(LetterNotStaleException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+    }
+
     private void setUpDateTime() {
         given(dateCalculator.subtractBusinessDays(any(), anyInt())).willReturn(ZonedDateTime.now());
 
