@@ -51,6 +51,20 @@ public class ActionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping(path = "/{id}/mark-created")
+    @Operation(summary = "Mark stale letter as created by letter ID")
+    public ResponseEntity<Void> markAsCreated(
+        @RequestHeader(value = AUTHORIZATION, required = false) String authHeader,
+        @PathVariable UUID id
+    ) {
+        logger.info("Marking stale letter status as 'Created' to re-upload to SFTP server {}", id);
+
+        validateAuthorization(authHeader);
+
+        staleLetterService.markStaleLetterAsCreated(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     private void validateAuthorization(String authorizationKey) {
 
         if (StringUtils.isEmpty(authorizationKey)) {
