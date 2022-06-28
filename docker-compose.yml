@@ -8,7 +8,7 @@ services:
     env_file:
       - docker/env.list
     environment:
-      ACTIONS_API_KEY: 20abd383-0b65-41f6-871c-0ffdf7900427
+      ACTIONS_API_KEY: dummy-actions-api-key
       FTP_PRIVATE_KEY: >
         -----BEGIN RSA PRIVATE KEY-----
         MIIEogIBAAKCAQEAx6JlnWeUNmS/xJZg1kcKM7bx2o/Z6/5dEzYg7MdUt2CB26nA
