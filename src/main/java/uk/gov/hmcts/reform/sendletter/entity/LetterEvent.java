@@ -53,31 +53,15 @@ public class LetterEvent {
         return letter;
     }
 
-    public void setLetter(Letter letter) {
-        this.letter = letter;
-    }
-
     public EventType getType() {
         return type;
-    }
-
-    public void setType(EventType type) {
-        this.type = type;
     }
 
     public String getNotes() {
         return notes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }
