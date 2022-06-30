@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
@@ -39,7 +42,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_CREATED;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_NOT_SENT;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.services.StaleLetterService.LETTER_STATUS_TO_IGNORE;
@@ -53,6 +59,9 @@ class StaleLetterServiceTest {
 
     @Mock
     private LetterRepository letterRepository;
+
+    @Mock
+    private LetterEventRepository letterEventRepository;
 
     @Mock
     private Clock clock;
@@ -257,8 +266,16 @@ class StaleLetterServiceTest {
 
         // then
         assertThat(res).isEqualTo(1);
+
+        ArgumentCaptor<LetterEvent> letterEventArgumentCaptor = ArgumentCaptor.forClass(LetterEvent.class);
+        verify(letterEventRepository).save(letterEventArgumentCaptor.capture());
+        assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letter);
+        assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(MANUALLY_MARKED_AS_NOT_SENT);
+        assertThat(letterEventArgumentCaptor.getValue().getNotes())
+                .isEqualTo("Letter marked manually as not sent as being stale");
+
         verify(letterRepository).markStaleLetterAsNotSent(letterId);
-        verifyNoMoreInteractions(letterRepository);
+        verifyNoMoreInteractions(letterRepository, letterEventRepository);
     }
 
     @Test
@@ -281,6 +298,7 @@ class StaleLetterServiceTest {
                 .isInstanceOf(LetterNotFoundException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     @Test
@@ -323,6 +341,7 @@ class StaleLetterServiceTest {
                 .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     @Test
@@ -366,6 +385,7 @@ class StaleLetterServiceTest {
                 .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     @Test
@@ -409,8 +429,16 @@ class StaleLetterServiceTest {
 
         // then
         assertThat(res).isEqualTo(1);
+
+        ArgumentCaptor<LetterEvent> letterEventArgumentCaptor = ArgumentCaptor.forClass(LetterEvent.class);
+        verify(letterEventRepository).save(letterEventArgumentCaptor.capture());
+        assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letter);
+        assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(MANUALLY_MARKED_AS_CREATED);
+        assertThat(letterEventArgumentCaptor.getValue().getNotes())
+                .isEqualTo("Letter marked manually as created for reprocessing");
+
         verify(letterRepository).markStaleLetterAsCreated(eq(letterId), any(LocalDateTime.class));
-        verifyNoMoreInteractions(letterRepository);
+        verifyNoMoreInteractions(letterRepository, letterEventRepository);
     }
 
     @Test
@@ -433,6 +461,7 @@ class StaleLetterServiceTest {
             .isInstanceOf(LetterNotFoundException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     @Test
@@ -475,6 +504,7 @@ class StaleLetterServiceTest {
             .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     @Test
@@ -518,6 +548,7 @@ class StaleLetterServiceTest {
             .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
     private void setUpDateTime() {
@@ -531,6 +562,7 @@ class StaleLetterServiceTest {
         return new StaleLetterService(
             dateCalculator,
             letterRepository,
+            letterEventRepository,
             minStaleLetterAgeInBusinessDays,
             ftpDowntimeStart,
             clock

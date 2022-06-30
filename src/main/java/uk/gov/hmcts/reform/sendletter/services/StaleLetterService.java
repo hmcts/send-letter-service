@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
+import uk.gov.hmcts.reform.sendletter.entity.EventType;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
@@ -18,6 +21,7 @@ import uk.gov.hmcts.reform.sendletter.util.CsvWriter;
 import java.io.File;
 import java.io.IOException;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -28,6 +32,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_CREATED;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_NOT_SENT;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.UTC;
@@ -40,6 +46,7 @@ public class StaleLetterService {
 
     private final DateCalculator dateCalculator;
     private final LetterRepository letterRepository;
+    private final LetterEventRepository letterEventRepository;
     private final int minStaleLetterAgeInBusinessDays;
     private final LocalTime ftpDowntimeStart;
     private final Clock clock;
@@ -47,16 +54,17 @@ public class StaleLetterService {
     public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE =
             List.of(LetterStatus.Posted, LetterStatus.Aborted);
 
-
     public StaleLetterService(
         DateCalculator dateCalculator,
         LetterRepository letterRepository,
+        LetterEventRepository letterEventRepository,
         @Value("${stale-letters.min-age-in-business-days}") int minStaleLetterAgeInBusinessDays,
         @Value("${ftp.downtime.from}") String ftpDowntimeStart,
         Clock clock
     ) {
         this.dateCalculator = dateCalculator;
         this.letterRepository = letterRepository;
+        this.letterEventRepository = letterEventRepository;
         this.minStaleLetterAgeInBusinessDays = minStaleLetterAgeInBusinessDays;
         this.ftpDowntimeStart = LocalTime.parse(ftpDowntimeStart);
         this.clock = clock;
@@ -86,20 +94,13 @@ public class StaleLetterService {
 
     @Transactional
     public int markStaleLetterAsNotSent(UUID id) {
-        log.info("Marking stale letter as not sent {}", id);
+        log.info("Marking stale letter as not sent {} as being stale", id);
 
-        Optional<Letter> letterOpt = letterRepository.findById(id);
-
-        if (letterOpt.isEmpty()) {
-            throw new LetterNotFoundException(id);
-        }
-
-        LocalDateTime localDateTime = calculateCutOffCreationDate()
-                .withZoneSameInstant(DB_TIME_ZONE_ID)
-                .toLocalDateTime();
-        if (!isStaleLetter(letterOpt.get(), localDateTime)) {
-            throw new LetterNotStaleException(id);
-        }
+        prepareChangingLetterStatus(
+                id,
+                MANUALLY_MARKED_AS_NOT_SENT,
+                "Letter marked manually as not sent as being stale"
+        );
 
         return letterRepository.markStaleLetterAsNotSent(id);
     }
@@ -108,24 +109,48 @@ public class StaleLetterService {
     public int markStaleLetterAsCreated(UUID id) {
         log.info("Marking the letter id {} as created to re-upload to FTP server", id);
 
+        prepareChangingLetterStatus(
+                id,
+                MANUALLY_MARKED_AS_CREATED,
+                "Letter marked manually as created for reprocessing"
+        );
+
+        return letterRepository.markStaleLetterAsCreated(id, LocalDateTime.now());
+    }
+
+    private void prepareChangingLetterStatus(UUID id, EventType manuallyMarkedAsNotSent, String notes) {
         Optional<Letter> letterOpt = letterRepository.findById(id);
 
         if (letterOpt.isEmpty()) {
             throw new LetterNotFoundException(id);
         }
 
-        LocalDateTime localDateTime = calculateCutOffCreationDate()
-            .withZoneSameInstant(DB_TIME_ZONE_ID)
-            .toLocalDateTime();
-        if (!isStaleLetter(letterOpt.get(), localDateTime)) {
-            throw new LetterNotStaleException(id);
-        }
+        Letter letter = letterOpt.get();
 
-        return letterRepository.markStaleLetterAsCreated(id, LocalDateTime.now());
+        checkIfLetterIsStale(letter);
+
+        createLetterEvent(
+                letter,
+                manuallyMarkedAsNotSent,
+                notes
+        );
     }
 
-    private boolean isStaleLetter(Letter letter, LocalDateTime localDateTime) {
-        return letter.getStatus() == Uploaded && letter.getCreatedAt().isBefore(localDateTime);
+    private void checkIfLetterIsStale(Letter letter) {
+        LocalDateTime localDateTime = calculateCutOffCreationDate()
+                .withZoneSameInstant(DB_TIME_ZONE_ID)
+                .toLocalDateTime();
+        if (letter.getStatus() != Uploaded || !letter.getCreatedAt().isBefore(localDateTime)) {
+            throw new LetterNotStaleException(letter.getId());
+        }
+    }
+
+    private void createLetterEvent(Letter letter, EventType type, String notes) {
+        log.info("Creating letter event {} for letter {}, notes {}", type, letter.getId(), notes);
+
+        LetterEvent letterEvent = new LetterEvent(letter, type, notes, Instant.now());
+
+        letterEventRepository.save(letterEvent);
     }
 
     /**
