@@ -98,7 +98,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
         + " SET l.status = 'Aborted'"
-        + " WHERE l.id = :id"
+        + " WHERE l.id = :id AND l.status <> 'Posted'"
     )
     int markLetterAsAborted(@Param("id") UUID id);
 }
