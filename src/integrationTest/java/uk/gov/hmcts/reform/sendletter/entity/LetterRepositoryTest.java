@@ -149,12 +149,16 @@ class LetterRepositoryTest {
         assertThat(updateCount).isEqualTo(0);
     }
 
-    @Test
-    void should_change_status_to_aborted_for_uploaded_letter() {
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Posted"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void should_change_status_to_aborted_when_letter_status_is_not_posted(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
 
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
 
         Letter savedLetter = repository.save(letter);
 
