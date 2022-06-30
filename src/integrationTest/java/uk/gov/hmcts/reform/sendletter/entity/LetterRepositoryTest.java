@@ -15,7 +15,11 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.*;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Aborted;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.NotSent;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
