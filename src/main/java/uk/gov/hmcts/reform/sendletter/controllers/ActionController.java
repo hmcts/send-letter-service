@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.sendletter.exception.InvalidApiKeyException;
+import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
 import java.util.UUID;
@@ -27,13 +28,16 @@ public class ActionController {
     private static final Logger logger = getLogger(ActionController.class);
 
     private final StaleLetterService staleLetterService;
+    private final LetterActionService letterActionService;
     private final String sendLetterApiKey;
 
     public ActionController(
         StaleLetterService staleLetterService,
+        LetterActionService letterActionService,
         @Value("${actions.api-key}") String apiKey
     ) {
         this.staleLetterService = staleLetterService;
+        this.letterActionService = letterActionService;
         this.sendLetterApiKey = apiKey;
     }
 
@@ -62,6 +66,20 @@ public class ActionController {
         validateAuthorization(authHeader);
 
         staleLetterService.markStaleLetterAsCreated(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}/mark-aborted")
+    @Operation(summary = "Mark letter as aborted by letter ID")
+    public ResponseEntity<Void> markAsAborted(
+        @RequestHeader(value = AUTHORIZATION, required = false) String authHeader,
+        @PathVariable UUID id
+    ) {
+        logger.info("Marking letter status as 'Aborted' {}", id);
+
+        validateAuthorization(authHeader);
+
+        letterActionService.markLetterAsAborted(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
