@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Aborted;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.NotSent;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
@@ -151,4 +152,64 @@ class LetterRepositoryTest {
         // then
         assertThat(updateCount).isEqualTo(0);
     }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Posted"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void should_change_status_to_aborted_when_letter_status_is_not_posted(LetterStatus status) {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+
+        letter.setStatus(status);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsAborted(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(1);
+        assertThat(repository.findAll())
+            .extracting(l ->
+                tuple(l.getId(), l.getStatus())
+            )
+            .containsExactly(
+                tuple(savedLetter.getId(), Aborted)
+            );
+    }
+
+    @Test
+    void should_not_change_status_to_aborted_for_posted_letter() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+
+        letter.setStatus(Posted);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsAborted(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
+    @Test
+    void should_not_change_letter_status_to_aborted_for_different_letter_id() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+
+        letter.setStatus(Created);
+
+        repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsAborted(UUID.randomUUID());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
 }
