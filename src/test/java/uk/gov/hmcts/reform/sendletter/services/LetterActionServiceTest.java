@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_ABORTED;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,6 +95,36 @@ class LetterActionServiceTest {
         // then
         assertThatThrownBy(() -> letterActionService.markLetterAsAborted(letterId))
             .isInstanceOf(LetterNotFoundException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
+    }
+
+    @Test
+    void should_throw_exception_when_letter_status_is_printed() {
+        // given
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            LocalDateTime.now(),
+            null
+        );
+        letter.setStatus(Posted);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        // when
+        // then
+        assertThatThrownBy(() -> letterActionService.markLetterAsAborted(letterId))
+            .isInstanceOf(UnsupportedLetterStatusException.class);
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(letterEventRepository);

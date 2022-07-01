@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.sendletter.controllers.ActionController;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
+import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterStatusException;
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 
 @WebMvcTest(ActionController.class)
 class ActionControllerTest {
@@ -254,7 +256,7 @@ class ActionControllerTest {
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-aborted")
             )
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(letterActionService);
     }
@@ -262,7 +264,6 @@ class ActionControllerTest {
     @Test
     void should_return_unauthorized_when_marking_letter_aborted_and_header_is_invalid() throws Exception {
         UUID letterId = UUID.randomUUID();
-        //given(letterActionService.markLetterAsAborted(letterId)).willReturn(1);
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-aborted")
@@ -271,5 +272,22 @@ class ActionControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_bad_request_when_marking_letter_aborted_and_letter_posted() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(letterActionService.markLetterAsAborted(letterId))
+            .willThrow(new UnsupportedLetterStatusException(letterId, Posted));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-aborted")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+        )
+            .andExpect(status().isBadRequest());
+
+        verify(letterActionService).markLetterAsAborted(letterId);
+        verifyNoMoreInteractions(letterActionService);
     }
 }
