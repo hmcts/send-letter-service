@@ -94,4 +94,11 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         + " WHERE l.id = :id AND l.status = 'Uploaded'"
     )
     int markStaleLetterAsCreated(@Param("id") UUID id, @Param("sentToPrintAt") LocalDateTime sentToPrintAt);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Letter l"
+        + " SET l.status = 'Aborted'"
+        + " WHERE l.id = :id AND l.status <> 'Posted'"
+    )
+    int markLetterAsAborted(@Param("id") UUID id);
 }
