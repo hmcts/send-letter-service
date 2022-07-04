@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterStatusException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -43,7 +43,8 @@ public class LetterActionService {
 
         Letter letter = letterOpt.get();
         if (letter.getStatus() == Posted) {
-            throw new UnsupportedLetterStatusException(letter.getId(), letter.getStatus());
+            throw new UnableToAbortLetterException(
+                "Letter with ID '" + letter.getId() + "', status '" + Posted + "' can not be aborted");
         }
 
         createLetterEvent(

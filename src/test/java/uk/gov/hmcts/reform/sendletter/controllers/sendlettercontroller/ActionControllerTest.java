@@ -7,9 +7,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.sendletter.controllers.ActionController;
+import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
-import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterStatusException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
@@ -21,7 +22,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 
 @WebMvcTest(ActionController.class)
 class ActionControllerTest {
@@ -279,7 +279,8 @@ class ActionControllerTest {
         UUID letterId = UUID.randomUUID();
 
         given(letterActionService.markLetterAsAborted(letterId))
-            .willThrow(new UnsupportedLetterStatusException(letterId, Posted));
+            .willThrow(new UnableToAbortLetterException(
+                "Letter with ID '" + letterId + "', status '" + LetterStatus.Posted  + "' can not be aborted"));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-aborted")

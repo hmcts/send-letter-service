@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterStatusException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -124,7 +124,7 @@ class LetterActionServiceTest {
         // when
         // then
         assertThatThrownBy(() -> letterActionService.markLetterAsAborted(letterId))
-            .isInstanceOf(UnsupportedLetterStatusException.class);
+            .isInstanceOf(UnableToAbortLetterException.class);
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(letterEventRepository);
