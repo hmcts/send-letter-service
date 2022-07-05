@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -54,6 +55,9 @@ class UploadLettersTaskTest {
 
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
+
+    @Mock
+    private LetterEventService letterEventService;
 
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
@@ -198,8 +202,9 @@ class UploadLettersTaskTest {
             repo,
             ftpClient,
             availabilityChecker,
+            letterEventService,
             serviceFolderMapping,
-                0
+            0
         );
     }
 }
