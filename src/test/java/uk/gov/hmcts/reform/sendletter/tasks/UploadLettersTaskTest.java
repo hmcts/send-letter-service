@@ -31,6 +31,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -171,6 +173,54 @@ class UploadLettersTaskTest {
         // and
         verify(ftpClient).upload(any(), eq("folder_A"), any());
         verify(ftpClient).upload(any(), eq("folder_C"), any());
+        verifyNoMoreInteractions(ftpClient);
+    }
+
+    @Test
+    void should_fail_letter_if_exception_thrown_during_upload() {
+        // given
+        Letter letterA = letterForService("service_A", Map.of("Document_1", 1));
+        Letter letterB = letterForService("service_B", Map.of("Document_1", 1));
+        Letter letterC = letterForService("service_C", Map.of("Document_1", 1));
+
+        given(repo.countByStatus(Created)).willReturn(3);
+
+        given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
+            .willReturn(Optional.of(letterA))
+            .willReturn(Optional.of(letterB))
+            .willReturn(Optional.of(letterC))
+            .willReturn(Optional.empty());
+
+        // and
+        given(serviceFolderMapping.getFolderFor(letterA.getService())).willReturn(Optional.of("folder_A"));
+        given(serviceFolderMapping.getFolderFor(letterB.getService())).willReturn(Optional.of("folder_B"));
+
+        doNothing().when(ftpClient).upload(any(FileToSend.class), eq("folder_A"), eq(sftpClient));
+        NullPointerException ex = new NullPointerException("msg");
+        doThrow(ex).when(ftpClient).upload(any(FileToSend.class), eq("folder_B"), eq(sftpClient));
+
+        // when
+        task().run();
+
+        // and
+        verify(ftpClient).runWith(captureRunWith.capture());
+
+        // when
+        int uploadAttempts = captureRunWith
+            .getAllValues()
+            .stream()
+            .mapToInt(function -> function.apply(sftpClient))
+            .sum();
+
+        // then
+        assertThat(uploadAttempts).isEqualTo(1);
+        assertThat(letterA.getStatus()).isEqualTo(Uploaded);
+        assertThat(letterC.getStatus()).isEqualTo(Created);
+
+        // and
+        verify(ftpClient).upload(any(), eq("folder_A"), any());
+        verify(ftpClient).upload(any(), eq("folder_B"), any());
+        verify(letterEventService).failLetterUpload(letterB, ex);
         verifyNoMoreInteractions(ftpClient);
     }
 
