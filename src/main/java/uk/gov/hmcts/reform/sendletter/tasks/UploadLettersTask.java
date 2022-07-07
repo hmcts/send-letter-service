@@ -80,6 +80,7 @@ public class UploadLettersTask {
                         = repo.findFirstLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
                 if (letter.isPresent()) {
+                    logger.info("Letter found {}", letter.get().getId());
                     boolean uploaded = processLetter(letter.get(), client);
                     if (uploaded) {
                         uploadCount++;
