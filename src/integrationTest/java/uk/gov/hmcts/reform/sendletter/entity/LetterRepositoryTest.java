@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -212,4 +213,62 @@ class LetterRepositoryTest {
         assertThat(updateCount).isEqualTo(0);
     }
 
+    @Test
+    void findStaleLetters_should_return_stale_letters() {
+        // given
+        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        letter1.setStatus(Uploaded);
+        Letter savedLetter1 = repository.save(letter1);
+
+        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
+        letter2.setStatus(Created);
+        Letter savedLetter2 = repository.save(letter2);
+
+        Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        letter3.setStatus(NotSent);
+        Letter savedLetter3 = repository.save(letter3);
+
+        Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter3.setStatus(Aborted);
+        Letter savedLetter4 = repository.save(letter4);
+
+
+        Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter3.setStatus(Posted);
+        Letter savedLetter5 = repository.save(letter5);
+
+        // when
+        List<BasicLetterInfo> staleLetters = repository.findStaleLetters(LocalDateTime.now().minusDays(1));
+
+        // then
+        assertThat(staleLetters).isNotEmpty().size().isEqualTo(2);
+        assertThat(staleLetters)
+            .extracting(l ->
+                tuple(l.getId(), l.getStatus())
+            )
+            .contains(
+                tuple(savedLetter1.getId(), Uploaded.name()),
+                tuple(savedLetter2.getId(), Created.name())
+            )
+            .doesNotContain(
+                tuple(savedLetter3.getId(), NotSent.name()),
+                tuple(savedLetter4.getId(), Aborted.name()),
+                tuple(savedLetter5.getId(), Posted.name())
+            );
+    }
+
+    @Test
+    void findStaleLetters_should_return_empty_when_no_letters_are_pending_to_print() {
+        // given
+        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(2));
+        letter1.setStatus(NotSent);
+
+        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(1));
+        letter2.setStatus(Posted);
+        repository.saveAll(List.of(letter1, letter2));
+
+        // when
+        // then
+        assertThat(repository.findStaleLetters(LocalDateTime.now())).isEmpty();
+    }
 }
