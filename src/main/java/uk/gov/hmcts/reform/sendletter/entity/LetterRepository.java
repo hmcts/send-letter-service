@@ -90,10 +90,10 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
-        + " SET l.status = 'Created', l.sentToPrintAt = :sentToPrintAt"
+        + " SET l.status = 'Created'"
         + " WHERE l.id = :id AND l.status = 'Uploaded'"
     )
-    int markStaleLetterAsCreated(@Param("id") UUID id, @Param("sentToPrintAt") LocalDateTime sentToPrintAt);
+    int markStaleLetterAsCreated(@Param("id") UUID id);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
