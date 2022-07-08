@@ -208,24 +208,24 @@ class LetterRepositoryTest {
         // given
         Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter1.setStatus(Uploaded);
-        Letter savedLetter1 = repository.save(letter1);
 
         Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
         letter2.setStatus(Created);
-        Letter savedLetter2 = repository.save(letter2);
 
         Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter3.setStatus(NotSent);
-        Letter savedLetter3 = repository.save(letter3);
 
         Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Aborted);
-        Letter savedLetter4 = repository.save(letter4);
-
 
         Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Posted);
-        Letter savedLetter5 = repository.save(letter5);
+
+        final Letter savedLetter1 = repository.save(letter1);
+        final Letter savedLetter2 = repository.save(letter2);
+        final Letter savedLetter3 = repository.save(letter3);
+        final Letter savedLetter4 = repository.save(letter4);
+        final Letter savedLetter5 = repository.save(letter5);
 
         // when
         List<BasicLetterInfo> staleLetters = repository.findStaleLetters(LocalDateTime.now().minusDays(1));
