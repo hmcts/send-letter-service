@@ -149,9 +149,9 @@ class StaleLetterServiceTest {
         // then
         verify(letterRepository)
             .findByStatusNotInAndTypeNotAndCreatedAtBetweenOrderByCreatedAtAsc(
-            eq(LETTER_STATUS_TO_IGNORE), eq(UploadLettersTask.SMOKE_TEST_LETTER_TYPE), isA(LocalDateTime.class),
-            // as the DB stores UTC-based local datetimes, we expect conversion to happen
-            eq(cutOffTime.withZoneSameInstant(UTC).toLocalDateTime()));
+                eq(LETTER_STATUS_TO_IGNORE), eq(UploadLettersTask.SMOKE_TEST_LETTER_TYPE), isA(LocalDateTime.class),
+                // as the DB stores UTC-based local datetimes, we expect conversion to happen
+                eq(cutOffTime.withZoneSameInstant(UTC).toLocalDateTime()));
 
         assertThat(weeklyStaleLetters).isNotEmpty();
 
@@ -187,15 +187,15 @@ class StaleLetterServiceTest {
 
         UUID[] uuids = {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
         LocalDateTime[] localDateTimes = {LocalDateTime.now(), LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2)};
+            LocalDateTime.now().plusHours(2)};
         //given
         List<BasicLetterInfo> repositoryLetters = Arrays.asList(
-                new BasicLetterInfo(uuids[0], null, "Test", Uploaded,
-                        null, null, localDateTimes[0], localDateTimes[0], null),
-                new BasicLetterInfo(uuids[1], null, "Test", Uploaded,
-                        null, null, localDateTimes[1], localDateTimes[1], null),
-                new BasicLetterInfo(uuids[2], null, "Test", Uploaded,
-                        null, null, localDateTimes[2], localDateTimes[2], null)
+            new BasicLetterInfo(uuids[0], null, "Test", Uploaded,
+                null, null, localDateTimes[0], localDateTimes[0], null),
+            new BasicLetterInfo(uuids[1], null, "Test", Uploaded,
+                null, null, localDateTimes[1], localDateTimes[1], null),
+            new BasicLetterInfo(uuids[2], null, "Test", Uploaded,
+                null, null, localDateTimes[2], localDateTimes[2], null)
         );
 
         given(letterRepository.findStaleLetters(any())).willReturn(repositoryLetters);
@@ -231,24 +231,24 @@ class StaleLetterServiceTest {
         int minStaleLetterAgeInBusinessDays = 123;
 
         ZonedDateTime now = LocalDate.parse("2019-05-03")
-                .atTime(15, 59) // currently it's before FTP downtime
-                .atZone((ZoneId.of(EUROPE_LONDON)));
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
         given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
-                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
         setCurrentTimeAndZone(now);
 
         UUID letterId = UUID.randomUUID();
         Letter letter = new Letter(
-                letterId,
-                letterId.toString(),
-                "cmc",
-                null,
-                "type",
-                null,
-                false,
-                null,
-                now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
-                null
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+            null
         );
         letter.setStatus(Uploaded);
 
@@ -260,8 +260,8 @@ class StaleLetterServiceTest {
 
         // when
         int res = staleLetterService(
-                ftpDowntimeStartTime,
-                minStaleLetterAgeInBusinessDays
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
         ).markStaleLetterAsNotSent(letterId);
 
         // then
@@ -272,7 +272,7 @@ class StaleLetterServiceTest {
         assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letter);
         assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(MANUALLY_MARKED_AS_NOT_SENT);
         assertThat(letterEventArgumentCaptor.getValue().getNotes())
-                .isEqualTo("Letter marked manually as not sent as being stale");
+            .isEqualTo("Letter marked manually as not sent as being stale");
 
         verify(letterRepository).markStaleLetterAsNotSent(letterId);
         verifyNoMoreInteractions(letterRepository, letterEventRepository);
@@ -292,10 +292,10 @@ class StaleLetterServiceTest {
         // when
         // then
         assertThatThrownBy(() -> staleLetterService(
-                ftpDowntimeStartTime,
-                minStaleLetterAgeInBusinessDays
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
         ).markStaleLetterAsNotSent(letterId))
-                .isInstanceOf(LetterNotFoundException.class);
+            .isInstanceOf(LetterNotFoundException.class);
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(letterEventRepository);
@@ -307,24 +307,24 @@ class StaleLetterServiceTest {
         int minStaleLetterAgeInBusinessDays = 123;
 
         ZonedDateTime now = LocalDate.parse("2019-05-03")
-                .atTime(15, 59) // currently it's before FTP downtime
-                .atZone((ZoneId.of(EUROPE_LONDON)));
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
         given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
-                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
         setCurrentTimeAndZone(now);
 
         UUID letterId = UUID.randomUUID();
         Letter letter = new Letter(
-                letterId,
-                letterId.toString(),
-                "cmc",
-                null,
-                "type",
-                null,
-                false,
-                null,
-                now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
-                null
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays + 1).toLocalDateTime(),
+            null
         );
         letter.setStatus(Created);
 
@@ -335,10 +335,10 @@ class StaleLetterServiceTest {
 
         // when
         assertThatThrownBy(() -> staleLetterService(
-                ftpDowntimeStartTime,
-                minStaleLetterAgeInBusinessDays
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
         ).markStaleLetterAsNotSent(letterId))
-                .isInstanceOf(LetterNotStaleException.class);
+            .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(letterEventRepository);
@@ -348,27 +348,27 @@ class StaleLetterServiceTest {
     void should_throw_exception_when_letter_not_stale() {
         // given
         ZonedDateTime now = LocalDate.parse("2019-05-03")
-                .atTime(15, 59) // currently it's before FTP downtime
-                .atZone((ZoneId.of(EUROPE_LONDON)));
+            .atTime(15, 59) // currently it's before FTP downtime
+            .atZone((ZoneId.of(EUROPE_LONDON)));
 
         int minStaleLetterAgeInBusinessDays = 123;
 
         given(dateCalculator.subtractBusinessDays(now, minStaleLetterAgeInBusinessDays))
-                .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
+            .willReturn(now.minusDays(minStaleLetterAgeInBusinessDays));
         setCurrentTimeAndZone(now);
 
         UUID letterId = UUID.randomUUID();
         Letter letter = new Letter(
-                letterId,
-                letterId.toString(),
-                "cmc",
-                null,
-                "type",
-                null,
-                false,
-                null,
-                now.minusDays(minStaleLetterAgeInBusinessDays - 1).toLocalDateTime(),
-                null
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            now.minusDays(minStaleLetterAgeInBusinessDays - 1).toLocalDateTime(),
+            null
         );
         letter.setStatus(Uploaded);
 
@@ -379,10 +379,10 @@ class StaleLetterServiceTest {
 
         // when
         assertThatThrownBy(() -> staleLetterService(
-                ftpDowntimeStartTime,
-                minStaleLetterAgeInBusinessDays
+            ftpDowntimeStartTime,
+            minStaleLetterAgeInBusinessDays
         ).markStaleLetterAsNotSent(letterId))
-                .isInstanceOf(LetterNotStaleException.class);
+            .isInstanceOf(LetterNotStaleException.class);
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(letterEventRepository);
@@ -417,7 +417,7 @@ class StaleLetterServiceTest {
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
-        given(letterRepository.markStaleLetterAsCreated(eq(letterId), any(LocalDateTime.class))).willReturn(1);
+        given(letterRepository.markStaleLetterAsCreated(letterId)).willReturn(1);
 
         String ftpDowntimeStartTime = "16:00";
 
@@ -435,9 +435,9 @@ class StaleLetterServiceTest {
         assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letter);
         assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(MANUALLY_MARKED_AS_CREATED);
         assertThat(letterEventArgumentCaptor.getValue().getNotes())
-                .isEqualTo("Letter marked manually as created for reprocessing");
+            .isEqualTo("Letter marked manually as created for reprocessing");
 
-        verify(letterRepository).markStaleLetterAsCreated(eq(letterId), any(LocalDateTime.class));
+        verify(letterRepository).markStaleLetterAsCreated(letterId);
         verifyNoMoreInteractions(letterRepository, letterEventRepository);
     }
 

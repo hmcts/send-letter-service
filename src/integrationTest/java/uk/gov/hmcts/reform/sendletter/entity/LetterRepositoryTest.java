@@ -98,24 +98,17 @@ class LetterRepositoryTest {
     void should_change_letter_status_to_created() {
         // given
         Letter letter = SampleData.letterEntity("aService");
-
         letter.setStatus(Uploaded);
-
         Letter savedLetter = repository.save(letter);
 
         // when
-        LocalDateTime postedAt = LocalDateTime.now();
-        int updateCount = repository.markStaleLetterAsCreated(savedLetter.getId(), postedAt);
+        int updateCount = repository.markStaleLetterAsCreated(savedLetter.getId());
 
         // then
         assertThat(updateCount).isEqualTo(1);
         assertThat(repository.findAll())
-            .extracting(l ->
-                tuple(l.getId(), l.getStatus(), l.getSentToPrintAt())
-            )
-            .containsExactly(
-                tuple(savedLetter.getId(), Created, postedAt)
-            );
+            .extracting(l -> tuple(l.getId(), l.getStatus()))
+            .containsExactly(tuple(savedLetter.getId(), Created));
     }
 
     @ParameterizedTest
@@ -126,7 +119,6 @@ class LetterRepositoryTest {
     void should_not_change_letter_status_when_status_is_not_uploaded(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(status);
 
         Letter savedLetter = repository.save(letter);
@@ -142,13 +134,12 @@ class LetterRepositoryTest {
     void should_not_change_letter_status_to_created_for_different_letter_id() {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(Uploaded);
 
         repository.save(letter);
 
         // when
-        int updateCount = repository.markStaleLetterAsCreated(UUID.randomUUID(), LocalDateTime.now());
+        int updateCount = repository.markStaleLetterAsCreated(UUID.randomUUID());
 
         // then
         assertThat(updateCount).isEqualTo(0);
@@ -162,7 +153,6 @@ class LetterRepositoryTest {
     void should_change_status_to_aborted_when_letter_status_is_not_posted(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(status);
 
         Letter savedLetter = repository.save(letter);
