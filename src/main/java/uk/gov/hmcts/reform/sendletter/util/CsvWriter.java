@@ -79,7 +79,7 @@ public final class CsvWriter {
     }
 
     public static File writeDelayedPostedLettersToCsv(Stream<BasicLetterInfo> letters) throws IOException {
-        var path = Files.createTempFile("Deplayed-letters-", ".csv", ATTRIBUTE);// Compliant
+        var path = Files.createTempFile("Delayed-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(DELAYED_LETTERS_EMAIL_CSV_HEADERS).build();
         var count = new AtomicInteger(0);
@@ -128,7 +128,7 @@ public final class CsvWriter {
                     letter.getSentToPrintAt(), letter.getPrintedAt());
             count.incrementAndGet();
         } catch (Exception e) {
-            logger.error("Deplay letter posted exception ", e);
+            logger.error("Delay letter posted exception ", e);
         }
     }
 }

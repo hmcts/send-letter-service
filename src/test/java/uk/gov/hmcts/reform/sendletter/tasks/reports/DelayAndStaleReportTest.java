@@ -63,9 +63,9 @@ class DelayAndStaleReportTest {
 
     @Test
     void should_send_emails() throws IOException {
-        File deplayedFile = new File("delayed-file");
+        File delayedFile = new File("delayed-file");
         given(delayedPrintService.getDelayLettersAttachment(isA(LocalDateTime.class),
-                isA(LocalDateTime.class), anyInt())).willReturn(deplayedFile);
+                isA(LocalDateTime.class), anyInt())).willReturn(delayedFile);
 
         File staleFile = new File("stale-file");
         given(staleLetterService.getWeeklyStaleLetters()).willReturn(staleFile);
