@@ -52,6 +52,7 @@ public class StaleLetterSearchTest {
 
         Letter uploadedLetter = storeLetter(cutOffDate.minusDays(5), LetterStatus.Uploaded);
         Letter createdLetter = storeLetter(cutOffDate.minusSeconds(1), LetterStatus.Created);
+        storeLetter(cutOffDate.minusDays(5), LetterStatus.NotSent);
 
         // when
         try (Stream<BasicLetterInfo> letterStream = repository

@@ -26,25 +26,25 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 public class DelayAndStaleReport {
     private static final Logger log = LoggerFactory.getLogger(DelayAndStaleReport.class);
 
-    private final DelayedPrintService deplayedPrintService;
+    private final DelayedPrintService delayedPrintService;
     private final StaleLetterService staleLetterService;
     private final EmailSender emailSender;
     private final String[] recipients;
     private final int minStaleLetterAgeInBusinessDays;
 
-    public static final String EMAIL_SUBJECT = "Send letter report for deplayed print and stale letters";
-    public static final String ATTACHEMENT_DELAYED_PRINT_PREFIX = "Delayed-Print-Weekly-Report-";
-    public static final String ATTACHEMENT_STALE_LETTER_PREFIX = "Stale-Letter-Weekly-Report-";
+    public static final String EMAIL_SUBJECT = "Send letter report for delayed print and stale letters";
+    public static final String ATTACHMENT_DELAYED_PRINT_PREFIX = "Delayed-Print-Weekly-Report-";
+    public static final String ATTACHMENT_STALE_LETTER_PREFIX = "Stale-Letter-Weekly-Report-";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
-    public DelayAndStaleReport(DelayedPrintService deplayedPrintService,
+    public DelayAndStaleReport(DelayedPrintService delayedPrintService,
                                StaleLetterService staleLetterService,
                                EmailSender emailSender,
                                @Value("${reports.delayed-stale-report.recipients}") String[] recipients,
                                @Value("${stale-letters.min-age-in-business-days}") int minStaleLetterAgeInBusinessDays
     ) {
-        this.deplayedPrintService = deplayedPrintService;
+        this.delayedPrintService = delayedPrintService;
         this.staleLetterService = staleLetterService;
         this.emailSender = emailSender;
         this.recipients = recipients;
@@ -66,7 +66,7 @@ public class DelayAndStaleReport {
                 }
             };
 
-            addAttachment.accept(getDeplayedAttachment(fromDate, toDate));
+            addAttachment.accept(getDelayedAttachment(fromDate, toDate));
             addAttachment.accept(getStaleLetterAttachment(toDate));
 
             if (!attachments.isEmpty()) {
@@ -83,7 +83,7 @@ public class DelayAndStaleReport {
         Attachment staleLetterAttachment = null;
         try {
             File weeklyStaleLettersFile = staleLetterService.getWeeklyStaleLetters();
-            String staleFileName = String.join("", ATTACHEMENT_STALE_LETTER_PREFIX,
+            String staleFileName = String.join("", ATTACHMENT_STALE_LETTER_PREFIX,
                     toDate.format(FORMATTER), ".csv");
 
             staleLetterAttachment = new Attachment(staleFileName, weeklyStaleLettersFile);
@@ -93,19 +93,19 @@ public class DelayAndStaleReport {
         return staleLetterAttachment;
     }
 
-    private Attachment getDeplayedAttachment(LocalDateTime fromDate, LocalDateTime toDate) {
-        Attachment deplayLettersAttachment = null;
+    private Attachment getDelayedAttachment(LocalDateTime fromDate, LocalDateTime toDate) {
+        Attachment delayLettersAttachment = null;
         try {
-            File deplayLettersFile = deplayedPrintService.getDelayLettersAttachment(fromDate, toDate,
+            File delayLettersFile = delayedPrintService.getDelayLettersAttachment(fromDate, toDate,
                     minStaleLetterAgeInBusinessDays);
-            String deplayFileName = String.join("", ATTACHEMENT_DELAYED_PRINT_PREFIX,
+            String delayFileName = String.join("", ATTACHMENT_DELAYED_PRINT_PREFIX,
                     toDate.format(FORMATTER), ".csv");
 
-            deplayLettersAttachment = new Attachment(deplayFileName, deplayLettersFile);
+            delayLettersAttachment = new Attachment(delayFileName, delayLettersFile);
         } catch (Exception e) {
             log.error("Error delayed letter report", e);
         }
-        return deplayLettersAttachment;
+        return delayLettersAttachment;
     }
 
 }
