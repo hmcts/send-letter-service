@@ -52,7 +52,7 @@ public class StaleLetterService {
     private final Clock clock;
 
     public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE =
-            List.of(LetterStatus.Posted, LetterStatus.Aborted);
+            List.of(LetterStatus.Posted, LetterStatus.Aborted, LetterStatus.NotSent);
 
     public StaleLetterService(
         DateCalculator dateCalculator,
@@ -115,10 +115,10 @@ public class StaleLetterService {
                 "Letter marked manually as created for reprocessing"
         );
 
-        return letterRepository.markStaleLetterAsCreated(id, LocalDateTime.now());
+        return letterRepository.markStaleLetterAsCreated(id);
     }
 
-    private void prepareChangingLetterStatus(UUID id, EventType manuallyMarkedAsNotSent, String notes) {
+    private void prepareChangingLetterStatus(UUID id, EventType manuallyMarkedStatus, String notes) {
         Optional<Letter> letterOpt = letterRepository.findById(id);
 
         if (letterOpt.isEmpty()) {
@@ -131,7 +131,7 @@ public class StaleLetterService {
 
         createLetterEvent(
                 letter,
-                manuallyMarkedAsNotSent,
+                manuallyMarkedStatus,
                 notes
         );
     }

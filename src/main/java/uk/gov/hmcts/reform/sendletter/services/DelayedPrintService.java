@@ -30,10 +30,10 @@ public class DelayedPrintService {
     public File getDelayLettersAttachment(LocalDateTime fromCreatedDate,
                                           LocalDateTime toCreatedDate,
                                           int minProcessingDays) throws IOException {
-        try (Stream<BasicLetterInfo> deplayedPostedLetter = letterRepository
+        try (Stream<BasicLetterInfo> delayedPostedLetter = letterRepository
                 .findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(LetterStatus.Posted,
                     fromCreatedDate, toCreatedDate)) {
-            List<BasicLetterInfo> filteredLetters = deplayedPostedLetter.filter(letter ->
+            List<BasicLetterInfo> filteredLetters = delayedPostedLetter.filter(letter ->
                 Period.between(letter.getSentToPrintAt().toLocalDate(),
                     letter.getPrintedAt().toLocalDate()).getDays() > minProcessingDays)
                 .collect(toList());
