@@ -52,7 +52,7 @@ public class StaleLetterService {
     private final Clock clock;
 
     public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE =
-            List.of(LetterStatus.Posted, LetterStatus.Aborted);
+            List.of(LetterStatus.Posted, LetterStatus.Aborted, LetterStatus.NotSent);
 
     public StaleLetterService(
         DateCalculator dateCalculator,

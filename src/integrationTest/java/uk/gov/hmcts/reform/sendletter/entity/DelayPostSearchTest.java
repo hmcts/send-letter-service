@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.NotSent;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -39,11 +40,12 @@ class DelayPostSearchTest {
         storeLetter(Posted, "type-2",  currentDateTime.minusDays(4), currentDateTime.minusDays(4).plusHours(2));
         storeLetter(Posted, "type-2",  currentDateTime.minusDays(3), currentDateTime.minusDays(1));
         storeLetter(Posted, "type-2",  currentDateTime.minusDays(3), currentDateTime.minusDays(1).plusHours(1));
+        storeLetter(NotSent, "type-2",  currentDateTime.minusDays(3), currentDateTime.minusDays(4).plusHours(1));
 
-        try (Stream<BasicLetterInfo> deplayedPostedLetter =
+        try (Stream<BasicLetterInfo> delayedPostedLetter =
                  letterRepository.findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(
                 LetterStatus.Posted,currentDateTime.minusDays(6), currentDateTime)) {
-            assertThat(deplayedPostedLetter.count()).isEqualTo(5);
+            assertThat(delayedPostedLetter.count()).isEqualTo(5);
         }
     }
 
