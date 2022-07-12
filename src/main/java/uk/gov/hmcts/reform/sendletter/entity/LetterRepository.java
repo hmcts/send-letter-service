@@ -26,7 +26,7 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
-        + " where l.status not in ('Posted', 'Aborted')"
+        + " where l.status not in ('Posted', 'Aborted', 'NotSent')"
         + " and l.createdAt < :createdBefore"
         + " and l.type <> '" + UploadLettersTask.SMOKE_TEST_LETTER_TYPE + "'"
         + " order by l.createdAt asc")
@@ -90,10 +90,10 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
-        + " SET l.status = 'Created', l.sentToPrintAt = :sentToPrintAt"
+        + " SET l.status = 'Created'"
         + " WHERE l.id = :id AND l.status = 'Uploaded'"
     )
-    int markStaleLetterAsCreated(@Param("id") UUID id, @Param("sentToPrintAt") LocalDateTime sentToPrintAt);
+    int markStaleLetterAsCreated(@Param("id") UUID id);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
