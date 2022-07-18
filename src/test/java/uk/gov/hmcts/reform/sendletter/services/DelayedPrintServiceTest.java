@@ -50,9 +50,9 @@ class DelayedPrintServiceTest {
         given(letterRepository.findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(eq(LetterStatus.Posted),
             isA(LocalDateTime.class), isA(LocalDateTime.class))).willReturn(stream);
 
-        File deplayLettersAttachment = delayedPrintService.getDelayLettersAttachment(
-                current.minusDays(6), current, 2);
-        List<CSVRecord> csvRecords = readCsv(deplayLettersAttachment);
+        File delayLettersAttachment = delayedPrintService.getDelayLettersAttachment(
+            current.minusDays(6), current, 2);
+        List<CSVRecord> csvRecords = readCsv(delayLettersAttachment);
         assertThat(csvRecords.size()).isEqualTo(3); // Includes header
         verify(letterRepository).findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(eq(LetterStatus.Posted),
             isA(LocalDateTime.class), isA(LocalDateTime.class));
