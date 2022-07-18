@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -86,7 +85,8 @@ class FailingFileTest {
                         .content(readResource("letter-with-pdf.json"))
         );
     }
-    void shouldHandleCorruptedLetter(MockHttpServletRequestBuilder request) throws Throwable {
+
+    private void shouldHandleCorruptedLetter(MockHttpServletRequestBuilder request) throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
