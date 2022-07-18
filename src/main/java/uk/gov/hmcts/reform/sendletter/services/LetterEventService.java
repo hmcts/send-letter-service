@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 
 import java.time.Instant;
 
-import static uk.gov.hmcts.reform.sendletter.entity.EventType.FAILED_IN_UPLOAD;
-import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Failed;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.FAILED_TO_UPLOAD;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 
 @Service
 public class LetterEventService {
@@ -34,12 +34,12 @@ public class LetterEventService {
     public void failLetterUpload(Letter letter, Exception ex) {
         log.error("Error uploading letter {}", letter.getId(), ex);
 
-        letter.setStatus(Failed);
+        letter.setStatus(FailedToUpload);
         letterRepository.save(letter);
 
         createLetterEvent(
                 letter,
-                FAILED_IN_UPLOAD,
+                FAILED_TO_UPLOAD,
                 ex.getMessage()
         );
     }

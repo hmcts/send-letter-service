@@ -16,9 +16,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.sendletter.entity.EventType.FAILED_IN_UPLOAD;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.FAILED_TO_UPLOAD;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
-import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Failed;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 
 @ExtendWith(MockitoExtension.class)
 class LetterEventServiceTest {
@@ -63,9 +63,9 @@ class LetterEventServiceTest {
         ArgumentCaptor<LetterEvent> letterEventArgumentCaptor = ArgumentCaptor.forClass(LetterEvent.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
         verify(letterEventRepository).save(letterEventArgumentCaptor.capture());
-        assertThat(letterArgumentCaptor.getValue().getStatus()).isEqualTo(Failed);
+        assertThat(letterArgumentCaptor.getValue().getStatus()).isEqualTo(FailedToUpload);
         assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letterArgumentCaptor.getValue());
-        assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(FAILED_IN_UPLOAD);
+        assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(FAILED_TO_UPLOAD);
         assertThat(letterEventArgumentCaptor.getValue().getNotes()).isEqualTo("msg");
     }
 }
