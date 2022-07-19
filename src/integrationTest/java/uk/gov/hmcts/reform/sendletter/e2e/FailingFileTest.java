@@ -79,10 +79,6 @@ class FailingFileTest {
 
     @Test
     void shouldHandleUploadFailure() throws Throwable {
-        shouldHandleCorruptedLetter();
-    }
-
-    private void shouldHandleCorruptedLetter() throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
