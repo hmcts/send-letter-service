@@ -33,11 +33,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @SpringBootTest
 @TestPropertySource(properties = {
         "scheduling.enabled=true",
-        "tasks.upload-letters.interval-ms=30000",
+        "tasks.upload-letters.interval-ms=60000",
         "tasks.mark-letters-posted.cron=*/1 * * * * *",
         "tasks.stale-letters-report.cron=*/1 * * * * *",
         "ftp.service-folders[0].service=some_service_name",
@@ -78,49 +79,59 @@ class FailingFileTest {
 
     @Test
     void shouldHandleUploadFailure() throws Throwable {
-        shouldHandleCorruptedLetter(
-                post("/letters")
-                        .header("ServiceAuthorization", "auth-header-value")
-                        .contentType(MediaTypes.LETTER_V2)
-                        .content(readResource("letter-with-pdf.json"))
-        );
+        shouldHandleCorruptedLetter();
     }
 
-    private void shouldHandleCorruptedLetter(MockHttpServletRequestBuilder request) throws Throwable {
+    private void shouldHandleCorruptedLetter() throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
             fakeFtpAvailabilityChecker.setAvailable(true);
 
-            mvc.perform(request)
-                    .andExpect(status().isOk())
-                    .andReturn();
+            int numberOfRequests = 5;
+            for (int i = 0; i < numberOfRequests; i++) {
+                MockHttpServletRequestBuilder request =
+                        post("/letters")
+                                .header("ServiceAuthorization", "auth-header-value")
+                                .contentType(MediaTypes.LETTER_V2)
+                                .content(readResource("letter-with-pdf" + i + ".json"));
+                sendRequest(request);
+            }
 
             await()
                     .forever()
                     .untilAsserted(() -> {
                         List<Letter> letters = repository.findAll();
-                        assertThat(letters).as("Letters in DB").hasSize(1);
+                        assertThat(letters).as("Letters in DB").hasSize(numberOfRequests);
                     });
 
-            corruptFileInDataBase();
+            corruptFileInDataBase(2);
 
             // The report should be processed and the letter marked posted.
             await()
                     .forever()
                     .untilAsserted(() -> {
                         List<Letter> letters = repository.findAll();
-                        assertThat(letters).as("Letters in DB").hasSize(1);
-                        assertThat(letters.get(0).getStatus()).as("Letter status").isEqualTo(FailedToUpload);
+                        assertThat(letters).as("Letters in DB").hasSize(numberOfRequests);
+                        long failedCnt = letters.stream().filter(l -> l.getStatus().equals(FailedToUpload)).count();
+                        long uploadedCnt = letters.stream().filter(l -> l.getStatus().equals(Uploaded)).count();
+                        assertThat(failedCnt).as("Failed letters").isEqualTo(1);
+                        assertThat(uploadedCnt).as("Failed letters").isEqualTo(4);
                     });
         }
     }
 
-    private void corruptFileInDataBase() {
-        // The interval between upload-letters tasks is 30 seconds,
+    private void sendRequest(MockHttpServletRequestBuilder request) throws Exception {
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    private void corruptFileInDataBase(int ind) {
+        // The interval between upload-letters tasks is 60 seconds (as defined by tasks.upload-letters.interval-ms),
         // this gives enough time to corrupt letter in db by making fileContent null
         List<Letter> savedLetters = repository.findAll();
-        Letter savedLetter = savedLetters.get(0);
+        Letter savedLetter = savedLetters.get(ind);
         // making fileContent null causes NPE when file is being uploaded
         savedLetter.setFileContent(null);
         repository.saveAndFlush(savedLetter);
