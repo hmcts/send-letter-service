@@ -159,7 +159,7 @@ class FailingUploadTest {
         repository.saveAndFlush(savedLetter);
     }
 
-    String readResource(final String fileName) throws IOException {
+    private String readResource(final String fileName) throws IOException {
         return StreamUtils.copyToString(
                 new ClassPathResource(fileName).getInputStream(), UTF_8);
     }
