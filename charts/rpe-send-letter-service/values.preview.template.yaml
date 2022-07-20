@@ -9,9 +9,9 @@ java:
   environment:
     # db
     LETTER_TRACKING_DB_HOST: "{{ .Release.Name }}-postgresql"
-    LETTER_TRACKING_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    LETTER_TRACKING_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    LETTER_TRACKING_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    LETTER_TRACKING_DB_NAME: "{{ .Values.postgresql.auth.postgresqlDatabase}}"
+    LETTER_TRACKING_DB_USER_NAME: "{{ .Values.postgresql.auth.postgresqlUsername}}"
+    LETTER_TRACKING_DB_PASSWORD: "{{ .Values.postgresql.auth.postgresqlPassword}}"
     LETTER_TRACKING_DB_CONN_OPTIONS: "?gssEncMode=disable"
     # db - migration
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
