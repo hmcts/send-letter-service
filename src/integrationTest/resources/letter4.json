@@ -1,0 +1,11 @@
+{
+  "documents": [
+    {
+      "template": "<html><p>Hello 4 {{ name }}</p></html>",
+      "values": {
+        "name": "M. Bloggs4"
+      }
+    }
+  ],
+  "type": "typeA"
+}

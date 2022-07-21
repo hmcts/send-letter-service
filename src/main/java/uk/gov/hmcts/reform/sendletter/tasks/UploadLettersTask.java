@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
@@ -37,19 +38,22 @@ public class UploadLettersTask {
     private final LetterRepository repo;
     private final FtpClient ftp;
     private final IFtpAvailabilityChecker availabilityChecker;
+    private final LetterEventService letterEventService;
     private final ServiceFolderMapping serviceFolderMapping;
     private final int dbPollDelay;
 
     public UploadLettersTask(
-        LetterRepository repo,
-        FtpClient ftp,
-        IFtpAvailabilityChecker availabilityChecker,
-        ServiceFolderMapping serviceFolderMapping,
-        @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
+            LetterRepository repo,
+            FtpClient ftp,
+            IFtpAvailabilityChecker availabilityChecker,
+            LetterEventService letterEventService,
+            ServiceFolderMapping serviceFolderMapping,
+            @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
     ) {
         this.repo = repo;
         this.ftp = ftp;
         this.availabilityChecker = availabilityChecker;
+        this.letterEventService = letterEventService;
         this.serviceFolderMapping = serviceFolderMapping;
         this.dbPollDelay = dbPollDelay;
     }
@@ -76,13 +80,20 @@ public class UploadLettersTask {
             int uploadCount = 0;
 
             for (int i = 0; i < BATCH_SIZE; i++) {
-                Optional<Letter> letter
+                Optional<Letter> letterOpt
                         = repo.findFirstLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
-                if (letter.isPresent()) {
-                    boolean uploaded = processLetter(letter.get(), client);
-                    if (uploaded) {
-                        uploadCount++;
+                if (letterOpt.isPresent()) {
+                    Letter letter = letterOpt.get();
+                    try {
+                        boolean uploaded = processLetter(letter, client);
+                        if (uploaded) {
+                            uploadCount++;
+                        }
+                    } catch (Exception ex) {
+                        letterEventService.failLetterUpload(letter, ex);
+
+                        break;
                     }
                 } else {
                     break;
