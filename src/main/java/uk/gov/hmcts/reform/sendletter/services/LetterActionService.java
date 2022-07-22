@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_ABORTED;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 
 @Service
 public class LetterActionService {
@@ -37,6 +39,12 @@ public class LetterActionService {
 
         if (letterOpt.isEmpty()) {
             throw new LetterNotFoundException(id);
+        }
+
+        Letter letter = letterOpt.get();
+        if (letter.getStatus() == Posted) {
+            throw new UnableToAbortLetterException(
+                "Letter with ID '" + letter.getId() + "', status '" + Posted + "' can not be aborted");
         }
 
         createLetterEvent(

@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,24 +98,17 @@ class LetterRepositoryTest {
     void should_change_letter_status_to_created() {
         // given
         Letter letter = SampleData.letterEntity("aService");
-
         letter.setStatus(Uploaded);
-
         Letter savedLetter = repository.save(letter);
 
         // when
-        LocalDateTime postedAt = LocalDateTime.now();
-        int updateCount = repository.markStaleLetterAsCreated(savedLetter.getId(), postedAt);
+        int updateCount = repository.markStaleLetterAsCreated(savedLetter.getId());
 
         // then
         assertThat(updateCount).isEqualTo(1);
         assertThat(repository.findAll())
-            .extracting(l ->
-                tuple(l.getId(), l.getStatus(), l.getSentToPrintAt())
-            )
-            .containsExactly(
-                tuple(savedLetter.getId(), Created, postedAt)
-            );
+            .extracting(l -> tuple(l.getId(), l.getStatus()))
+            .containsExactly(tuple(savedLetter.getId(), Created));
     }
 
     @ParameterizedTest
@@ -125,7 +119,6 @@ class LetterRepositoryTest {
     void should_not_change_letter_status_when_status_is_not_uploaded(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(status);
 
         Letter savedLetter = repository.save(letter);
@@ -141,13 +134,12 @@ class LetterRepositoryTest {
     void should_not_change_letter_status_to_created_for_different_letter_id() {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(Uploaded);
 
         repository.save(letter);
 
         // when
-        int updateCount = repository.markStaleLetterAsCreated(UUID.randomUUID(), LocalDateTime.now());
+        int updateCount = repository.markStaleLetterAsCreated(UUID.randomUUID());
 
         // then
         assertThat(updateCount).isEqualTo(0);
@@ -161,7 +153,6 @@ class LetterRepositoryTest {
     void should_change_status_to_aborted_when_letter_status_is_not_posted(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
-
         letter.setStatus(status);
 
         Letter savedLetter = repository.save(letter);
@@ -212,4 +203,62 @@ class LetterRepositoryTest {
         assertThat(updateCount).isEqualTo(0);
     }
 
+    @Test
+    void findStaleLetters_should_return_stale_letters() {
+        // given
+        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        letter1.setStatus(Uploaded);
+
+        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
+        letter2.setStatus(Created);
+
+        Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        letter3.setStatus(NotSent);
+
+        Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter3.setStatus(Aborted);
+
+        Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter3.setStatus(Posted);
+
+        final Letter savedLetter1 = repository.save(letter1);
+        final Letter savedLetter2 = repository.save(letter2);
+        final Letter savedLetter3 = repository.save(letter3);
+        final Letter savedLetter4 = repository.save(letter4);
+        final Letter savedLetter5 = repository.save(letter5);
+
+        // when
+        List<BasicLetterInfo> staleLetters = repository.findStaleLetters(LocalDateTime.now().minusDays(1));
+
+        // then
+        assertThat(staleLetters).isNotEmpty().size().isEqualTo(2);
+        assertThat(staleLetters)
+            .extracting(l ->
+                tuple(l.getId(), l.getStatus())
+            )
+            .contains(
+                tuple(savedLetter1.getId(), Uploaded.name()),
+                tuple(savedLetter2.getId(), Created.name())
+            )
+            .doesNotContain(
+                tuple(savedLetter3.getId(), NotSent.name()),
+                tuple(savedLetter4.getId(), Aborted.name()),
+                tuple(savedLetter5.getId(), Posted.name())
+            );
+    }
+
+    @Test
+    void findStaleLetters_should_return_empty_when_no_letters_are_pending_to_print() {
+        // given
+        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(2));
+        letter1.setStatus(NotSent);
+
+        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(1));
+        letter2.setStatus(Posted);
+        repository.saveAll(List.of(letter1, letter2));
+
+        // when
+        // then
+        assertThat(repository.findStaleLetters(LocalDateTime.now())).isEmpty();
+    }
 }
