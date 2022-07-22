@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
+import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -51,6 +52,9 @@ class UploadLettersTaskTest {
 
     @Mock
     private FtpAvailabilityChecker availabilityChecker;
+
+    @Mock
+    private LetterEventService letterEventService;
 
     @Mock ServiceFolderMapping serviceFolderMapping;
 
@@ -86,8 +90,9 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
+            letterEventService,
             serviceFolderMapping,
-                0
+            0
         );
 
         // Invoke the upload job.
@@ -122,8 +127,9 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getFailingClient(LocalSftpServer.port),
             availabilityChecker,
+            letterEventService,
             serviceFolderMapping,
-                0
+            0
         );
 
         // and
@@ -157,8 +163,9 @@ class UploadLettersTaskTest {
             repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
+            letterEventService,
             serviceFolderMapping,
-                0
+            0
         );
 
         try (LocalSftpServer server = LocalSftpServer.create()) {
