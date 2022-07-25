@@ -303,7 +303,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.14.3'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.18.0'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
@@ -324,8 +324,8 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.8.0'
-  integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.8.0'
+  integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.9.0'
+  integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.9.0'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.3'
   integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.1', withoutJunit4
 

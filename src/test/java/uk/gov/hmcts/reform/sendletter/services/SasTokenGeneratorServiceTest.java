@@ -59,7 +59,7 @@ class SasTokenGeneratorServiceTest {
 
         assertThat(tokenData.get("sig")).isNotNull();//this is a generated hash of the resource string
         assertThat(tokenData.get("se")).startsWith(LocalDate.now().toString());//the expiry date/time for the signature
-        assertThat(tokenData.get("sv")).contains("2020-10-02");//azure api version is latest
+        assertThat(tokenData.get("sv")).contains("2021-08-06");//azure api version is latest
         assertThat(tokenData.get("sp")).contains("rwl");//access permissions(write-w,list-l)
         assertThat(tokenData.get("sr")).isNotNull();
     }
