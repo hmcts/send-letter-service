@@ -102,7 +102,7 @@ class LetterRepositoryTest {
         Letter savedLetter = repository.save(letter);
 
         // when
-        int updateCount = repository.markStaleLetterAsCreated(savedLetter.getId());
+        int updateCount = repository.markLetterAsCreated(savedLetter.getId());
 
         // then
         assertThat(updateCount).isEqualTo(1);
@@ -139,7 +139,7 @@ class LetterRepositoryTest {
         repository.save(letter);
 
         // when
-        int updateCount = repository.markStaleLetterAsCreated(UUID.randomUUID());
+        int updateCount = repository.markLetterAsCreated(UUID.randomUUID());
 
         // then
         assertThat(updateCount).isEqualTo(0);
