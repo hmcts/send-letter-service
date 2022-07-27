@@ -65,7 +65,7 @@ public class ActionController {
 
         validateAuthorization(authHeader);
 
-        staleLetterService.markStaleLetterAsCreated(id);
+        letterActionService.markLetterAsCreated(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

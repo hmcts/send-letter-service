@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
@@ -21,15 +22,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ActionController.class)
 class ActionControllerTest {
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @MockBean private StaleLetterService staleLetterService;
-    @MockBean private LetterActionService letterActionService;
+    @MockBean
+    private StaleLetterService staleLetterService;
+    @MockBean
+    private LetterActionService letterActionService;
 
     @Test
     void should_return_ok_when_letter_is_successfully_marked() throws Exception {
@@ -128,7 +133,7 @@ class ActionControllerTest {
     void should_return_ok_when_letter_is_successfully_marked_as_created() throws Exception {
         UUID letterId = UUID.randomUUID();
 
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willReturn(1);
+        given(letterActionService.markLetterAsCreated(letterId)).willReturn(1);
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
@@ -136,15 +141,15 @@ class ActionControllerTest {
             )
                 .andExpect(status().isOk());
 
-        verify(staleLetterService).markStaleLetterAsCreated(letterId);
-        verifyNoMoreInteractions(staleLetterService);
+        verify(letterActionService).markLetterAsCreated(letterId);
+        verifyNoMoreInteractions(letterActionService);
     }
 
     @Test
     void should_return_not_found_when_marking_letter_created_and_letter_not_found() throws Exception {
         UUID letterId = UUID.randomUUID();
 
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotFoundException(letterId));
+        given(letterActionService.markLetterAsCreated(letterId)).willThrow(new LetterNotFoundException(letterId));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
@@ -152,15 +157,15 @@ class ActionControllerTest {
             )
                 .andExpect(status().isNotFound());
 
-        verify(staleLetterService).markStaleLetterAsCreated(letterId);
-        verifyNoMoreInteractions(staleLetterService);
+        verify(letterActionService).markLetterAsCreated(letterId);
+        verifyNoMoreInteractions(letterActionService);
     }
 
     @Test
     void should_return_bad_request_when_marking_letter_created_and_letter_not_stale() throws Exception {
         UUID letterId = UUID.randomUUID();
 
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+        given(letterActionService.markLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
@@ -168,15 +173,35 @@ class ActionControllerTest {
             )
                 .andExpect(status().isBadRequest());
 
-        verify(staleLetterService).markStaleLetterAsCreated(letterId);
-        verifyNoMoreInteractions(staleLetterService);
+        verify(letterActionService).markLetterAsCreated(letterId);
+        verifyNoMoreInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_bad_request_when_marking_letter_created_and_letter_status_not_supported() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(letterActionService.markLetterAsCreated(letterId))
+            .willThrow(new UnableToReprocessLetterException(
+                "Letter with ID '" + letterId + "', status 'Posted' can not be re-processed"));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-created")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(
+                "Letter with ID '" + letterId + "', status 'Posted' can not be re-processed"));
+
+        verify(letterActionService).markLetterAsCreated(letterId);
+        verifyNoMoreInteractions(letterActionService);
     }
 
     @Test
     void should_return_bad_request_when_marking_letter_created_and_letter_id_is_corrupted() throws Exception {
         UUID letterId = UUID.randomUUID();
 
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
+        given(letterActionService.markLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
@@ -184,29 +209,25 @@ class ActionControllerTest {
             )
                 .andExpect(status().isBadRequest());
 
-        verify(staleLetterService).markStaleLetterAsCreated(letterId);
-        verifyNoMoreInteractions(staleLetterService);
+        verify(letterActionService).markLetterAsCreated(letterId);
+        verifyNoMoreInteractions(letterActionService);
     }
 
     @Test
     void should_return_unauthorized_when_marking_letter_created_and_header_is_missing() throws Exception {
         UUID letterId = UUID.randomUUID();
 
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
-
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
             )
                 .andExpect(status().isUnauthorized());
 
-        verifyNoInteractions(staleLetterService);
+        verifyNoInteractions(letterActionService);
     }
 
     @Test
     void should_return_unauthorized_when_marking_letter_created_and_header_is_invalid() throws Exception {
         UUID letterId = UUID.randomUUID();
-
-        given(staleLetterService.markStaleLetterAsCreated(letterId)).willThrow(new LetterNotStaleException(letterId));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-created")
@@ -214,7 +235,7 @@ class ActionControllerTest {
         )
                 .andExpect(status().isUnauthorized());
 
-        verifyNoInteractions(staleLetterService);
+        verifyNoInteractions(letterActionService);
     }
 
     @Test
@@ -280,7 +301,7 @@ class ActionControllerTest {
 
         given(letterActionService.markLetterAsAborted(letterId))
             .willThrow(new UnableToAbortLetterException(
-                "Letter with ID '" + letterId + "', status '" + LetterStatus.Posted  + "' can not be aborted"));
+                "Letter with ID '" + letterId + "', status '" + LetterStatus.Posted + "' can not be aborted"));
 
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-aborted")

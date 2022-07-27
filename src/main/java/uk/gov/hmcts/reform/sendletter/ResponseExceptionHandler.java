@@ -139,12 +139,12 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnableToAbortLetterException.class)
     protected ResponseEntity<String> handleUnableToAbortLetterException(UnableToAbortLetterException exc) {
         log.warn(exc.getMessage(), exc);
-        return status(BAD_REQUEST).body("Status is not supported to abort the letter");
+        return status(BAD_REQUEST).body(exc.getMessage());
     }
 
     @ExceptionHandler(UnableToReprocessLetterException.class)
     protected ResponseEntity<String> handleUnableToReprocessLetterException(UnableToReprocessLetterException exc) {
         log.warn(exc.getMessage(), exc);
-        return status(BAD_REQUEST).body("Status is not supported to re-process the letter");
+        return status(BAD_REQUEST).body(exc.getMessage());
     }
 }
