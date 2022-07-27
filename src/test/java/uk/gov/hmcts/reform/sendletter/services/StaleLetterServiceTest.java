@@ -417,7 +417,7 @@ class StaleLetterServiceTest {
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
-        given(letterRepository.markStaleLetterAsCreated(letterId)).willReturn(1);
+        given(letterRepository.markLetterAsCreated(letterId)).willReturn(1);
 
         String ftpDowntimeStartTime = "16:00";
 
@@ -437,7 +437,7 @@ class StaleLetterServiceTest {
         assertThat(letterEventArgumentCaptor.getValue().getNotes())
             .isEqualTo("Letter marked manually as created for reprocessing");
 
-        verify(letterRepository).markStaleLetterAsCreated(letterId);
+        verify(letterRepository).markLetterAsCreated(letterId);
         verifyNoMoreInteractions(letterRepository, letterEventRepository);
     }
 
