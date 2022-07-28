@@ -94,11 +94,15 @@ class LetterRepositoryTest {
         assertThat(updateCount).isEqualTo(0);
     }
 
-    @Test
-    void should_change_letter_status_to_created() {
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded", "FailedToUpload"},
+        mode = EnumSource.Mode.INCLUDE)
+    void should_change_letter_status_to_created(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("aService");
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
         Letter savedLetter = repository.save(letter);
 
         // when
@@ -110,6 +114,25 @@ class LetterRepositoryTest {
             .extracting(l -> tuple(l.getId(), l.getStatus()))
             .containsExactly(tuple(savedLetter.getId(), Created));
     }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded", "FailedToUpload"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void should_not_change_status_to_created_when_letter_status_is_unsupported_to_reprocess(LetterStatus status) {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+        letter.setStatus(status);
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsCreated(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
 
     @ParameterizedTest
     @EnumSource(
