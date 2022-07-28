@@ -61,7 +61,7 @@ public class ActionController {
         @RequestHeader(value = AUTHORIZATION, required = false) String authHeader,
         @PathVariable UUID id
     ) {
-        logger.info("Marking stale letter status as 'Created' to re-upload to SFTP server {}", id);
+        logger.info("Marking letter status as 'Created' to re-upload to SFTP server {}", id);
 
         validateAuthorization(authHeader);
 
