@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
@@ -46,6 +47,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static com.google.common.io.Resources.getResource;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -63,15 +65,31 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LetterServiceTest {
 
-    @Mock PdfCreator pdfCreator;
-    @Mock LetterRepository letterRepository;
-    @Mock Zipper zipper;
+    @Mock
+    private PdfCreator pdfCreator;
+
+    @Mock
+    private LetterRepository letterRepository;
+
+    @Mock
+    private LetterEventRepository letterEventRepository;
+
+    @Mock
+    private Zipper zipper;
+
     ObjectMapper objectMapper = new ObjectMapper();
-    @Mock ServiceFolderMapping serviceFolderMapping;
+
+    @Mock
+    private ServiceFolderMapping serviceFolderMapping;
+
     @Spy
-    ExecusionService execusionService;
-    @Mock DuplicateLetterService duplicateLetterService;
-    @Mock ExceptionLetterService exceptionLetterService;
+    private ExecusionService execusionService;
+
+    @Mock
+    private DuplicateLetterService duplicateLetterService;
+
+    @Mock
+    private ExceptionLetterService exceptionLetterService;
 
     private LetterService service;
 
@@ -460,18 +478,27 @@ class LetterServiceTest {
 
     @Test
     void should_return_letter() {
+        // given
         createLetterService(false, null);
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
-        Optional<Letter> letter = Optional.of(createLetter());
-        given(letterRepository.findById(isA(UUID.class))).willReturn(letter);
+        Letter letter = createLetter();
+        given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.of(letter));
+        given(letterEventRepository.findAllByLetterOrderByCreatedAt(letter)).willReturn(emptyList());
+
+        // when
         LetterStatus status = service.getStatus(UUID.randomUUID(), "false", "true");
+
+        // then
         assertNotNull(status);
+        assertThat(status.events).isEmpty();
         verify(letterRepository).findById(isA(UUID.class));
+        verify(letterEventRepository).findAllByLetterOrderByCreatedAt(letter);
         verify(duplicateLetterService).isDuplicate(isA(UUID.class));
     }
 
     @Test
     void should_return_letter_json_copies() {
+        // given
         createLetterService(false, null);
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
         Letter letter = createLetter();
@@ -479,12 +506,16 @@ class LetterServiceTest {
 
         given(letter.getCopies()).willReturn(copies);
         given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.of(letter));
+        given(letterEventRepository.findAllByLetterOrderByCreatedAt(letter)).willReturn(emptyList());
 
-        LetterStatusV2 status
-                = service.getLatestStatus(UUID.randomUUID());
+        // when
+        LetterStatusV2 status = service.getLatestStatus(UUID.randomUUID());
 
+        // then
         assertNotNull(status);
+        assertThat(status.events).isEmpty();
         verify(letterRepository).findById(isA(UUID.class));
+        verify(letterEventRepository).findAllByLetterOrderByCreatedAt(letter);
     }
 
 
@@ -504,6 +535,7 @@ class LetterServiceTest {
         this.service = new LetterService(
             pdfCreator,
             letterRepository,
+            letterEventRepository,
             zipper,
             objectMapper,
             isEncryptionEnabled,
@@ -511,7 +543,8 @@ class LetterServiceTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService
+        );
     }
 
     private byte[] loadPublicKey() throws IOException {
