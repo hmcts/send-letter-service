@@ -38,15 +38,12 @@ class FtpFileServiceTest {
     private FtpFileService ftpFileService;
 
     @BeforeEach
-    @SuppressWarnings("unchecked") // {@code invocation.getArgument(0)} has Object. But we know what it is
     void setUp() {
-        given(ftpClient.runWith(any())).willAnswer(invocation ->
-            ((Function<SFTPClient, Void>) invocation.getArgument(0)).apply(sftpClient)
-        );
         ftpFileService = new FtpFileService(ftpClient, serviceFolderMapping);
     }
 
     @Test
+    @SuppressWarnings("unchecked") // {@code invocation.getArgument(0)} has an Object. But we know what it is
     void should_return_files_list_for_all_services() {
         // given
         given(serviceFolderMapping.getFolders()).willReturn(ImmutableSet.of("aFolder", "bFolder"));
@@ -56,6 +53,9 @@ class FtpFileServiceTest {
                 new FileInfo("aFile2 path", Instant.now())));
         given(ftpClient.listLetters("bFolder", sftpClient))
             .willReturn(ImmutableList.of(new FileInfo("bFile1 path", Instant.now())));
+        given(ftpClient.runWith(any())).willAnswer(invocation ->
+            ((Function<SFTPClient, Void>) invocation.getArgument(0)).apply(sftpClient)
+        );
 
         // when
         ftpFileService.listLettersForAllServices();
@@ -83,7 +83,7 @@ class FtpFileServiceTest {
     void should_handle_ftp_exception() {
         // given
         given(serviceFolderMapping.getFolders()).willReturn(ImmutableSet.of("aFolder"));
-        given(ftpClient.listLetters("aFolder", sftpClient)).willThrow(FtpException.class);
+        given(ftpClient.runWith(any())).willThrow(FtpException.class);
 
         // when
         ftpFileService.listLettersForAllServices();
