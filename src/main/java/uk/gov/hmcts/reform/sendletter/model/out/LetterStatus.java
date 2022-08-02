@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,8 +38,6 @@ public class LetterStatus {
     @JsonProperty("copies")
     public final Integer copies;
 
-    @JsonProperty("events")
-    public final List<LetterStatusEvent> events;
 
     public LetterStatus(
         final UUID id,
@@ -50,8 +47,7 @@ public class LetterStatus {
         final ZonedDateTime sentToPrintAt,
         final ZonedDateTime printedAt,
         final Map<String, Object> additionalData,
-        final Integer copies,
-        final List<LetterStatusEvent> events
+        final Integer copies
     ) {
         this.id = id;
         this.status = status;
@@ -62,6 +58,5 @@ public class LetterStatus {
         this.printedAt = printedAt;
         this.additionalData = additionalData;
         this.copies =  copies;
-        this.events =  events;
     }
 }

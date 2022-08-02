@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
-import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
@@ -46,10 +45,7 @@ import static org.mockito.Mockito.when;
 class UploadLettersTaskTest {
 
     @Autowired
-    private LetterRepository letterRepository;
-
-    @Autowired
-    private LetterEventRepository letterEventRepository;
+    LetterRepository repository;
 
     @Autowired
     private EntityManager entityManager;
@@ -72,11 +68,10 @@ class UploadLettersTaskTest {
         DuplicateLetterService duplicateLetterService = mock(DuplicateLetterService.class);
         ExceptionLetterService exceptionLetterService = mock(ExceptionLetterService.class);
 
-        letterRepository.deleteAll();
+        repository.deleteAll();
         this.letterService = new LetterService(
             new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
-            letterRepository,
-            letterEventRepository,
+            repository,
             new Zipper(),
             new ObjectMapper(),
             false,
@@ -84,8 +79,7 @@ class UploadLettersTaskTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService
-        );
+            exceptionLetterService);
     }
 
     @ParameterizedTest
@@ -93,7 +87,7 @@ class UploadLettersTaskTest {
     void uploads_file_to_sftp_and_sets_letter_status_to_uploaded(String async) throws Exception {
         UUID id = letterService.save(SampleData.letterRequest(), "bulkprint", async);
         UploadLettersTask task = new UploadLettersTask(
-            letterRepository,
+            repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
             letterEventService,
@@ -112,7 +106,7 @@ class UploadLettersTaskTest {
             // Ensure the letter is marked as uploaded in the database.
             // Clear the JPA cache to force a read.
             entityManager.clear();
-            Letter l = letterRepository.findById(id).get();
+            Letter l = repository.findById(id).get();
             assertThat(l.getStatus()).isEqualTo(LetterStatus.Uploaded);
             assertThat(l.getSentToPrintAt()).isNotNull();
             assertThat(l.getPrintedAt()).isNull();
@@ -130,7 +124,7 @@ class UploadLettersTaskTest {
 
         // and
         UploadLettersTask task = new UploadLettersTask(
-            letterRepository,
+            repository,
             FtpHelper.getFailingClient(LocalSftpServer.port),
             availabilityChecker,
             letterEventService,
@@ -139,7 +133,7 @@ class UploadLettersTaskTest {
         );
 
         // and
-        assertThat(letterRepository.findByStatus(LetterStatus.Created)).hasSize(2);
+        assertThat(repository.findByStatus(LetterStatus.Created)).hasSize(2);
 
         // when
         try (LocalSftpServer server = LocalSftpServer.create()) {
@@ -151,7 +145,7 @@ class UploadLettersTaskTest {
 
             // Clear the JPA cache to force a read.
             entityManager.clear();
-            Letter l = letterRepository.findById(id).get();
+            Letter l = repository.findById(id).get();
             assertThat(l.getStatus()).isEqualTo(LetterStatus.Created);
             assertThat(l.getSentToPrintAt()).isNull();
             assertThat(l.getFileContent()).isNotNull();
@@ -166,7 +160,7 @@ class UploadLettersTaskTest {
             x -> letterService.save(SampleData.letterRequest(), "bulkprint", async));
 
         UploadLettersTask task = new UploadLettersTask(
-            letterRepository,
+            repository,
             FtpHelper.getSuccessfulClient(LocalSftpServer.port),
             availabilityChecker,
             letterEventService,
@@ -177,6 +171,6 @@ class UploadLettersTaskTest {
         try (LocalSftpServer server = LocalSftpServer.create()) {
             task.run();
         }
-        assertThat(letterRepository.findByStatus(LetterStatus.Uploaded)).hasSize(UploadLettersTask.BATCH_SIZE);
+        assertThat(repository.findByStatus(LetterStatus.Uploaded)).hasSize(UploadLettersTask.BATCH_SIZE);
     }
 }
