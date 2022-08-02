@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
-import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
@@ -28,22 +27,19 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 public class SendLetterProviderConfiguration {
 
     @MockBean
-    private AuthService authService;
+    AuthService authService;
 
     @MockBean
-    private LetterRepository letterRepository;
+    LetterRepository letterRepository;
 
     @MockBean
-    private LetterEventRepository letterEventRepository;
+    ServiceFolderMapping serviceFolderMapping;
 
     @MockBean
-    private ServiceFolderMapping serviceFolderMapping;
+    DuplicateLetterService duplicateLetterService;
 
     @MockBean
-    private DuplicateLetterService duplicateLetterService;
-
-    @MockBean
-    private ExceptionLetterService exceptionLetterService;
+    ExceptionLetterService exceptionLetterService;
 
     @Bean
     @Primary
@@ -54,23 +50,14 @@ public class SendLetterProviderConfiguration {
     @Bean
     @Primary
     LetterService letterService() {
-        return new LetterService(
-            pdfCreator(),
-            letterRepository,
-            letterEventRepository,
-            new Zipper(),
-            new ObjectMapper(),
-            false,
-            "",
-            serviceFolderMapping,
+        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(),
+            false, "", serviceFolderMapping,
             new ExecusionService(),
-            duplicateLetterService,
-            exceptionLetterService
-        );
+            duplicateLetterService, exceptionLetterService);
     }
 
     @MockBean
-    private AuthTokenValidator authTokenValidator;
+    AuthTokenValidator authTokenValidator;
 
     @Bean
     @Primary

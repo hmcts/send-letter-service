@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -35,31 +34,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SendLetterController.class)
 class GetLetterStatusControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @MockBean
-    private LetterService service;
-
-    @MockBean
-    private AuthService authService;
+    @MockBean private LetterService service;
+    @MockBean private AuthService authService;
 
     private LetterStatus letterStatus;
+
 
     @BeforeEach
     void setUp() {
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
-        letterStatus = new LetterStatus(
-                UUID.randomUUID(),
-                "Created",
-                "some-message-id",
-                now,
-                now,
-                now,
-                null,
-                null,
-                emptyList()
-        );
+        letterStatus = new LetterStatus(UUID.randomUUID(), "Created",
+                "some-message-id", now, now, now, null, null);
     }
 
     @Test
@@ -88,17 +75,8 @@ class GetLetterStatusControllerTest {
         ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
 
         LetterStatusV2 letterStatus =
-                new LetterStatusV2(
-                        UUID.randomUUID(),
-                        "Created",
-                        "some-message-id",
-                        now,
-                        now,
-                        now,
-                        null,
-                        detailCopies,
-                        emptyList()
-                );
+                new LetterStatusV2(UUID.randomUUID(), "Created",
+                "some-message-id", now, now, now, null, detailCopies);
         given(service.getLatestStatus(letterStatus.id)).willReturn(letterStatus);
 
         mockMvc.perform(
