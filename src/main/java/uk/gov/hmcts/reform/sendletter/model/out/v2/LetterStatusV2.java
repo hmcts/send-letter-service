@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.sendletter.model.out.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.hmcts.reform.sendletter.model.out.LetterStatusEvent;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,9 +22,10 @@ public class LetterStatusV2 extends uk.gov.hmcts.reform.sendletter.model.out.Let
         final ZonedDateTime sentToPrintAt,
         final ZonedDateTime printedAt,
         final Map<String, Object> additionalData,
-        final Map<String, Object> jsonCopies
+        final Map<String, Object> jsonCopies,
+        final List<LetterStatusEvent> events
     ) {
-        super(id, status, checksum, createdAt, sentToPrintAt, printedAt, additionalData, null);
+        super(id, status, checksum, createdAt, sentToPrintAt, printedAt, additionalData, null, events);
         this.jsonCopies = jsonCopies;
     }
 }
