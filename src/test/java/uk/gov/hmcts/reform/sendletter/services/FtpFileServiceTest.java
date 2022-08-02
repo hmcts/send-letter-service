@@ -38,8 +38,7 @@ class FtpFileServiceTest {
     private FtpFileService ftpFileService;
 
     @BeforeEach
-    @SuppressWarnings("unchecked")
-        // {@code invocation.getArgument(0)} has Object. But we know what it is
+    @SuppressWarnings("unchecked") // {@code invocation.getArgument(0)} has Object. But we know what it is
     void setUp() {
         given(ftpClient.runWith(any())).willAnswer(invocation ->
             ((Function<SFTPClient, Void>) invocation.getArgument(0)).apply(sftpClient)
