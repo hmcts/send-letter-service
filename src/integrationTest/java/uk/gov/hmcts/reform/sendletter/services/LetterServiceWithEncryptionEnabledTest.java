@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
@@ -41,6 +42,9 @@ class LetterServiceWithEncryptionEnabledTest {
     @Autowired
     private LetterRepository letterRepository;
 
+    @Autowired
+    private LetterEventRepository letterEventRepository;
+
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
@@ -64,6 +68,7 @@ class LetterServiceWithEncryptionEnabledTest {
         LetterService service = new LetterService(
             pdfCreator,
             letterRepository,
+            letterEventRepository,
             new Zipper(),
             new ObjectMapper(),
             true,
@@ -71,7 +76,8 @@ class LetterServiceWithEncryptionEnabledTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService
+        );
 
         UUID id = service.save(letterRequest, SERVICE_NAME, async);
 

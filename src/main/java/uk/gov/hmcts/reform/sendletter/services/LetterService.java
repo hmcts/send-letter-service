@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
@@ -26,18 +28,21 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.LetterStatusEvent;
 import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpEncryptionUtil;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
+import uk.gov.hmcts.reform.sendletter.util.TimeZones;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +50,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
 
@@ -55,6 +61,7 @@ public class LetterService {
 
     private final PdfCreator pdfCreator;
     private final LetterRepository letterRepository;
+    private final LetterEventRepository letterEventRepository;
     private final Zipper zipper;
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
@@ -68,15 +75,19 @@ public class LetterService {
     public LetterService(
             PdfCreator pdfCreator,
             LetterRepository letterRepository,
+            LetterEventRepository letterEventRepository,
             Zipper zipper,
             ObjectMapper mapper,
             @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
             @Value("${encryption.publicKey}") String encryptionPublicKey,
             ServiceFolderMapping serviceFolderMapping,
             ExecusionService asynService,
-            DuplicateLetterService duplicateLetterService, ExceptionLetterService exceptionLetterService) {
+            DuplicateLetterService duplicateLetterService,
+            ExceptionLetterService exceptionLetterService
+    ) {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
+        this.letterEventRepository = letterEventRepository;
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
@@ -326,14 +337,15 @@ public class LetterService {
         LetterStatus letterStatus = letterRepository
                 .findById(id)
                 .map(letter -> new LetterStatus(
-                        id,
-                        letter.getStatus().name(),
-                        letter.getChecksum(),
-                        toDateTime(letter.getCreatedAt()),
-                        toDateTime(letter.getSentToPrintAt()),
-                        toDateTime(letter.getPrintedAt()),
-                        additionDataFunction.apply(letter.getAdditionalData()),
-                        null
+                    id,
+                    letter.getStatus().name(),
+                    letter.getChecksum(),
+                    toDateTime(letter.getCreatedAt()),
+                    toDateTime(letter.getSentToPrintAt()),
+                    toDateTime(letter.getPrintedAt()),
+                    additionDataFunction.apply(letter.getAdditionalData()),
+                    null,
+                    getLetterStatusEvents(letter)
                 ))
                 .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
@@ -353,8 +365,9 @@ public class LetterService {
                         toDateTime(letter.getCreatedAt()),
                         toDateTime(letter.getSentToPrintAt()),
                         toDateTime(letter.getPrintedAt()),
-                        mapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){}),
-                        mapper.convertValue(letter.getCopies(), new TypeReference<>(){})
+                        mapper.convertValue(letter.getAdditionalData(), new TypeReference<>() {}),
+                        mapper.convertValue(letter.getCopies(), new TypeReference<>() {}),
+                        getLetterStatusEvents(letter)
                 ))
                 .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning v2 letter status for letter {}, letter id {}", letterStatus, id);
@@ -378,6 +391,22 @@ public class LetterService {
                 throw new DataIntegrityViolationException(duplicateMessage);
             }
         }
+    }
+
+    private List<LetterStatusEvent> getLetterStatusEvents(Letter letter) {
+        List<LetterEvent> letterEvents = letterEventRepository.findAllByLetterOrderByCreatedAt(letter);
+        return letterEvents.stream().map(
+            letterEvent -> new LetterStatusEvent(
+                letterEvent.getType().name(),
+                letterEvent.getNotes(),
+                toDateTime(
+                    LocalDateTime.ofInstant(
+                        letterEvent.getCreatedAt(),
+                        ZoneId.of(TimeZones.EUROPE_LONDON)
+                    )
+                )
+            )
+        ).collect(toList());
     }
 
     static ZonedDateTime toDateTime(LocalDateTime dateTime) {

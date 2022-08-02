@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
@@ -57,6 +58,9 @@ class LetterServiceTest {
     @Autowired
     private LetterRepository letterRepository;
 
+    @Autowired
+    private LetterEventRepository letterEventRepository;
+
     @BeforeEach
     void setUp() {
         execusionService = spy(ExecusionService.class);
@@ -68,6 +72,7 @@ class LetterServiceTest {
         service = new LetterService(
             new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
             letterRepository,
+            letterEventRepository,
             new Zipper(),
             new ObjectMapper(),
             false,
@@ -75,11 +80,13 @@ class LetterServiceTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService
+        );
     }
 
     @AfterEach
     void tearDown() {
+        letterEventRepository.deleteAll();
         letterRepository.deleteAll();
     }
 
@@ -108,8 +115,7 @@ class LetterServiceTest {
         Letter result = letterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
         JsonNode copiesNode = result.getCopies();
-        Map<String, Integer> copies = objectMapper.convertValue(copiesNode, new TypeReference<Map<String, Integer>>() {
-        });
+        Map<String, Integer> copies = objectMapper.convertValue(copiesNode, new TypeReference<>() {});
         assertThat(copies).containsAllEntriesOf(Map.of("Document_1", 4, "Document_2", 10));
         assertThat(result.isEncrypted()).isFalse();
         assertThat(result.getEncryptionKeyFingerprint()).isNull();

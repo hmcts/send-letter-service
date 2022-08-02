@@ -10,10 +10,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -27,9 +28,17 @@ class LetterStatusV2Test {
         UUID uuid = UUID.randomUUID();
         Map<String, Object> additionalData = Map.of("reference", "ABD-123-WAZ", "count", 10, "additionInfo", "present");
         Map<String, Object> detailCopies = Map.of("Document_1", 1, "Document_2", 2);
-        LetterStatusV2 letterStatus = new LetterStatusV2(uuid, "TEST", "abc",
-                ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
-                ZonedDateTime.now().plusHours(2), additionalData, detailCopies);
+        LetterStatusV2 letterStatus = new LetterStatusV2(
+                uuid,
+                "TEST",
+                "abc",
+                ZonedDateTime.now(),
+                ZonedDateTime.now().plusHours(1),
+                ZonedDateTime.now().plusHours(2),
+                additionalData,
+                detailCopies,
+                emptyList()
+        );
         JsonContent<LetterStatusV2> jsonContent = this.json.write(letterStatus);
 
         assertThat(jsonContent).hasJsonPathStringValue("$.id")
@@ -42,9 +51,17 @@ class LetterStatusV2Test {
     void testWithEmptyAdditionalData() throws IOException {
         UUID uuid = UUID.randomUUID();
         Map<String, Object> detailCopies = Map.of("Document_1", 1);
-        LetterStatusV2 letterStatus = new LetterStatusV2(uuid, "TEST", "abc",
-                ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
-                ZonedDateTime.now().plusHours(2), Collections.emptyMap(), detailCopies);
+        LetterStatusV2 letterStatus = new LetterStatusV2(
+                uuid,
+                "TEST",
+                "abc",
+                ZonedDateTime.now(),
+                ZonedDateTime.now().plusHours(1),
+                ZonedDateTime.now().plusHours(2),
+                emptyMap(),
+                detailCopies,
+                emptyList()
+        );
         JsonContent<LetterStatusV2> jsonContent = this.json.write(letterStatus);
         assertThat(jsonContent).hasJsonPathStringValue("$.id")
                 .hasJsonPath("$.additional_data")
@@ -56,9 +73,17 @@ class LetterStatusV2Test {
     void testWithNullAdditionalDataPresent() throws IOException {
         UUID uuid = UUID.randomUUID();
 
-        LetterStatusV2 letterStatus = new LetterStatusV2(uuid, "TEST", "abc",
-                ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
-                ZonedDateTime.now().plusHours(2), null,  null);
+        LetterStatusV2 letterStatus = new LetterStatusV2(
+                uuid,
+                "TEST",
+                "abc",
+                ZonedDateTime.now(),
+                ZonedDateTime.now().plusHours(1),
+                ZonedDateTime.now().plusHours(2),
+                null,
+                null,
+                emptyList()
+        );
         JsonContent<LetterStatusV2> jsonContent = this.json.write(letterStatus);
         System.out.println(jsonContent);
         assertThat(jsonContent).hasJsonPathStringValue("$.id")
