@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FileInfo;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.io.File;
@@ -15,10 +16,14 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 public final class CsvWriter {
     private static final Logger logger = LoggerFactory.getLogger(CsvWriter.class);
@@ -40,6 +45,10 @@ public final class CsvWriter {
 
     private static final String[] STALE_LETTERS_EMAIL_CSV_HEADERS = {
         "FileName", "ServiceName", "ReceivedDate", "UploadedDate"
+    };
+
+    private static final String[] FTP_UPLOADED_LETTERS_EMAIL_CSV_HEADERS = {
+        "FileName", "UploadedAt"
     };
 
     private CsvWriter() {
@@ -106,6 +115,41 @@ public final class CsvWriter {
 
         logger.info("Number of weekly stale letters {}", count.get());
         return csvFile;
+    }
+
+    public static List<File> writeFtpLettersToCsvFiles(
+        Map<String, List<FileInfo>> serviceToLetters
+    ) throws IOException {
+        List<File> csvFiles = new ArrayList<>();
+
+        for (Map.Entry<String, List<FileInfo>> entry : serviceToLetters.entrySet()) {
+            var path = Files.createTempFile(
+                format("FTP-uploaded-letters-%s", entry.getKey()), ".csv", ATTRIBUTE);// Compliant
+
+            var csvFile = path.toFile();
+            CSVFormat csvFileHeader
+                = CSVFormat.DEFAULT.builder().setHeader(FTP_UPLOADED_LETTERS_EMAIL_CSV_HEADERS).build();
+            var count = new AtomicInteger(0);
+
+            try (var fileWriter = new FileWriter(csvFile);
+                 var printer = new CSVPrinter(fileWriter, csvFileHeader)) {
+                entry.getValue().forEach(letter -> printFtpUploadedFile(letter, printer, count));
+            }
+
+            logger.info("Number of letters uploaded to FTP server for service {} {}", entry.getKey(), count.get());
+            csvFiles.add(csvFile);
+        }
+
+        return csvFiles;
+    }
+
+    private static void printFtpUploadedFile(FileInfo fileInfo, CSVPrinter printer, AtomicInteger count) {
+        try {
+            printer.printRecord(fileInfo.path, fileInfo.modifiedAt);
+            count.incrementAndGet();
+        } catch (Exception e) {
+            logger.error("Exception writing FTP uploaded file information ", e);
+        }
     }
 
     private static void printStaleRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {

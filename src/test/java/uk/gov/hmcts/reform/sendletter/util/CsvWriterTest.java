@@ -1,19 +1,26 @@
 package uk.gov.hmcts.reform.sendletter.util;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.services.ftp.FileInfo;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -46,10 +53,10 @@ class CsvWriterTest {
             .extracting(record -> tuple(
                 record.get(0), record.get(1))
             ).containsExactly(
-            tuple("Service", "Letters Uploaded"),
-            tuple("ServiceA", "10"),
-            tuple("ServiceB", "20"),
-            tuple("ServiceC", "30"));
+                tuple("Service", "Letters Uploaded"),
+                tuple("ServiceA", "10"),
+                tuple("ServiceB", "20"),
+                tuple("ServiceC", "30"));
     }
 
     @Test
@@ -66,7 +73,7 @@ class CsvWriterTest {
             .extracting(record -> tuple(
                 record.get(0), record.get(1))
             ).containsExactly(
-            tuple("Service", "Letters Uploaded"));
+                tuple("Service", "Letters Uploaded"));
 
     }
 
@@ -74,35 +81,35 @@ class CsvWriterTest {
     void should_return_stale_letters() throws IOException {
         UUID[] uuids = {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
         LocalDateTime[] localDateTimes = {LocalDateTime.now(), LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2)};
+            LocalDateTime.now().plusHours(2)};
 
         //given`
         List<BasicLetterInfo> staleLetters = Arrays.asList(
-                new BasicLetterInfo(uuids[0], null, "Test", LetterStatus.Uploaded,
-                        null, null, localDateTimes[0], localDateTimes[0], null),
-                new BasicLetterInfo(uuids[1], null, "Test", LetterStatus.Uploaded,
-                        null, null, localDateTimes[1], localDateTimes[1], null),
-                new BasicLetterInfo(uuids[2], null, "Test", LetterStatus.Uploaded,
-                        null, null, localDateTimes[2], localDateTimes[2], null)
+            new BasicLetterInfo(uuids[0], null, "Test", LetterStatus.Uploaded,
+                null, null, localDateTimes[0], localDateTimes[0], null),
+            new BasicLetterInfo(uuids[1], null, "Test", LetterStatus.Uploaded,
+                null, null, localDateTimes[1], localDateTimes[1], null),
+            new BasicLetterInfo(uuids[2], null, "Test", LetterStatus.Uploaded,
+                null, null, localDateTimes[2], localDateTimes[2], null)
         );
 
         //when
-        File csvFile =  CsvWriter.writeStaleLettersToCsv(staleLetters);
+        File csvFile = CsvWriter.writeStaleLettersToCsv(staleLetters);
         //then
         List<CSVRecord> csvRecordsList = readCsv(csvFile);
         assertThat(csvRecordsList)
-                .isNotEmpty()
-                .hasSize(4)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
-                ).containsExactly(
+            .isNotEmpty()
+            .hasSize(4)
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
+            ).containsExactly(
                 tuple("Id", "Status", "Service", "CreatedAt", "SentToPrintAt"),
                 tuple(uuids[0].toString(), LetterStatus.Uploaded.name(), "Test",
-                        localDateTimes[0].toString(), localDateTimes[0].toString()),
+                    localDateTimes[0].toString(), localDateTimes[0].toString()),
                 tuple(uuids[1].toString(), LetterStatus.Uploaded.name(), "Test",
-                        localDateTimes[1].toString(), localDateTimes[1].toString()),
+                    localDateTimes[1].toString(), localDateTimes[1].toString()),
                 tuple(uuids[2].toString(), LetterStatus.Uploaded.name(), "Test",
-                        localDateTimes[2].toString(), localDateTimes[2].toString()));
+                    localDateTimes[2].toString(), localDateTimes[2].toString()));
 
     }
 
@@ -115,11 +122,11 @@ class CsvWriterTest {
         List<CSVRecord> csvRecordsList = readCsv(csvFile);
 
         assertThat(csvRecordsList)
-                .isNotEmpty()
-                .hasSize(1)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
-                ).containsExactly(
+            .isNotEmpty()
+            .hasSize(1)
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
+            ).containsExactly(
                 tuple("Id", "Status", "Service", "CreatedAt", "SentToPrintAt"));
 
     }
@@ -132,28 +139,28 @@ class CsvWriterTest {
         List<CSVRecord> csvRecords = readCsv(file);
 
         assertThat(csvRecords).isNotEmpty().hasSize(4)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
-                ).containsExactly(
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
+            ).containsExactly(
                 tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate", "PrintedDate"),
                 tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
                         letters.get(0).getCreatedAt(), letters.get(0).getId(), true),
-                        letters.get(0).getService(),
-                        letters.get(0).getCreatedAt().toString(),
-                        letters.get(0).getSentToPrintAt().toString(),
-                        letters.get(0).getPrintedAt().toString()),
+                    letters.get(0).getService(),
+                    letters.get(0).getCreatedAt().toString(),
+                    letters.get(0).getSentToPrintAt().toString(),
+                    letters.get(0).getPrintedAt().toString()),
                 tuple(generateName(letters.get(1).getType(), letters.get(1).getService(),
                         letters.get(1).getCreatedAt(), letters.get(1).getId(), true),
-                        letters.get(1).getService(),
-                        letters.get(1).getCreatedAt().toString(),
-                        letters.get(1).getSentToPrintAt().toString(),
-                        letters.get(1).getPrintedAt().toString()),
+                    letters.get(1).getService(),
+                    letters.get(1).getCreatedAt().toString(),
+                    letters.get(1).getSentToPrintAt().toString(),
+                    letters.get(1).getPrintedAt().toString()),
                 tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
-                        letters.get(2).getCreatedAt(), letters.get(2).getId(),true),
-                        letters.get(2).getService(),
-                        letters.get(2).getCreatedAt().toString(),
-                        letters.get(2).getSentToPrintAt().toString(),
-                        letters.get(2).getPrintedAt().toString()));
+                        letters.get(2).getCreatedAt(), letters.get(2).getId(), true),
+                    letters.get(2).getService(),
+                    letters.get(2).getCreatedAt().toString(),
+                    letters.get(2).getSentToPrintAt().toString(),
+                    letters.get(2).getPrintedAt().toString()));
 
     }
 
@@ -165,25 +172,25 @@ class CsvWriterTest {
         List<CSVRecord> csvRecords = readCsv(file);
 
         assertThat(csvRecords).isNotEmpty().hasSize(4)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3))
-                ).contains(
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3))
+            ).contains(
                 tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate"),
                 tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
                         letters.get(0).getCreatedAt(), letters.get(0).getId(), true),
-                        letters.get(0).getService(),
-                        letters.get(0).getCreatedAt().toString(),
-                        letters.get(0).getSentToPrintAt().toString()),
+                    letters.get(0).getService(),
+                    letters.get(0).getCreatedAt().toString(),
+                    letters.get(0).getSentToPrintAt().toString()),
                 tuple(generateName(letters.get(1).getType(), letters.get(1).getService(),
                         letters.get(1).getCreatedAt(), letters.get(1).getId(), true),
-                        letters.get(1).getService(),
-                        letters.get(1).getCreatedAt().toString(),
-                        letters.get(1).getSentToPrintAt().toString()),
+                    letters.get(1).getService(),
+                    letters.get(1).getCreatedAt().toString(),
+                    letters.get(1).getSentToPrintAt().toString()),
                 tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
                         letters.get(2).getCreatedAt(), letters.get(2).getId(), true),
-                        letters.get(2).getService(),
-                        letters.get(2).getCreatedAt().toString(),
-                        letters.get(2).getSentToPrintAt().toString()));
+                    letters.get(2).getService(),
+                    letters.get(2).getCreatedAt().toString(),
+                    letters.get(2).getSentToPrintAt().toString()));
 
     }
 
@@ -195,22 +202,22 @@ class CsvWriterTest {
         List<CSVRecord> csvRecords = readCsv(file);
 
         assertThat(csvRecords).isNotEmpty().hasSize(3)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
-                ).containsExactly(
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3), record.get(4))
+            ).containsExactly(
                 tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate", "PrintedDate"),
                 tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
                         letters.get(0).getCreatedAt(), letters.get(0).getId(), true),
-                        letters.get(0).getService(),
-                        letters.get(0).getCreatedAt().toString(),
-                        letters.get(0).getSentToPrintAt().toString(),
-                        letters.get(0).getPrintedAt().toString()),
+                    letters.get(0).getService(),
+                    letters.get(0).getCreatedAt().toString(),
+                    letters.get(0).getSentToPrintAt().toString(),
+                    letters.get(0).getPrintedAt().toString()),
                 tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
                         letters.get(2).getCreatedAt(), letters.get(2).getId(), true),
-                        letters.get(2).getService(),
-                        letters.get(2).getCreatedAt().toString(),
-                        letters.get(2).getSentToPrintAt().toString(),
-                        letters.get(2).getPrintedAt().toString()));
+                    letters.get(2).getService(),
+                    letters.get(2).getCreatedAt().toString(),
+                    letters.get(2).getSentToPrintAt().toString(),
+                    letters.get(2).getPrintedAt().toString()));
 
     }
 
@@ -222,21 +229,90 @@ class CsvWriterTest {
         List<CSVRecord> csvRecords = readCsv(file);
 
         assertThat(csvRecords).isNotEmpty().hasSize(3)
-                .extracting(record -> tuple(
-                        record.get(0), record.get(1), record.get(2), record.get(3))
-                ).contains(
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3))
+            ).contains(
                 tuple("FileName", "ServiceName", "ReceivedDate", "UploadedDate"),
                 tuple(generateName(letters.get(0).getType(), letters.get(0).getService(),
                         letters.get(0).getCreatedAt(), letters.get(0).getId(), true),
-                        letters.get(0).getService(),
-                        letters.get(0).getCreatedAt().toString(),
-                        letters.get(0).getSentToPrintAt().toString()),
+                    letters.get(0).getService(),
+                    letters.get(0).getCreatedAt().toString(),
+                    letters.get(0).getSentToPrintAt().toString()),
                 tuple(generateName(letters.get(2).getType(), letters.get(2).getService(),
                         letters.get(2).getCreatedAt(), letters.get(2).getId(), true),
-                        letters.get(2).getService(),
-                        letters.get(2).getCreatedAt().toString(),
-                        letters.get(2).getSentToPrintAt().toString()));
+                    letters.get(2).getService(),
+                    letters.get(2).getCreatedAt().toString(),
+                    letters.get(2).getSentToPrintAt().toString()));
 
+    }
+
+    @Test
+    void should_return_files_for_all_services() throws Exception {
+        //given
+        FileInfo service1Letter1 = new FileInfo("/service1/file1.zip", Instant.now());
+        FileInfo service1Letter2 = new FileInfo("/service1/file2.zip", Instant.now());
+        FileInfo service2Letter1 = new FileInfo("/service2/file2.zip", Instant.now());
+        Map<String, List<FileInfo>> lettersForServices = ImmutableMap.of(
+            "service1", List.of(service1Letter1, service1Letter2),
+            "service2", List.of(service2Letter1),
+            "service3", emptyList()
+        );
+
+        // when
+        List<File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
+
+        // then
+        assertThat(files).isNotEmpty().hasSize(3);
+        // File1 records
+        List<CSVRecord> csvRecordsForService1 = readCsv(files.get(0));
+        assertThat(csvRecordsForService1).isNotEmpty().hasSize(3)
+            .extracting(record -> tuple(record.get(0), record.get(1)))
+            .contains(
+                tuple("FileName", "UploadedAt"),
+                tuple(service1Letter1.path, service1Letter1.modifiedAt.toString()),
+                tuple(service1Letter2.path, service1Letter2.modifiedAt.toString())
+            );
+
+        // File2 records
+        List<CSVRecord> csvRecordsForService2 = readCsv(files.get(1));
+        assertThat(csvRecordsForService2).isNotEmpty().hasSize(2)
+            .extracting(record -> tuple(record.get(0), record.get(1)))
+            .contains(
+                tuple("FileName", "UploadedAt"),
+                tuple(service2Letter1.path, service2Letter1.modifiedAt.toString())
+            );
+
+        // File3 records
+        List<CSVRecord> csvRecordsForService3 = readCsv(files.get(2));
+        assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService3);
+    }
+
+    @Test
+    void should_return_empty_files_when_no_files_uploaded_for_services() throws Exception {
+        //given
+        Map<String, List<FileInfo>> lettersForServices = ImmutableMap.of(
+            "service1", emptyList(),
+            "service2", emptyList()
+        );
+
+        // when
+        List<File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
+
+        // then
+        assertThat(files).isNotEmpty().hasSize(2);
+        // File1 records
+        List<CSVRecord> csvRecordsForService1 = readCsv(files.get(0));
+        assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService1);
+
+        // File2 records
+        List<CSVRecord> csvRecordsForService2 = readCsv(files.get(1));
+        assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService2);
+    }
+
+    private void assertFileHasOnlyHeaderAndNoLetters(List<CSVRecord> csvRecordsForService) {
+        assertThat(csvRecordsForService).isNotEmpty().hasSize(1)
+            .extracting(record -> tuple(record.get(0), record.get(1)))
+            .contains(tuple("FileName", "UploadedAt"));
     }
 
     private List<CSVRecord> readCsv(File file) throws IOException {
@@ -244,19 +320,19 @@ class CsvWriterTest {
     }
 
     public static String generateName(
-            String type,
-            String service,
-            LocalDateTime createdAtDateTime,
-            UUID id,
-            Boolean isEncrypted
+        String type,
+        String service,
+        LocalDateTime createdAtDateTime,
+        UUID id,
+        Boolean isEncrypted
     ) {
         return String.format(
-                "%s_%s_%s_%s.%s",
-                type.replace("_", ""),
-                service.replace("_", ""),
-                createdAtDateTime.format(FileNameHelper.dateTimeFormatter),
-                id,
-                isEncrypted ? "pgp" : "zip"
+            "%s_%s_%s_%s.%s",
+            type.replace("_", ""),
+            service.replace("_", ""),
+            createdAtDateTime.format(FileNameHelper.dateTimeFormatter),
+            id,
+            isEncrypted ? "pgp" : "zip"
         );
     }
 
