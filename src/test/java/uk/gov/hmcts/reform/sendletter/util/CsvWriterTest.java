@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.sendletter.util;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.assertj.core.api.AbstractListAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
@@ -270,8 +267,7 @@ class CsvWriterTest {
             .contains(
                 tuple("FileName", "UploadedAt"),
                 tuple(service1Letter1.path, service1Letter1.modifiedAt.toString()),
-                tuple(service1Letter2.path, service1Letter2.modifiedAt.toString())
-            );
+                tuple(service1Letter2.path, service1Letter2.modifiedAt.toString()));
 
         // File2 records
         List<CSVRecord> csvRecordsForService2 = readCsv(files.get(1));
@@ -279,8 +275,7 @@ class CsvWriterTest {
             .extracting(record -> tuple(record.get(0), record.get(1)))
             .contains(
                 tuple("FileName", "UploadedAt"),
-                tuple(service2Letter1.path, service2Letter1.modifiedAt.toString())
-            );
+                tuple(service2Letter1.path, service2Letter1.modifiedAt.toString()));
 
         // File3 records
         List<CSVRecord> csvRecordsForService3 = readCsv(files.get(2));
