@@ -256,12 +256,12 @@ class CsvWriterTest {
         );
 
         // when
-        List<File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
+        Map<String, File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
 
         // then
         assertThat(files).isNotEmpty().hasSize(3);
         // File1 records
-        List<CSVRecord> csvRecordsForService1 = readCsv(files.get(0));
+        List<CSVRecord> csvRecordsForService1 = readCsv(files.get("service1"));
         assertThat(csvRecordsForService1).isNotEmpty().hasSize(3)
             .extracting(record -> tuple(record.get(0), record.get(1)))
             .contains(
@@ -270,7 +270,7 @@ class CsvWriterTest {
                 tuple(service1Letter2.path, service1Letter2.modifiedAt.toString()));
 
         // File2 records
-        List<CSVRecord> csvRecordsForService2 = readCsv(files.get(1));
+        List<CSVRecord> csvRecordsForService2 = readCsv(files.get("service2"));
         assertThat(csvRecordsForService2).isNotEmpty().hasSize(2)
             .extracting(record -> tuple(record.get(0), record.get(1)))
             .contains(
@@ -278,7 +278,7 @@ class CsvWriterTest {
                 tuple(service2Letter1.path, service2Letter1.modifiedAt.toString()));
 
         // File3 records
-        List<CSVRecord> csvRecordsForService3 = readCsv(files.get(2));
+        List<CSVRecord> csvRecordsForService3 = readCsv(files.get("service3"));
         assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService3);
     }
 
@@ -291,16 +291,16 @@ class CsvWriterTest {
         );
 
         // when
-        List<File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
+        Map<String, File> files = CsvWriter.writeFtpLettersToCsvFiles(lettersForServices);
 
         // then
         assertThat(files).isNotEmpty().hasSize(2);
         // File1 records
-        List<CSVRecord> csvRecordsForService1 = readCsv(files.get(0));
+        List<CSVRecord> csvRecordsForService1 = readCsv(files.get("service1"));
         assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService1);
 
         // File2 records
-        List<CSVRecord> csvRecordsForService2 = readCsv(files.get(1));
+        List<CSVRecord> csvRecordsForService2 = readCsv(files.get("service2"));
         assertFileHasOnlyHeaderAndNoLetters(csvRecordsForService2);
     }
 

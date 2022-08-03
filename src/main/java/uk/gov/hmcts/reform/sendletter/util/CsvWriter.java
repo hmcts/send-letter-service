@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -117,10 +117,10 @@ public final class CsvWriter {
         return csvFile;
     }
 
-    public static List<File> writeFtpLettersToCsvFiles(
+    public static Map<String, File> writeFtpLettersToCsvFiles(
         Map<String, List<FileInfo>> serviceToLetters
     ) throws IOException {
-        List<File> csvFiles = new ArrayList<>();
+        Map<String, File> csvFilesForServices = new HashMap<>();
 
         for (Map.Entry<String, List<FileInfo>> entry : serviceToLetters.entrySet()) {
             var path = Files.createTempFile(
@@ -137,10 +137,10 @@ public final class CsvWriter {
             }
 
             logger.info("Number of letters uploaded to FTP server for service {} {}", entry.getKey(), count.get());
-            csvFiles.add(csvFile);
+            csvFilesForServices.put(entry.getKey(), csvFile);
         }
 
-        return csvFiles;
+        return csvFilesForServices;
     }
 
     private static void printFtpUploadedFile(FileInfo fileInfo, CSVPrinter printer, AtomicInteger count) {
