@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
+import uk.gov.hmcts.reform.sendletter.model.out.ExtendedLetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.SendLetterResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
@@ -113,6 +114,27 @@ public class SendLetterController {
         UUID letterId = letterService.save(letter, serviceName, isAsync);
 
         return ok().body(new SendLetterResponse(letterId));
+    }
+
+    @GetMapping(path = "/{id}/extended-status")
+    @Operation(description = "Get extended letter status")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = SendLetterResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Letter not found")
+    })
+    public ResponseEntity<LetterStatus> getExtendedLetterStatus(
+        @PathVariable String id,
+        @RequestParam(name = "include-additional-info", defaultValue = "false") String isAdditionalInfoRequired,
+        @RequestParam(name = "check-duplicate", defaultValue = "false") String isDuplicate
+    ) {
+        ExtendedLetterStatus letterStatus = letterService.getExtendedStatus(
+            getLetterIdFromString(id),
+            isAdditionalInfoRequired,
+            isDuplicate
+        );
+
+        return ok(letterStatus);
     }
 
     @GetMapping(path = "/{id}")
