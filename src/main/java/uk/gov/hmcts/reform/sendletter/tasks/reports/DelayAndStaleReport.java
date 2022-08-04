@@ -73,7 +73,7 @@ public class DelayAndStaleReport {
                 emailSender.send(EMAIL_SUBJECT, recipients, attachments.toArray(new Attachment[0]));
                 log.info("Send email for {} ", EMAIL_SUBJECT);
             } else {
-                log.info("Send not email for {} as there are no attachemnts", EMAIL_SUBJECT);
+                log.info("Send not email for {} as there are no attachments", EMAIL_SUBJECT);
             }
         }
     }
