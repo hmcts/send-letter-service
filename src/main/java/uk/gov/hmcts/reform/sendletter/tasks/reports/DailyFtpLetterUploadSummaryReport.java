@@ -37,7 +37,7 @@ public class DailyFtpLetterUploadSummaryReport {
     public DailyFtpLetterUploadSummaryReport(
         FtpFileSummaryService ftpFileSummaryService,
         EmailSender emailSender,
-        @Value("${reports.upload-summary.recipients}") String[] recipients
+        @Value("${reports.ftp-uploaded-letters-summary.recipients}") String[] recipients
     ) {
         this.ftpFileSummaryService = ftpFileSummaryService;
         this.emailSender = emailSender;

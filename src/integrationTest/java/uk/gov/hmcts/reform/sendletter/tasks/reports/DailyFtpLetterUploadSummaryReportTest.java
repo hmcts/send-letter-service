@@ -23,7 +23,7 @@ class DailyFtpLetterUploadSummaryReportTest {
     @Mock
     private FtpFileSummaryService ftpFileSummaryService;
 
-    @Value("${reports.upload-summary.recipients}")
+    @Value("${reports.ftp-uploaded-letters-summary.recipients}")
     private String[] recipients;
 
     @Autowired
