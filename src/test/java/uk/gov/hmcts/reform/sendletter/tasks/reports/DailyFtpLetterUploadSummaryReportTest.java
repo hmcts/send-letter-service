@@ -20,11 +20,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.sendletter.tasks.reports.DailyFtpFileUploadSummaryReport.ATTACHMENT_NAME_FORMAT;
-import static uk.gov.hmcts.reform.sendletter.tasks.reports.DailyFtpFileUploadSummaryReport.EMAIL_SUBJECT;
+import static uk.gov.hmcts.reform.sendletter.tasks.reports.DailyFtpLetterUploadSummaryReport.ATTACHMENT_NAME_FORMAT;
+import static uk.gov.hmcts.reform.sendletter.tasks.reports.DailyFtpLetterUploadSummaryReport.EMAIL_SUBJECT;
 
 @ExtendWith(MockitoExtension.class)
-class DailyFtpFileUploadSummaryReportTest {
+class DailyFtpLetterUploadSummaryReportTest {
 
     @Mock
     private FtpFileSummaryService ftpFileSummaryService;
@@ -41,7 +41,7 @@ class DailyFtpFileUploadSummaryReportTest {
     @Captor
     ArgumentCaptor<String[]> recipientsCaptor;
 
-    private DailyFtpFileUploadSummaryReport dailyFtpFileUploadSummaryReport;
+    private DailyFtpLetterUploadSummaryReport dailyFtpLetterUploadSummaryReport;
 
     String[] recipients = null;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -50,7 +50,7 @@ class DailyFtpFileUploadSummaryReportTest {
     void should_send_email_for_all_recipients() {
         // given
         recipients = new String[]{"test1@dummy.com", "test2@dummy.com"};
-        dailyFtpFileUploadSummaryReport = new DailyFtpFileUploadSummaryReport(
+        dailyFtpLetterUploadSummaryReport = new DailyFtpLetterUploadSummaryReport(
             ftpFileSummaryService, emailSender, recipients);
 
         File serviceFile1 = new File("service1-file");
@@ -59,7 +59,7 @@ class DailyFtpFileUploadSummaryReportTest {
             .willReturn(ImmutableMap.of("service1", serviceFile1, "service2", serviceFile2));
 
         // when
-        dailyFtpFileUploadSummaryReport.send();
+        dailyFtpLetterUploadSummaryReport.send();
 
         // then
         verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
@@ -77,11 +77,11 @@ class DailyFtpFileUploadSummaryReportTest {
     void should_not_send_a_report_when_no_recipients_are_configured() {
         // given
         recipients = new String[]{};
-        dailyFtpFileUploadSummaryReport = new DailyFtpFileUploadSummaryReport(
+        dailyFtpLetterUploadSummaryReport = new DailyFtpLetterUploadSummaryReport(
             ftpFileSummaryService, emailSender, recipients);
 
         // when
-        dailyFtpFileUploadSummaryReport.send();
+        dailyFtpLetterUploadSummaryReport.send();
 
         // then
         verify(ftpFileSummaryService, never()).getFtpFileUploadSummaryFiles();
