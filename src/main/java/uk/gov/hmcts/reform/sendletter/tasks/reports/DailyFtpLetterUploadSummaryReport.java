@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
 
@@ -14,10 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
+
 @Component
 @ConditionalOnBean(EmailSender.class)
-public class DailyFtpFileUploadSummaryReport {
-    private static final Logger log = LoggerFactory.getLogger(DailyFtpFileUploadSummaryReport.class);
+@ConditionalOnProperty(prefix = "reports.ftp-uploaded-letters-summary", name = "enabled")
+public class DailyFtpLetterUploadSummaryReport {
+    private static final Logger log = LoggerFactory.getLogger(DailyFtpLetterUploadSummaryReport.class);
 
     private final FtpFileSummaryService ftpFileSummaryService;
     private final EmailSender emailSender;
@@ -28,15 +34,18 @@ public class DailyFtpFileUploadSummaryReport {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
-    public DailyFtpFileUploadSummaryReport(FtpFileSummaryService ftpFileSummaryService,
-                                           EmailSender emailSender,
-                                           @Value("${reports.upload-summary.recipients}") String[] recipients
+    public DailyFtpLetterUploadSummaryReport(
+        FtpFileSummaryService ftpFileSummaryService,
+        EmailSender emailSender,
+        @Value("${reports.ftp-uploaded-letters-summary.recipients}") String[] recipients
     ) {
         this.ftpFileSummaryService = ftpFileSummaryService;
         this.emailSender = emailSender;
         this.recipients = recipients;
     }
 
+    @SchedulerLock(name = "daily-ftp-uploaded-letters-summary", lockAtLeastFor = "PT5S")
+    @Scheduled(cron = "${reports.ftp-uploaded-letters-summary.cron}", zone = EUROPE_LONDON)
     public void send() {
         if (recipients == null || recipients.length == 0) {
             log.error("No recipients configured to send daily FTP letters report");

@@ -64,6 +64,10 @@ reports:
     cron: ${UPLOAD_SUMMARY_REPORT_CRON:0 0 19 * * *}
     enabled: ${UPLOAD_SUMMARY_REPORT_ENABLED:false}
     recipients: ${UPLOAD_SUMMARY_REPORT_RECIPIENTS:}
+  ftp-uploaded-letters-summary:
+    cron: ${FTP_UPLOADED_LETTERS_SUMMARY_REPORT_CRON:45 59 15 * * *}
+    enabled: ${FTP_UPLOADED_LETTERS_SUMMARY_REPORT_ENABLED:false}
+    recipients: ${UPLOAD_SUMMARY_REPORT_RECIPIENTS:}
   service-config:
     - service: cmc_claim_store
       display-name: CMC
@@ -93,7 +97,7 @@ ftp:
   target-folder: ${FTP_TARGET_FOLDER}
   smoke-test-target-folder: ${FTP_SMOKE_TEST_TARGET_FOLDER:SMOKE_TEST}
   reports-folder: ${FTP_REPORTS_FOLDER}
-  reports-cron: ${FTP_REPORTS_CRON:0 30 0 * * *}
+  reports-cron: ${FTP_REPORTS_CRON:"30 59 15 * * ?"}
   fingerprint: ${FTP_FINGERPRINT}
   username: ${FTP_USER}
   privateKey: ${FTP_PRIVATE_KEY}
