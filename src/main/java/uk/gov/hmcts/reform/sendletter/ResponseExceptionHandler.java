@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.FieldError;
 import uk.gov.hmcts.reform.sendletter.model.out.errors.ModelValidationError;
@@ -136,8 +137,14 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UnableToAbortLetterException.class)
-    protected ResponseEntity<Void> handleUnsupportedLetterStatusException(UnableToAbortLetterException exc) {
+    protected ResponseEntity<String> handleUnableToAbortLetterException(UnableToAbortLetterException exc) {
         log.warn(exc.getMessage(), exc);
-        return status(BAD_REQUEST).build();
+        return status(BAD_REQUEST).body(exc.getMessage());
+    }
+
+    @ExceptionHandler(UnableToReprocessLetterException.class)
+    protected ResponseEntity<String> handleUnableToReprocessLetterException(UnableToReprocessLetterException exc) {
+        log.warn(exc.getMessage(), exc);
+        return status(BAD_REQUEST).body(exc.getMessage());
     }
 }

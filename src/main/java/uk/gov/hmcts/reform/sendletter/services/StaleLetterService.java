@@ -115,7 +115,7 @@ public class StaleLetterService {
                 "Letter marked manually as created for reprocessing"
         );
 
-        return letterRepository.markStaleLetterAsCreated(id);
+        return letterRepository.markLetterAsCreated(id);
     }
 
     private void prepareChangingLetterStatus(UUID id, EventType manuallyMarkedStatus, String notes) {

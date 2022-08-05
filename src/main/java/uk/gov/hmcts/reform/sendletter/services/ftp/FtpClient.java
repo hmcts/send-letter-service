@@ -67,7 +67,11 @@ public class FtpClient {
 
         retryTemplate.execute(arg -> {
             try {
-                logger.info("Uploading file {} to SFTP server", file.filename);
+                logger.info(
+                    "Uploading file {}, size {} to SFTP server",
+                    file.filename,
+                    file.content.length / 1024 + "KB"
+                );
                 sftpClient.getFileTransfer().upload(file, path);
 
                 logger.info(
