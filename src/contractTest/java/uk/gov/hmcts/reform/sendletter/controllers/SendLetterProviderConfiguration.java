@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
+import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
@@ -27,19 +28,22 @@ import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 public class SendLetterProviderConfiguration {
 
     @MockBean
-    AuthService authService;
+    private AuthService authService;
 
     @MockBean
-    LetterRepository letterRepository;
+    private LetterRepository letterRepository;
 
     @MockBean
-    ServiceFolderMapping serviceFolderMapping;
+    private LetterEventRepository letterEventRepository;
 
     @MockBean
-    DuplicateLetterService duplicateLetterService;
+    private ServiceFolderMapping serviceFolderMapping;
 
     @MockBean
-    ExceptionLetterService exceptionLetterService;
+    private DuplicateLetterService duplicateLetterService;
+
+    @MockBean
+    private ExceptionLetterService exceptionLetterService;
 
     @Bean
     @Primary
@@ -50,10 +54,19 @@ public class SendLetterProviderConfiguration {
     @Bean
     @Primary
     LetterService letterService() {
-        return new LetterService(pdfCreator(), letterRepository, new Zipper(), new ObjectMapper(),
-            false, "", serviceFolderMapping,
+        return new LetterService(
+            pdfCreator(),
+            letterRepository,
+            letterEventRepository,
+            new Zipper(),
+            new ObjectMapper(),
+            false,
+            "",
+            serviceFolderMapping,
             new ExecusionService(),
-            duplicateLetterService, exceptionLetterService);
+            duplicateLetterService,
+            exceptionLetterService
+        );
     }
 
     @MockBean

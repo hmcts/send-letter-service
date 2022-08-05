@@ -6,7 +6,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-  id 'org.flywaydb.flyway' version '9.1.0'
+  id 'org.flywaydb.flyway' version '9.1.2'
   id 'org.springframework.boot' version '2.7.2'
   id 'org.owasp.dependencycheck' version '7.1.0.1'
   id 'com.github.ben-manes.versions' version '0.42.0'
@@ -276,7 +276,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.1.0'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.1'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.39.0'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.39.0'
@@ -298,7 +298,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.17.1'
+  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.17.3'
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
