@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Aborted;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.NotSent;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.PostedLocally;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -221,6 +222,63 @@ class LetterRepositoryTest {
 
         // when
         int updateCount = repository.markLetterAsAborted(UUID.randomUUID());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void markLetterAsPostedLocally_should_not_change_status_to_posted_locally(LetterStatus status) {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+        letter.setStatus(status);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
+    @Test
+    void markLetterAsPostedLocally_should_change_status_to_posted_locally() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+        letter.setStatus(Uploaded);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(1);
+        assertThat(repository.findAll())
+            .extracting(l ->
+                tuple(l.getId(), l.getStatus())
+            )
+            .containsExactly(
+                tuple(savedLetter.getId(), PostedLocally)
+            );
+    }
+
+    @Test
+    void markLetterAsPostedLocally_should_not_change_letter_status_for_different_letter_id() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+
+        letter.setStatus(Uploaded);
+
+        repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(UUID.randomUUID());
 
         // then
         assertThat(updateCount).isEqualTo(0);
