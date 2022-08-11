@@ -288,25 +288,25 @@ class LetterRepositoryTest {
     @Test
     void findStaleLetters_should_return_stale_letters() {
         // given
-        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        final Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter1.setStatus(Uploaded);
 
-        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
+        final Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
         letter2.setStatus(Created);
 
-        Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        final Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter3.setStatus(NotSent);
 
-        Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Aborted);
 
-        Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Posted);
 
-        Letter letter6 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(2));
+        final Letter letter6 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(2));
         letter6.setStatus(FailedToUpload);
 
-        Letter letter7 = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter letter7 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter7.setStatus(PostedLocally);
 
         final Letter savedLetter1 = repository.save(letter1);
@@ -334,8 +334,7 @@ class LetterRepositoryTest {
                 tuple(savedLetter3.getId(), NotSent.name()),
                 tuple(savedLetter4.getId(), Aborted.name()),
                 tuple(savedLetter5.getId(), Posted.name(),
-                tuple(savedLetter7.getId(), PostedLocally.name()))
-            );
+                tuple(savedLetter7.getId(), PostedLocally.name())));
     }
 
     @Test
