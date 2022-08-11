@@ -18,9 +18,9 @@ import java.util.stream.Stream;
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
     @Query(value = "select * from letters l "
-        + " where l.status = 'Created' "
+        + " where l.status in ('Created', 'FailedToUpload')"
         + " and l.created_at <= :createdBefore order by l.created_at asc limit 1", nativeQuery = true)
-    Optional<Letter> findFirstLetterCreated(@Param("createdBefore") LocalDateTime createdBefore);
+    Optional<Letter> findFirstLetterToUpload(@Param("createdBefore") LocalDateTime createdBefore);
 
     List<Letter> findByStatus(LetterStatus status);
 

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -341,5 +342,49 @@ class LetterRepositoryTest {
         // when
         // then
         assertThat(repository.findStaleLetters(LocalDateTime.now())).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Created", "FailedToUpload"},
+        mode = EnumSource.Mode.INCLUDE)
+    void findFirstLetterCreated_should_return_letter_pending_to_upload(LetterStatus status) {
+        // given
+        final Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusMinutes(5));
+        letter1.setStatus(status);
+
+        final Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter2.setStatus(Uploaded);
+
+        repository.saveAll(List.of(letter1, letter2));
+
+        // when
+        Optional<Letter> firstLetterOptional = repository.findFirstLetterToUpload(LocalDateTime.now());
+
+        // then
+        assertThat(firstLetterOptional.isPresent()).isEqualTo(true);
+        Letter letterToUpload = firstLetterOptional.get();
+        assertThat(letterToUpload.getId()).isEqualTo(letterToUpload.getId());
+        assertThat(letterToUpload.getStatus()).isEqualTo(status);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Created", "FailedToUpload"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void findFirstLetterCreated_should_not_return_when_there_are_no_letters_to_upload(LetterStatus status) {
+        // given
+        final Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusMinutes(1));
+        letter1.setStatus(status);
+
+        repository.save(letter1);
+
+        // when
+        Optional<Letter> firstLetterOptional = repository.findFirstLetterToUpload(LocalDateTime.now());
+
+        // then
+        assertThat(firstLetterOptional).isEmpty();
     }
 }
