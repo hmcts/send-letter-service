@@ -5,6 +5,8 @@ import net.schmizz.sshj.xfer.InMemorySourceFile;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 public class FileToSend extends InMemorySourceFile {
 
     public final String filename;
@@ -13,7 +15,7 @@ public class FileToSend extends InMemorySourceFile {
 
     public FileToSend(String filename, byte[] content, boolean isSmokeTest) {
         this.filename = filename;
-        this.content = content;
+        this.content = defaultIfNull(content, new byte[0]);
         this.isSmokeTest = isSmokeTest;
     }
 

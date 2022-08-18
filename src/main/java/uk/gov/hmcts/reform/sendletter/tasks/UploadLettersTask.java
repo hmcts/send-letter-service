@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.IFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
@@ -91,8 +92,10 @@ public class UploadLettersTask {
                             uploadCount++;
                         }
                     } catch (Exception ex) {
-                        letterEventService.failLetterUpload(letter, ex);
-
+                        if (!(ex.getCause() instanceof IOException)) {
+                            logger.info("Error uploading letter {}", letter.getId(), ex);
+                            letterEventService.failLetterUpload(letter, ex);
+                        }
                         break;
                     }
                 } else {

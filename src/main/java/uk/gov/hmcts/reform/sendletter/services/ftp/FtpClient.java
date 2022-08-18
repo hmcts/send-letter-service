@@ -70,7 +70,7 @@ public class FtpClient {
                 logger.info(
                     "Uploading file {}, size {} to SFTP server",
                     file.filename,
-                    file.content.length / 1024 + "KB"
+                    file.getLength() / 1024 + "KB"
                 );
                 sftpClient.getFileTransfer().upload(file, path);
 
@@ -78,7 +78,7 @@ public class FtpClient {
                     "File {} uploaded. Time: {}, Size: {}, Folder: {}",
                     file.filename,
                     ChronoUnit.MILLIS.between(start, Instant.now()) + "ms",
-                    file.content.length / 1024 + "KB",
+                    file.getLength() / 1024 + "KB",
                     serviceFolder
                 );
 
