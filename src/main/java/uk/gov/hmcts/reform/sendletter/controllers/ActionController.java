@@ -83,6 +83,20 @@ public class ActionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping(path = "/{id}/mark-posted-locally")
+    @Operation(summary = "Mark letter as posted locally by letter ID")
+    public ResponseEntity<Void> markAsPostedLocally(
+        @RequestHeader(value = AUTHORIZATION, required = false) String authHeader,
+        @PathVariable UUID id
+    ) {
+        logger.info("Marking letter status as 'PostedLocally' {}", id);
+
+        validateAuthorization(authHeader);
+
+        letterActionService.markLetterAsPostedLocally(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     private void validateAuthorization(String authorizationKey) {
 
         if (StringUtils.isEmpty(authorizationKey)) {

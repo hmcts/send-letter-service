@@ -18,8 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Aborted;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.NotSent;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
+import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.PostedLocally;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -226,48 +228,113 @@ class LetterRepositoryTest {
         assertThat(updateCount).isEqualTo(0);
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void markLetterAsPostedLocally_should_not_change_status_to_posted_locally(LetterStatus status) {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+        letter.setStatus(status);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
+    @Test
+    void markLetterAsPostedLocally_should_change_status_to_posted_locally() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+        letter.setStatus(Uploaded);
+
+        Letter savedLetter = repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(savedLetter.getId());
+
+        // then
+        assertThat(updateCount).isEqualTo(1);
+        assertThat(repository.findAll())
+            .extracting(l ->
+                tuple(l.getId(), l.getStatus())
+            )
+            .containsExactly(
+                tuple(savedLetter.getId(), PostedLocally)
+            );
+    }
+
+    @Test
+    void markLetterAsPostedLocally_should_not_change_letter_status_for_different_letter_id() {
+        // given
+        Letter letter = SampleData.letterEntity("service1");
+
+        letter.setStatus(Uploaded);
+
+        repository.save(letter);
+
+        // when
+        int updateCount = repository.markLetterAsPostedLocally(UUID.randomUUID());
+
+        // then
+        assertThat(updateCount).isEqualTo(0);
+    }
+
     @Test
     void findStaleLetters_should_return_stale_letters() {
         // given
-        Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        final Letter letter1 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter1.setStatus(Uploaded);
 
-        Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
+        final Letter letter2 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(3));
         letter2.setStatus(Created);
 
-        Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
+        final Letter letter3 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(4));
         letter3.setStatus(NotSent);
 
-        Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter letter4 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Aborted);
 
-        Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter letter5 = SampleData.letterEntity("aService", LocalDateTime.now());
         letter3.setStatus(Posted);
+
+        final Letter letter6 = SampleData.letterEntity("aService", LocalDateTime.now().minusDays(2));
+        letter6.setStatus(FailedToUpload);
+
+        final Letter letter7 = SampleData.letterEntity("aService", LocalDateTime.now());
+        letter7.setStatus(PostedLocally);
 
         final Letter savedLetter1 = repository.save(letter1);
         final Letter savedLetter2 = repository.save(letter2);
         final Letter savedLetter3 = repository.save(letter3);
         final Letter savedLetter4 = repository.save(letter4);
         final Letter savedLetter5 = repository.save(letter5);
+        final Letter savedLetter6 = repository.save(letter6);
+        final Letter savedLetter7 = repository.save(letter7);
 
         // when
         List<BasicLetterInfo> staleLetters = repository.findStaleLetters(LocalDateTime.now().minusDays(1));
 
         // then
-        assertThat(staleLetters).isNotEmpty().size().isEqualTo(2);
-        assertThat(staleLetters)
+        assertThat(staleLetters).isNotEmpty().hasSize(3)
             .extracting(l ->
                 tuple(l.getId(), l.getStatus())
             )
             .contains(
                 tuple(savedLetter1.getId(), Uploaded.name()),
-                tuple(savedLetter2.getId(), Created.name())
+                tuple(savedLetter2.getId(), Created.name()),
+                tuple(savedLetter6.getId(), FailedToUpload.name())
             )
             .doesNotContain(
                 tuple(savedLetter3.getId(), NotSent.name()),
                 tuple(savedLetter4.getId(), Aborted.name()),
-                tuple(savedLetter5.getId(), Posted.name())
-            );
+                tuple(savedLetter5.getId(), Posted.name(),
+                tuple(savedLetter7.getId(), PostedLocally.name())));
     }
 
     @Test
