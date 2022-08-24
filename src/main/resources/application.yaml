@@ -81,6 +81,8 @@ reports:
       display-name: SSCS
     - service: finrem_document_generator
       display-name: FINREM
+    - service: finrem_case_orchestration
+      display-name: FINREM
     - service: fpl_case_service
       display-name: FPLA
   delayed-stale-report:
@@ -119,6 +121,8 @@ ftp:
     - service: sscs
       folder: SSCS
     - service: finrem_document_generator
+      folder: FINREM
+    - service: finrem_case_orchestration
       folder: FINREM
     - service: fpl_case_service
       folder: FPL
@@ -186,6 +190,9 @@ accesstoken:
       newContainerName: new-sscs
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: finrem_document_generator
+      newContainerName: new-finrem
+      validity: ${SAS_TOKEN_VALIDITY:300}
+    - serviceName: finrem_case_orchestration
       newContainerName: new-finrem
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: fpl_case_service
