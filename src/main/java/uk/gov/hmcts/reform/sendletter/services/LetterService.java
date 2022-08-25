@@ -106,6 +106,7 @@ public class LetterService {
 
         log.info("Saving letter, service {}, messageId {}", serviceName, checksum);
 
+        log.info("Configured services - {}", String.join(",", serviceFolderMapping.getServices()));
         if (serviceFolderMapping.getFolderFor(serviceName).isEmpty()) {
             String message = "No configuration for service " + serviceName + " found";
             log.error(message);

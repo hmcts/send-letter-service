@@ -19,6 +19,10 @@ public class ServiceFolderMapping {
         return configProperties.getServiceFolders().values();
     }
 
+    public Collection<String> getServices() {
+        return configProperties.getServiceFolders().keySet();
+    }
+
     public Optional<String> getFolderFor(String serviceName) {
         return Optional.ofNullable(configProperties.getServiceFolders().get(serviceName));
     }
