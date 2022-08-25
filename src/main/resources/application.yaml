@@ -81,10 +81,10 @@ reports:
       display-name: SSCS
     - service: finrem_document_generator
       display-name: FINREM
-    - service: finrem_case_orchestration
-      display-name: FINREM
     - service: fpl_case_service
       display-name: FPLA
+    - service: finrem_case_orchestration
+      display-name: FINREM
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -122,10 +122,10 @@ ftp:
       folder: SSCS
     - service: finrem_document_generator
       folder: FINREM
-    - service: finrem_case_orchestration
-      folder: FINREM
     - service: fpl_case_service
       folder: FPL
+    - service: finrem_case_orchestration
+      folder: FINREM
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
