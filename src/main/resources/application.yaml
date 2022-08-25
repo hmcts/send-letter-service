@@ -85,6 +85,8 @@ reports:
       display-name: FINREM
     - service: fpl_case_service
       display-name: FPLA
+    - service: civil-service
+      display-name: Civil Service
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -126,6 +128,8 @@ ftp:
       folder: FINREM
     - service: fpl_case_service
       folder: FPL
+    - service: civil-service
+      folder: CMC
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
