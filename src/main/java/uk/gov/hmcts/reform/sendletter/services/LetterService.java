@@ -68,7 +68,7 @@ public class LetterService {
     private final boolean isEncryptionEnabled;
     private final PGPPublicKey pgpPublicKey;
     private final ServiceFolderMapping serviceFolderMapping;
-    private final ExecusionService asynService;
+    private final ExecusionService asyncService;
     private final DuplicateLetterService duplicateLetterService;
     private final ExceptionLetterService exceptionLetterService;
     private static final Map<String, Integer> DEFAULT_COPY = Map.of(getCopiesKey(1), 1);
@@ -82,7 +82,7 @@ public class LetterService {
             @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
             @Value("${encryption.publicKey}") String encryptionPublicKey,
             ServiceFolderMapping serviceFolderMapping,
-            ExecusionService asynService,
+            ExecusionService asyncService,
             DuplicateLetterService duplicateLetterService,
             ExceptionLetterService exceptionLetterService
     ) {
@@ -94,7 +94,7 @@ public class LetterService {
         this.isEncryptionEnabled = isEncryptionEnabled;
         this.pgpPublicKey = loadPgpPublicKey(encryptionPublicKey);
         this.serviceFolderMapping = serviceFolderMapping;
-        this.asynService = asynService;
+        this.asyncService = asyncService;
         this.duplicateLetterService = duplicateLetterService;
         this.exceptionLetterService = exceptionLetterService;
     }
@@ -128,23 +128,30 @@ public class LetterService {
     }
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
-        UUID id = UUID.randomUUID();
-        log.info("letterId {}, service {}, messageId {}", id, serviceName, messageId);
+        UUID letterId = UUID.randomUUID();
+        String loggingContext = String.format(
+            "letter  %s, service %s, messageId %s, additionalData %s",
+            letterId,
+            serviceName,
+            messageId, mapper.valueToTree(letter.getAdditionalData())
+        );
+
+        log.info("letterId {}, service {}, messageId {}", letterId, serviceName, messageId);
         byte[] zipContent = zipper.zip(
                 new PdfDoc(
-                        FileNameHelper.generatePdfName(letter.getType(), serviceName, id),
-                        getPdfContent(letter)
+                        FileNameHelper.generatePdfName(letter.getType(), serviceName, letterId),
+                        getPdfContent(letter, loggingContext)
                 )
         );
 
-        Function<LocalDateTime, byte[]> fileContent = localDateTime -> getFileContent(id, letter,
+        Function<LocalDateTime, byte[]> fileContent = localDateTime -> getFileContent(letterId, letter,
                 serviceName, localDateTime, zipContent);
 
         if (letter instanceof LetterRequest) {
             log.info(
-                "Team {} is still using the v1 api call and renders pdf templates. Letter id = {}, messageId {}",
+                "Team {} is still using the v1 api call and renders pdf templates. Letter letterId = {}, messageId {}",
                 serviceName,
-                id,
+                letterId,
                 messageId
             );
         }
@@ -152,41 +159,41 @@ public class LetterService {
         if (Boolean.parseBoolean(isAsync)) {
             Runnable logger = () -> log.info(
                     "Saving letter id {} in async mode as flag value is {}, service {}, messageId {}",
-                    id,
+                    letterId,
                     isAsync,
                     serviceName,
                     messageId
             );
-            asynService.run(() -> saveLetter(letter, messageId, serviceName, id, fileContent), logger,
-                () -> saveDuplicate(letter, id, messageId, serviceName, isAsync),
-                message -> saveExcepton(letter, id, serviceName, message, isAsync));
+            asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent), logger,
+                () -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync),
+                message -> saveException(letter, letterId, serviceName, message, isAsync));
         } else {
             try {
                 log.info(
                         "Saving letter id {} in sync mode as flag value is {}, service {}, messageId {}",
-                        id,
+                        letterId,
                         isAsync,
                         serviceName,
                         messageId
                 );
-                asynService.execute(() -> saveLetter(letter, messageId, serviceName, id, fileContent));
+                asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                 Runnable logger = () -> log.error(
                         "Duplicate record, letter id {}, service {}, messageId {}",
-                        id,
+                        letterId,
                         serviceName,
                         messageId,
                         dataIntegrityViolationException
                 );
-                asynService.run(() -> saveDuplicate(letter, id, messageId, serviceName, isAsync), logger,
-                    () -> {}, message -> saveExcepton(letter, id, serviceName,
+                asyncService.run(() -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync), logger,
+                    () -> {}, message -> saveException(letter, letterId, serviceName,
                                 zipContent.length + ":" + message, isAsync));
                 throw dataIntegrityViolationException;
             }
         }
-        log.info("Returning letter id {} for service {}, messageId {}", id, serviceName, messageId);
+        log.info("Returning letter letterId {} for service {}, messageId {}", letterId, serviceName, messageId);
 
-        return id;
+        return letterId;
     }
 
     @Transactional
@@ -220,7 +227,7 @@ public class LetterService {
     }
 
     @Transactional
-    public void saveExcepton(ILetterRequest letter, UUID id, String serviceName, String message, String isAsync) {
+    public void saveException(ILetterRequest letter, UUID id, String serviceName, String message, String isAsync) {
         ExceptionLetter exceptionLetter = new ExceptionLetter(id, serviceName, LocalDateTime.now(),
                 letter.getType(), message, isAsync);
         exceptionLetterService.save(exceptionLetter);
@@ -288,15 +295,16 @@ public class LetterService {
         }
     }
 
-    private byte[] getPdfContent(ILetterRequest letter) {
+    private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
         if (letter instanceof LetterRequest) {
-            return pdfCreator.createFromTemplates(((LetterRequest) letter).documents);
+            return pdfCreator.createFromTemplates(((LetterRequest) letter).documents, loggingContext);
         } else if (letter instanceof LetterWithPdfsRequest) {
-            return pdfCreator.createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents);
+            return pdfCreator.createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents, loggingContext);
         } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
             return pdfCreator
                 .createFromBase64PdfWithCopies(
-                    ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents
+                    ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents,
+                    loggingContext
                 );
         } else {
             throw new UnsupportedLetterRequestTypeException();
@@ -364,7 +372,8 @@ public class LetterService {
         Function<JsonNode, Map<String, Object>> additionDataFunction = additionalData -> {
             if (Boolean.parseBoolean(isAdditionalDataRequired)) {
                 return Optional.ofNullable(additionalData)
-                    .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>(){}))
+                    .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>() {
+                    }))
                     .orElse(Collections.emptyMap());
             }
             return null;
@@ -388,8 +397,7 @@ public class LetterService {
         return letterStatus;
     }
 
-    public LetterStatusV2
-        getLatestStatus(UUID id) {
+    public LetterStatusV2 getLatestStatus(UUID id) {
         log.info("Getting v2 letter status for id {} ", id);
 
         LetterStatusV2 letterStatus = letterRepository

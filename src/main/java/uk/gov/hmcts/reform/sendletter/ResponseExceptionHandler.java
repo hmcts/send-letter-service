@@ -90,10 +90,16 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return status(BAD_REQUEST).body("Exception occurred while parsing letter contents");
     }
 
-    @ExceptionHandler({DuplexException.class, LetterSaveException.class})
+    @ExceptionHandler(LetterSaveException.class)
     protected ResponseEntity<String> handleInvalidPdfException() {
         // only then pdf is actually checked hence invalid pdf message
         return status(BAD_REQUEST).body("Invalid pdf");
+    }
+
+    @ExceptionHandler(DuplexException.class)
+    protected ResponseEntity<String> handleDuplexException(DuplexException exc) {
+        // failed to parse the document
+        return status(BAD_REQUEST).body(exc.getMessage());
     }
 
     @ExceptionHandler(UnauthenticatedException.class)

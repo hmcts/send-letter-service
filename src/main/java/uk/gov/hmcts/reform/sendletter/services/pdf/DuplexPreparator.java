@@ -18,7 +18,7 @@ public class DuplexPreparator {
     /**
      * Adds an extra blank page if the total number of pages is odd.
      */
-    public byte[] prepare(byte[] pdf) {
+    public byte[] prepare(byte[] pdf, String loggingContext) {
         logger.info("File size is {} KB", pdf.length / 1024);
         try (var pdDoc = PDDocument.load(pdf)) {
             int numberOfPages = pdDoc.getNumberOfPages();
@@ -34,7 +34,9 @@ public class DuplexPreparator {
                 return pdf;
             }
         } catch (IOException exc) {
-            throw new DuplexException(exc);
+            String errorMessage = "Failed to parse the documents for " + loggingContext;
+            logger.error(errorMessage);
+            throw new DuplexException(errorMessage, exc);
         }
     }
 }

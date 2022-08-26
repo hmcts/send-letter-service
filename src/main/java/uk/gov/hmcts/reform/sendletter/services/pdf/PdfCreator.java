@@ -24,42 +24,42 @@ public class PdfCreator {
         this.converter = converter;
     }
 
-    public byte[] createFromTemplates(List<Document> documents) {
+    public byte[] createFromTemplates(List<Document> documents, String loggingContext) {
         Asserts.notNull(documents, "documents");
 
         List<byte[]> docs =
             documents
                 .stream()
                 .map(this::generatePdf)
-                .map(duplexPreparator::prepare)
+                .map(pdf -> duplexPreparator.prepare(pdf, loggingContext))
                 .collect(toList());
 
-        return PdfMerger.mergeDocuments(docs);
+        return PdfMerger.mergeDocuments(docs, loggingContext);
     }
 
-    public byte[] createFromBase64Pdfs(List<byte[]> base64decodedDocs) {
+    public byte[] createFromBase64Pdfs(List<byte[]> base64decodedDocs, String loggingContext) {
         Asserts.notNull(base64decodedDocs, "base64decodedDocs");
 
         List<byte[]> docs = base64decodedDocs
             .stream()
-            .map(duplexPreparator::prepare)
+            .map(pdf -> duplexPreparator.prepare(pdf, loggingContext))
             .collect(toList());
 
-        return PdfMerger.mergeDocuments(docs);
+        return PdfMerger.mergeDocuments(docs, loggingContext);
     }
 
-    public byte[] createFromBase64PdfWithCopies(List<Doc> docs) {
+    public byte[] createFromBase64PdfWithCopies(List<Doc> docs, String loggingContext) {
         Asserts.notNull(docs, "base64decodedDocs");
 
         List<byte[]> pdfs = docs
             .stream()
             .peek(doc -> logger.info("Number of copies request {}", doc.copies))
-            .map(doc -> new Doc(duplexPreparator.prepare(doc.content), doc.copies))
+            .map(doc -> new Doc(duplexPreparator.prepare(doc.content, loggingContext), doc.copies))
             .map(d -> Collections.nCopies(d.copies, d.content))
             .flatMap(Collection::stream)
             .collect(toList());
 
-        return PdfMerger.mergeDocuments(pdfs);
+        return PdfMerger.mergeDocuments(pdfs, loggingContext);
     }
 
     private byte[] generatePdf(Document document) {
