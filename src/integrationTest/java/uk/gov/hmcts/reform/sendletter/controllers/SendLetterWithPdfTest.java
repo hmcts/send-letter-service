@@ -16,7 +16,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -83,8 +86,8 @@ class SendLetterWithPdfTest {
                     .contentType(MediaTypes.LETTER_V2)
                     .content(json)
             )
-            .andExpect(
-                status().isBadRequest()
-            );
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(startsWith("Failed to parse the documents for letter ")))
+            .andExpect(content().string(containsString("service some_service_name")));
     }
 }

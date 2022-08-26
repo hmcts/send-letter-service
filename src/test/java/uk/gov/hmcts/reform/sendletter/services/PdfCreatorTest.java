@@ -43,7 +43,7 @@ class PdfCreatorTest {
 
     @Test
     void should_require_documents_to_not_be_null() {
-        assertThatThrownBy(() -> pdfCreator.createFromTemplates(null))
+        assertThatThrownBy(() -> pdfCreator.createFromTemplates(null, "test"))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("documents");
     }
@@ -51,21 +51,22 @@ class PdfCreatorTest {
     @Test
     void should_handle_documents_with_number_of_copies_specified() throws Exception {
         // given
-        byte[] test1Pdf = loadResource("test1.pdf");
-        byte[] test2Pdf = loadResource("test2.pdf");
+        final String loggingContext = "test_service";
+        final byte[] test1Pdf = loadResource("test1.pdf");
+        final byte[] test2Pdf = loadResource("test2.pdf");
 
-        given(duplexPreparator.prepare(test1Pdf)).willReturn(test1Pdf);
-        given(duplexPreparator.prepare(test2Pdf)).willReturn(test2Pdf);
+        given(duplexPreparator.prepare(test1Pdf, loggingContext)).willReturn(test1Pdf);
+        given(duplexPreparator.prepare(test2Pdf, loggingContext)).willReturn(test2Pdf);
 
         Doc doc1 = new Doc(test1Pdf, 5);
         Doc doc2 = new Doc(test2Pdf, 10);
 
         // when
-        byte[] result = pdfCreator.createFromBase64PdfWithCopies(asList(doc1, doc2));
+        byte[] result = pdfCreator.createFromBase64PdfWithCopies(asList(doc1, doc2), loggingContext);
 
         // then
-        verify(duplexPreparator, times(1)).prepare(doc1.content);
-        verify(duplexPreparator, times(1)).prepare(doc2.content);
+        verify(duplexPreparator, times(1)).prepare(doc1.content, loggingContext);
+        verify(duplexPreparator, times(1)).prepare(doc2.content, loggingContext);
 
         try (PDDocument doc = PDDocument.load(result)) {
             assertThat(doc.getNumberOfPages()).isEqualTo(doc1.copies + doc2.copies);
@@ -74,12 +75,13 @@ class PdfCreatorTest {
 
     @Test
     void should_return_a_merged_pdf_when_multiple_documents_are_passed() throws Exception {
-        byte[] test1Pdf = loadResource("test1.pdf");
-        byte[] test2Pdf = loadResource("test2.pdf");
-        byte[] expectedMergedPdf = loadResource("merged.pdf");
+        final byte[] test1Pdf = loadResource("test1.pdf");
+        final byte[] test2Pdf = loadResource("test2.pdf");
+        final byte[] expectedMergedPdf = loadResource("merged.pdf");
+        final String loggingContext = "test_service logging";
 
-        given(duplexPreparator.prepare(test1Pdf)).willReturn(test1Pdf);
-        given(duplexPreparator.prepare(test2Pdf)).willReturn(test2Pdf);
+        given(duplexPreparator.prepare(test1Pdf, loggingContext)).willReturn(test1Pdf);
+        given(duplexPreparator.prepare(test2Pdf, loggingContext)).willReturn(test2Pdf);
 
         given(converter.apply(eq("t1".getBytes()), any())).willReturn(test1Pdf);
         given(converter.apply(eq("t2".getBytes()), any())).willReturn(test2Pdf);
@@ -90,7 +92,7 @@ class PdfCreatorTest {
         );
 
         // when
-        byte[] pdfContent = pdfCreator.createFromTemplates(docs);
+        byte[] pdfContent = pdfCreator.createFromTemplates(docs, loggingContext);
 
         // then
         try (
@@ -105,7 +107,7 @@ class PdfCreatorTest {
         }
 
         // and
-        verify(duplexPreparator, times(2)).prepare(any(byte[].class));
+        verify(duplexPreparator, times(2)).prepare(any(byte[].class), eq(loggingContext));
     }
 
     private InputStream getPdfPageContents(byte[] pdf, int pageNumber) throws Exception {

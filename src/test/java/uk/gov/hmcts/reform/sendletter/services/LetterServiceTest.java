@@ -59,6 +59,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -121,7 +123,7 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
@@ -145,11 +147,12 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             service.save(letter, "some_service", async);
         } else {
-            assertThrows(DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
+            assertThrows(
+                DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
         }
 
         // then
-        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
@@ -176,10 +179,11 @@ class LetterServiceTest {
         LetterRequest letter = SampleData.letterRequest();
 
         // when
-        assertThrows(DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
+        assertThrows(
+            DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
 
         // then
-        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
         verify(exceptionLetterService).save(isA(ExceptionLetter.class));
     }
@@ -203,11 +207,12 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             service.save(letter, "some_service", async);
         } else {
-            assertThrows(UnableToPgpEncryptZipFileException.class, () -> service.save(letter, "some_service", async));
+            assertThrows(
+                UnableToPgpEncryptZipFileException.class, () -> service.save(letter, "some_service", async));
         }
 
         // then
-        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
@@ -237,7 +242,7 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromBase64Pdfs(letter.documents);
+        verify(pdfCreator).createFromBase64Pdfs(eq(letter.documents), anyString());
 
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
@@ -265,7 +270,8 @@ class LetterServiceTest {
         service.save(letterWithPdfsAndNumberOfCopiesRequest, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromBase64PdfWithCopies(letterWithPdfsAndNumberOfCopiesRequest.documents);
+        verify(pdfCreator)
+            .createFromBase64PdfWithCopies(eq(letterWithPdfsAndNumberOfCopiesRequest.documents), anyString());
         verify(zipper).zip(any(PdfDoc.class));
 
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
@@ -300,7 +306,7 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromTemplates(letter.documents);
+        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
@@ -336,7 +342,7 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromBase64Pdfs(letter.documents);
+        verify(pdfCreator).createFromBase64Pdfs(eq(letter.documents), anyString());
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
@@ -369,7 +375,7 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
-        verify(pdfCreator).createFromBase64PdfWithCopies(letter.documents);
+        verify(pdfCreator).createFromBase64PdfWithCopies(eq(letter.documents), anyString());
         verify(zipper).zip(any(PdfDoc.class));
 
         if (Boolean.parseBoolean(async)) {
