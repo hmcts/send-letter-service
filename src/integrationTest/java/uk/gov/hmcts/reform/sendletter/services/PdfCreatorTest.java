@@ -35,7 +35,7 @@ class PdfCreatorTest {
         );
 
         // when
-        byte[] pdfContent = pdfCreator.createFromBase64Pdfs(pdfs);
+        byte[] pdfContent = pdfCreator.createFromBase64Pdfs(pdfs, "logging");
 
         // then
         assertThat(pdfContent).isNotNull();
@@ -51,7 +51,7 @@ class PdfCreatorTest {
         );
 
         // when
-        byte[] pdfContent = pdfCreator.createFromBase64PdfWithCopies(docs);
+        byte[] pdfContent = pdfCreator.createFromBase64PdfWithCopies(docs, "logging");
 
         // then
         assertThat(pdfContent).isNotNull();
@@ -66,7 +66,7 @@ class PdfCreatorTest {
         );
 
         // when
-        var exc = catchThrowable(() -> pdfCreator.createFromBase64Pdfs(pdfs));
+        var exc = catchThrowable(() -> pdfCreator.createFromBase64Pdfs(pdfs, "logging"));
 
         // then
         assertThat(exc)

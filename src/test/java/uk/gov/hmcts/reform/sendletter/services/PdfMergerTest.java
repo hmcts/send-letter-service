@@ -24,7 +24,7 @@ class PdfMergerTest {
         byte[] expectedMergedPdf = loadResource("merged.pdf");
 
         //when
-        byte[] actualMergedPdf = PdfMerger.mergeDocuments(asList(test1Pdf, test2Pdf));
+        byte[] actualMergedPdf = PdfMerger.mergeDocuments(asList(test1Pdf, test2Pdf), "test_service");
 
         // then
         try (
@@ -45,7 +45,7 @@ class PdfMergerTest {
         byte[] testPdf = loadResource("test1.pdf");
 
         //when
-        byte[] actualMergedPdf = PdfMerger.mergeDocuments(singletonList(testPdf));
+        byte[] actualMergedPdf = PdfMerger.mergeDocuments(singletonList(testPdf), "test_service");
 
         // then
         assertThat(actualMergedPdf).containsExactly(testPdf);
@@ -62,6 +62,6 @@ class PdfMergerTest {
     }
 
     private static void merge() {
-        PdfMerger.mergeDocuments(asList("test1".getBytes(), "test2".getBytes()));
+        PdfMerger.mergeDocuments(asList("test1".getBytes(), "test2".getBytes()), "test_service");
     }
 }

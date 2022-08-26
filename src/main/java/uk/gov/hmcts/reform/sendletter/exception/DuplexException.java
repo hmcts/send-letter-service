@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.exception;
 
 public class DuplexException extends RuntimeException {
-    public DuplexException(Throwable cause) {
-        super(cause);
+    public DuplexException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

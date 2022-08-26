@@ -17,7 +17,7 @@ class DuplexPreparatorTest {
         byte[] before = loadResource("single_page.pdf");
 
         // when
-        byte[] after = new DuplexPreparator().prepare(before);
+        byte[] after = new DuplexPreparator().prepare(before, "test_service");
 
         // then
         assertThat(after).isNotEqualTo(before);
@@ -32,7 +32,7 @@ class DuplexPreparatorTest {
         byte[] before = loadResource("two_pages.pdf");
 
         // when
-        byte[] after = new DuplexPreparator().prepare(before);
+        byte[] after = new DuplexPreparator().prepare(before, "test_service");
 
         // then
         assertThat(after).isEqualTo(before);
@@ -41,10 +41,11 @@ class DuplexPreparatorTest {
     @Test
     void should_throw_duplex_exception_when_stream_is_not_pdf() {
         assertThatThrownBy(DuplexPreparatorTest::prepare)
-            .isInstanceOf(DuplexException.class);
+            .isInstanceOf(DuplexException.class)
+            .hasMessage("Failed to parse the documents for test_service logs");
     }
 
     private static void prepare() {
-        new DuplexPreparator().prepare("corruptedStream".getBytes());
+        new DuplexPreparator().prepare("corruptedStream".getBytes(), "test_service logs");
     }
 }

@@ -18,7 +18,7 @@ public final class PdfMerger {
         // utility class constructor
     }
 
-    public static byte[] mergeDocuments(List<byte[]> documents) {
+    public static byte[] mergeDocuments(List<byte[]> documents, String loggingContext) {
         if (documents.size() == 1) {
             return documents.get(0);
         }
@@ -37,7 +37,7 @@ public final class PdfMerger {
             pdfMergerUtility.mergeDocuments(setupMainMemoryOnly());
             return docOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new PdfMergeException("Exception occurred while merging PDF files", e);
+            throw new PdfMergeException("Exception occurred while merging PDF files." + loggingContext, e);
         }
     }
 }
