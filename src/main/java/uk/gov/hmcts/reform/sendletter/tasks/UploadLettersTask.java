@@ -82,7 +82,7 @@ public class UploadLettersTask {
 
             for (int i = 0; i < BATCH_SIZE; i++) {
                 Optional<Letter> letterOpt
-                        = repo.findFirstLetterToUpload(LocalDateTime.now().minusMinutes(dbPollDelay));
+                        = repo.findFirstLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
                 if (letterOpt.isPresent()) {
                     Letter letter = letterOpt.get();

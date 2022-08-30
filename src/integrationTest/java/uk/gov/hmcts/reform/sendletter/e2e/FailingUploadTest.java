@@ -147,8 +147,8 @@ class FailingUploadTest {
                     assertThat(letters).as("Letters in DB").hasSize(numberOfRequests);
                     long failedCnt = letters.stream().filter(l -> l.getStatus().equals(FailedToUpload)).count();
                     long uploadedCnt = letters.stream().filter(l -> l.getStatus().equals(Uploaded)).count();
-                    assertThat(failedCnt).as("Failed letters").isEqualTo(0);
-                    assertThat(uploadedCnt).as("Uploaded letters").isEqualTo(5);
+                    assertThat(failedCnt).as("Failed letters").isEqualTo(1);
+                    assertThat(uploadedCnt).as("Uploaded letters").isEqualTo(4);
                 });
     }
 
