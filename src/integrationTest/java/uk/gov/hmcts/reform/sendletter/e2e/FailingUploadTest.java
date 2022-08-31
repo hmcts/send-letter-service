@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.helper.FakeFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -39,7 +40,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 @SpringBootTest
 @TestPropertySource(properties = {
         "scheduling.enabled=true",
-        "tasks.upload-letters.interval-ms=60000",
+        "tasks.upload-letters.interval-ms=20000",
         "tasks.mark-letters-posted.cron=*/1 * * * * *",
         "tasks.stale-letters-report.cron=*/1 * * * * *",
         "ftp.service-folders[0].service=some_service_name",
@@ -79,7 +80,7 @@ class FailingUploadTest {
     }
 
     @Test
-    void shouldHandleUploadFailureOldLetterModel() throws Throwable {
+    void shouldHandleEmptyFileUploadsOldLetterModel() throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
@@ -100,7 +101,7 @@ class FailingUploadTest {
     }
 
     @Test
-    void shouldHandleUploadFailureNewLetterModel() throws Throwable {
+    void shouldHandleEmptyFileUploadsNewLetterModel() throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
@@ -128,7 +129,8 @@ class FailingUploadTest {
 
     private void corruptFileAndAwaitResult(int numberOfRequests) {
         await()
-                .forever()
+                .atMost(Duration.ofSeconds(10))
+                .pollInterval(Duration.ofSeconds(2))
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
                     assertThat(letters).as("Letters in DB").hasSize(numberOfRequests);
@@ -138,14 +140,15 @@ class FailingUploadTest {
 
         // The report should be processed and the letter marked posted.
         await()
-                .forever()
+                .atMost(Duration.ofMinutes(2))
+                .pollInterval(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
                     List<Letter> letters = repository.findAll();
                     assertThat(letters).as("Letters in DB").hasSize(numberOfRequests);
                     long failedCnt = letters.stream().filter(l -> l.getStatus().equals(FailedToUpload)).count();
                     long uploadedCnt = letters.stream().filter(l -> l.getStatus().equals(Uploaded)).count();
                     assertThat(failedCnt).as("Failed letters").isEqualTo(1);
-                    assertThat(uploadedCnt).as("Failed letters").isEqualTo(4);
+                    assertThat(uploadedCnt).as("Uploaded letters").isEqualTo(4);
                 });
     }
 
