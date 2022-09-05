@@ -12,16 +12,22 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_ABORTED;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_CREATED;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_POSTED;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_POSTED_LOCALLY;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
@@ -109,6 +115,30 @@ public class LetterActionService {
         return letterRepository.markLetterAsPostedLocally(id);
     }
 
+    @Transactional
+    public int markLetterAsPosted(UUID id,
+                                  LocalDate sentToPrintDate,
+                                  LocalTime sentToPrintTime) {
+        log.info("Marking the letter id {} as Posted", id);
+
+        Optional<Letter> letterOpt = letterRepository.findById(id);
+        if (letterOpt.isEmpty()) {
+            throw new LetterNotFoundException(id);
+        }
+
+        Letter letter = letterOpt.get();
+        checkLetterStatusForMarkPosted(letter);
+
+        final ZonedDateTime sentToPrintAt = ZonedDateTime.of(sentToPrintDate, sentToPrintTime, ZoneOffset.UTC);
+
+        createLetterEvent(
+            letterOpt.get(),
+            MANUALLY_MARKED_AS_POSTED,
+            "Letter marked manually as Posted");
+
+        return letterRepository.markLetterAsPosted(id, sentToPrintAt.toLocalDateTime());
+    }
+
     private void checkLetterStatusForLetterReUpload(Letter letter) {
         if (!List.of(FailedToUpload, Uploaded).contains(letter.getStatus())) {
             throw new UnableToReprocessLetterException(
@@ -123,6 +153,15 @@ public class LetterActionService {
             throw new UnableToMarkLetterPostedLocallyException(
                 "Letter with ID '" + letter.getId() + "', status '"
                     + letter.getStatus() + "' can not be marked as " + LetterStatus.PostedLocally);
+        }
+
+    }
+
+    private void checkLetterStatusForMarkPosted(Letter letter) {
+        if (letter.getStatus() == Posted) {
+            throw new UnableToMarkLetterPostedException(
+                "Letter with ID '" + letter.getId() + "', status '"
+                    + letter.getStatus() + "' can not be marked as " + LetterStatus.Posted);
         }
 
     }
