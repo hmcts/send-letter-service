@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -11,14 +12,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.sendletter.exception.InvalidApiKeyException;
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.TIME;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
@@ -94,6 +100,22 @@ public class ActionController {
         validateAuthorization(authHeader);
 
         letterActionService.markLetterAsPostedLocally(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}/mark-posted")
+    @Operation(summary = "Mark letter as posted by letter ID")
+    public ResponseEntity<Void> markAsPosted(
+        @RequestHeader(value = AUTHORIZATION, required = false) String authHeader,
+        @PathVariable UUID id,
+        @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date,
+        @RequestParam(name = "time") @DateTimeFormat(iso = TIME) LocalTime time
+    ) {
+        logger.info("Marking letter status as 'Posted' {}", id);
+
+        validateAuthorization(authHeader);
+
+        letterActionService.markLetterAsPosted(id, date, time);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

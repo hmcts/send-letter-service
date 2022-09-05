@@ -15,15 +15,22 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -31,6 +38,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_ABORTED;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_CREATED;
+import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_POSTED;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.MANUALLY_MARKED_AS_POSTED_LOCALLY;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
@@ -352,6 +360,96 @@ class LetterActionServiceTest {
 
         verifyNoMoreInteractions(letterRepository);
         verifyNoInteractions(staleLetterService, letterEventRepository);
+    }
+
+    @Test
+    void markLetterAsPosted_should_update_letter_status_when_record_present() {
+        // given
+        UUID letterId = UUID.randomUUID();
+
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            LocalDateTime.now(),
+            null
+        );
+        letter.setStatus(Uploaded);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+        given(letterRepository.markLetterAsPosted(eq(letterId), any(LocalDateTime.class))).willReturn(1);
+
+        // when
+        LocalDate printedOn = LocalDate.now().minusDays(2);
+        LocalTime printedAt = LocalTime.now().minusHours(2);
+        int result = letterActionService.markLetterAsPosted(letterId, printedOn, printedAt);
+
+        // then
+        assertThat(result).isEqualTo(1);
+
+        ArgumentCaptor<LetterEvent> letterEventArgumentCaptor = ArgumentCaptor.forClass(LetterEvent.class);
+        verify(letterEventRepository).save(letterEventArgumentCaptor.capture());
+        assertThat(letterEventArgumentCaptor.getValue().getLetter()).isEqualTo(letter);
+        assertThat(letterEventArgumentCaptor.getValue().getType()).isEqualTo(MANUALLY_MARKED_AS_POSTED);
+        assertThat(letterEventArgumentCaptor.getValue().getNotes())
+            .isEqualTo("Letter marked manually as Posted");
+
+        ZonedDateTime printedDateTime = ZonedDateTime.of(printedOn, printedAt, UTC);
+        verify(letterRepository).markLetterAsPosted(letterId, printedDateTime.toLocalDateTime());
+        verifyNoMoreInteractions(letterRepository, letterEventRepository);
+    }
+
+    @Test
+    void markLetterAsPosted_should_throw_exception_when_letter_not_present() {
+        // given
+        UUID letterId = UUID.randomUUID();
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> letterActionService.markLetterAsPosted(letterId, LocalDate.now(), LocalTime.now()))
+            .isInstanceOf(LetterNotFoundException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
+    }
+
+    @Test
+    void markLetterAsPosted_should_throw_exception_when_letter_status_is_posted() {
+        // given
+        UUID letterId = UUID.randomUUID();
+        Letter letter = new Letter(
+            letterId,
+            letterId.toString(),
+            "cmc",
+            null,
+            "type",
+            null,
+            false,
+            null,
+            LocalDateTime.now(),
+            null
+        );
+        letter.setStatus(Posted);
+
+        reset(letterRepository);
+        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
+
+        // when
+        // then
+        assertThatThrownBy(() -> letterActionService.markLetterAsPosted(
+            letterId, LocalDate.of(2022, 8, 8), LocalTime.of(10, 10))
+        ).isInstanceOf(UnableToMarkLetterPostedException.class);
+
+        verifyNoMoreInteractions(letterRepository);
+        verifyNoInteractions(letterEventRepository);
     }
 
 }

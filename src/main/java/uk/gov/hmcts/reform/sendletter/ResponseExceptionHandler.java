@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
+import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
@@ -158,6 +159,14 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnableToMarkLetterPostedLocallyException.class)
     protected ResponseEntity<String> handleUnableToUnableToMarkLetterPostedLocallyException(
         UnableToMarkLetterPostedLocallyException exc
+    ) {
+        log.warn(exc.getMessage(), exc);
+        return status(BAD_REQUEST).body(exc.getMessage());
+    }
+
+    @ExceptionHandler(UnableToMarkLetterPostedException.class)
+    protected ResponseEntity<String> handleUnableToUnableToMarkLetterPostedException(
+        UnableToMarkLetterPostedException exc
     ) {
         log.warn(exc.getMessage(), exc);
         return status(BAD_REQUEST).body(exc.getMessage());

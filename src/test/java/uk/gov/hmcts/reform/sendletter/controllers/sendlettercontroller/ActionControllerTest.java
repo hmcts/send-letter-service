@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
 import uk.gov.hmcts.reform.sendletter.services.StaleLetterService;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
@@ -384,6 +386,96 @@ class ActionControllerTest {
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-posted-locally")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+        )
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(errorMessage));
+
+        verify(letterActionService).markLetterAsPostedLocally(letterId);
+        verifyNoMoreInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_ok_when_letter_is_successfully_marked_as_posted() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(letterActionService.markLetterAsPostedLocally(letterId)).willReturn(1);
+
+        LocalDate printedOn = LocalDate.parse("2022-08-12");
+        LocalTime printedAt = LocalTime.parse("17:49");
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-posted")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+                    .queryParam("date", printedOn.toString())
+                    .queryParam("time", printedAt.toString())
+            )
+                .andExpect(status().isOk());
+
+        verify(letterActionService).markLetterAsPosted(letterId, printedOn, printedAt);
+        verifyNoMoreInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_not_found_when_marking_letter_posted_and_letter_not_found() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        given(letterActionService.markLetterAsPostedLocally(letterId))
+            .willThrow(new LetterNotFoundException(letterId));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-posted-locally")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+                        .queryParam("date", LocalDate.parse("2022-08-10").toString())
+                        .queryParam("time", LocalTime.parse("17:10").toString())
+            )
+                .andExpect(status().isNotFound());
+
+        verify(letterActionService).markLetterAsPostedLocally(letterId);
+        verifyNoMoreInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_unauthorized_when_marking_letter_posted_and_header_is_missing() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-posted-locally")
+                        .queryParam("date", LocalDate.parse("2022-08-10").toString())
+                        .queryParam("time", LocalTime.parse("17:10").toString())
+            )
+            .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_unauthorized_when_marking_letter_posted_and_header_is_invalid() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-posted-locally")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer invalid-report-api-key")
+                        .queryParam("date", LocalDate.parse("2022-08-10").toString())
+                        .queryParam("time", LocalTime.parse("17:10").toString())
+        )
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(letterActionService);
+    }
+
+    @Test
+    void should_return_bad_request_when_marking_letter_posted_and_letter_posted() throws Exception {
+        UUID letterId = UUID.randomUUID();
+
+        String errorMessage = "Letter with ID '" + letterId + "', status '"
+            + LetterStatus.Posted + "' can not be marked as " + LetterStatus.PostedLocally;
+        given(letterActionService.markLetterAsPostedLocally(letterId))
+            .willThrow(new UnableToMarkLetterPostedLocallyException(errorMessage));
+
+        mockMvc.perform(
+                put("/letters/" + letterId + "/mark-posted-locally")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
+                        .queryParam("date", LocalDate.parse("2022-08-10").toString())
+                        .queryParam("time", LocalTime.parse("17:10").toString())
         )
             .andExpect(status().isBadRequest())
             .andExpect(content().string(errorMessage));
