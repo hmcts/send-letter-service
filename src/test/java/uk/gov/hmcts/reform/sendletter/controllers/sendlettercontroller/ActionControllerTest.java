@@ -400,17 +400,17 @@ class ActionControllerTest {
 
         given(letterActionService.markLetterAsPostedLocally(letterId)).willReturn(1);
 
-        LocalDate sentToPrintDate = LocalDate.parse("2022-08-12");
-        LocalTime sentToPrintTime = LocalTime.parse("17:49");
+        LocalDate printedOn = LocalDate.parse("2022-08-12");
+        LocalTime printedAt = LocalTime.parse("17:49");
         mockMvc.perform(
                 put("/letters/" + letterId + "/mark-posted")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
-                    .queryParam("date", sentToPrintDate.toString())
-                    .queryParam("time", sentToPrintTime.toString())
+                    .queryParam("date", printedOn.toString())
+                    .queryParam("time", printedAt.toString())
             )
                 .andExpect(status().isOk());
 
-        verify(letterActionService).markLetterAsPosted(letterId, sentToPrintDate, sentToPrintTime);
+        verify(letterActionService).markLetterAsPosted(letterId, printedOn, printedAt);
         verifyNoMoreInteractions(letterActionService);
     }
 

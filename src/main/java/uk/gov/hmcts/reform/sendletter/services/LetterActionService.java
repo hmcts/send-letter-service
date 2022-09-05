@@ -117,8 +117,8 @@ public class LetterActionService {
 
     @Transactional
     public int markLetterAsPosted(UUID id,
-                                  LocalDate sentToPrintDate,
-                                  LocalTime sentToPrintTime) {
+                                  LocalDate printedOn,
+                                  LocalTime printedAt) {
         log.info("Marking the letter id {} as Posted", id);
 
         Optional<Letter> letterOpt = letterRepository.findById(id);
@@ -129,14 +129,14 @@ public class LetterActionService {
         Letter letter = letterOpt.get();
         checkLetterStatusForMarkPosted(letter);
 
-        final ZonedDateTime sentToPrintAt = ZonedDateTime.of(sentToPrintDate, sentToPrintTime, ZoneOffset.UTC);
+        final ZonedDateTime printedDateTime = ZonedDateTime.of(printedOn, printedAt, ZoneOffset.UTC);
 
         createLetterEvent(
             letterOpt.get(),
             MANUALLY_MARKED_AS_POSTED,
             "Letter marked manually as Posted");
 
-        return letterRepository.markLetterAsPosted(id, sentToPrintAt.toLocalDateTime());
+        return letterRepository.markLetterAsPosted(id, printedDateTime.toLocalDateTime());
     }
 
     private void checkLetterStatusForLetterReUpload(Letter letter) {

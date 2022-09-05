@@ -386,9 +386,9 @@ class LetterActionServiceTest {
         given(letterRepository.markLetterAsPosted(eq(letterId), any(LocalDateTime.class))).willReturn(1);
 
         // when
-        LocalDate sentToPrintDate = LocalDate.now().minusDays(2);
-        LocalTime sentToPrintTime = LocalTime.now().minusHours(2);
-        int result = letterActionService.markLetterAsPosted(letterId, sentToPrintDate, sentToPrintTime);
+        LocalDate printedOn = LocalDate.now().minusDays(2);
+        LocalTime printedAt = LocalTime.now().minusHours(2);
+        int result = letterActionService.markLetterAsPosted(letterId, printedOn, printedAt);
 
         // then
         assertThat(result).isEqualTo(1);
@@ -400,8 +400,8 @@ class LetterActionServiceTest {
         assertThat(letterEventArgumentCaptor.getValue().getNotes())
             .isEqualTo("Letter marked manually as Posted");
 
-        ZonedDateTime sentToPrintAt = ZonedDateTime.of(sentToPrintDate, sentToPrintTime, UTC);
-        verify(letterRepository).markLetterAsPosted(letterId, sentToPrintAt.toLocalDateTime());
+        ZonedDateTime printedDateTime = ZonedDateTime.of(printedOn, printedAt, UTC);
+        verify(letterRepository).markLetterAsPosted(letterId, printedDateTime.toLocalDateTime());
         verifyNoMoreInteractions(letterRepository, letterEventRepository);
     }
 
