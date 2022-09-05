@@ -32,7 +32,9 @@ public class LetterActionService {
     private static final Logger log = LoggerFactory.getLogger(StaleLetterService.class);
 
     private final LetterRepository letterRepository;
+    
     private final LetterEventRepository letterEventRepository;
+    
     private final StaleLetterService staleLetterService;
 
     public LetterActionService(LetterRepository letterRepository,
