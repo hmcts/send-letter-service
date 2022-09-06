@@ -25,6 +25,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.getCurrentEuropeLondonInstant;
 
 @Aspect
@@ -160,10 +162,22 @@ public class AppInsights {
         properties.put("checksum", staleLetter.getChecksum());
         properties.put("service", staleLetter.getService());
         properties.put("type", staleLetter.getType());
-        properties.put("sentToPrintDayOfWeek", staleLetter.getSentToPrintAt().getDayOfWeek().name());
-        properties.put("sentToPrintAt", staleLetter.getSentToPrintAt().format(DATE_TIME_FORMAT));
+        properties.put("sentToPrintDayOfWeek", getSentToPrintOn(staleLetter));
+        properties.put("sentToPrintAt", getSentToPrintAt(staleLetter));
 
         telemetryClient.trackEvent(LETTER_NOT_PRINTED, properties, null);
+    }
+
+    private String getSentToPrintAt(BasicLetterInfo staleLetter) {
+        return isNotEmpty(staleLetter.getSentToPrintAt())
+            ? staleLetter.getSentToPrintAt().format(DATE_TIME_FORMAT)
+            : EMPTY;
+    }
+
+    private String getSentToPrintOn(BasicLetterInfo staleLetter) {
+        return isNotEmpty(staleLetter.getSentToPrintAt())
+            ? staleLetter.getSentToPrintAt().getDayOfWeek().name()
+            : EMPTY;
     }
 
     public void trackPendingLetter(BasicLetterInfo pendingLetter) {
