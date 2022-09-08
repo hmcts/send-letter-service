@@ -34,6 +34,7 @@ public class FtpConfigProperties {
 
         private String service;
         private String folder;
+        private boolean enabled = true;
 
         public ServiceFolderMapping() {
             // Spring needs it.
@@ -54,6 +55,15 @@ public class FtpConfigProperties {
         public void setFolder(String folder) {
             this.folder = folder;
         }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
         // endregion
     }
 
@@ -144,6 +154,7 @@ public class FtpConfigProperties {
     public void setServiceFolders(List<ServiceFolderMapping> serviceFolders) {
         this.serviceFolders = serviceFolders
             .stream()
+            .filter(ServiceFolderMapping::isEnabled)
             .collect(toMap(ServiceFolderMapping::getService, ServiceFolderMapping::getFolder));
     }
 }

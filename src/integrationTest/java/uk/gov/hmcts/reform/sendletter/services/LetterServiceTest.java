@@ -107,7 +107,7 @@ class LetterServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
-    void generatesLetterWithAddionalCopiesAndSaveZippedPdf(String async) throws Exception {
+    void generatesLetterWithAdditionalCopiesAndSaveZippedPdf(String async) throws Exception {
         UUID id = service.save(SampleData.letterWithPdfAndCopiesRequest(4,10), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
@@ -126,7 +126,7 @@ class LetterServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
-    void generatesLetterWithAddionalDataAndSaveZippedPdf(String async) throws Exception {
+    void generatesLetterWithAdditionalDataAndSaveZippedPdf(String async) throws Exception {
         UUID id = service.save(SampleData.letterWithPdfsRequestWithAdditionalData(), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
@@ -149,7 +149,7 @@ class LetterServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
-    void generatesLetterWithNoAddionalDataAndSaveZippedPdf(String async) throws Exception {
+    void generatesLetterWithNoAdditionalDataAndSaveZippedPdf(String async) throws Exception {
         UUID id = service.save(SampleData.letterWithPdfsRequestWithNoAdditionalData(), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
