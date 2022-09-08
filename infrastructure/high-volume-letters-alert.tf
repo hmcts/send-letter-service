@@ -16,6 +16,6 @@ module "send-letter-high-volume-alert" {
   action_group_name          = "${module.alert-action-group.action_group_name}"
   custom_email_subject       = "Send Letter Service high volume"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 1
+  trigger_threshold          = 100
   resourcegroup_name         = "${azurerm_resource_group.rg.name}"
 }
