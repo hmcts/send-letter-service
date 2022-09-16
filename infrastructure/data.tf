@@ -10,8 +10,8 @@ locals {
   app_aks_network_name    = var.env == "prod" ? "core-${local.aks_env}-vnet" : "cft-${local.aks_env}-vnet"
   app_aks_network_rg_name = var.env == "prod" ? "aks-infra-${local.aks_env}-rg" : "cft-${local.aks_env}-network-rg"
 
-  cft_aks_network_name    = var.env == "prod" ? "cft-prod-vnet" : ""
-  cft_aks_network_rg_name = var.env == "prod" ? "cft-prod-network-rg" : ""
+  cft_aks_network_name    = var.env == "prod" ? "cft-prod-vnet" : []
+  cft_aks_network_rg_name = var.env == "prod" ? "cft-prod-network-rg" : []
 
 }
 
