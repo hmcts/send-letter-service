@@ -31,7 +31,9 @@ locals {
     data.azurerm_subnet.jenkins_aks_00.id,
     data.azurerm_subnet.jenkins_aks_01.id,
     data.azurerm_subnet.app_aks_00_subnet.id,
-    data.azurerm_subnet.app_aks_01_subnet.id
+    data.azurerm_subnet.app_aks_01_subnet.id,
+    data.azurerm_subnet.cft_aks_00_subnet.id,
+    data.azurerm_subnet.cft_aks_01_subnet.id
   ]
 
   preview_subnets   = var.env == "aat" ? [data.azurerm_subnet.preview_aks_00_subnet.id, data.azurerm_subnet.preview_aks_01_subnet.id] : []
