@@ -10,6 +10,9 @@ locals {
   app_aks_network_name    = var.env == "prod" ? "core-${local.aks_env}-vnet" : "cft-${local.aks_env}-vnet"
   app_aks_network_rg_name = var.env == "prod" ? "aks-infra-${local.aks_env}-rg" : "cft-${local.aks_env}-network-rg"
 
+  cft_aks_network_name    = "cft-${local.aks_env}-vnet"
+  cft_aks_network_rg_name = "cft-${local.aks_env}-network-rg"
+
 }
 
 data "azurerm_subnet" "jenkins_subnet" {
@@ -45,6 +48,20 @@ data "azurerm_subnet" "app_aks_01_subnet" {
   name                 = "aks-01"
   virtual_network_name = local.app_aks_network_name
   resource_group_name  = local.app_aks_network_rg_name
+}
+
+data "azurerm_subnet" "cft_aks_00_subnet" {
+  provider             = azurerm.aks
+  name                 = "aks-00"
+  virtual_network_name = local.cft_aks_network_name
+  resource_group_name  = local.cft_aks_network_rg_name
+}
+
+data "azurerm_subnet" "cft_aks_01_subnet" {
+  provider             = azurerm.aks
+  name                 = "aks-01"
+  virtual_network_name = local.cft_aks_network_name
+  resource_group_name  = local.cft_aks_network_rg_name
 }
 
 data "azurerm_user_assigned_identity" "keda_mi" {
