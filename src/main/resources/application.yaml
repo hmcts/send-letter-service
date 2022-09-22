@@ -114,6 +114,7 @@ ftp:
       folder: CMC
     - service: civil-service
       folder: CMC
+      enabled: ${CIVIL_SERVICE_ENABLED:false}
     - service: send_letter_tests
       folder: BULKPRINT
     - service: nfdiv_case_api
