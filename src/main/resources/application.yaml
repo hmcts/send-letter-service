@@ -71,6 +71,8 @@ reports:
   service-config:
     - service: cmc_claim_store
       display-name: CMC
+    - service: civil-service
+      display-name: CMC
     - service: send_letter_tests
       display-name: Bulk Print
     - service: divorce_frontend
@@ -110,6 +112,9 @@ ftp:
   service-folders:
     - service: cmc_claim_store
       folder: CMC
+    - service: civil-service
+      folder: CMC
+      enabled: ${CIVIL_SERVICE_ENABLED:false}
     - service: send_letter_tests
       folder: BULKPRINT
     - service: nfdiv_case_api
@@ -175,6 +180,9 @@ storage:
 accesstoken:
   serviceConfig:
     - serviceName: cmc_claim_store
+      newContainerName: new-cmc
+      validity: ${SAS_TOKEN_VALIDITY:300}
+    - serviceName: civil-service
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: send_letter_tests
