@@ -72,7 +72,7 @@ reports:
     - service: cmc_claim_store
       display-name: CMC
     - service: civil-service
-      display-name: CMC
+      display-name: OCMC
     - service: send_letter_tests
       display-name: Bulk Print
     - service: divorce_frontend
