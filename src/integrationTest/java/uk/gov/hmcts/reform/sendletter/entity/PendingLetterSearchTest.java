@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -43,8 +44,9 @@ public class PendingLetterSearchTest {
     public void should_return_letters_in_created_status() {
         // given
 
-        storeLetter(Created, "type-3", LocalDateTime.now());
-        storeLetter(Created, "type-4", LocalDateTime.now());
+        storeLetter(Created, "type-3", LocalDateTime.now().minusMinutes(2));
+        storeLetter(Created, "type-4", LocalDateTime.now().minusHours(1));
+        storeLetter(Uploaded, "type-5", LocalDateTime.now());
 
         // when
         List<BasicLetterInfo> letters = repository.findPendingLetters();
@@ -52,7 +54,8 @@ public class PendingLetterSearchTest {
         // then
         assertThat(letters)
             .extracting(BasicLetterInfo::getType)
-            .containsExactly("type-3", "type-4");
+            .containsExactly("type-4", "type-3")
+            .doesNotContain("type-5");
     }
 
     @Test
@@ -87,8 +90,11 @@ public class PendingLetterSearchTest {
         List<BasicLetterInfo> letters = repository.findPendingLetters();
 
         // then
-        assertThat(letters.size()).isEqualTo(2);
-        assertThat(letters).noneMatch(l -> l.getStatus().equals(SMOKE_TEST_LETTER_TYPE));
+        assertThat(letters).hasSize(2)
+            .noneMatch(l -> l.getStatus().equals(SMOKE_TEST_LETTER_TYPE));
+
+        assertThat(letters).extracting("type")
+            .containsExactlyInAnyOrder("not-smoke-test-type-1", "not-smoke-test-type-2");
     }
 
     @Test
@@ -107,17 +113,25 @@ public class PendingLetterSearchTest {
         }
         assertThat(collect.size()).isEqualTo(2);
         assertThat(collect).extracting("type")
-                .containsExactlyInAnyOrder("not-smoke-test-type-1","not-smoke-test-type-2");
+                .containsExactlyInAnyOrder("not-smoke-test-type-1","not-smoke-test-type-2")
+            .doesNotContain(SMOKE_TEST_LETTER_TYPE);
     }
 
     @Test
-    public void should_set_properties_correctly() {
+    public void should_return_pending_letters_with_correct_properties() {
         // given
-        Letter letter = SampleData.letterEntity("service", LocalDateTime.now(), "type", "fingerprint",
-                Map.of("Document_1", 1),
-                SampleData.checkSumSupplier);
-        letter.setStatus(Created);
-        Letter savedLetter = repository.save(letter);
+        Letter letter1 = SampleData.letterEntity("service", LocalDateTime.now(), "type", "fingerprint",
+            Map.of("Document_1", 1),
+            SampleData.checkSumSupplier);
+        letter1.setStatus(Created);
+        Letter savedLetter1 = repository.save(letter1);
+
+        Letter letter2 = SampleData.letterEntity(
+            "service2", LocalDateTime.now().minusHours(1), "type2", "fingerprint2",
+            Map.of("Document_2", 1),
+            () -> UUID.randomUUID().toString());
+        letter2.setStatus(Uploaded);
+        repository.save(letter2);
 
         // when
         List<BasicLetterInfo> letters = repository.findPendingLetters();
@@ -133,12 +147,12 @@ public class PendingLetterSearchTest {
                 l.getType()
             ))
             .containsExactly(tuple(
-                savedLetter.getId(),
-                savedLetter.getChecksum(),
-                savedLetter.getCreatedAt(),
-                savedLetter.getEncryptionKeyFingerprint(),
-                savedLetter.getService(),
-                savedLetter.getType()
+                savedLetter1.getId(),
+                savedLetter1.getChecksum(),
+                savedLetter1.getCreatedAt(),
+                savedLetter1.getEncryptionKeyFingerprint(),
+                savedLetter1.getService(),
+                savedLetter1.getType()
             ));
     }
 
