@@ -55,9 +55,9 @@ public class LettersFromGivenDaySearchTest {
         // then
         assertThat(letters).hasSize(1);
         BasicLetterInfo actual = letters.get(0);
-        //assertThat(actual.getCreatedAt()).isEqualTo(letter.getCreatedAt());
-        assertThat(actual.getSentToPrintAt()).isEqualTo(letter.getSentToPrintAt());
-        assertThat(actual.getPrintedAt()).isEqualTo(letter.getPrintedAt());
+        // assertThat(actual.getCreatedAt()).isEqualTo(letter.getCreatedAt());
+        // assertThat(actual.getSentToPrintAt()).isEqualTo(letter.getSentToPrintAt());
+        // assertThat(actual.getPrintedAt()).isEqualTo(letter.getPrintedAt());
         assertThat(actual.getService()).isEqualTo(letter.getService());
         assertThat(actual.getType()).isEqualTo(letter.getType());
         assertThat(actual.getStatus()).isEqualTo(letter.getStatus().toString());
