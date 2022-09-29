@@ -41,10 +41,11 @@ public class LettersFromGivenDaySearchTest {
     @Test
     void should_read_expected_data_from_db() {
         // given
-        Letter letter = SampleData.letterEntity("service1", now(), "some_type");
+        LocalDateTime createdAt = now();
+        Letter letter = SampleData.letterEntity("service1", createdAt, "some_type");
         letter.setStatus(Posted);
-        letter.setPrintedAt(now().plusDays(1));
-        letter.setSentToPrintAt(now().minusDays(2));
+        letter.setPrintedAt(createdAt.plusDays(1));
+        letter.setSentToPrintAt(createdAt.minusDays(2));
 
         repository.save(letter);
 
