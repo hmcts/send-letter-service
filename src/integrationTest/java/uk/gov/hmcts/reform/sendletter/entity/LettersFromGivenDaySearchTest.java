@@ -22,6 +22,8 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 public class LettersFromGivenDaySearchTest {
 
     private static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
+    public static final String TYPE_1 = "type-1";
+    public static final String TYPE_2 = "type-2";
 
     @Autowired
     private LetterRepository repository;
@@ -51,24 +53,22 @@ public class LettersFromGivenDaySearchTest {
 
         // then
         assertThat(letters).hasSize(1);
-        assertThat(letters.get(0))
-            .satisfies(l -> {
-                assertThat(l.getCreatedAt()).isEqualTo(letter.getCreatedAt());
-                assertThat(l.getSentToPrintAt()).isEqualTo(letter.getSentToPrintAt());
-                assertThat(l.getPrintedAt()).isEqualTo(letter.getPrintedAt());
-                assertThat(l.getService()).isEqualTo(letter.getService());
-                assertThat(l.getType()).isEqualTo(letter.getType());
-                assertThat(l.getStatus()).isEqualTo(letter.getStatus().toString());
-            });
+        BasicLetterInfo actual = letters.get(0);
+        assertThat(actual.getCreatedAt()).isEqualTo(letter.getCreatedAt());
+        assertThat(actual.getSentToPrintAt()).isEqualTo(letter.getSentToPrintAt());
+        assertThat(actual.getPrintedAt()).isEqualTo(letter.getPrintedAt());
+        assertThat(actual.getService()).isEqualTo(letter.getService());
+        assertThat(actual.getType()).isEqualTo(letter.getType());
+        assertThat(actual.getStatus()).isEqualTo(letter.getStatus().toString());
     }
 
     @Test
     void should_exclude_letters_created_on_different_day() {
         // given
-        storeLetter(Uploaded, "type-1", now());
-        storeLetter(Posted, "type-2", now());
-        storeLetter(Uploaded, "type-1", now().minusDays(1));
-        storeLetter(Posted, "type-2", now().plusDays(1));
+        storeLetter(Uploaded, TYPE_1, now());
+        storeLetter(Posted, TYPE_2, now());
+        storeLetter(Uploaded, TYPE_1, now().minusDays(1));
+        storeLetter(Posted, TYPE_2, now().plusDays(1));
 
         // when
         List<BasicLetterInfo> letters = repository.findCreatedAt(LocalDate.now());
@@ -80,8 +80,8 @@ public class LettersFromGivenDaySearchTest {
     @Test
     public void should_exclude_smoke_test_letters() {
         // given
-        storeLetter(Uploaded, "type-1", now());
-        storeLetter(Posted, "type-2", now());
+        storeLetter(Uploaded, TYPE_1, now());
+        storeLetter(Posted, TYPE_2, now());
         storeLetter(Posted, SMOKE_TEST_LETTER_TYPE, now());
         storeLetter(Posted, SMOKE_TEST_LETTER_TYPE, now());
 
