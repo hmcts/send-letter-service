@@ -31,13 +31,13 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @TestPropertySource(properties = {
-        "scheduling.enabled=true",
-        "tasks.upload-letters.interval-ms=20000",
-        "tasks.mark-letters-posted.cron=*/1 * * * * *",
-        "tasks.stale-letters-report.cron=*/1 * * * * *",
-        "ftp.service-folders[0].service=some_service_name",
-        "ftp.service-folders[0].folder=BULKPRINT",
-        "ftp.service-folders[0].enabled=false"
+    "scheduling.enabled=true",
+    "tasks.upload-letters.interval-ms=20000",
+    "tasks.mark-letters-posted.cron=*/1 * * * * *",
+    "tasks.stale-letters-report.cron=*/1 * * * * *",
+    "ftp.service-folders[0].service=some_service_name",
+    "ftp.service-folders[0].folder=BULKPRINT",
+    "ftp.service-folders[0].enabled=false"
 })
 @AutoConfigureMockMvc
 @ComponentScan(basePackages = "...", lazyInit = true)

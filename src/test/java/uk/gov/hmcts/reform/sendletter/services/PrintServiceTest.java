@@ -237,8 +237,8 @@ class PrintServiceTest {
         ObjectMapper mockMapper = mock(ObjectMapper.class);
         PrintRequest mockRequest = mock(PrintRequest.class);
 
-        given(mockMapper.writeValueAsString(any()))
-            .willThrow(mock(JsonProcessingException.class));
+        JsonProcessingException mockException = mock(JsonProcessingException.class);
+        given(mockMapper.writeValueAsString(any())).willThrow(mockException);
 
         PrintService mockService = new PrintService(repository, mockMapper, sasTokenGeneratorService);
 
@@ -246,8 +246,7 @@ class PrintServiceTest {
             letterId,
             service,
             mockRequest
-        )).isInstanceOf(NullPointerException.class)
-            .hasMessage(null);
+        )).isInstanceOf(NullPointerException.class);
     }
 
     private JsonNode getDocuments() throws JsonProcessingException {

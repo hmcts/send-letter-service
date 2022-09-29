@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/rpe-send-letter-service/app-insights-connection-string}",
+  "role": {
+    "name": "rpe-send-letter-service"
+  }
+}

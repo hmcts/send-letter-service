@@ -74,17 +74,17 @@ public class LetterService {
     private static final Map<String, Integer> DEFAULT_COPY = Map.of(getCopiesKey(1), 1);
 
     public LetterService(
-            PdfCreator pdfCreator,
-            LetterRepository letterRepository,
-            LetterEventRepository letterEventRepository,
-            Zipper zipper,
-            ObjectMapper mapper,
-            @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
-            @Value("${encryption.publicKey}") String encryptionPublicKey,
-            ServiceFolderMapping serviceFolderMapping,
-            ExecusionService asyncService,
-            DuplicateLetterService duplicateLetterService,
-            ExceptionLetterService exceptionLetterService
+        PdfCreator pdfCreator,
+        LetterRepository letterRepository,
+        LetterEventRepository letterEventRepository,
+        Zipper zipper,
+        ObjectMapper mapper,
+        @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
+        @Value("${encryption.publicKey}") String encryptionPublicKey,
+        ServiceFolderMapping serviceFolderMapping,
+        ExecusionService asyncService,
+        DuplicateLetterService duplicateLetterService,
+        ExceptionLetterService exceptionLetterService
     ) {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
@@ -117,10 +117,10 @@ public class LetterService {
             .map(duplicate -> {
                 UUID id = duplicate.getId();
                 log.info(
-                        "Same message found already created. Returning letter id {} instead. Service {}, messageId {}",
-                        id,
-                        serviceName,
-                        checksum
+                    "Same message found already created. Returning letter id {} instead. Service {}, messageId {}",
+                    id,
+                    serviceName,
+                    checksum
                 );
                 return id;
             })
@@ -138,14 +138,14 @@ public class LetterService {
 
         log.info("letterId {}, service {}, messageId {}", letterId, serviceName, messageId);
         byte[] zipContent = zipper.zip(
-                new PdfDoc(
-                        FileNameHelper.generatePdfName(letter.getType(), serviceName, letterId),
-                        getPdfContent(letter, loggingContext)
-                )
+            new PdfDoc(
+                FileNameHelper.generatePdfName(letter.getType(), serviceName, letterId),
+                getPdfContent(letter, loggingContext)
+            )
         );
 
         Function<LocalDateTime, byte[]> fileContent = localDateTime -> getFileContent(letterId, letter,
-                serviceName, localDateTime, zipContent);
+            serviceName, localDateTime, zipContent);
 
         if (letter instanceof LetterRequest) {
             log.info(
@@ -158,11 +158,11 @@ public class LetterService {
 
         if (Boolean.parseBoolean(isAsync)) {
             Runnable logger = () -> log.info(
-                    "Saving letter id {} in async mode as flag value is {}, service {}, messageId {}",
-                    letterId,
-                    isAsync,
-                    serviceName,
-                    messageId
+                "Saving letter id {} in async mode as flag value is {}, service {}, messageId {}",
+                letterId,
+                isAsync,
+                serviceName,
+                messageId
             );
             asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent), logger,
                 () -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync),
@@ -170,24 +170,25 @@ public class LetterService {
         } else {
             try {
                 log.info(
-                        "Saving letter id {} in sync mode as flag value is {}, service {}, messageId {}",
-                        letterId,
-                        isAsync,
-                        serviceName,
-                        messageId
+                    "Saving letter id {} in sync mode as flag value is {}, service {}, messageId {}",
+                    letterId,
+                    isAsync,
+                    serviceName,
+                    messageId
                 );
                 asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                 Runnable logger = () -> log.error(
-                        "Duplicate record, letter id {}, service {}, messageId {}",
-                        letterId,
-                        serviceName,
-                        messageId,
-                        dataIntegrityViolationException
+                    "Duplicate record, letter id {}, service {}, messageId {}",
+                    letterId,
+                    serviceName,
+                    messageId,
+                    dataIntegrityViolationException
                 );
                 asyncService.run(() -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync), logger,
-                    () -> {}, message -> saveException(letter, letterId, serviceName,
-                                zipContent.length + ":" + message, isAsync));
+                    () -> {
+                    }, message -> saveException(letter, letterId, serviceName,
+                        zipContent.length + ":" + message, isAsync));
                 throw dataIntegrityViolationException;
             }
         }
@@ -221,7 +222,7 @@ public class LetterService {
     public void saveDuplicate(ILetterRequest letter, UUID id, String checksum, String serviceName,
                               String isAsync) {
         DuplicateLetter duplicateLetter = getDuplicateLetter(letter, id, checksum, serviceName,
-                isAsync);
+            isAsync);
         duplicateLetterService.save(duplicateLetter);
         log.info("Created new duplicate record with id {} for service {}", id, serviceName);
     }
@@ -229,7 +230,7 @@ public class LetterService {
     @Transactional
     public void saveException(ILetterRequest letter, UUID id, String serviceName, String message, String isAsync) {
         ExceptionLetter exceptionLetter = new ExceptionLetter(id, serviceName, LocalDateTime.now(),
-                letter.getType(), message, isAsync);
+            letter.getType(), message, isAsync);
         exceptionLetterService.save(exceptionLetter);
         log.info("Created new exception record with id {} for service {}", id, serviceName);
     }
@@ -239,14 +240,14 @@ public class LetterService {
                                                String isAsync) {
         LocalDateTime createdAtTime = now();
         return new DuplicateLetter(
-                id,
-                checksum,
-                serviceName,
-                mapper.valueToTree(letter.getAdditionalData()),
-                letter.getType(),
-                createdAtTime,
-                mapper.valueToTree(getCopies(letter)),
-                isAsync
+            id,
+            checksum,
+            serviceName,
+            mapper.valueToTree(letter.getAdditionalData()),
+            letter.getType(),
+            createdAtTime,
+            mapper.valueToTree(getCopies(letter)),
+            isAsync
         );
     }
 
@@ -287,7 +288,9 @@ public class LetterService {
 
     private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
         if (!isEncryptionEnabled) {
-            log.info("Encryption is not enabled hence not loading the public key");
+            log.info("""
+                Encryption is not enabled hence not loading the public key
+                """);
             return null;
         } else {
             Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
@@ -313,8 +316,8 @@ public class LetterService {
 
     private Map<String, Integer> getCopies(LetterWithPdfsAndNumberOfCopiesRequest letter) {
         return IntStream.range(0, letter.documents.size())
-                .collect(HashMap::new, (map, count) -> map.put(getCopiesKey(count + 1),
-                        letter.documents.get(count).copies), Map::putAll);
+            .collect(HashMap::new, (map, count) -> map.put(getCopiesKey(count + 1),
+                letter.documents.get(count).copies), Map::putAll);
     }
 
     private Map<String, Integer> getCopies(ILetterRequest letter) {
@@ -325,11 +328,10 @@ public class LetterService {
     }
 
     private static String getCopiesKey(int count) {
-        return String.join("_","Document", String.valueOf(count));
+        return String.join("_", "Document", String.valueOf(count));
     }
 
-    public uk.gov.hmcts.reform.sendletter.model.out.LetterStatus
-        getStatus(UUID id, String isAdditionalDataRequired, String isDuplicate) {
+    public LetterStatus getStatus(UUID id, String isAdditionalDataRequired, String isDuplicate) {
         log.info("Getting letter status for id {} ", id);
         exceptionCheck(id);
         duplicateCheck(id, isDuplicate);
@@ -337,25 +339,26 @@ public class LetterService {
         Function<JsonNode, Map<String, Object>> additionDataFunction = additionalData -> {
             if (Boolean.parseBoolean(isAdditionalDataRequired)) {
                 return Optional.ofNullable(additionalData)
-                    .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>(){}))
+                    .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Object>>() {
+                    }))
                     .orElse(Collections.emptyMap());
             }
             return null;
         };
 
         LetterStatus letterStatus = letterRepository
-                .findById(id)
-                .map(letter -> new LetterStatus(
-                        id,
-                        letter.getStatus().name(),
-                        letter.getChecksum(),
-                        toDateTime(letter.getCreatedAt()),
-                        toDateTime(letter.getSentToPrintAt()),
-                        toDateTime(letter.getPrintedAt()),
-                        additionDataFunction.apply(letter.getAdditionalData()),
-                        null
-                ))
-                .orElseThrow(() -> new LetterNotFoundException(id));
+            .findById(id)
+            .map(letter -> new LetterStatus(
+                id,
+                letter.getStatus().name(),
+                letter.getChecksum(),
+                toDateTime(letter.getCreatedAt()),
+                toDateTime(letter.getSentToPrintAt()),
+                toDateTime(letter.getPrintedAt()),
+                additionDataFunction.apply(letter.getAdditionalData()),
+                null
+            ))
+            .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
         return letterStatus;
     }
@@ -380,19 +383,19 @@ public class LetterService {
         };
 
         ExtendedLetterStatus letterStatus = letterRepository
-                .findById(id)
-                .map(letter -> new ExtendedLetterStatus(
-                        id,
-                        letter.getStatus().name(),
-                        letter.getChecksum(),
-                        toDateTime(letter.getCreatedAt()),
-                        toDateTime(letter.getSentToPrintAt()),
-                        toDateTime(letter.getPrintedAt()),
-                        additionDataFunction.apply(letter.getAdditionalData()),
-                        null,
-                        getLetterStatusEvents(letter)
-                ))
-                .orElseThrow(() -> new LetterNotFoundException(id));
+            .findById(id)
+            .map(letter -> new ExtendedLetterStatus(
+                id,
+                letter.getStatus().name(),
+                letter.getChecksum(),
+                toDateTime(letter.getCreatedAt()),
+                toDateTime(letter.getSentToPrintAt()),
+                toDateTime(letter.getPrintedAt()),
+                additionDataFunction.apply(letter.getAdditionalData()),
+                null,
+                getLetterStatusEvents(letter)
+            ))
+            .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
         return letterStatus;
     }
@@ -401,18 +404,20 @@ public class LetterService {
         log.info("Getting v2 letter status for id {} ", id);
 
         LetterStatusV2 letterStatus = letterRepository
-                .findById(id)
-                .map(letter -> new LetterStatusV2(
-                        id,
-                        letter.getStatus().name(),
-                        letter.getChecksum(),
-                        toDateTime(letter.getCreatedAt()),
-                        toDateTime(letter.getSentToPrintAt()),
-                        toDateTime(letter.getPrintedAt()),
-                        mapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){}),
-                        mapper.convertValue(letter.getCopies(), new TypeReference<>(){})
-                ))
-                .orElseThrow(() -> new LetterNotFoundException(id));
+            .findById(id)
+            .map(letter -> new LetterStatusV2(
+                id,
+                letter.getStatus().name(),
+                letter.getChecksum(),
+                toDateTime(letter.getCreatedAt()),
+                toDateTime(letter.getSentToPrintAt()),
+                toDateTime(letter.getPrintedAt()),
+                mapper.convertValue(letter.getAdditionalData(), new TypeReference<>() {
+                }),
+                mapper.convertValue(letter.getCopies(), new TypeReference<>() {
+                })
+            ))
+            .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning v2 letter status for letter {}, letter id {}", letterStatus, id);
         return letterStatus;
     }
@@ -429,8 +434,8 @@ public class LetterService {
             if (optDuplicateLetter.isPresent()) {
                 DuplicateLetter duplicateLetter = optDuplicateLetter.get();
                 String duplicateMessage = String.join(",",
-                        "Duplicate record for service:", duplicateLetter.getService(),
-                        " with checksum:", duplicateLetter.getChecksum());
+                    "Duplicate record for service:", duplicateLetter.getService(),
+                    " with checksum:", duplicateLetter.getChecksum());
                 throw new DataIntegrityViolationException(duplicateMessage);
             }
         }
