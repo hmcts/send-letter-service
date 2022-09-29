@@ -123,7 +123,7 @@ public class PendingLetterSearchTest {
             Map.of("Document_1", 1),
             SampleData.checkSumSupplier);
         letter1.setStatus(Created);
-        Letter savedLetter1 = repository.save(letter1);
+        final Letter savedLetter1 = repository.save(letter1);
 
         Letter letter2 = SampleData.letterEntity(
             "service2", LocalDateTime.now().minusHours(1), "type2", "fingerprint2",
