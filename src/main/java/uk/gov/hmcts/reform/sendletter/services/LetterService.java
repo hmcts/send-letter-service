@@ -51,7 +51,6 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static java.time.LocalDateTime.now;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
 
@@ -73,6 +72,7 @@ public class LetterService {
     private final ExceptionLetterService exceptionLetterService;
     private static final Map<String, Integer> DEFAULT_COPY = Map.of(getCopiesKey(1), 1);
 
+    @SuppressWarnings("java:S107")
     public LetterService(
         PdfCreator pdfCreator,
         LetterRepository letterRepository,
@@ -454,7 +454,7 @@ public class LetterService {
                     )
                 )
             )
-        ).collect(toList());
+        ).toList();
     }
 
     static ZonedDateTime toDateTime(LocalDateTime dateTime) {

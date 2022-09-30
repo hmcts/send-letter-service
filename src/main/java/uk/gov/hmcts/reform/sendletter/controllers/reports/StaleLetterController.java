@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @RestController
 @RequestMapping(path = "/stale-letters")
 public class StaleLetterController {
@@ -47,7 +45,7 @@ public class StaleLetterController {
                 .getStaleLetters()
                 .stream()
                 .map(this::mapToStaleLetter)
-                .collect(toList());
+                .toList();
 
         return new StaleLetterResponse(staleLetters);
     }
