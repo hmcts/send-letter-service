@@ -19,4 +19,7 @@
         <cve>CVE-2022-40149</cve>
         <cve>CVE-2022-40150</cve>
     </suppress>
+    <suppress until="2022-12-30">
+        <cve>CVE-2022-36944</cve>
+    </suppress>
 </suppressions>
