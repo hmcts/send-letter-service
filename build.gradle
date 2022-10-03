@@ -305,7 +305,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.10'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.33.0'
-  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.26'
+  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
@@ -361,7 +361,7 @@ dependencies {
 
   contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
 
-  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.26'
+  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
 
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
