@@ -6,7 +6,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-  id 'org.flywaydb.flyway' version '9.3.1'
+  id 'org.flywaydb.flyway' version '9.4.0'
   id 'org.springframework.boot' version '2.7.2'
   id 'org.owasp.dependencycheck' version '7.2.1'
   id 'com.github.ben-manes.versions' version '0.42.0'
@@ -319,7 +319,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.6.10', withoutJunit4
+  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.6.11', withoutJunit4
   testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.5'
   testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.26', withoutJunit4
