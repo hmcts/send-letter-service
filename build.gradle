@@ -224,6 +224,11 @@ dependencyManagement {
       entry 'guava'
     }
 
+    // CVE-2022-36944
+    dependencySet(group: 'org.scala-lang', version: '2.13.9') {
+      entry 'scala-library'
+    }
+
     // avoid CVE-2021-29425
     dependencySet(group: 'commons-io', version: '2.11.0') {
       entry 'commons-io'
