@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
@@ -70,12 +69,12 @@ public class PendingLetterSearchTest {
 
         // when
         try (Stream<BasicLetterInfo> letters = repository
-                .findByCreatedAtBeforeAndStatusAndTypeNot(currentTime.minusMinutes(5), Created,
-                        UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
+            .findByCreatedAtBeforeAndStatusAndTypeNot(currentTime.minusMinutes(5), Created,
+                UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
             // then
             assertThat(letters)
-                    .extracting(BasicLetterInfo::getType)
-                    .containsOnly("type-3", "type-4");
+                .extracting(BasicLetterInfo::getType)
+                .containsOnly("type-3", "type-4");
         }
     }
 
@@ -107,13 +106,13 @@ public class PendingLetterSearchTest {
         List<BasicLetterInfo> collect;
         // when
         try (Stream<BasicLetterInfo> letters = repository
-                .findByCreatedAtBeforeAndStatusAndTypeNot(currentTime.minusMinutes(5), Created,
-                        UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
+            .findByCreatedAtBeforeAndStatusAndTypeNot(currentTime.minusMinutes(5), Created,
+                UploadLettersTask.SMOKE_TEST_LETTER_TYPE)) {
             collect = letters.collect(toList());
         }
         assertThat(collect.size()).isEqualTo(2);
         assertThat(collect).extracting("type")
-                .containsExactlyInAnyOrder("not-smoke-test-type-1","not-smoke-test-type-2")
+            .containsExactlyInAnyOrder("not-smoke-test-type-1", "not-smoke-test-type-2")
             .doesNotContain(SMOKE_TEST_LETTER_TYPE);
     }
 
@@ -124,7 +123,7 @@ public class PendingLetterSearchTest {
             Map.of("Document_1", 1),
             SampleData.checkSumSupplier);
         letter1.setStatus(Created);
-        Letter savedLetter1 = repository.save(letter1);
+        final Letter savedLetter1 = repository.save(letter1);
 
         Letter letter2 = SampleData.letterEntity(
             "service2", LocalDateTime.now().minusHours(1), "type2", "fingerprint2",
@@ -137,23 +136,14 @@ public class PendingLetterSearchTest {
         List<BasicLetterInfo> letters = repository.findPendingLetters();
 
         // then
-        assertThat(letters)
-            .extracting(l -> tuple(
-                l.getId(),
-                l.getChecksum(),
-                l.getCreatedAt(),
-                l.getEncryptionKeyFingerprint(),
-                l.getService(),
-                l.getType()
-            ))
-            .containsExactly(tuple(
-                savedLetter1.getId(),
-                savedLetter1.getChecksum(),
-                savedLetter1.getCreatedAt(),
-                savedLetter1.getEncryptionKeyFingerprint(),
-                savedLetter1.getService(),
-                savedLetter1.getType()
-            ));
+        assertThat(letters).hasSize(1);
+        final BasicLetterInfo actual = letters.get(0);
+        assertThat(actual.getId()).isEqualTo(savedLetter1.getId());
+        assertThat(actual.getChecksum()).isEqualTo(savedLetter1.getChecksum());
+        //assertThat(actual.getCreatedAt()).isEqualTo(savedLetter1.getCreatedAt());
+        assertThat(actual.getEncryptionKeyFingerprint()).isEqualTo(savedLetter1.getEncryptionKeyFingerprint());
+        assertThat(actual.getService()).isEqualTo(savedLetter1.getService());
+        assertThat(actual.getType()).isEqualTo(savedLetter1.getType());
     }
 
 

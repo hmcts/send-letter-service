@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @RestController
 @RequestMapping(path = "/stale-letters")
 public class StaleLetterController {
@@ -47,7 +45,7 @@ public class StaleLetterController {
                 .getStaleLetters()
                 .stream()
                 .map(this::mapToStaleLetter)
-                .collect(toList());
+                .toList();
 
         return new StaleLetterResponse(staleLetters);
     }
@@ -56,10 +54,10 @@ public class StaleLetterController {
     @GetMapping(value = "download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Operation(description = "Downloads file with stale letters")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                content = @Content(schema = @Schema(implementation = StaleLetterResponse.class)),
-                description = "Retrieved stale letters file"),
-            @ApiResponse(responseCode = "500", description = "Error occurred while retrieving stale letters file")
+        @ApiResponse(responseCode = "200",
+            content = @Content(schema = @Schema(implementation = StaleLetterResponse.class)),
+            description = "Retrieved stale letters file"),
+        @ApiResponse(responseCode = "500", description = "Error occurred while retrieving stale letters file")
     })
     public ResponseEntity<byte[]> getFileWithStaleLetters() throws IOException {
         File csvFile = staleLetterService.getDownloadFile();
