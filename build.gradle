@@ -366,7 +366,7 @@ dependencies {
 
   contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
 
-  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.26'
+  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
 
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
