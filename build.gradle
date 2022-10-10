@@ -225,7 +225,7 @@ dependencyManagement {
     }
 
     // CVE-2022-36944
-    dependencySet(group: 'org.scala-lang', version: '2.13.9') {
+    dependencySet(group: 'org.scala-lang', version: '2.13.10') {
       entry 'scala-library'
     }
 
