@@ -225,7 +225,7 @@ dependencyManagement {
     }
 
     // CVE-2022-36944
-    dependencySet(group: 'org.scala-lang', version: '2.13.9') {
+    dependencySet(group: 'org.scala-lang', version: '2.13.10') {
       entry 'scala-library'
     }
 
@@ -249,7 +249,7 @@ dependencyManagement {
       entry 'tomcat-embed-websocket'
     }
     //CVE-2022-24823
-    dependencySet(group: 'io.netty', version: '4.1.82.Final') {
+    dependencySet(group: 'io.netty', version: '4.1.84.Final') {
       entry 'netty-buffer'
       entry 'netty-codec'
       entry 'netty-codec-dns'
@@ -291,7 +291,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.4.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.42.0'
@@ -342,7 +342,7 @@ dependencies {
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-scp', version: '2.9.1'
   integrationTestImplementation group: 'org.apache.sshd', name: 'sshd-sftp', version: '2.9.1'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.4'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.5'
   integrationTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.1', withoutJunit4
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
