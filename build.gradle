@@ -301,7 +301,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.0'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.1'
   implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.5.2'
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
@@ -357,7 +357,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.0'
+  contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.1'
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
   contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
