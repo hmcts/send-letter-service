@@ -112,7 +112,7 @@ ftp:
   service-folders:
     - service: cmc_claim_store
       folder: CMC
-    - service: civil-service
+    - service: civil_service
       folder: CMC
       enabled: ${CIVIL_SERVICE_ENABLED:false}
     - service: send_letter_tests
@@ -182,7 +182,7 @@ accesstoken:
     - serviceName: cmc_claim_store
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: civil-service
+    - serviceName: civil_service
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: send_letter_tests
