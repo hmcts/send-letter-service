@@ -71,7 +71,7 @@ reports:
   service-config:
     - service: cmc_claim_store
       display-name: CMC
-    - service: civil-service
+    - service: civil_service
       display-name: OCMC
     - service: send_letter_tests
       display-name: Bulk Print
