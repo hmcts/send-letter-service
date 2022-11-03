@@ -14,7 +14,7 @@
         <cve>CVE-2022-31692</cve>
         <cve>CVE-2022-31690</cve>
     </suppress>
-    <suppress until="2022-02-03">
+    <suppress until="2023-02-03">
         <notes>tomcat-embed-websocket-9.0.58 and tomcat-embed-core-9.0.58</notes>
         <cve>CVE-2022-29885</cve>
         <cve>CVE-2022-42252</cve>
