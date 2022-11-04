@@ -21,4 +21,9 @@
         <cve>CVE-2022-34305</cve>
         <cve>CVE-2021-43980</cve>
     </suppress>
+    <suppress until="2023-02-03">
+        <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
+        <cve>CVE-2022-40149</cve>
+        <cve>CVE-2022-40150</cve>
+    </suppress>
 </suppressions>
