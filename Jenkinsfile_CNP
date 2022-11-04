@@ -1,7 +1,7 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineDsl
 
-@Library("Infrastructure@ardoq-integration-prototype")
+@Library("Infrastructure@DTSSE-2204/ardoq-integration-prototype")
 
 import uk.gov.hmcts.contino.GradleBuilder
 
