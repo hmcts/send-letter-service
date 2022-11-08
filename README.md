@@ -1,5 +1,6 @@
 # Send Letter Service
 
+
 ![Diagram](./doc/arch/diagram.png)
 > You can edit this diagram by importing `./doc/arch/diagram.drawio` into [draw.io](https://www.draw.io/).
 
