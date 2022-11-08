@@ -190,4 +190,3 @@ A letter can be in one of the following statuses:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
