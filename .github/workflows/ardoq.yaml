@@ -17,5 +17,5 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - name: List dependencies
         run: |
-          ./gradlew -q dependencies | grep ^\\+ | cut -c 5- | sed 's/ \\-\\> /:/g' | grep -E -i '^.+:.+:.+\$' | sed -E 's/(.*):/\\1 -> /' | sed 's/([\\*n])//'
+          echo "./gradlew -q dependencies | grep ^\\+ | cut -c 5- | sed 's/ \\-\\> /:/g' | grep -E -i '^.+:.+:.+\$' | sed -E 's/(.*):/\\1 -> /' | sed 's/([\\*n])//'" >> $GITHUB_OUTPUT
       - run: echo "🍏 This job's status is ${{ job.status }}."
