@@ -18,7 +18,7 @@ jobs:
       - name: List dependencies
         run: |
           echo 'DEPS<<EOF' >> $GITHUB_ENV
-          echo "$(./gradlew -q dependencies | grep ^\\+ | cut -c 5- | sed 's/ \\-\\> /:/g' | grep -E -i '^.+:.+:.+\$' | sed -E 's/(.*):/\\1 -> /' | sed 's/([\\*n])//')" >> $GITHUB_ENV
+          ./gradlew -q dependencies >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
         id: deps
 
