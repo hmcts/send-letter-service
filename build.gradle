@@ -319,7 +319,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.19.1'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.20.1'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
