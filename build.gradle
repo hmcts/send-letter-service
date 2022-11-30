@@ -205,7 +205,7 @@ def versions = [
   bouncycastle: '1.69',
   junit: '5.7.1',
   junitPlatform: '1.7.1',
-  reformLogging: '5.1.7',
+  reformLogging: '5.1.9',
   springfoxSwagger: '2.9.2',
   pact_version: '4.1.7'
 ]
