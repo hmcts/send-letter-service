@@ -203,8 +203,8 @@ repositories {
 
 def versions = [
   bouncycastle: '1.70',
-  junit: '5.7.1',
-  junitPlatform: '1.7.1',
+  junit: '5.9.1',
+  junitPlatform: '1.9.1',
   reformLogging: '6.0.1',
   springfoxSwagger: '2.9.2',
   pact_version: '4.1.7'
