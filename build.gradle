@@ -204,7 +204,7 @@ repositories {
 def versions = [
   bouncycastle: '1.70',
   junit: '5.9.1',
-  junitPlatform: '1.9.1',
+  junitPlatform: '1.7.1',
   reformLogging: '5.1.9',
   springfoxSwagger: '2.9.2',
   pact_version: '4.1.7'
