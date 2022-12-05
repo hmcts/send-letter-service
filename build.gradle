@@ -205,7 +205,7 @@ def versions = [
   bouncycastle: '1.70',
   junit: '5.7.1',
   junitPlatform: '1.7.1',
-  reformLogging: '5.1.9',
+  reformLogging: '6.0.1',
   springfoxSwagger: '2.9.2',
   pact_version: '4.1.7'
 ]
@@ -301,6 +301,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.1'
   implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.5.2'
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
