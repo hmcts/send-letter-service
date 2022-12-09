@@ -26,4 +26,8 @@
         <cve>CVE-2022-40149</cve>
         <cve>CVE-2022-40150</cve>
     </suppress>
+    <suppress until="2023-03-08">
+        <notes>apache-commons vulnerability</notes>
+        <cve>CVE-2021-37533</cve>
+    </suppress>
 </suppressions>
