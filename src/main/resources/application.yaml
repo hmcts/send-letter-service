@@ -152,7 +152,7 @@ tasks:
 file-cleanup:
   enabled: ${FILE_CLEANUP_ENABLED:false}
   cron: ${FILE_CLEANUP_CRON:0 15 * * * *}
-  ttl: P7D
+  ttl: 12h
 
 old-letter-content-cleanup:
   enabled: ${OLD_LETTER_CONTENT_CLEANUP_ENABLED:false}
