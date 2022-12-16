@@ -297,7 +297,7 @@ dependencies {
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.0.1'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.0.1'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.13'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.14'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
