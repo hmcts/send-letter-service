@@ -315,7 +315,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.20.0'
+  implementation group: 'com.vladmihalcea', name: 'hibernate-types-5', version: '2.21.0'
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
