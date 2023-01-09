@@ -59,12 +59,6 @@ public class LetterActionService {
             throw new LetterNotFoundException(id);
         }
 
-        Letter letter = letterOpt.get();
-        if (letter.getStatus() == Posted) {
-            throw new UnableToAbortLetterException(
-                "Letter with ID '" + letter.getId() + "', status '" + Posted + "' can not be aborted");
-        }
-
         createLetterEvent(
             letterOpt.get(),
             MANUALLY_MARKED_AS_ABORTED,
@@ -149,7 +143,7 @@ public class LetterActionService {
     }
 
     private void checkLetterStatusForMarkPostedLocally(Letter letter) {
-        if (letter.getStatus() != Uploaded) {
+        if (!List.of(Uploaded, Posted).contains(letter.getStatus())) {
             throw new UnableToMarkLetterPostedLocallyException(
                 "Letter with ID '" + letter.getId() + "', status '"
                     + letter.getStatus() + "' can not be marked as " + LetterStatus.PostedLocally);
