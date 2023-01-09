@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
@@ -57,12 +56,6 @@ public class LetterActionService {
 
         if (letterOpt.isEmpty()) {
             throw new LetterNotFoundException(id);
-        }
-
-        Letter letter = letterOpt.get();
-        if (letter.getStatus() == Posted) {
-            throw new UnableToAbortLetterException(
-                "Letter with ID '" + letter.getId() + "', status '" + Posted + "' can not be aborted");
         }
 
         createLetterEvent(
@@ -142,17 +135,17 @@ public class LetterActionService {
     private void checkLetterStatusForLetterReUpload(Letter letter) {
         if (!List.of(FailedToUpload, Uploaded).contains(letter.getStatus())) {
             throw new UnableToReprocessLetterException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be re-processed");
+                String.format("Letter with ID '%s', status '%s' can not be re-processed",
+                    letter.getId(), letter.getStatus()));
         }
 
     }
 
     private void checkLetterStatusForMarkPostedLocally(Letter letter) {
-        if (letter.getStatus() != Uploaded) {
+        if (!List.of(Uploaded, Posted).contains(letter.getStatus())) {
             throw new UnableToMarkLetterPostedLocallyException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be marked as " + LetterStatus.PostedLocally);
+                String.format("Letter with ID '%s', status '%s' can not be marked as %s",
+                    letter.getId(), letter.getStatus(), LetterStatus.PostedLocally));
         }
 
     }
@@ -160,8 +153,8 @@ public class LetterActionService {
     private void checkLetterStatusForMarkPosted(Letter letter) {
         if (letter.getStatus() == Posted) {
             throw new UnableToMarkLetterPostedException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be marked as " + LetterStatus.Posted);
+                String.format("Letter with ID '%s', status '%s' can not be marked as %s",
+                    letter.getId(), letter.getStatus(), LetterStatus.Posted));
         }
 
     }
