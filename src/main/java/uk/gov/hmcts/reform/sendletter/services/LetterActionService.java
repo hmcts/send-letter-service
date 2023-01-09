@@ -135,8 +135,8 @@ public class LetterActionService {
     private void checkLetterStatusForLetterReUpload(Letter letter) {
         if (!List.of(FailedToUpload, Uploaded).contains(letter.getStatus())) {
             throw new UnableToReprocessLetterException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be re-processed");
+                String.format("Letter with ID '%s', status '%s' can not be re-processed",
+                    letter.getId(), letter.getStatus()));
         }
 
     }
@@ -144,8 +144,8 @@ public class LetterActionService {
     private void checkLetterStatusForMarkPostedLocally(Letter letter) {
         if (!List.of(Uploaded, Posted).contains(letter.getStatus())) {
             throw new UnableToMarkLetterPostedLocallyException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be marked as " + LetterStatus.PostedLocally);
+                String.format("Letter with ID '%s', status '%s' can not be marked as %s",
+                    letter.getId(), letter.getStatus(), LetterStatus.PostedLocally));
         }
 
     }
@@ -153,8 +153,8 @@ public class LetterActionService {
     private void checkLetterStatusForMarkPosted(Letter letter) {
         if (letter.getStatus() == Posted) {
             throw new UnableToMarkLetterPostedException(
-                "Letter with ID '" + letter.getId() + "', status '"
-                    + letter.getStatus() + "' can not be marked as " + LetterStatus.Posted);
+                String.format("Letter with ID '%s', status '%s' can not be marked as %s",
+                    letter.getId(), letter.getStatus(), LetterStatus.Posted));
         }
 
     }
