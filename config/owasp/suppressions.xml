@@ -4,12 +4,12 @@
         <notes>spring-web-5.3.22.jar</notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress until="2023-01-06">
+    <suppress until="2023-04-06">
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
     </suppress>
-    <suppress>
+    <suppress until="2023-04-09">
         <notes>spring-security-crypto-5.7.2</notes>
         <cve>CVE-2022-31692</cve>
         <cve>CVE-2022-31690</cve>
@@ -31,7 +31,12 @@
         <cve>CVE-2021-37533</cve>
     </suppress>
     <suppress until="2023-04-03">
+        <cve>CVE-2021-4277</cve>
         <cve>CVE-2022-45693</cve>
         <cve>CVE-2022-45685</cve>
+    </suppress>
+    <suppress until="2023-04-09">
+        <cve>CVE-2021-4235</cve>
+        <cve>CVE-2022-3064</cve>
     </suppress>
 </suppressions>

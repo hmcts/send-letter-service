@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
@@ -120,36 +119,6 @@ class LetterActionServiceTest {
     }
 
     @Test
-    void should_throw_exception_when_letter_status_is_printed() {
-        // given
-        UUID letterId = UUID.randomUUID();
-        Letter letter = new Letter(
-            letterId,
-            letterId.toString(),
-            "cmc",
-            null,
-            "type",
-            null,
-            false,
-            null,
-            LocalDateTime.now(),
-            null
-        );
-        letter.setStatus(Posted);
-
-        reset(letterRepository);
-        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
-
-        // when
-        // then
-        assertThatThrownBy(() -> letterActionService.markLetterAsAborted(letterId))
-            .isInstanceOf(UnableToAbortLetterException.class);
-
-        verifyNoMoreInteractions(letterRepository);
-        verifyNoInteractions(letterEventRepository);
-    }
-
-    @Test
     void markLetterAsPostedLocally_should_update_letter_status_when_record_present() {
         // given
         UUID letterId = UUID.randomUUID();
@@ -208,7 +177,7 @@ class LetterActionServiceTest {
     @ParameterizedTest
     @EnumSource(
         value = LetterStatus.class,
-        names = {"Uploaded"},
+        names = {"Uploaded", "Posted"},
         mode = EnumSource.Mode.EXCLUDE)
     void markLetterAsPostedLocally_should_throw_exception_when_letter_status_is_not_uploaded(LetterStatus status) {
         // given
