@@ -20,11 +20,11 @@ jobs:
       - name: Dump dependencies
         run: ./gradlew -q dependencies > $PWD/deps.log
       - run: cat $PWD/deps.log
-#      - name: Send data to Ardoq adapter
-#        env:
-#          ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
-#        run: |
-#          curl -X POST $ARDOQ_ADAPTER_URL/api/maven/cp-microservice-framework
-#          -H 'Content-Type: plain/text'
-#          -d @{$PWD}/deps.log
+      - name: Send data to Ardoq adapter
+        env:
+          ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
+        run: |
+          curl -X POST $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service
+          -H 'Content-Type: plain/text'
+          -d @{$PWD}/deps.log
       - run: echo "🍏 This job's status is ${{ job.status }}."
