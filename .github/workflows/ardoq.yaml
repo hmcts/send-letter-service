@@ -18,8 +18,8 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Dump dependencies
-        run: ./gradlew -q dependencies > ${PWD}/deps.log
-      - run: echo {$PWD}/deps.log
+        run: ./gradlew -q dependencies > $PWD/deps.log
+      - run: cat $PWD/deps.log
 #      - name: Send data to Ardoq adapter
 #        env:
 #          ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
