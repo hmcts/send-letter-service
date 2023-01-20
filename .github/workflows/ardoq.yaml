@@ -25,6 +25,6 @@ jobs:
           ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
         run: |
           curl -X POST $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service \
-          -H 'Content-Type: plain/text' \
-          -d @{$PWD}/deps.log
+          -H 'Content-Type: text/plain' \
+          --data-binary "@{$PWD}/deps.log"
       - run: echo "🍏 This job's status is ${{ job.status }}."
