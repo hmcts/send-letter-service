@@ -26,5 +26,5 @@ jobs:
         run: |
           curl -X POST $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service \
           -H 'Content-Type: text/plain' \
-          --data-binary "@{$PWD}/deps.log"
+          --data-binary "@$PWD/deps.log"
       - run: echo "🍏 This job's status is ${{ job.status }}."
