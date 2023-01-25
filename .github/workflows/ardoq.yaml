@@ -19,10 +19,11 @@ jobs:
           distribution: 'adopt'
       - name: Dump dependencies
         run: ./gradlew -q dependencies > $PWD/deps.log
-      - run: cat $PWD/deps.log
+      - name: base64 encode
+        run: cat $PWD/deps.log | base64 > $PWD/deps.log.base64
       - name: Send data to Ardoq adapter
         env:
           ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
         run: |
-          curl --data-binary "@$PWD/deps.log" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain'
+          curl -d "@$PWD/deps.log.base64" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain'
       - run: echo "🍏 This job's status is ${{ job.status }}."
