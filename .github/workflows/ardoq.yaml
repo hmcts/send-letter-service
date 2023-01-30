@@ -9,7 +9,7 @@ on:
 jobs:
   Maintain-Ardoq-Tech-Stack:
     runs-on: ubuntu-latest
-    steps:i
+    steps:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - uses: actions/checkout@v3
       - name: Set up JDK 11
