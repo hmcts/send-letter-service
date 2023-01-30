@@ -9,7 +9,7 @@ on:
 jobs:
   Maintain-Ardoq-Tech-Stack:
     runs-on: ubuntu-latest
-    steps:
+    steps:i
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -24,6 +24,7 @@ jobs:
       - name: Send data to Ardoq adapter
         env:
           ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
+          ARDOQ_ADAPTER_KEY: ${{ secrets.ARDOQ_ADAPTER_KEY }}
         run: |
-          curl -d "@$PWD/deps.log.base64" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain'
+          curl -d "@$PWD/deps.log.base64" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain' -H 'Authorization: Bearer $ARDOQ_ADAPTER_KEY'
       - run: echo "🍏 This job's status is ${{ job.status }}."
