@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
@@ -63,8 +62,9 @@ class LetterActionServiceTest {
         letterActionService = new LetterActionService(letterRepository, letterEventRepository, staleLetterService);
     }
 
-    @Test
-    void should_abort_letter_when_record_present() {
+    @ParameterizedTest
+    @EnumSource(value = LetterStatus.class)
+    void should_abort_letter_when_record_present(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
 
@@ -80,7 +80,7 @@ class LetterActionServiceTest {
             LocalDateTime.now(),
             null
         );
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
@@ -119,38 +119,12 @@ class LetterActionServiceTest {
         verifyNoInteractions(letterEventRepository);
     }
 
-    @Test
-    void should_throw_exception_when_letter_status_is_printed() {
-        // given
-        UUID letterId = UUID.randomUUID();
-        Letter letter = new Letter(
-            letterId,
-            letterId.toString(),
-            "cmc",
-            null,
-            "type",
-            null,
-            false,
-            null,
-            LocalDateTime.now(),
-            null
-        );
-        letter.setStatus(Posted);
-
-        reset(letterRepository);
-        given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
-
-        // when
-        // then
-        assertThatThrownBy(() -> letterActionService.markLetterAsAborted(letterId))
-            .isInstanceOf(UnableToAbortLetterException.class);
-
-        verifyNoMoreInteractions(letterRepository);
-        verifyNoInteractions(letterEventRepository);
-    }
-
-    @Test
-    void markLetterAsPostedLocally_should_update_letter_status_when_record_present() {
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded", "Posted"},
+        mode = EnumSource.Mode.INCLUDE)
+    void markLetterAsPostedLocally_should_update_letter_status_when_record_present(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
 
@@ -166,7 +140,7 @@ class LetterActionServiceTest {
             LocalDateTime.now(),
             null
         );
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
@@ -208,9 +182,9 @@ class LetterActionServiceTest {
     @ParameterizedTest
     @EnumSource(
         value = LetterStatus.class,
-        names = {"Uploaded"},
+        names = {"Uploaded", "Posted"},
         mode = EnumSource.Mode.EXCLUDE)
-    void markLetterAsPostedLocally_should_throw_exception_when_letter_status_is_not_uploaded(LetterStatus status) {
+    void markLetterAsPostedLocally_should_throw_exception_when_letter_status_is_not_valid(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
         Letter letter = new Letter(

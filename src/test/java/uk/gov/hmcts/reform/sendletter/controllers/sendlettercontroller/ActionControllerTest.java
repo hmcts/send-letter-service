@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.sendletter.controllers.ActionController;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
-import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedLocallyException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToReprocessLetterException;
 import uk.gov.hmcts.reform.sendletter.services.LetterActionService;
@@ -299,24 +298,6 @@ class ActionControllerTest {
     }
 
     @Test
-    void should_return_bad_request_when_marking_letter_aborted_and_letter_posted() throws Exception {
-        UUID letterId = UUID.randomUUID();
-
-        given(letterActionService.markLetterAsAborted(letterId))
-            .willThrow(new UnableToAbortLetterException(
-                "Letter with ID '" + letterId + "', status '" + LetterStatus.Posted + "' can not be aborted"));
-
-        mockMvc.perform(
-                put("/letters/" + letterId + "/mark-aborted")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer valid-report-api-key")
-        )
-            .andExpect(status().isBadRequest());
-
-        verify(letterActionService).markLetterAsAborted(letterId);
-        verifyNoMoreInteractions(letterActionService);
-    }
-
-    @Test
     void should_return_ok_when_letter_is_successfully_marked_as_posted_locally() throws Exception {
         UUID letterId = UUID.randomUUID();
 
@@ -375,11 +356,11 @@ class ActionControllerTest {
     }
 
     @Test
-    void should_return_bad_request_when_marking_letter_posted_locally_and_letter_posted() throws Exception {
+    void should_return_bad_request_when_marking_letter_posted_locally_and_letter_aborted() throws Exception {
         UUID letterId = UUID.randomUUID();
 
         String errorMessage = "Letter with ID '" + letterId + "', status '"
-            + LetterStatus.Posted + "' can not be marked as " + LetterStatus.PostedLocally;
+            + LetterStatus.Aborted + "' can not be marked as " + LetterStatus.PostedLocally;
         given(letterActionService.markLetterAsPostedLocally(letterId))
             .willThrow(new UnableToMarkLetterPostedLocallyException(errorMessage));
 
@@ -463,11 +444,11 @@ class ActionControllerTest {
     }
 
     @Test
-    void should_return_bad_request_when_marking_letter_posted_and_letter_posted() throws Exception {
+    void should_return_bad_request_when_marking_letter_posted_and_letter_posted_locally() throws Exception {
         UUID letterId = UUID.randomUUID();
 
         String errorMessage = "Letter with ID '" + letterId + "', status '"
-            + LetterStatus.Posted + "' can not be marked as " + LetterStatus.PostedLocally;
+            + LetterStatus.PostedLocally + "' can not be marked as " + LetterStatus.PostedLocally;
         given(letterActionService.markLetterAsPostedLocally(letterId))
             .willThrow(new UnableToMarkLetterPostedLocallyException(errorMessage));
 
