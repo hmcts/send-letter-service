@@ -25,5 +25,5 @@ jobs:
         env:
           ARDOQ_ADAPTER_URL: ${{ secrets.ARDOQ_ADAPTER_URL }}
         run: |
-          curl -d "@$PWD/deps.log.base64" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain' -H $'Authorization: Bearer ${{ secrets.ARDOQ_ADAPTER_KEY }}'
+          curl -d "@$PWD/deps.log.base64" $ARDOQ_ADAPTER_URL/api/gradle/send-letter-service -H 'Content-Type: text/plain' -H 'Authorization: Bearer ${{ secrets.ARDOQ_ADAPTER_KEY }}'
       - run: echo "🍏 This job's status is ${{ job.status }}."
