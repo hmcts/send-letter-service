@@ -26,7 +26,7 @@ module "db-v11" {
   database_name      = "send_letter"
   postgresql_user    = "send_letter"
   postgresql_version = "11"
-  sku_name           = "GP_Gen5_2"
+  sku_name           = "GP_Gen5_4"
   sku_tier           = "GeneralPurpose"
   common_tags        = var.common_tags
   subscription       = var.subscription
