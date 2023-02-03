@@ -31,7 +31,7 @@ module "db-v11" {
   common_tags        = var.common_tags
   subscription       = var.subscription
   sku_capacity       = "4"
-  storage_mb         = "100000"
+  storage_mb         = "102400"
 }
 
 module "staging-db" {
