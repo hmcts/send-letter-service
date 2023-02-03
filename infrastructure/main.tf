@@ -30,6 +30,7 @@ module "db-v11" {
   sku_tier           = "GeneralPurpose"
   common_tags        = var.common_tags
   subscription       = var.subscription
+  sku_capacity       = "4"
 }
 
 module "staging-db" {
