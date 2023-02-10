@@ -62,8 +62,9 @@ class LetterActionServiceTest {
         letterActionService = new LetterActionService(letterRepository, letterEventRepository, staleLetterService);
     }
 
-    @Test
-    void should_abort_letter_when_record_present() {
+    @ParameterizedTest
+    @EnumSource(value = LetterStatus.class)
+    void should_abort_letter_when_record_present(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
 
@@ -79,7 +80,7 @@ class LetterActionServiceTest {
             LocalDateTime.now(),
             null
         );
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
@@ -118,8 +119,12 @@ class LetterActionServiceTest {
         verifyNoInteractions(letterEventRepository);
     }
 
-    @Test
-    void markLetterAsPostedLocally_should_update_letter_status_when_record_present() {
+    @ParameterizedTest
+    @EnumSource(
+        value = LetterStatus.class,
+        names = {"Uploaded", "Posted"},
+        mode = EnumSource.Mode.INCLUDE)
+    void markLetterAsPostedLocally_should_update_letter_status_when_record_present(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
 
@@ -135,7 +140,7 @@ class LetterActionServiceTest {
             LocalDateTime.now(),
             null
         );
-        letter.setStatus(Uploaded);
+        letter.setStatus(status);
 
         reset(letterRepository);
         given(letterRepository.findById(letterId)).willReturn(Optional.of(letter));
@@ -179,7 +184,7 @@ class LetterActionServiceTest {
         value = LetterStatus.class,
         names = {"Uploaded", "Posted"},
         mode = EnumSource.Mode.EXCLUDE)
-    void markLetterAsPostedLocally_should_throw_exception_when_letter_status_is_not_uploaded(LetterStatus status) {
+    void markLetterAsPostedLocally_should_throw_exception_when_letter_status_is_not_valid(LetterStatus status) {
         // given
         UUID letterId = UUID.randomUUID();
         Letter letter = new Letter(

@@ -171,11 +171,8 @@ class LetterRepositoryTest {
     }
 
     @ParameterizedTest
-    @EnumSource(
-        value = LetterStatus.class,
-        names = {"Posted"},
-        mode = EnumSource.Mode.EXCLUDE)
-    void should_change_status_to_aborted_when_letter_status_is_not_posted(LetterStatus status) {
+    @EnumSource(value = LetterStatus.class)
+    void should_change_status_to_aborted_when_letter_exists(LetterStatus status) {
         // given
         Letter letter = SampleData.letterEntity("service1");
         letter.setStatus(status);
@@ -197,22 +194,6 @@ class LetterRepositoryTest {
     }
 
     @Test
-    void should_not_change_status_to_aborted_for_posted_letter() {
-        // given
-        Letter letter = SampleData.letterEntity("service1");
-
-        letter.setStatus(Posted);
-
-        Letter savedLetter = repository.save(letter);
-
-        // when
-        int updateCount = repository.markLetterAsAborted(savedLetter.getId());
-
-        // then
-        assertThat(updateCount).isEqualTo(0);
-    }
-
-    @Test
     void should_not_change_letter_status_to_aborted_for_different_letter_id() {
         // given
         Letter letter = SampleData.letterEntity("service1");
@@ -231,7 +212,7 @@ class LetterRepositoryTest {
     @ParameterizedTest
     @EnumSource(
         value = LetterStatus.class,
-        names = {"Uploaded"},
+        names = {"Uploaded", "Posted"},
         mode = EnumSource.Mode.EXCLUDE)
     void markLetterAsPostedLocally_should_not_change_status_to_posted_locally(LetterStatus status) {
         // given
