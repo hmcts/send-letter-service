@@ -292,7 +292,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.2'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.3'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.1.0'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.1.0'
@@ -332,7 +332,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.6.12', withoutJunit4
+  testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.6.13', withoutJunit4
   testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.5'
   testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: '2.0.27', withoutJunit4
