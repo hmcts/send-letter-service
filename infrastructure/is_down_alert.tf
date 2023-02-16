@@ -36,7 +36,7 @@ EOF
 
   frequency_in_minutes = "10"
   // window no longer matters as it is defined in the query. but it is a requirement for module
-  time_window_in_minutes     = 30
+  time_window_in_minutes     = "30"
   severity_level             = "2"
   action_group_name          = module.alert-action-group.action_group_name
   custom_email_subject       = "Send Letter is DOWN"
