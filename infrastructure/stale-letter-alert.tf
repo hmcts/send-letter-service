@@ -28,7 +28,7 @@ customEvents
           tostring(sentToPrintAt)
 EOF
 
-  frequency_in_minutes       = 15
+  frequency_in_minutes       = "15"
   time_window_in_minutes     = 15
   severity_level             = "2"
   action_group_name          = module.alert-action-group.action_group_name
