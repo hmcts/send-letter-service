@@ -41,6 +41,6 @@ EOF
   action_group_name          = module.alert-action-group.action_group_name
   custom_email_subject       = "Send Letter is DOWN"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 3
+  trigger_threshold          = "3"
   resourcegroup_name         = azurerm_resource_group.rg.name
 }
