@@ -34,13 +34,13 @@ union
 | where is_operational == false
 EOF
 
-  frequency_in_minutes = 10
+  frequency_in_minutes = "10"
   // window no longer matters as it is defined in the query. but it is a requirement for module
-  time_window_in_minutes     = 30
+  time_window_in_minutes     = "30"
   severity_level             = "2"
   action_group_name          = module.alert-action-group.action_group_name
   custom_email_subject       = "Send Letter is DOWN"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 3
+  trigger_threshold          = "3"
   resourcegroup_name         = azurerm_resource_group.rg.name
 }
