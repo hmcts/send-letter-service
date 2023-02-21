@@ -38,8 +38,6 @@ variable "vault_section" {
   default     = "test"
 }
 
-variable "ilbIp" {}
-
 variable "tenant_id" {}
 
 variable "subscription" {}
