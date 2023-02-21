@@ -49,15 +49,11 @@ services:
       - 8485:8485
   send-letter-database:
     build:
-      context: docker/database
+      context: ./docker/database
     environment:
-      POSTGRES_DB: letter_tracking
-      POSTGRES_USER: letterservice
-      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - 5432:5432
-    volumes:
-      - send-letter-database:/var/lib/postgresql/data
+      - 5440:5432
   send-letter-sftp:
     build:
       context: docker/sftp
