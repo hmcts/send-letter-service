@@ -32,6 +32,6 @@ EOF
   action_group_name          = module.alert-action-group.action_group_name
   custom_email_subject       = "Send Letter Service pending letter"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 0
+  trigger_threshold          = "0"
   resourcegroup_name         = azurerm_resource_group.rg.name
 }

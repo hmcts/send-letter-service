@@ -20,6 +20,6 @@ EOF
   action_group_name          = module.alert-action-group.action_group_name
   custom_email_subject       = "Send Letter Service liveness"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 5
+  trigger_threshold          = "5"
   resourcegroup_name         = azurerm_resource_group.rg.name
 }
