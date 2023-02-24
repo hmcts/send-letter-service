@@ -235,7 +235,7 @@ dependencyManagement {
     }
 
     //CVE-2021-22044
-    dependencySet(group: 'org.springframework.cloud', version: '3.1.5') {
+    dependencySet(group: 'org.springframework.cloud', version: '3.1.6') {
       entry 'spring-cloud-openfeign-core'
       entry 'spring-cloud-starter-openfeign'
     }
@@ -307,7 +307,7 @@ dependencies {
   implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.5'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.6'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.1'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.33.0'
