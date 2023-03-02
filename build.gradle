@@ -207,7 +207,7 @@ def versions = [
   junitPlatform: '1.7.1',
   reformLogging: '6.0.1',
   springfoxSwagger: '2.9.2',
-  pact_version: '4.1.7'
+  pact_version: '4.5.1'
 ]
 
 ext["rest-assured.version"] = '4.3.0'
