@@ -136,4 +136,28 @@ class DocumentRepositoryTest {
         // then
         assertThat(documentFound).isEmpty();
     }
+
+    @Test
+    void findCreatedAfter_should_return_not_null_values() {
+        // given
+        final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
+        final Letter savedLetter = letterRepository.save(letter);
+
+        final String checkSum1 = UUID.randomUUID().toString();
+        final Document document1 = SampleData.documentEntity(
+            savedLetter.getId(),
+            checkSum1,
+            LocalDateTime.now().minusMinutes(30)
+        );
+        final Document savedDocument = repository.save(document1);
+
+        // when
+        Optional<Document> documentFound = repository.findById(savedDocument.getId());
+
+        // then
+        assertThat(documentFound).isNotEmpty();
+        assertThat(documentFound.get().getLetterId()).isEqualTo(savedLetter.getId());
+        assertThat(documentFound.get().getChecksum()).isEqualTo(checkSum1);
+        assertThat(documentFound.get().getCreatedAt()).isNotNull();
+    }
 }
