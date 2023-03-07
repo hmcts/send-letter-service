@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "documents")
