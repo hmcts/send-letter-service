@@ -89,15 +89,6 @@ public final class SampleData {
         return letterEntity(service, createdAt, "letterType1", null, Map.of("Document_1", 1), checkSumSupplier);
     }
 
-    public static uk.gov.hmcts.reform.sendletter.entity.Document documentEntity(UUID letterId, String checkSum, LocalDateTime createdAt) {
-        return new uk.gov.hmcts.reform.sendletter.entity.Document(
-            UUID.randomUUID(),
-            letterId,
-            checkSum,
-            createdAt
-        );
-    }
-
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(
         String service,
         LocalDateTime createdAt,
@@ -131,6 +122,19 @@ public final class SampleData {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static uk.gov.hmcts.reform.sendletter.entity.Document documentEntity(
+        UUID letterId,
+        String checkSum,
+        LocalDateTime createdAt
+    ) {
+        return new uk.gov.hmcts.reform.sendletter.entity.Document(
+            UUID.randomUUID(),
+            letterId,
+            checkSum,
+            createdAt
+        );
     }
 
     public static ParsedReport parsedReport(String filename, List<UUID> letterIds, boolean allParsed) {
