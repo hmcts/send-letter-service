@@ -35,7 +35,7 @@ class DocumentRepositoryTest {
     }
 
     @Test
-    void findCreatedAfter_should_return_empty_if_no_document_created_after() {
+    void findOneCreatedAfter_should_return_empty_if_no_document_created_after() {
         // given
         final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
         final Letter savedLetter = letterRepository.save(letter);
@@ -49,14 +49,14 @@ class DocumentRepositoryTest {
         repository.save(document);
 
         // when
-        Optional<Document> documentFound = repository.findCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isEmpty();
     }
 
     @Test
-    void findCreatedAfter_should_return_not_empty_if_single_document_created_after() {
+    void findOneCreatedAfter_should_return_not_empty_if_single_document_created_after() {
         // given
         final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
         final Letter savedLetter = letterRepository.save(letter);
@@ -70,14 +70,14 @@ class DocumentRepositoryTest {
         repository.save(document);
 
         // when
-        Optional<Document> documentFound = repository.findCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isNotEmpty();
     }
 
     @Test
-    void findCreatedAfter_should_return_empty_if_multiple_document_created_after() {
+    void findOneCreatedAfter_should_return_empty_if_multiple_document_created_after() {
         // given
         final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
         final Letter savedLetter = letterRepository.save(letter);
@@ -103,14 +103,14 @@ class DocumentRepositoryTest {
         repository.save(document3);
 
         // when
-        Optional<Document> documentFound = repository.findCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isNotEmpty();
     }
 
     @Test
-    void findCreatedAfter_should_return_empty_if_document_with_different_checksums_created_after() {
+    void findOneCreatedAfter_should_return_empty_if_document_with_different_checksums_created_after() {
         // given
         final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
         final Letter savedLetter = letterRepository.save(letter);
@@ -131,14 +131,14 @@ class DocumentRepositoryTest {
         repository.save(document2);
 
         // when
-        Optional<Document> documentFound = repository.findCreatedAfter(checkSum2, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum2, LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isEmpty();
     }
 
     @Test
-    void findCreatedAfter_should_return_not_null_values() {
+    void findOneCreatedAfter_should_return_not_null_values() {
         // given
         final Letter letter = SampleData.letterEntity("aService", LocalDateTime.now());
         final Letter savedLetter = letterRepository.save(letter);
