@@ -82,7 +82,7 @@ public class PrintServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
-        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
+        String idempotencyKey = ChecksumGenerator.generateChecksum(printRequest);
 
         PrintResponse printResponse = printService.save(uuid.toString(), service, printRequest);
 

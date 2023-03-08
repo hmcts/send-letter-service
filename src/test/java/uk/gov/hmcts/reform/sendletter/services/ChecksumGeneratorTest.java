@@ -12,7 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LetterChecksumGeneratorTest {
+class ChecksumGeneratorTest {
 
     @Test
     void should_return_same_md5_checksum_hex_for_same_letter_objects() {
@@ -38,8 +38,8 @@ class LetterChecksumGeneratorTest {
         LetterRequest letter1 = letterSupplier.get();
         LetterRequest letter2 = letterSupplier.get();
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(ChecksumGenerator.generateChecksum(letter1))
+            .isEqualTo(ChecksumGenerator.generateChecksum(letter2));
     }
 
     @Test
@@ -61,8 +61,8 @@ class LetterChecksumGeneratorTest {
         LetterWithPdfsRequest letter1 = letterSupplier.get();
         LetterWithPdfsRequest letter2 = letterSupplier.get();
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(ChecksumGenerator.generateChecksum(letter1))
+            .isEqualTo(ChecksumGenerator.generateChecksum(letter2));
     }
 
     @Test
@@ -98,8 +98,8 @@ class LetterChecksumGeneratorTest {
             )
         );
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isNotEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(ChecksumGenerator.generateChecksum(letter1))
+            .isNotEqualTo(ChecksumGenerator.generateChecksum(letter2));
     }
 
     @Test
@@ -129,7 +129,7 @@ class LetterChecksumGeneratorTest {
             )
         );
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isNotEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(ChecksumGenerator.generateChecksum(letter1))
+            .isNotEqualTo(ChecksumGenerator.generateChecksum(letter2));
     }
 }

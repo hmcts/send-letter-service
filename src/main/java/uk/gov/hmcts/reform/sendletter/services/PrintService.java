@@ -51,7 +51,7 @@ public class PrintService {
         } catch (JsonProcessingException jpe) {
             LOG.info("PrintService JsonProcessingException {}, service {}", jpe.getMessage(), service, jpe);
         }
-        String checksum = LetterChecksumGenerator.generateChecksum(request);
+        String checksum = ChecksumGenerator.generateChecksum(request);
         var printRequest = new Print(
             UUID.fromString(id),
             service,

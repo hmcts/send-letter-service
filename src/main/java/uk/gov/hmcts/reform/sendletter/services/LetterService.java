@@ -52,7 +52,7 @@ import java.util.stream.IntStream;
 
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
-import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
+import static uk.gov.hmcts.reform.sendletter.services.ChecksumGenerator.generateChecksum;
 
 @Service(value = "LetterService")
 public class LetterService {
