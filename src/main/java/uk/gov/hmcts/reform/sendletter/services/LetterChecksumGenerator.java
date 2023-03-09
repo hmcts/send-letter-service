@@ -4,9 +4,9 @@ import org.springframework.util.DigestUtils;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
-public final class ChecksumGenerator {
+public final class LetterChecksumGenerator {
 
-    private ChecksumGenerator() {
+    private LetterChecksumGenerator() {
     }
 
     public static String generateChecksum(Object obj) {

@@ -104,7 +104,7 @@ class FileNameHelperTest {
     void should_throw_custom_exception_when_id_cannot_be_extracted_from_file_name() {
         assertThatThrownBy(
             () -> FileNameHelper.extractIdFromPdfName("a_b.pdf")
-        ).isInstanceOf(UnableToExtractIdFromFileNameException.class);
+        ).isInstanceOf(UnableToExtractIdFromFileNameException.class).;
     }
 
     @Test

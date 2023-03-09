@@ -56,7 +56,7 @@ class PrintServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
-        String idempotencyKey = ChecksumGenerator.generateChecksum(printRequest);
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
         given(repository.save(isA(Print.class)))
             .willReturn(
                 new Print(
@@ -133,7 +133,7 @@ class PrintServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         PrintRequest printRequest = objectMapper.readValue(json, PrintRequest.class);
-        String idempotencyKey = ChecksumGenerator.generateChecksum(printRequest);
+        String idempotencyKey = LetterChecksumGenerator.generateChecksum(printRequest);
         given(repository.save(isA(Print.class)))
             .willReturn(
                 new Print(
