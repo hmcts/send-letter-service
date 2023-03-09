@@ -37,7 +37,7 @@ class DocumentServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        documentService = new DocumentService(documentRepository);
+        documentService = new DocumentService(documentRepository, 1);
     }
 
     @Test

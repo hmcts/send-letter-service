@@ -62,6 +62,7 @@ public class LetterService {
     private final PdfCreator pdfCreator;
     private final LetterRepository letterRepository;
     private final LetterEventRepository letterEventRepository;
+    private final DocumentService documentService;
     private final Zipper zipper;
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
@@ -77,6 +78,7 @@ public class LetterService {
         PdfCreator pdfCreator,
         LetterRepository letterRepository,
         LetterEventRepository letterEventRepository,
+        DocumentService documentService,
         Zipper zipper,
         ObjectMapper mapper,
         @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
@@ -89,6 +91,7 @@ public class LetterService {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
         this.letterEventRepository = letterEventRepository;
+        this.documentService = documentService;
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
@@ -200,6 +203,7 @@ public class LetterService {
     @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
                            Function<LocalDateTime, byte[]> zipContent) {
+        documentService.saveDocuments(id, getDocumentsFromLetter(letter));
         LocalDateTime createdAtTime = now();
         Letter dbLetter = new Letter(
             id,
@@ -295,6 +299,18 @@ public class LetterService {
         } else {
             Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
             return PgpEncryptionUtil.loadPublicKey(encryptionPublicKey.getBytes());
+        }
+    }
+
+    private List<?> getDocumentsFromLetter(ILetterRequest letter) {
+        if (letter instanceof LetterRequest) {
+            return ((LetterRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsRequest) {
+            return ((LetterWithPdfsRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
+            return ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents;
+        } else {
+            throw new UnsupportedLetterRequestTypeException();
         }
     }
 

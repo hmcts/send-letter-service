@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
+import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
@@ -64,6 +65,9 @@ class UploadLettersTaskTest {
 
     private LetterService letterService;
 
+    @Mock
+    private DocumentService documentService;
+
     @BeforeEach
     void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
@@ -77,6 +81,7 @@ class UploadLettersTaskTest {
             new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
                 letterRepository,
             letterEventRepository,
+            documentService,
             new Zipper(),
             new ObjectMapper(),
             false,

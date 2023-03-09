@@ -59,6 +59,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -102,6 +103,9 @@ class LetterServiceTest {
 
     private LetterService service;
 
+    @Mock
+    private DocumentService documentService;
+
 
     Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
             objectMapper.convertValue(jsonNode,
@@ -127,6 +131,7 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -157,6 +162,7 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -186,6 +192,7 @@ class LetterServiceTest {
         verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
         verify(exceptionLetterService).save(isA(ExceptionLetter.class));
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -222,9 +229,9 @@ class LetterServiceTest {
         } else {
             verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
 
     }
-
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -247,6 +254,7 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -283,6 +291,7 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -318,7 +327,7 @@ class LetterServiceTest {
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 1));
-
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -354,7 +363,7 @@ class LetterServiceTest {
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 1));
-
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -387,6 +396,7 @@ class LetterServiceTest {
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 3, "Document_2", 8));
+        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @Test
@@ -583,6 +593,7 @@ class LetterServiceTest {
             pdfCreator,
             letterRepository,
             letterEventRepository,
+            documentService,
             zipper,
             objectMapper,
             isEncryptionEnabled,

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +23,27 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    private final int cutOffHours;
+
+    public DocumentService(
+        DocumentRepository documentRepository,
+        @Value("${documents.duplicate.cut-off-hours:1}") int cutOffHours
+    ) {
         this.documentRepository = documentRepository;
+        this.cutOffHours = cutOffHours;
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void saveDocuments(UUID letterId, List<uk.gov.hmcts.reform.sendletter.model.in.Document> documents) {
+    public void saveDocuments(UUID letterId, List<?> documents) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
             log.info("Saving document, id {}, letterId {}", id, letterId);
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
-            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(checkSum, now().minusHours(1));
+            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
+                checkSum,
+                now().minusHours(cutOffHours)
+            );
             if (documentFound.isEmpty()) {
                 Document documentToSave =
                     new Document(
