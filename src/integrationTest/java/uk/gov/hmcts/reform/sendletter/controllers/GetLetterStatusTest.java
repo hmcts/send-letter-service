@@ -16,11 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.config.TimeConfiguration;
+import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
@@ -43,7 +43,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ComponentScan(basePackages = "...", lazyInit = true)
 @ContextConfiguration
 @SpringBootTest
-@Transactional
 class GetLetterStatusTest {
 
     @Autowired
@@ -51,6 +50,9 @@ class GetLetterStatusTest {
 
     @Autowired
     private LetterRepository letterRepository;
+
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @MockBean
     private AuthTokenValidator tokenValidator;
@@ -67,6 +69,7 @@ class GetLetterStatusTest {
 
     @AfterEach
     void tearDown() {
+        documentRepository.deleteAll();
         letterRepository.deleteAll();
     }
 

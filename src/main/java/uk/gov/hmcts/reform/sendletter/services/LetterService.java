@@ -203,7 +203,6 @@ public class LetterService {
     @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
                            Function<LocalDateTime, byte[]> zipContent) {
-        documentService.saveDocuments(id, getDocumentsFromLetter(letter));
         LocalDateTime createdAtTime = now();
         Letter dbLetter = new Letter(
             id,
@@ -219,6 +218,9 @@ public class LetterService {
         );
 
         letterRepository.save(dbLetter);
+
+        documentService.saveDocuments(id, getDocumentsFromLetter(letter));
+
         log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
 

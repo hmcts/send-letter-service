@@ -38,7 +38,7 @@ public class DocumentService {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
-            log.info("Saving document, id {}, letterId {}", id, letterId);
+            log.debug("Saving document, id {}, letterId {}", id, letterId);
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,

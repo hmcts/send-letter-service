@@ -162,7 +162,6 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
-        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -192,7 +191,6 @@ class LetterServiceTest {
         verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
         verify(exceptionLetterService).save(isA(ExceptionLetter.class));
-        verify(documentService).saveDocuments(any(UUID.class), anyList());
     }
 
     @ParameterizedTest
@@ -229,8 +227,6 @@ class LetterServiceTest {
         } else {
             verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
         }
-        verify(documentService).saveDocuments(any(UUID.class), anyList());
-
     }
 
     @ParameterizedTest
