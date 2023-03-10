@@ -22,7 +22,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
-    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_three_pdf_documents() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
             samplePdfLetterRequestJson("letter-with-three-pdfs.json", "test.pdf")
