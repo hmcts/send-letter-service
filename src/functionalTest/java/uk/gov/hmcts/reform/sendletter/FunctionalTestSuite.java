@@ -206,7 +206,7 @@ abstract class FunctionalTestSuite {
         String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
 
         for (int ind: inds) {
-            byte[] pdf = toByteArray(getResource("test" + ind));
+            byte[] pdf = toByteArray(getResource("test" + ind + ".pdf"));
             requestBody = requestBody.replace("{{pdf" + ind + "}}", new String(Base64.getEncoder().encode(pdf)));
         }
 
