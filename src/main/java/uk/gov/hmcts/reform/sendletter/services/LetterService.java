@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
 import uk.gov.hmcts.reform.sendletter.entity.ExceptionLetter;
@@ -200,7 +201,7 @@ public class LetterService {
         return letterId;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
                            Function<LocalDateTime, byte[]> zipContent) {
         LocalDateTime createdAtTime = now();
