@@ -18,7 +18,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -59,8 +59,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId = sendPrintLetterRequest(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate.json", "test.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json", 21, 22)
             );
         } catch (Exception e) {
             e.printStackTrace();

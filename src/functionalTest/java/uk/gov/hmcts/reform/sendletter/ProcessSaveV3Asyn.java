@@ -24,8 +24,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     @Test
     public void testSaveLetterAsync() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
-                signIn(),
-                samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
         );
 
         logger.info("Letter id created {}", letterId);
