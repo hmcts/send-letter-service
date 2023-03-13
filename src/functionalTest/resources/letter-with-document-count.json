@@ -1,11 +1,11 @@
 {
   "documents": [
     {
-      "content": "{{pdf1}}",
+      "content": "{{pdf11}}",
       "copies": 1
     },
     {
-      "content": "{{pdf2}}",
+      "content": "{{pdf12}}",
       "copies": 10
     }
   ],
