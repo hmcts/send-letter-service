@@ -44,8 +44,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId =  sendPrintLetterRequest(
-                    signIn(),
-                    sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
             );
         } catch (IOException e) {
             e.printStackTrace();
