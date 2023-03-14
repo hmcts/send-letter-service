@@ -33,7 +33,7 @@ public class DocumentService {
         this.cutOffHours = cutOffHours;
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     public void saveDocuments(UUID letterId, List<?> documents) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {

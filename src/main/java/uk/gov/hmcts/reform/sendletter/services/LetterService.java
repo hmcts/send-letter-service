@@ -201,7 +201,7 @@ public class LetterService {
         return letterId;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
                            Function<LocalDateTime, byte[]> zipContent) {
         LocalDateTime createdAtTime = now();
