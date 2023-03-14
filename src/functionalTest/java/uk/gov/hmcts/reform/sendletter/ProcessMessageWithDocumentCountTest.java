@@ -59,7 +59,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
 
     private String getLetterRequest() {
         String letterId = "none";
-        
+
         try {
             letterId = sendPrintLetterRequest(
                 signIn(),

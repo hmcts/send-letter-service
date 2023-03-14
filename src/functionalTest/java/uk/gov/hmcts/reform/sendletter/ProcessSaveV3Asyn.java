@@ -66,7 +66,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                     signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate_async.json", "hello.pdf")
+                    sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json", 101, 102)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
