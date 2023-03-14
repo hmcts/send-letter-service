@@ -36,6 +36,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     private String verifyLetterUploaded(String letterId) {
         int counter = 1;
         String letterStatus = LetterStatus.Created.name();
+        
         while (!letterStatus.equals(LetterStatus.Uploaded.name())) {
             try {
                 Thread.sleep(LETTER_UPLOAD_DELAY);
@@ -47,6 +48,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 logger.error(interruptedException.getMessage(), interruptedException);
             }
         }
+
         return letterStatus;
     }
 
