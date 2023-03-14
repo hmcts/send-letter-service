@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
 
     @Override
     String getContentType() {

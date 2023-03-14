@@ -24,7 +24,7 @@ import static com.google.common.io.Resources.getResource;
 @ExtendWith(SpringExtension.class)
 public class PrintMessageTest extends FunctionalTestSuite {
 
-    private static String destDirectory = "/var/tmp";
+    private static final String destDirectory = "/var/tmp";
     private ObjectMapper objectMapper;
 
     @BeforeEach

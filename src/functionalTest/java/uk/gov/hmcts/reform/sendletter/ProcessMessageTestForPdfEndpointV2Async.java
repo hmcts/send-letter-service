@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
 
     @Override
     String getContentType() {
