@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Document;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
@@ -33,7 +32,7 @@ public class DocumentService {
         this.cutOffHours = cutOffHours;
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     public void saveDocuments(UUID letterId, List<?> documents) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {

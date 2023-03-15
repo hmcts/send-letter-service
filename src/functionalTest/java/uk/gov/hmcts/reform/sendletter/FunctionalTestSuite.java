@@ -202,6 +202,17 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
+    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, int... idxs) throws IOException {
+        String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
+
+        for (int idx: idxs) {
+            byte[] pdf = toByteArray(getResource("test" + idx + ".pdf"));
+            requestBody = requestBody.replace("{{pdf" + idx + "}}", new String(Base64.getEncoder().encode(pdf)));
+        }
+
+        return requestBody;
+    }
+
     SSHClient getSshClient() throws IOException {
         SSHClient ssh = new SSHClient();
 

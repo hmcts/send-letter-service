@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
 
     @Override
     String getContentType() {
@@ -24,8 +24,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     @Test
     public void testSaveLetterAsync() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
-                signIn(),
-                samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json", 81, 82)
         );
 
         logger.info("Letter id created {}", letterId);
@@ -65,8 +65,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId = sendPrintLetterRequestAsync(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate_async.json", "hello.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json", 101, 102)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);

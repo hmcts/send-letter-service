@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageWithDocumentCountTest.class);
 
     @Test
     void should_send_letter_and_upload_file_on_sftp_server() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -36,6 +36,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     private String verifyLetterUploaded(String letterId) {
         int counter = 1;
         String letterStatus = LetterStatus.Created.name();
+
         while (!letterStatus.equals(LetterStatus.Uploaded.name())) {
             try {
                 Thread.sleep(LETTER_UPLOAD_DELAY);
@@ -47,6 +48,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 logger.error(interruptedException.getMessage(), interruptedException);
             }
         }
+
         return letterStatus;
     }
 
@@ -57,14 +59,16 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
 
     private String getLetterRequest() {
         String letterId = "none";
+
         try {
             letterId = sendPrintLetterRequest(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate.json", "test.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json", 21, 22)
             );
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return letterId;
     }
 

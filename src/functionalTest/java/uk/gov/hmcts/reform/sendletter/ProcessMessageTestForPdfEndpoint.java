@@ -14,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpoint.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpoint.class);
 
     @Test
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-single-pdf.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -44,8 +44,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId =  sendPrintLetterRequest(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-three-pdfs.json", "hello.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
             );
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,7 +57,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-two-pdfs.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-two-pdfs.json", 71, 72)
         );
 
         String status = verifyLetterUploaded(letterId);
