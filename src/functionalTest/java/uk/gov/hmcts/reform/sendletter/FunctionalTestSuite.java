@@ -61,7 +61,7 @@ abstract class FunctionalTestSuite {
     private String s2sSecret;
 
     @Value("${send-letter-service-url}")
-    private String sendLetterServiceUrl;
+    protected String sendLetterServiceUrl;
 
     @Value("${ftp-hostname}")
     private String ftpHostname;

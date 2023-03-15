@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
@@ -33,6 +35,38 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
                 validatePdfFile(letterId, sftp, sftpFile, 2);
             }
         });
+    }
+
+    @Test
+    void should_return_bad_request_if_same_document_sent_twice() throws Exception {
+        String letterId = sendPrintLetterRequest(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51)
+        );
+
+        String status = verifyLetterUploaded(letterId);
+        assertThat(status).isEqualTo(LetterStatus.Uploaded.name());
+
+        awaitAndVerifyFileOnSftp(letterId, (sftpFile, sftp) -> {
+            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+
+            if (!isEncryptionEnabled) {
+                validatePdfFile(letterId, sftp, sftpFile, 2);
+            }
+        });
+
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 51);
+        RestAssured
+                .given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(400);
     }
 
     @Test
