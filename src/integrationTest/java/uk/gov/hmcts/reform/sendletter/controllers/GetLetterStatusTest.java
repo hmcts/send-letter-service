@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpStatus;
 import com.google.common.io.Resources;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -122,6 +125,45 @@ class GetLetterStatusTest {
                 .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
                 .andExpect(jsonPath("$.printed_at").isEmpty())
                 .andExpect(jsonPath("$.additional_data").doesNotHaveJsonPath());
+    }
+
+    @Test
+    void should_return_400_when_duplicated_document_is_sent() throws Exception {
+        // given
+        given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
+
+        String letter = Resources.toString(getResource("letter-with-pdf.json"), UTF_8);
+        MvcResult result = mvc
+            .perform(
+                post("/letters")
+                    .header("ServiceAuthorization", "auth-header-value")
+                    .contentType(MediaTypes.LETTER_V2)
+                    .content(letter)
+            ).andReturn();
+
+        JSONObject letterResult = new JSONObject(result.getResponse().getContentAsString());
+        String letterId = letterResult.getString("letter_id");
+        getLetterStatus(letterId)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").isNotEmpty())
+            .andExpect(jsonPath("$.status").value(LetterStatus.Created.name()))
+            .andExpect(jsonPath("$.checksum").isNotEmpty())
+            .andExpect(jsonPath("$.created_at").isNotEmpty())
+            .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
+            .andExpect(jsonPath("$.printed_at").isEmpty())
+            .andExpect(jsonPath("$.additional_data").doesNotHaveJsonPath());
+
+        String duplicatedLetter = Resources.toString(getResource("letter-with-pdf-duplicate.json"), UTF_8);
+        MvcResult resultDuplicate = mvc
+            .perform(
+                post("/letters")
+                    .header("ServiceAuthorization", "auth-header-value")
+                    .contentType(MediaTypes.LETTER_V2)
+                    .content(duplicatedLetter)
+            ).andReturn();
+
+        MockHttpServletResponse responseDuplicate = resultDuplicate.getResponse();
+        Assert.assertEquals(responseDuplicate.getStatus(), HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test
