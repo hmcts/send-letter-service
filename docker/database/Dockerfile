@@ -1,5 +1,8 @@
-FROM postgres:alpine
+FROM postgres:11
 
-HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD psql -c 'select 1' -d letter_tracking -U letterservice
+MAINTAINER "HMCTS BSP <https://github.com/hmcts>"
+LABEL maintainer = "HMCTS BSP <https://github.com/hmcts>"
+
+COPY init-db.sh /docker-entrypoint-initdb.d
 
 EXPOSE 5432
