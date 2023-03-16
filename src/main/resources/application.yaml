@@ -1,6 +1,14 @@
 server:
   port: 8485
 
+resilience4j:
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 15
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+
 management:
   endpoint:
     health:
