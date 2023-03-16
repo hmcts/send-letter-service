@@ -124,6 +124,19 @@ public final class SampleData {
         }
     }
 
+    public static uk.gov.hmcts.reform.sendletter.entity.Document documentEntity(
+        UUID letterId,
+        String checkSum,
+        LocalDateTime createdAt
+    ) {
+        return new uk.gov.hmcts.reform.sendletter.entity.Document(
+            UUID.randomUUID(),
+            letterId,
+            checkSum,
+            createdAt
+        );
+    }
+
     public static ParsedReport parsedReport(String filename, List<UUID> letterIds, boolean allParsed) {
         return new ParsedReport(
             filename,

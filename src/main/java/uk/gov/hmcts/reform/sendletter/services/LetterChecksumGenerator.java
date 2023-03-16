@@ -9,7 +9,7 @@ public final class LetterChecksumGenerator {
     private LetterChecksumGenerator() {
     }
 
-    public static String generateChecksum(Object letter) {
-        return DigestUtils.md5DigestAsHex(serialize(letter));
+    public static String generateChecksum(Object obj) {
+        return DigestUtils.md5DigestAsHex(serialize(obj));
     }
 }
