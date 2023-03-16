@@ -41,7 +41,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_return_bad_request_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51)
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -56,7 +56,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         });
 
         // the same document in another letter
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 51);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json", 111);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
