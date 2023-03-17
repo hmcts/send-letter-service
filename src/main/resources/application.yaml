@@ -1,6 +1,14 @@
 server:
   port: 8485
 
+resilience4j:
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 15
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+
 management:
   endpoint:
     health:
@@ -27,7 +35,7 @@ spring:
     import: "optional:configtree:/mnt/secrets/rpe-send-letter/"
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${LETTER_TRACKING_DB_HOST:send-letter-database}:${LETTER_TRACKING_DB_PORT:5432}/${LETTER_TRACKING_DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
+    url: jdbc:postgresql://${LETTER_TRACKING_DB_HOST:send-letter-database}:${LETTER_TRACKING_DB_PORT:5440}/${LETTER_TRACKING_DB_NAME:letter_tracking}${LETTER_TRACKING_DB_CONN_OPTIONS:}
     username: ${LETTER_TRACKING_DB_USER_NAME:letterservice}
     password: ${LETTER_TRACKING_DB_PASSWORD:}
     properties:
@@ -95,6 +103,7 @@ reports:
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
   password: ${LETTER_TRACKING_DB_PASSWORD}
+
 ftp:
   hostname: ${FTP_HOSTNAME}
   port: ${FTP_PORT}

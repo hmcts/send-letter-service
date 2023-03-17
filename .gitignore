@@ -18,6 +18,7 @@
 *.iws
 *.iml
 *.ipr
+.env
 
 .DS_store
 
