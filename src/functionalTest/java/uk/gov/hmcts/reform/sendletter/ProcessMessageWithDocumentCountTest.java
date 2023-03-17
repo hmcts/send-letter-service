@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
@@ -31,6 +33,38 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 validatePdfFile(letterId, sftp, sftpFile, 22);
             }
         });
+    }
+
+    @Test
+    void should_return_bad_request_if_same_document_sent_twice() throws Exception {
+        String letterId = sendPrintLetterRequest(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json", 131, 132)
+        );
+
+        String status = verifyLetterUploaded(letterId);
+        assertThat(status).isEqualTo(LetterStatus.Uploaded.name());
+
+        awaitAndVerifyFileOnSftp(letterId, (sftpFile, sftp) -> {
+            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+
+            if (!isEncryptionEnabled) {
+                validatePdfFile(letterId, sftp, sftpFile, 22);
+            }
+        });
+
+        // the same pdf document in another letter
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(400);
     }
 
     private String verifyLetterUploaded(String letterId) {

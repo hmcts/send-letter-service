@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
@@ -31,6 +33,31 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         logger.info("Letter id created {}", letterId);
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+    }
+
+    @Test
+    public void testSaveLetterAsync_should_return_bad_request_if_same_document_sent_twice() throws IOException {
+        String letterId = sendPrintLetterRequestAsync(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
+        );
+
+        logger.info("Letter id created {}", letterId);
+        String letterStatus = verifyLetterCreated(letterId);
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+
+        // the same pdf document in another letter
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(400);
     }
 
     private String verifyLetterCreated(String letterId) {
