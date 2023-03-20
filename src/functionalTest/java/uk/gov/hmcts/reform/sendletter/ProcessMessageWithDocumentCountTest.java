@@ -53,6 +53,12 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
             }
         });
 
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException ex) {
+            logger.error("Error: ", ex);
+        }
+
         // the same pdf document in another letter
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
         RestAssured.given()

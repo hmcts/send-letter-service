@@ -46,6 +46,12 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
 
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException ex) {
+            logger.error("Error: ", ex);
+        }
+
         // the same pdf document in another letter
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
         RestAssured.given()
