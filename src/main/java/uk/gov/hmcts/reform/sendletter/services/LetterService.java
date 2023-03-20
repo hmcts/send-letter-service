@@ -131,6 +131,8 @@ public class LetterService {
     }
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
+        documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter));
+
         UUID letterId = UUID.randomUUID();
         String loggingContext = String.format(
             "letter  %s, service %s, messageId %s, additionalData %s",

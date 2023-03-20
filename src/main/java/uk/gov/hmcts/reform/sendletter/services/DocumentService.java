@@ -32,6 +32,27 @@ public class DocumentService {
         this.cutOffHours = cutOffHours;
     }
 
+    public void checkDocumentDuplicates(List<?> documents) {
+        documents.forEach((document) -> {
+            UUID id = UUID.randomUUID();
+            log.debug("Checking document, id {}", id);
+            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
+                    checkSum,
+                    now().minusHours(cutOffHours)
+            );
+            if (documentFound.isPresent()) {
+                String msg = String.format(
+                        "Duplicate document found, id %s, checkSum %s",
+                        documentFound.get().getId(),
+                        checkSum
+                );
+                log.error(msg);
+                throw new DuplicateDocumentException(msg);
+            }
+        });
+    }
+
     @Transactional
     public void saveDocuments(UUID letterId, List<?> documents) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
