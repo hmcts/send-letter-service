@@ -38,7 +38,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     @Test
     public void testSaveLetterAsync_should_return_bad_request_if_same_document_sent_twice() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
-            "abcd",
+            signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
         );
 
@@ -56,7 +56,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
         RestAssured.given()
                 .relaxedHTTPSValidation()
-                .header("ServiceAuthorization", "Bearer " + "abcd")
+                .header("ServiceAuthorization", "Bearer " + signIn())
                 .header(CONTENT_TYPE, getContentType())
                 .baseUri(sendLetterServiceUrl)
                 .body(jsonBody.getBytes())
