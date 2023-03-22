@@ -106,7 +106,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplicateDocumentException.class)
     protected ResponseEntity<String> handleDuplicateDocumentException(DuplicateDocumentException exc) {
-        return status(BAD_REQUEST).body(exc.getMessage());
+        return status(CONFLICT).body(exc.getMessage());
     }
 
     @ExceptionHandler(UnauthenticatedException.class)

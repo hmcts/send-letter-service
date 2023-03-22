@@ -9,6 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -70,7 +71,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(400);
+                .statusCode(SC_CONFLICT);
     }
 
     private String verifyLetterUploaded(String letterId) {

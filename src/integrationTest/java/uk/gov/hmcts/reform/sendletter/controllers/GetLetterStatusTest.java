@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpStatus;
 import com.google.common.io.Resources;
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ import java.util.UUID;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -128,7 +128,7 @@ class GetLetterStatusTest {
     }
 
     @Test
-    void should_return_400_when_duplicated_document_is_sent() throws Exception {
+    void should_return_409_when_duplicated_document_is_sent() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
 
@@ -163,7 +163,7 @@ class GetLetterStatusTest {
             ).andReturn();
 
         MockHttpServletResponse responseDuplicate = resultDuplicate.getResponse();
-        Assert.assertEquals(responseDuplicate.getStatus(), HttpStatus.SC_BAD_REQUEST);
+        Assertions.assertEquals(responseDuplicate.getStatus(), SC_CONFLICT);
     }
 
     @Test

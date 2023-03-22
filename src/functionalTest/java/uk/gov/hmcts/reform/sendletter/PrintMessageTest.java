@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static com.google.common.io.Resources.getResource;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
 @ExtendWith(SpringExtension.class)
 public class PrintMessageTest extends FunctionalTestSuite {
@@ -96,7 +97,7 @@ public class PrintMessageTest extends FunctionalTestSuite {
             requestBody,
             "/print-jobs/{id}",
             UUID.randomUUID().toString(),
-            409
+            SC_CONFLICT
         );
     }
 

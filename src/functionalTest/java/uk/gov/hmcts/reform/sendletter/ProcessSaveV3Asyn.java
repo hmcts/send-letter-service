@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -63,7 +64,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(400);
+                .statusCode(SC_CONFLICT);
     }
 
     private String verifyLetterCreated(String letterId) {
