@@ -37,7 +37,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync_should_return_bad_request_if_same_document_sent_twice() throws IOException {
+    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)

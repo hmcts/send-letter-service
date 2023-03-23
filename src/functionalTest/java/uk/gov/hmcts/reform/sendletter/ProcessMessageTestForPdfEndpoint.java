@@ -39,7 +39,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_bad_request_if_same_document_sent_twice() throws Exception {
+    void should_return_conflict_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111)

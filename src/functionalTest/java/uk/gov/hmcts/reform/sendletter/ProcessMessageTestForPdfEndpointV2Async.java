@@ -36,7 +36,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_bad_request_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
+    void should_return_conflict_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
             throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
