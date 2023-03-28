@@ -60,7 +60,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
             logger.error("Error: ", ex);
         }
 
-        // the same pdf document in another letter
+        // the same pdf document in another letter (preserve the order)
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
         RestAssured.given()
                 .relaxedHTTPSValidation()
