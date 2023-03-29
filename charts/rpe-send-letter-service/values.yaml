@@ -1,7 +1,3 @@
-devmemoryRequests: '2048Mi'
-devcpuRequests: '250m'
-devmemoryLimits: '4096Mi'
-devcpuLimits: '2500m'
 java:
   applicationPort: 8485
   ingressHost: rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
