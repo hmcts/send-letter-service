@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
+import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
@@ -42,6 +43,9 @@ public class SendLetterProviderTest {
 
     @Autowired
     LetterRepository letterRepository;
+    
+    @Autowired
+    DocumentService documentService;
 
     @Autowired
     ServiceFolderMapping serviceFolderMapping;
