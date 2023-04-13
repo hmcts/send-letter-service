@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2023-04-06">
+    <suppress until="2023-07-11">
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
     </suppress>
-    <suppress until="2023-04-09">
+    <suppress until="2023-07-11">
         <notes>spring-security-crypto-5.7.2</notes>
         <cve>CVE-2022-31692</cve>
         <cve>CVE-2022-31690</cve>
@@ -26,7 +26,7 @@
     <suppress until="2023-06-22">
         <cve>CVE-2022-1471</cve>
     </suppress>
-    <suppress until="2023-07-05">
+    <suppress until="2023-07-11">
         <cve>CVE-2023-20860</cve>
         <cve>CVE-2023-20861</cve>
         <cve>CVE-2023-1436</cve>

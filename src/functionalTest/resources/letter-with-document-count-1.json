@@ -1,0 +1,13 @@
+{
+  "documents": [
+    {
+      "content": "{{pdf81}}",
+      "copies": 1
+    },
+    {
+      "content": "{{pdf82}}",
+      "copies": 10
+    }
+  ],
+  "type": "BPS001"
+}

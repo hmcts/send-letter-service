@@ -16,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
+import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
 import uk.gov.hmcts.reform.sendletter.exception.InvalidApiKeyException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
@@ -101,6 +102,11 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<String> handleDuplexException(DuplexException exc) {
         // failed to parse the document
         return status(BAD_REQUEST).body(exc.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateDocumentException.class)
+    protected ResponseEntity<String> handleDuplicateDocumentException(DuplicateDocumentException exc) {
+        return status(CONFLICT).body(exc.getMessage());
     }
 
     @ExceptionHandler(UnauthenticatedException.class)

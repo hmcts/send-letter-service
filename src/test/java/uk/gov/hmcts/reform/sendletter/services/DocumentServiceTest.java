@@ -37,7 +37,7 @@ class DocumentServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        documentService = new DocumentService(documentRepository);
+        documentService = new DocumentService(documentRepository, 1);
     }
 
     @Test
@@ -106,4 +106,63 @@ class DocumentServiceTest {
 
     }
 
+    @Test
+    void checkDocumentDuplicates_should_check_multiple_documents() {
+        //given
+        UUID letterId = UUID.randomUUID();
+        Document document1 = new Document("temp1", new HashMap<>());
+        Document document2 = new Document("temp2", new HashMap<>());
+        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+            .willReturn(Optional.empty());
+
+        //when
+        documentService.checkDocumentDuplicates(asList(document1, document2));
+
+        //then
+        verify(documentRepository, times(2)).findOneCreatedAfter(anyString(), any(LocalDateTime.class));
+    }
+
+    @Test
+    void checkDocumentDuplicates_should_save_single_document() {
+        //given
+        UUID letterId = UUID.randomUUID();
+        Document document1 = new Document("temp1", new HashMap<>());
+        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+            .willReturn(Optional.empty());
+
+        //when
+        documentService.checkDocumentDuplicates(singletonList(document1));
+
+        //then
+        verify(documentRepository).findOneCreatedAfter(anyString(), any(LocalDateTime.class));
+    }
+
+    @Test
+    void checkDocumentDuplicates_should_throw_if_duplicated_document() {
+        //given
+        UUID letterId = UUID.randomUUID();
+        Document document1 = new Document("temp1", new HashMap<>());
+        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+            .willReturn(Optional.of(mock(uk.gov.hmcts.reform.sendletter.entity.Document.class)));
+
+        //when
+
+        //then
+        assertThatThrownBy(() ->
+            documentService.checkDocumentDuplicates(singletonList(document1))
+        ).isInstanceOf(DuplicateDocumentException.class);
+    }
+
+    @Test
+    void checkDocumentDuplicates_should_not_save_documents_if_empty_list() {
+        //given
+        UUID letterId = UUID.randomUUID();
+
+        //when
+        documentService.saveDocuments(letterId, emptyList());
+
+        //then
+        verifyNoInteractions(documentRepository);
+
+    }
 }

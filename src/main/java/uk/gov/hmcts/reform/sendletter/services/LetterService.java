@@ -62,6 +62,7 @@ public class LetterService {
     private final PdfCreator pdfCreator;
     private final LetterRepository letterRepository;
     private final LetterEventRepository letterEventRepository;
+    private final DocumentService documentService;
     private final Zipper zipper;
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
@@ -77,6 +78,7 @@ public class LetterService {
         PdfCreator pdfCreator,
         LetterRepository letterRepository,
         LetterEventRepository letterEventRepository,
+        DocumentService documentService,
         Zipper zipper,
         ObjectMapper mapper,
         @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
@@ -89,6 +91,7 @@ public class LetterService {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
         this.letterEventRepository = letterEventRepository;
+        this.documentService = documentService;
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
@@ -128,6 +131,8 @@ public class LetterService {
     }
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
+        documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter));
+
         UUID letterId = UUID.randomUUID();
         String loggingContext = String.format(
             "letter  %s, service %s, messageId %s, additionalData %s",
@@ -215,6 +220,9 @@ public class LetterService {
         );
 
         letterRepository.save(dbLetter);
+
+        documentService.saveDocuments(id, getDocumentsFromLetter(letter));
+
         log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
 
@@ -295,6 +303,18 @@ public class LetterService {
         } else {
             Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
             return PgpEncryptionUtil.loadPublicKey(encryptionPublicKey.getBytes());
+        }
+    }
+
+    private List<?> getDocumentsFromLetter(ILetterRequest letter) {
+        if (letter instanceof LetterRequest) {
+            return ((LetterRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsRequest) {
+            return ((LetterWithPdfsRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
+            return ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents;
+        } else {
+            throw new UnsupportedLetterRequestTypeException();
         }
     }
 

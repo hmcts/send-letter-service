@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -10,11 +11,13 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
 
     @Override
     String getContentType() {
@@ -24,13 +27,44 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     @Test
     public void testSaveLetterAsync() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
-                signIn(),
-                samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json", 81, 82)
         );
 
         logger.info("Letter id created {}", letterId);
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+    }
+
+    @Test
+    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice() throws IOException {
+        String letterId = sendPrintLetterRequestAsync(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
+        );
+
+        logger.info("Letter id created {}", letterId);
+        String letterStatus = verifyLetterCreated(letterId);
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            logger.error("Error: ", ex);
+        }
+
+        // the same pdf document in another letter (preserve the order)
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(SC_CONFLICT);
     }
 
     private String verifyLetterCreated(String letterId) {
@@ -65,8 +99,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId = sendPrintLetterRequestAsync(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate_async.json", "hello.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json", 101, 102)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
