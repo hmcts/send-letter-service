@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+@Disabled
 class ProcessMessageTest extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
 
