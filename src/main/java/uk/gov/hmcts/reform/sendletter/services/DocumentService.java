@@ -26,7 +26,7 @@ public class DocumentService {
 
     public DocumentService(
         DocumentRepository documentRepository,
-        @Value("${documents.duplicate.cut-off-time-in-minutes:2}") int cutOffInMinutes
+        @Value("${documents.duplicate.cut-off-time-in-minutes:0}") int cutOffInMinutes
     ) {
         this.documentRepository = documentRepository;
         this.cutOffInMinutes = cutOffInMinutes;
