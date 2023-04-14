@@ -22,14 +22,14 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    private final int cutOffHours;
+    private final int cutOffInMinutes;
 
     public DocumentService(
         DocumentRepository documentRepository,
-        @Value("${documents.duplicate.cut-off-hours:1}") int cutOffHours
+        @Value("${documents.duplicate.cut-off-time-in-minutes:2}") int cutOffInMinutes
     ) {
         this.documentRepository = documentRepository;
-        this.cutOffHours = cutOffHours;
+        this.cutOffInMinutes = cutOffInMinutes;
     }
 
     public void checkDocumentDuplicates(List<?> documents) {
@@ -39,7 +39,7 @@ public class DocumentService {
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                     checkSum,
-                    now().minusHours(cutOffHours)
+                    now().minusMinutes(cutOffInMinutes)
             );
             if (documentFound.isPresent()) {
                 String msg = String.format(
@@ -62,7 +62,7 @@ public class DocumentService {
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
-                now().minusHours(cutOffHours)
+                now().minusHours(cutOffInMinutes)
             );
             if (documentFound.isEmpty()) {
                 Document documentToSave =
