@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
+import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
@@ -47,8 +47,8 @@ public class SendLetterProviderConfiguration {
     @MockBean
     private ExceptionLetterService exceptionLetterService;
 
-    @Mock
-    private DocumentService documentService;
+    @MockBean
+    private DocumentRepository documentRepository;
 
     @Bean
     @Primary
@@ -58,12 +58,18 @@ public class SendLetterProviderConfiguration {
 
     @Bean
     @Primary
+    DocumentService documentService() {
+        return new DocumentService(documentRepository, 1);
+    }
+
+    @Bean
+    @Primary
     LetterService letterService() {
         return new LetterService(
             pdfCreator(),
             letterRepository,
             letterEventRepository,
-            documentService,
+            documentService(),
             new Zipper(),
             new ObjectMapper(),
             false,
