@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
 
@@ -39,6 +38,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled
     public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice() throws IOException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),

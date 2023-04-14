@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
 
@@ -38,6 +37,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled
     void should_return_conflict_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
             throws Exception {
         String letterId = sendPrintLetterRequestAsync(
