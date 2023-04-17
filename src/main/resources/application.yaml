@@ -233,4 +233,4 @@ actions:
 
 documents:
   duplicate:
-    cut-off-hours: 1
+    cut-off-time-in-minutes: ${DUPLICATES_CUT_OFF_TIME:0}

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +45,10 @@ public class SendLetterProviderTest {
 
     @Autowired
     LetterRepository letterRepository;
-    
+
+    @Autowired
+    DocumentRepository documentRepository;
+
     @Autowired
     DocumentService documentService;
 
@@ -71,6 +76,8 @@ public class SendLetterProviderTest {
     public void sendValidLetter() {
         Mockito.when(authService.authenticate(anyString())).thenReturn("serviceName");
         Mockito.when(serviceFolderMapping.getFolderFor("serviceName")).thenReturn(Optional.of("serviceFolder"));
+        Mockito.when(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+            .thenReturn(Optional.empty());
         Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(),
             any(LetterStatus.class))).thenReturn(Optional.empty());
     }
