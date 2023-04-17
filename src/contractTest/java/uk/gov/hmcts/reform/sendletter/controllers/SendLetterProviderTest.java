@@ -76,7 +76,7 @@ public class SendLetterProviderTest {
     public void sendValidLetter() {
         Mockito.when(authService.authenticate(anyString())).thenReturn("serviceName");
         Mockito.when(serviceFolderMapping.getFolderFor("serviceName")).thenReturn(Optional.of("serviceFolder"));
-        Mockito.when(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        Mockito.when(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .thenReturn(Optional.empty());
         Mockito.when(letterRepository.findByChecksumAndStatusOrderByCreatedAtDesc(anyString(),
             any(LetterStatus.class))).thenReturn(Optional.empty());

@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -44,12 +45,14 @@ class DocumentRepositoryTest {
         final Document document = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum,
+            "any",
             LocalDateTime.now().minusHours(2)
         );
         repository.save(document);
 
         // when
-        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, anyString(),
+            LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isEmpty();
@@ -65,12 +68,14 @@ class DocumentRepositoryTest {
         final Document document = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum,
+            "any",
             LocalDateTime.now().minusMinutes(30)
         );
         repository.save(document);
 
         // when
-        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, anyString(),
+            LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isNotEmpty();
@@ -86,16 +91,19 @@ class DocumentRepositoryTest {
         final Document document1 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum,
+            "any",
             LocalDateTime.now().minusMinutes(30)
         );
         final Document document2 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum,
+            "any",
             LocalDateTime.now().minusMinutes(40)
         );
         final Document document3 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum,
+            "any",
             LocalDateTime.now().minusHours(2)
         );
         repository.save(document1);
@@ -103,7 +111,8 @@ class DocumentRepositoryTest {
         repository.save(document3);
 
         // when
-        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum, anyString(),
+            LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isNotEmpty();
@@ -120,18 +129,21 @@ class DocumentRepositoryTest {
         final Document document1 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum1,
+            "any",
             LocalDateTime.now().minusMinutes(30)
         );
         final Document document2 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum2,
+            "any",
             LocalDateTime.now().minusHours(2)
         );
         repository.save(document1);
         repository.save(document2);
 
         // when
-        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum2, LocalDateTime.now().minusHours(1));
+        Optional<Document> documentFound = repository.findOneCreatedAfter(checkSum2, anyString(),
+            LocalDateTime.now().minusHours(1));
 
         // then
         assertThat(documentFound).isEmpty();
@@ -147,6 +159,7 @@ class DocumentRepositoryTest {
         final Document document1 = SampleData.documentEntity(
             savedLetter.getId(),
             checkSum1,
+            "any",
             LocalDateTime.now().minusMinutes(30)
         );
         final Document savedDocument = repository.save(document1);

@@ -103,6 +103,8 @@ reports:
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
   password: ${LETTER_TRACKING_DB_PASSWORD}
+  noop:
+    strategy: "false"
 
 ftp:
   hostname: ${FTP_HOSTNAME}
@@ -140,6 +142,8 @@ ftp:
       folder: FINREM
     - service: fpl_case_service
       folder: FPL
+    - service: test
+      folder: test
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
@@ -191,6 +195,9 @@ accesstoken:
     - serviceName: cmc_claim_store
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
+    - serviceName: test
+      newContainerName: test
+      validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: civil_service
       newContainerName: new-cmc
       validity: ${SAS_TOKEN_VALIDITY:300}
@@ -233,4 +240,4 @@ actions:
 
 documents:
   duplicate:
-    cut-off-time-in-minutes: ${DUPLICATES_CUT_OFF_TIME:0}
+    cut-off-time: ${DUPLICATES_CUT_OFF_TIME:1}

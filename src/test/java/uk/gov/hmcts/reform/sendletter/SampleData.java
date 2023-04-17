@@ -127,12 +127,14 @@ public final class SampleData {
     public static uk.gov.hmcts.reform.sendletter.entity.Document documentEntity(
         UUID letterId,
         String checkSum,
+        String recipientsChecksum,
         LocalDateTime createdAt
     ) {
         return new uk.gov.hmcts.reform.sendletter.entity.Document(
             UUID.randomUUID(),
             letterId,
             checkSum,
+            recipientsChecksum,
             createdAt
         );
     }

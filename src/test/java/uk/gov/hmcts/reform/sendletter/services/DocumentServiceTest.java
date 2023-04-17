@@ -46,11 +46,11 @@ class DocumentServiceTest {
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
         Document document2 = new Document("temp2", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.empty());
 
         //when
-        documentService.saveDocuments(letterId, asList(document1, document2));
+        documentService.saveDocuments(letterId, asList(document1, document2), "any");
 
         //then
         verify(documentRepository, times(2)).save(any(uk.gov.hmcts.reform.sendletter.entity.Document.class));
@@ -61,11 +61,11 @@ class DocumentServiceTest {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.empty());
 
         //when
-        documentService.saveDocuments(letterId, singletonList(document1));
+        documentService.saveDocuments(letterId, singletonList(document1), "any");
 
         //then
         ArgumentCaptor<uk.gov.hmcts.reform.sendletter.entity.Document> documentArgumentCaptor =
@@ -82,14 +82,14 @@ class DocumentServiceTest {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.of(mock(uk.gov.hmcts.reform.sendletter.entity.Document.class)));
 
         //when
 
         //then
         assertThatThrownBy(() ->
-            documentService.saveDocuments(letterId, singletonList(document1))
+            documentService.saveDocuments(letterId, singletonList(document1), "any")
         ).isInstanceOf(DuplicateDocumentException.class);
     }
 
@@ -99,7 +99,7 @@ class DocumentServiceTest {
         UUID letterId = UUID.randomUUID();
 
         //when
-        documentService.saveDocuments(letterId, emptyList());
+        documentService.saveDocuments(letterId, emptyList(), "any");
 
         //then
         verifyNoInteractions(documentRepository);
@@ -112,14 +112,14 @@ class DocumentServiceTest {
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
         Document document2 = new Document("temp2", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.empty());
 
         //when
-        documentService.checkDocumentDuplicates(asList(document1, document2));
+        documentService.checkDocumentDuplicates(asList(document1, document2), "any");
 
         //then
-        verify(documentRepository, times(2)).findOneCreatedAfter(anyString(), any(LocalDateTime.class));
+        verify(documentRepository, times(2)).findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class));
     }
 
     @Test
@@ -127,14 +127,14 @@ class DocumentServiceTest {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.empty());
 
         //when
-        documentService.checkDocumentDuplicates(singletonList(document1));
+        documentService.checkDocumentDuplicates(singletonList(document1), "any");
 
         //then
-        verify(documentRepository).findOneCreatedAfter(anyString(), any(LocalDateTime.class));
+        verify(documentRepository).findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class));
     }
 
     @Test
@@ -142,14 +142,14 @@ class DocumentServiceTest {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
-        given(documentRepository.findOneCreatedAfter(anyString(), any(LocalDateTime.class)))
+        given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
             .willReturn(Optional.of(mock(uk.gov.hmcts.reform.sendletter.entity.Document.class)));
 
         //when
 
         //then
         assertThatThrownBy(() ->
-            documentService.checkDocumentDuplicates(singletonList(document1))
+            documentService.checkDocumentDuplicates(singletonList(document1), "any")
         ).isInstanceOf(DuplicateDocumentException.class);
     }
 
@@ -159,7 +159,7 @@ class DocumentServiceTest {
         UUID letterId = UUID.randomUUID();
 
         //when
-        documentService.saveDocuments(letterId, emptyList());
+        documentService.saveDocuments(letterId, emptyList(), "any");
 
         //then
         verifyNoInteractions(documentRepository);

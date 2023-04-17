@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -131,7 +132,12 @@ public class LetterService {
     }
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
-        documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter));
+        Optional<String> recipientsChecksum =
+            (!(letter.getAdditionalData() == null || letter.getAdditionalData().isEmpty())
+                && Objects.requireNonNull(letter.getAdditionalData()).containsKey("recipients"))
+                ? Optional.of(generateChecksum(mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
+                : Optional.empty();
+        recipientsChecksum.ifPresent(s -> documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter), s));
 
         UUID letterId = UUID.randomUUID();
         String loggingContext = String.format(
@@ -169,7 +175,8 @@ public class LetterService {
                 serviceName,
                 messageId
             );
-            asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent), logger,
+            asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId,
+                fileContent, recipientsChecksum), logger,
                 () -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync),
                 message -> saveException(letter, letterId, serviceName, message, isAsync));
         } else {
@@ -181,7 +188,8 @@ public class LetterService {
                     serviceName,
                     messageId
                 );
-                asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent));
+                asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId,
+                    fileContent, recipientsChecksum));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                 Runnable logger = () -> log.error(
                     "Duplicate record, letter id {}, service {}, messageId {}",
@@ -204,7 +212,7 @@ public class LetterService {
 
     @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
-                           Function<LocalDateTime, byte[]> zipContent) {
+                           Function<LocalDateTime, byte[]> zipContent, Optional<String> recipientsChecksum) {
         LocalDateTime createdAtTime = now();
         Letter dbLetter = new Letter(
             id,
@@ -221,7 +229,7 @@ public class LetterService {
 
         letterRepository.save(dbLetter);
 
-        documentService.saveDocuments(id, getDocumentsFromLetter(letter));
+        documentService.saveDocuments(id, getDocumentsFromLetter(letter), recipientsChecksum.orElse(null));
 
         log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
