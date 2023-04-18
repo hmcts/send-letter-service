@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -10,11 +12,13 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpointV2Async.class);
 
     @Override
     String getContentType() {
@@ -22,14 +26,40 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
-    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
+    void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_three_pdf_documents() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-three-pdfs.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs.json", 61, 62, 63)
         );
 
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+    }
+
+    @Test
+    @Disabled
+    void should_return_conflict_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
+            throws Exception {
+        String letterId = sendPrintLetterRequestAsync(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-2.json", 121, 122, 123)
+        );
+
+        String letterStatus = verifyLetterCreated(letterId);
+        assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
+
+        // the same pdf document in another letter
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json", 123, 124, 125);
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(SC_CONFLICT);
     }
 
     private String verifyLetterCreated(String letterId) {
@@ -63,8 +93,8 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId = sendPrintLetterRequestAsync(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-four-pdfs.json", "test.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-four-pdfs.json", 41, 42, 43, 44)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
