@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
+import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
+import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
@@ -45,10 +47,19 @@ public class SendLetterProviderConfiguration {
     @MockBean
     private ExceptionLetterService exceptionLetterService;
 
+    @MockBean
+    private DocumentRepository documentRepository;
+
     @Bean
     @Primary
     PdfCreator pdfCreator() {
         return new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
+    }
+
+    @Bean
+    @Primary
+    DocumentService documentService() {
+        return new DocumentService(documentRepository, 1);
     }
 
     @Bean
@@ -58,6 +69,7 @@ public class SendLetterProviderConfiguration {
             pdfCreator(),
             letterRepository,
             letterEventRepository,
+            documentService(),
             new Zipper(),
             new ObjectMapper(),
             false,

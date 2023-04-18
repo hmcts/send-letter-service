@@ -61,7 +61,7 @@ abstract class FunctionalTestSuite {
     private String s2sSecret;
 
     @Value("${send-letter-service-url}")
-    private String sendLetterServiceUrl;
+    protected String sendLetterServiceUrl;
 
     @Value("${ftp-hostname}")
     private String ftpHostname;
@@ -200,6 +200,17 @@ abstract class FunctionalTestSuite {
         byte[] pdf = toByteArray(getResource(pdfFile));
 
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
+    }
+
+    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, int... idxs) throws IOException {
+        String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
+
+        for (int idx: idxs) {
+            byte[] pdf = toByteArray(getResource("test" + idx + ".pdf"));
+            requestBody = requestBody.replace("{{pdf" + idx + "}}", new String(Base64.getEncoder().encode(pdf)));
+        }
+
+        return requestBody;
     }
 
     SSHClient getSshClient() throws IOException {
