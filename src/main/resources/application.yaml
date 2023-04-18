@@ -103,8 +103,6 @@ reports:
 flyway:
   user: ${LETTER_TRACKING_DB_USER_NAME}
   password: ${LETTER_TRACKING_DB_PASSWORD}
-  noop:
-    strategy: "false"
 
 ftp:
   hostname: ${FTP_HOSTNAME}
