@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +162,16 @@ public final class SampleData {
                 Map.of("reference", "ABD-123-WAZ",
                         "count", 10,
                         "additionInfo", "present")
+        );
+    }
+
+    public static LetterWithPdfsRequest letterWithPdfsRequestWithAdditionalDataIncludingRecipients() throws Exception {
+        return new LetterWithPdfsRequest(
+            singletonList(
+                Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE))), "someType",
+            Map.of("reference", "ABD-123-WAZ",
+                "count", 10,
+                "recipients", Arrays.asList("one", "two"))
         );
     }
 
