@@ -4,5 +4,8 @@
     "{{pdf122}}",
     "{{pdf123}}"
   ],
-  "type": "BPS001"
+  "type": "BPS001",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }
