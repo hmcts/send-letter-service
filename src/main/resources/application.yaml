@@ -142,8 +142,6 @@ ftp:
       folder: FINREM
     - service: fpl_case_service
       folder: FPL
-    - service: test
-      folder: test
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
@@ -194,9 +192,6 @@ accesstoken:
   serviceConfig:
     - serviceName: cmc_claim_store
       newContainerName: new-cmc
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: test
-      newContainerName: test
       validity: ${SAS_TOKEN_VALIDITY:300}
     - serviceName: civil_service
       newContainerName: new-cmc

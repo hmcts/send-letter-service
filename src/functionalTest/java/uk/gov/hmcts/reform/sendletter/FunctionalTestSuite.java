@@ -87,7 +87,7 @@ abstract class FunctionalTestSuite {
     @Value("${encryption.enabled}")
     Boolean isEncryptionEnabled;
 
-    static final int LETTER_STATUS_RETRY_COUNT = 40;
+    static final int LETTER_STATUS_RETRY_COUNT = 5;
     static final int LETTER_STATUS_RETRY_INTERVAL = 500;
     static final int LETTER_UPLOAD_DELAY = 30000;
 
