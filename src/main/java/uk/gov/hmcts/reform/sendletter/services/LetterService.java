@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -62,6 +63,7 @@ public class LetterService {
     private final PdfCreator pdfCreator;
     private final LetterRepository letterRepository;
     private final LetterEventRepository letterEventRepository;
+    private final DocumentService documentService;
     private final Zipper zipper;
     private final ObjectMapper mapper;
     private final boolean isEncryptionEnabled;
@@ -77,6 +79,7 @@ public class LetterService {
         PdfCreator pdfCreator,
         LetterRepository letterRepository,
         LetterEventRepository letterEventRepository,
+        DocumentService documentService,
         Zipper zipper,
         ObjectMapper mapper,
         @Value("${encryption.enabled}") Boolean isEncryptionEnabled,
@@ -89,6 +92,7 @@ public class LetterService {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
         this.letterEventRepository = letterEventRepository;
+        this.documentService = documentService;
         this.zipper = zipper;
         this.mapper = mapper;
         this.isEncryptionEnabled = isEncryptionEnabled;
@@ -128,6 +132,13 @@ public class LetterService {
     }
 
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
+        Optional<String> recipientsChecksum =
+            (!(letter.getAdditionalData() == null || letter.getAdditionalData().isEmpty())
+                && Objects.requireNonNull(letter.getAdditionalData()).containsKey("recipients"))
+                ? Optional.of(generateChecksum(mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
+                : Optional.empty();
+        recipientsChecksum.ifPresent(s -> documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter), s));
+
         UUID letterId = UUID.randomUUID();
         String loggingContext = String.format(
             "letter  %s, service %s, messageId %s, additionalData %s",
@@ -164,7 +175,8 @@ public class LetterService {
                 serviceName,
                 messageId
             );
-            asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent), logger,
+            asyncService.run(() -> saveLetter(letter, messageId, serviceName, letterId,
+                fileContent, recipientsChecksum), logger,
                 () -> saveDuplicate(letter, letterId, messageId, serviceName, isAsync),
                 message -> saveException(letter, letterId, serviceName, message, isAsync));
         } else {
@@ -176,7 +188,8 @@ public class LetterService {
                     serviceName,
                     messageId
                 );
-                asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId, fileContent));
+                asyncService.execute(() -> saveLetter(letter, messageId, serviceName, letterId,
+                    fileContent, recipientsChecksum));
             } catch (DataIntegrityViolationException dataIntegrityViolationException) {
                 Runnable logger = () -> log.error(
                     "Duplicate record, letter id {}, service {}, messageId {}",
@@ -199,7 +212,7 @@ public class LetterService {
 
     @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
-                           Function<LocalDateTime, byte[]> zipContent) {
+                           Function<LocalDateTime, byte[]> zipContent, Optional<String> recipientsChecksum) {
         LocalDateTime createdAtTime = now();
         Letter dbLetter = new Letter(
             id,
@@ -215,6 +228,9 @@ public class LetterService {
         );
 
         letterRepository.save(dbLetter);
+
+        documentService.saveDocuments(id, getDocumentsFromLetter(letter), recipientsChecksum.orElse(null));
+
         log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
 
@@ -295,6 +311,18 @@ public class LetterService {
         } else {
             Asserts.notNull(encryptionPublicKey, "encryptionPublicKey");
             return PgpEncryptionUtil.loadPublicKey(encryptionPublicKey.getBytes());
+        }
+    }
+
+    private List<?> getDocumentsFromLetter(ILetterRequest letter) {
+        if (letter instanceof LetterRequest) {
+            return ((LetterRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsRequest) {
+            return ((LetterWithPdfsRequest) letter).documents;
+        } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
+            return ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents;
+        } else {
+            throw new UnsupportedLetterRequestTypeException();
         }
     }
 

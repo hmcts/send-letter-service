@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -124,15 +126,53 @@ public final class SampleData {
         }
     }
 
+    public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(
+        String service,
+        LocalDateTime createdAt,
+        String type,
+        String fingerprint,
+        Map<String, Integer> copies,
+        Supplier<String> checkSum,
+        Map<String, Object> additionalData
+    ) {
+
+        try {
+            return new uk.gov.hmcts.reform.sendletter.entity.Letter(
+                UUID.randomUUID(),
+                checkSum.get(),
+                service,
+                objectMapper.readTree(objectMapper.writeValueAsString(additionalData)),
+                type,
+                new byte[1],
+                false,
+                fingerprint,
+                createdAt,
+                objectMapper.valueToTree(copies)
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntityWithRecipients(
+        String service, LocalDateTime createdAt, List<String> recipients) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("recipients", recipients);
+        return letterEntity(service, createdAt, "letterType1",
+            null, Map.of("Document_1", 1), checkSumSupplier, additionalData);
+    }
+
     public static uk.gov.hmcts.reform.sendletter.entity.Document documentEntity(
         UUID letterId,
         String checkSum,
+        String recipientsChecksum,
         LocalDateTime createdAt
     ) {
         return new uk.gov.hmcts.reform.sendletter.entity.Document(
             UUID.randomUUID(),
             letterId,
             checkSum,
+            recipientsChecksum,
             createdAt
         );
     }
@@ -159,6 +199,16 @@ public final class SampleData {
                 Map.of("reference", "ABD-123-WAZ",
                         "count", 10,
                         "additionInfo", "present")
+        );
+    }
+
+    public static LetterWithPdfsRequest letterWithPdfsRequestWithAdditionalDataIncludingRecipients() throws Exception {
+        return new LetterWithPdfsRequest(
+            singletonList(
+                Base64.getDecoder().decode(loadResource(ENCODED_PDF_FILE))), "someType",
+            Map.of("reference", "ABD-123-WAZ",
+                "count", 10,
+                "recipients", Arrays.asList("one", "two"))
         );
     }
 

@@ -12,5 +12,8 @@
   ],
   "case_id": "{{case_id}}",
   "case_ref": "162MC066",
-  "letter_type": "first-contact-pack"
+  "letter_type": "first-contact-pack",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }

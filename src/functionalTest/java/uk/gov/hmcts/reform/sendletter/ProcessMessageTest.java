@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class ProcessMessageTest extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
 
     @Test
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_even_pages()
@@ -104,7 +104,7 @@ class ProcessMessageTest extends FunctionalTestSuite {
         try {
             letterId =  sendPrintLetterRequest(
                     signIn(),
-                    sampleLetterRequestJson("letter_single_document.json", "one-page-template_duplicate.html")
+                    sampleLetterRequestJson("letter_single_document_duplicate.json", "one-page-template_duplicate.html")
             );
         } catch (Exception e) {
             e.printStackTrace();

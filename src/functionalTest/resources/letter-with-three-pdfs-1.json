@@ -1,0 +1,11 @@
+{
+  "documents": [
+    "{{pdf91}}",
+    "{{pdf92}}",
+    "{{pdf93}}"
+  ],
+  "type": "BPS001",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
+}

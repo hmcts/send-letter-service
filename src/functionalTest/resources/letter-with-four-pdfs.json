@@ -1,9 +1,12 @@
 {
   "documents": [
-    "{{pdf}}",
-    "{{pdf}}",
-    "{{pdf}}",
-    "{{pdf}}"
+    "{{pdf41}}",
+    "{{pdf42}}",
+    "{{pdf43}}",
+    "{{pdf44}}"
   ],
-  "type": "BPS001"
+  "type": "BPS001",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }

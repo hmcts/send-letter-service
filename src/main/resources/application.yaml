@@ -230,3 +230,7 @@ springdoc:
 
 actions:
   api-key: ${ACTIONS_API_KEY}
+
+documents:
+  duplicate:
+    cut-off-time: ${DUPLICATES_CUT_OFF_TIME:1}

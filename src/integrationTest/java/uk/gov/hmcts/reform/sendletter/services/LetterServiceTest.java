@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -61,6 +62,9 @@ class LetterServiceTest {
     @Autowired
     private LetterEventRepository letterEventRepository;
 
+    @Mock
+    private DocumentService documentService;
+
     @BeforeEach
     void setUp() {
         execusionService = spy(ExecusionService.class);
@@ -70,17 +74,19 @@ class LetterServiceTest {
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
         objectMapper = new ObjectMapper();
         service = new LetterService(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
-            letterRepository,
-            letterEventRepository,
-            new Zipper(),
-            new ObjectMapper(),
-            false,
-            null,
-            serviceFolderMapping,
-            execusionService,
-            duplicateLetterService,
-            exceptionLetterService);
+                new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+                letterRepository,
+                letterEventRepository,
+                documentService,
+                new Zipper(),
+                new ObjectMapper(),
+                false,
+                null,
+                serviceFolderMapping,
+                execusionService,
+                duplicateLetterService,
+                exceptionLetterService
+        );
     }
 
     @AfterEach

@@ -48,6 +48,9 @@ class LetterServiceWithEncryptionEnabledTest {
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
+    @Mock
+    private DocumentService documentService;
+
     @AfterEach
     void tearDown() {
         letterRepository.deleteAll();
@@ -69,6 +72,7 @@ class LetterServiceWithEncryptionEnabledTest {
             pdfCreator,
             letterRepository,
             letterEventRepository,
+            documentService,
             new Zipper(),
             new ObjectMapper(),
             true,
