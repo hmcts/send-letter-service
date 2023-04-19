@@ -13,7 +13,7 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
 
     @Query(value = "select * from documents d "
         + " WHERE d.checksum = :checkSum "
+        + " AND d.recipients_checksum = :recipientsChecksum "
         + " AND d.created_at >= :createdAfter limit 1", nativeQuery = true)
-    Optional<Document> findOneCreatedAfter(@Param("checkSum") String checkSum, @Param("createdAfter") LocalDateTime createdAfter);
-
+    Optional<Document> findOneCreatedAfter(@Param("checkSum") String checkSum, @Param("recipientsChecksum") String recipientsChecksum, @Param("createdAfter") LocalDateTime createdAfter);
 }

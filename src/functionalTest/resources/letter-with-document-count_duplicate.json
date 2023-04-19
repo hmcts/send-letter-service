@@ -1,13 +1,16 @@
 {
   "documents": [
     {
-      "content": "{{pdf}}",
+      "content": "{{pdf21}}",
       "copies": 2
     },
     {
-      "content": "{{pdf}}",
+      "content": "{{pdf22}}",
       "copies": 5
     }
   ],
-  "type": "BPS001"
+  "type": "BPS001",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }

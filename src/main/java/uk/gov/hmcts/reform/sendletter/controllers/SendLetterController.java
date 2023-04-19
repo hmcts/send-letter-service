@@ -72,7 +72,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 
@@ -82,6 +81,7 @@ public class SendLetterController {
         @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = SendLetterResponse.class)),
             description = "Successfully sent letter"),
+        @ApiResponse(responseCode = "400", description = ControllerResponseMessage.RESPONSE_400),
         @ApiResponse(responseCode = "401", description = ControllerResponseMessage.RESPONSE_401),
         @ApiResponse(responseCode = "403", description = ControllerResponseMessage.RESPONSE_403)
     })
@@ -93,7 +93,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 
@@ -112,7 +111,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 

@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.sendletter.entity.Document;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
@@ -22,24 +22,56 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    private final int cutOff;
+
+    public DocumentService(
+        DocumentRepository documentRepository,
+        @Value("${documents.duplicate.cut-off-time:0}") int cutOff
+    ) {
         this.documentRepository = documentRepository;
+        this.cutOff = cutOff;
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void saveDocuments(UUID letterId, List<uk.gov.hmcts.reform.sendletter.model.in.Document> documents) {
+    public void checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
+        documents.forEach((document) -> {
+            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
+                checkSum,
+                recipientListChecksum,
+                now().minusHours(cutOff)
+            );
+            if (documentFound.isPresent()) {
+                String msg = String.format(
+                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s",
+                    documentFound.get().getId(),
+                    checkSum,
+                    recipientListChecksum
+                );
+                log.error(msg);
+                throw new DuplicateDocumentException(msg);
+            }
+        });
+    }
+
+    @Transactional
+    public void saveDocuments(UUID letterId, List<?> documents, String recipientsChecksum) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
-            log.info("Saving document, id {}, letterId {}", id, letterId);
+            log.debug("Saving document, id {}, letterId {}", id, letterId);
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
-            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(checkSum, now().minusHours(1));
+            Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
+                checkSum,
+                recipientsChecksum,
+                now().minusHours(cutOff)
+            );
             if (documentFound.isEmpty()) {
                 Document documentToSave =
                     new Document(
                         id,
                         letterId,
                         checkSum,
+                        recipientsChecksum,
                         now()
                     );
                 documentRepository.save(documentToSave);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -8,17 +9,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
-    private static Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessMessageWithDocumentCountTest.class);
 
     @Test
     void should_send_letter_and_upload_file_on_sftp_server() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            samplePdfLetterRequestJson("letter-with-document-count.json", "test.pdf")
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -33,9 +36,48 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         });
     }
 
+    @Test
+    void should_return_conflict_if_same_document_sent_twice() throws Exception {
+        String letterId = sendPrintLetterRequest(
+            signIn(),
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json", 131, 132)
+        );
+
+        String status = verifyLetterUploaded(letterId);
+        assertThat(status).isEqualTo(LetterStatus.Uploaded.name());
+
+        awaitAndVerifyFileOnSftp(letterId, (sftpFile, sftp) -> {
+            assertThat(sftpFile.getName()).matches(getFileNamePattern(letterId));
+
+            if (!isEncryptionEnabled) {
+                validatePdfFile(letterId, sftp, sftpFile, 22);
+            }
+        });
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            logger.error("Error: ", ex);
+        }
+
+        // the same pdf document in another letter (preserve the order)
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", "Bearer " + signIn())
+                .header(CONTENT_TYPE, getContentType())
+                .baseUri(sendLetterServiceUrl)
+                .body(jsonBody.getBytes())
+                .when()
+                .post("/letters")
+                .then()
+                .statusCode(SC_CONFLICT);
+    }
+
     private String verifyLetterUploaded(String letterId) {
         int counter = 1;
         String letterStatus = LetterStatus.Created.name();
+
         while (!letterStatus.equals(LetterStatus.Uploaded.name())) {
             try {
                 Thread.sleep(LETTER_UPLOAD_DELAY);
@@ -47,6 +89,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 logger.error(interruptedException.getMessage(), interruptedException);
             }
         }
+
         return letterStatus;
     }
 
@@ -57,14 +100,16 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
 
     private String getLetterRequest() {
         String letterId = "none";
+
         try {
             letterId = sendPrintLetterRequest(
-                    signIn(),
-                    samplePdfLetterRequestJson("letter-with-document-count_duplicate.json", "test.pdf")
+                signIn(),
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json", 21, 22)
             );
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return letterId;
     }
 

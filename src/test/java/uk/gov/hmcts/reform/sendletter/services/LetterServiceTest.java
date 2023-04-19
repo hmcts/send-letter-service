@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEvent;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
@@ -59,11 +60,14 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -102,6 +106,9 @@ class LetterServiceTest {
 
     private LetterService service;
 
+    @Mock
+    private DocumentService documentService;
+
 
     Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
             objectMapper.convertValue(jsonNode,
@@ -127,11 +134,13 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
-    void should_handle_DataIntegrityViolationException(String async) {
+    void should_handle_DataIntegrityViolationException(String async) throws Exception {
         // given
         thereAreNoDuplicates();
 
@@ -141,7 +150,7 @@ class LetterServiceTest {
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
         createLetterService(false, null);
 
-        LetterRequest letter = SampleData.letterRequest();
+        LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequestWithAdditionalDataIncludingRecipients();
 
         // when
         if (Boolean.parseBoolean(async)) {
@@ -152,7 +161,8 @@ class LetterServiceTest {
         }
 
         // then
-        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
+        verify(documentService).checkDocumentDuplicates(anyList(), anyString());
+        verify(pdfCreator).createFromBase64Pdfs(eq(letter.documents), anyString());
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
@@ -183,6 +193,7 @@ class LetterServiceTest {
             DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
 
         // then
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
         verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
         verify(exceptionLetterService).save(isA(ExceptionLetter.class));
@@ -212,6 +223,7 @@ class LetterServiceTest {
         }
 
         // then
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
         verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
@@ -222,9 +234,7 @@ class LetterServiceTest {
         } else {
             verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
         }
-
     }
-
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -242,11 +252,39 @@ class LetterServiceTest {
         service.save(letter, "some_service", async);
 
         // then
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
         verify(pdfCreator).createFromBase64Pdfs(eq(letter.documents), anyString());
 
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_generate_final_pdf_from_embedded_pdfs_when_new_model_is_passed_and_recipients_present(String async)
+        throws Exception {
+        // given
+        thereAreNoDuplicates();
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(false, null);
+
+        LetterWithPdfsRequest letter = SampleData.letterWithPdfsRequestWithAdditionalDataIncludingRecipients();
+
+        // when
+        service.save(letter, "some_service", async);
+
+        // then
+        verify(documentService).checkDocumentDuplicates(anyList(), anyString());
+        verify(pdfCreator).createFromBase64Pdfs(eq(letter.documents), anyString());
+
+        if (Boolean.parseBoolean(async)) {
+            verify(execusionService).run(any(), any(), any(), any());
+        }
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), anyString());
     }
 
     @ParameterizedTest
@@ -270,6 +308,7 @@ class LetterServiceTest {
         service.save(letterWithPdfsAndNumberOfCopiesRequest, "some_service", async);
 
         // then
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
         verify(pdfCreator)
             .createFromBase64PdfWithCopies(eq(letterWithPdfsAndNumberOfCopiesRequest.documents), anyString());
         verify(zipper).zip(any(PdfDoc.class));
@@ -283,6 +322,7 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 
     @ParameterizedTest
@@ -315,10 +355,11 @@ class LetterServiceTest {
 
         ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
         verify(letterRepository).save(letterArgumentCaptor.capture());
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 1));
-
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 
     @ParameterizedTest
@@ -354,7 +395,8 @@ class LetterServiceTest {
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 1));
-
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 
     @ParameterizedTest
@@ -387,6 +429,8 @@ class LetterServiceTest {
 
         assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
                 .containsAllEntriesOf(Map.of("Document_1", 3, "Document_2", 8));
+        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
+        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 
     @Test
@@ -440,6 +484,33 @@ class LetterServiceTest {
         assertThat(throwable)
             .isInstanceOf(UnsupportedLetterRequestTypeException.class)
             .hasMessage("Unsupported letter request type");
+
+        verify(execusionService, never()).run(any(), any(), any(), any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
+    void should_rethrow_document_duplicate_exception(String async) {
+        // given
+        thereAreNoDuplicates();
+
+        // and
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+        createLetterService(false, null);
+        doThrow(new DuplicateDocumentException("msg")).when(documentService)
+            .checkDocumentDuplicates(anyList(), anyString());
+
+        // when
+        Throwable throwable = catchThrowable(() -> service.save(
+                SampleData.letterWithPdfsRequestWithAdditionalDataIncludingRecipients(),
+                "some_service",
+                async
+        ));
+
+        // then
+        assertThat(throwable)
+            .isInstanceOf(DuplicateDocumentException.class)
+            .hasMessage("msg");
 
         verify(execusionService, never()).run(any(), any(), any(), any());
     }
@@ -565,7 +636,6 @@ class LetterServiceTest {
         verify(letterRepository).findById(isA(UUID.class));
     }
 
-
     private Letter createLetter() {
         Letter result = mock(Letter.class);
         when(result.getStatus()).thenReturn(uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created);
@@ -583,6 +653,7 @@ class LetterServiceTest {
             pdfCreator,
             letterRepository,
             letterEventRepository,
+            documentService,
             zipper,
             objectMapper,
             isEncryptionEnabled,

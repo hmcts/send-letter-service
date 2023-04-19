@@ -20,7 +20,7 @@
 
 Follow list of required environment variables defined in `./docker/env.list` in order to be able to run application.
 Additionally local application will require configured database so add/amend `LETTER_TRACKING_DB_*` variables as needed.
-Once everything is set up, run application by simply
+Once everything is set up, run application by simply:
 
 ```bash
 $ ./gradlew bootRun
