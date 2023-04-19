@@ -72,7 +72,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 
@@ -94,7 +93,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 
@@ -113,7 +111,6 @@ public class SendLetterController {
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-
         return ok().body(new SendLetterResponse(letterId));
     }
 

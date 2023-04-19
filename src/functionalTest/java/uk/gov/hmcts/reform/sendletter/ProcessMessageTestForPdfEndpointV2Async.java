@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -37,7 +36,6 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
-    @Disabled
     void should_return_conflict_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
             throws Exception {
         String letterId = sendPrintLetterRequestAsync(

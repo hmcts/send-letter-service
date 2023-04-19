@@ -2,5 +2,8 @@
   "documents": [
     "{{pdf111}}"
   ],
-  "type": "BPS002"
+  "type": "BPS002",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }

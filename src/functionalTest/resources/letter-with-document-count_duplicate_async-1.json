@@ -9,5 +9,8 @@
       "copies": 6
     }
   ],
-  "type": "BPS00"
+  "type": "BPS00",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
 }

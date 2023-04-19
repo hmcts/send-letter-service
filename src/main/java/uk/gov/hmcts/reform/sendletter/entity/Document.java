@@ -13,6 +13,7 @@ public class Document {
     private UUID id;
     private UUID letterId;
     private String checksum;
+    private String recipientsChecksum;
     private LocalDateTime createdAt;
 
     // For use by hibernate.
@@ -23,11 +24,13 @@ public class Document {
         UUID id,
         UUID letterId,
         String checksum,
+        String recipientsChecksum,
         LocalDateTime createdAt
     ) {
         this.id = id;
         this.letterId = letterId;
         this.checksum = checksum;
+        this.recipientsChecksum = recipientsChecksum;
         this.createdAt = createdAt;
     }
 
@@ -41,6 +44,10 @@ public class Document {
 
     public String getChecksum() {
         return checksum;
+    }
+
+    public String getRecipientsChecksum() {
+        return recipientsChecksum;
     }
 
     public LocalDateTime getCreatedAt() {

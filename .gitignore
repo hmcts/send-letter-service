@@ -23,3 +23,6 @@
 .DS_store
 
 application-default.yaml
+/bin/setup-env.sh
+/bin/substitutions.json
+/bin/create-env-file.sh

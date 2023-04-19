@@ -22,30 +22,30 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    private final int cutOffInMinutes;
+    private final int cutOff;
 
     public DocumentService(
         DocumentRepository documentRepository,
-        @Value("${documents.duplicate.cut-off-time-in-minutes:0}") int cutOffInMinutes
+        @Value("${documents.duplicate.cut-off-time:0}") int cutOff
     ) {
         this.documentRepository = documentRepository;
-        this.cutOffInMinutes = cutOffInMinutes;
+        this.cutOff = cutOff;
     }
 
-    public void checkDocumentDuplicates(List<?> documents) {
+    public void checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
         documents.forEach((document) -> {
-            UUID id = UUID.randomUUID();
-            log.debug("Checking document, id {}", id);
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
-                    checkSum,
-                    now().minusMinutes(cutOffInMinutes)
+                checkSum,
+                recipientListChecksum,
+                now().minusHours(cutOff)
             );
             if (documentFound.isPresent()) {
                 String msg = String.format(
-                        "Duplicate document found, id %s, checkSum %s",
-                        documentFound.get().getId(),
-                        checkSum
+                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s",
+                    documentFound.get().getId(),
+                    checkSum,
+                    recipientListChecksum
                 );
                 log.error(msg);
                 throw new DuplicateDocumentException(msg);
@@ -54,7 +54,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public void saveDocuments(UUID letterId, List<?> documents) {
+    public void saveDocuments(UUID letterId, List<?> documents, String recipientsChecksum) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
@@ -62,7 +62,8 @@ public class DocumentService {
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
-                now().minusHours(cutOffInMinutes)
+                recipientsChecksum,
+                now().minusHours(cutOff)
             );
             if (documentFound.isEmpty()) {
                 Document documentToSave =
@@ -70,6 +71,7 @@ public class DocumentService {
                         id,
                         letterId,
                         checkSum,
+                        recipientsChecksum,
                         now()
                     );
                 documentRepository.save(documentToSave);
