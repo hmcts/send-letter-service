@@ -95,6 +95,8 @@ reports:
       display-name: FINREM
     - service: fpl_case_service
       display-name: FPLA
+    - service: prl_cos_api
+      display-name: PRIVATELAW
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -140,7 +142,8 @@ ftp:
       folder: FINREM
     - service: fpl_case_service
       folder: FPL
-
+    - service: prl_cos_api
+      folder: PRIVLAW
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
   lock_at_most_for: ${SCHEDULING_LOCK_AT_MOST_FOR:PT10M} # 10 minutes in ISO-8601
@@ -221,6 +224,10 @@ accesstoken:
     - serviceName: send_letter_service
       newContainerName: encrypted
       validity: ${SAS_TOKEN_VALIDITY:300}
+    - serviceName: prl_cos_api
+      newContainerName: new-bulkprint
+      validity: ${SAS_TOKEN_VALIDITY:300}
+
 
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.sendletter
