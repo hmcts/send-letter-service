@@ -374,6 +374,11 @@ public class LetterService {
             return null;
         };
 
+        Function<JsonNode, Map<String, Integer>> copiesFunction= copies -> Optional.ofNullable(copies)
+            .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Integer>>() {
+            }))
+            .orElse(Collections.emptyMap());
+
         LetterStatus letterStatus = letterRepository
             .findById(id)
             .map(letter -> new LetterStatus(
@@ -384,7 +389,7 @@ public class LetterService {
                 toDateTime(letter.getSentToPrintAt()),
                 toDateTime(letter.getPrintedAt()),
                 additionDataFunction.apply(letter.getAdditionalData()),
-                null
+                copiesFunction.apply(letter.getCopies())
             ))
             .orElseThrow(() -> new LetterNotFoundException(id));
         log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
