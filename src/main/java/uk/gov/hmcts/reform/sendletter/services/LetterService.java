@@ -374,7 +374,7 @@ public class LetterService {
             return null;
         };
 
-        Function<JsonNode, Map<String, Integer>> copiesFunction= copies -> Optional.ofNullable(copies)
+        Function<JsonNode, Map<String, Integer>> copiesFunction = copies -> Optional.ofNullable(copies)
             .map(data -> mapper.convertValue(data, new TypeReference<Map<String, Integer>>() {
             }))
             .orElse(Collections.emptyMap());
