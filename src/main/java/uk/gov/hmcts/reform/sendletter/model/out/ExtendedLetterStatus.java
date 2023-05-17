@@ -19,7 +19,7 @@ public class ExtendedLetterStatus extends LetterStatus {
         final ZonedDateTime sentToPrintAt,
         final ZonedDateTime printedAt,
         final Map<String, Object> additionalData,
-        final Map<String, Integer> copies,
+        final Integer copies,
         final List<LetterStatusEvent> events
     ) {
         super(id, status, checksum, createdAt, sentToPrintAt, printedAt, additionalData, copies);
