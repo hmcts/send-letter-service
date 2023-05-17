@@ -36,7 +36,7 @@ public class LetterStatus {
     public final Map<String, Object> additionalData;
 
     @JsonProperty("copies")
-    public final Integer copies;
+    public final Map<String, Integer> copies;
 
 
     public LetterStatus(
@@ -47,7 +47,7 @@ public class LetterStatus {
         final ZonedDateTime sentToPrintAt,
         final ZonedDateTime printedAt,
         final Map<String, Object> additionalData,
-        final Integer copies
+        final Map<String, Integer> copies
     ) {
         this.id = id;
         this.status = status;
@@ -57,6 +57,6 @@ public class LetterStatus {
         this.sentToPrintAt = sentToPrintAt;
         this.printedAt = printedAt;
         this.additionalData = additionalData;
-        this.copies =  copies;
+        this.copies = copies;
     }
 }
