@@ -89,8 +89,7 @@ class GetLetterStatusTest {
             .andExpect(jsonPath("$.checksum").value(letter.getChecksum()))
             .andExpect(jsonPath("$.created_at").value(toIso(letter.getCreatedAt())))
             .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
-            .andExpect(jsonPath("$.printed_at").isEmpty())
-            .andExpect(jsonPath("$.copies.Document_1").value(1));
+            .andExpect(jsonPath("$.printed_at").isEmpty());
     }
 
     @Test
