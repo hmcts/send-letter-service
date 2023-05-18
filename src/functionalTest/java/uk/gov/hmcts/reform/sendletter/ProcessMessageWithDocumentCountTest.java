@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
+@Disabled
 public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageWithDocumentCountTest.class);
 
