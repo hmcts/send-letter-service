@@ -23,7 +23,7 @@ jobs:
           java-version: '17'
 
       - name: List dependencies
-        run: ./gradlew -q dependencies deps.log
+        run: ./gradlew -q dependencies > deps.log
 
       - name: Base 64 encode dependencies
         run: cat deps.log | base64 > deps.log.b64
