@@ -1,5 +1,4 @@
 name: Maintain Ardoq Tech Stack
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   push:
     branches:
