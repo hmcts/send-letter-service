@@ -305,11 +305,11 @@ dependencies {
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
-  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.5.1'
+  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.3.1'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.5.1'
+  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.3.1'
 
   contractTestImplementation sourceSets.test.runtimeClasspath
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
