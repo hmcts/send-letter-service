@@ -23,6 +23,7 @@ public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILe
     public final String type;
 
     @Schema(description = "Optional field where services can store any additional information about the letter")
+    @ValidRecipients
     public final Map<String, Object> additionalData;
 
     public LetterWithPdfsAndNumberOfCopiesRequest(
