@@ -20,5 +20,6 @@
       }
     }
   ],
-  "type": "smoke_test"
+  "type": "smoke_test",
+  "additional_data": {}
 }
