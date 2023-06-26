@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
@@ -20,13 +23,15 @@ class CreateLetterSmokeTest extends SmokeTestSuite {
 
         String jwt = signIn();
 
-        String json = new JSONObject(sampleLetterJson("letter.json"))
-            .put("additional_data", new JSONObject().put("recipients",
-                UUID.randomUUID())).toString();
+        JSONObject json = new JSONObject(sampleLetterJson("letter.json"));
+        JSONArray recipientsArray = new JSONArray().put(UUID.randomUUID().toString());
+        JSONObject additionalData = new JSONObject().put("recipients", recipientsArray);
+        json.put("additional_data", additionalData);
+        String modifiedJson = json.toString();
 
         String id = givenJwt(jwt)
             .and()
-            .body(json)
+            .body(modifiedJson)
             .when()
             .post("/letters")
             .then()
