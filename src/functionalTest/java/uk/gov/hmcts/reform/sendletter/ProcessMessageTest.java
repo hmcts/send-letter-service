@@ -19,7 +19,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleLetterRequestJson("letter_single_document.json", "two-page-template.html")
+            getModifiedJsonWithRecipients(sampleLetterRequestJson(
+                "letter_single_document.json", "two-page-template.html"))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -39,7 +40,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleLetterRequestJson("letter_single_document.json", "one-page-template.html")
+            getModifiedJsonWithRecipients(sampleLetterRequestJson(
+                "letter_single_document.json", "one-page-template.html"))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -59,7 +61,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleLetterRequestJson("letter_two_documents.json", "two-page-template.html")
+            getModifiedJsonWithRecipients(
+                sampleLetterRequestJson("letter_two_documents.json", "two-page-template.html"))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -79,7 +82,8 @@ class ProcessMessageTest extends FunctionalTestSuite {
         throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleLetterRequestJson("letter_two_documents.json", "one-page-template.html")
+            getModifiedJsonWithRecipients(
+                sampleLetterRequestJson("letter_two_documents.json", "one-page-template.html"))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -103,8 +107,10 @@ class ProcessMessageTest extends FunctionalTestSuite {
         String letterId = "none";
         try {
             letterId =  sendPrintLetterRequest(
-                    signIn(),
-                    sampleLetterRequestJson("letter_single_document_duplicate.json", "one-page-template_duplicate.html")
+                signIn(),
+                getModifiedJsonWithRecipients(
+                    sampleLetterRequestJson("letter_single_document_duplicate.json",
+                        "one-page-template_duplicate.html"))
             );
         } catch (Exception e) {
             e.printStackTrace();

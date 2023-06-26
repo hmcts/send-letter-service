@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -23,7 +24,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51)
+            getModifiedJsonWithRecipients(
+                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -42,7 +44,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_return_conflict_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111)
+            getModifiedJsonWithRecipients(
+                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -57,7 +60,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         });
 
         // the same pdf document in another letter
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json", 111);
+        String jsonBody = getModifiedJsonWithRecipients(
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json", 111));
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -82,7 +86,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
                 signIn(),
                 sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
             );
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return letterId;

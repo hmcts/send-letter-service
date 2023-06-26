@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             logger.error(e.getMessage(), e);
         }
         return letterId;

@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
@@ -202,15 +203,15 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
-    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, int... idxs) throws IOException {
+    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, int... idxs)
+        throws IOException, JSONException {
         String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
 
         for (int idx: idxs) {
             byte[] pdf = toByteArray(getResource("test" + idx + ".pdf"));
             requestBody = requestBody.replace("{{pdf" + idx + "}}", new String(Base64.getEncoder().encode(pdf)));
         }
-
-        return requestBody;
+        return getModifiedJsonWithRecipients(requestBody);
     }
 
     SSHClient getSshClient() throws IOException {
@@ -368,6 +369,14 @@ abstract class FunctionalTestSuite {
 
             return new PdfFile(pdfName, pdfContent);
         }
+    }
+
+    public String getModifiedJsonWithRecipients(String originalJson) throws JSONException {
+        JSONObject json = new JSONObject(originalJson);
+        JSONArray recipientsArray = new JSONArray().put(UUID.randomUUID().toString());
+        JSONObject additionalData = new JSONObject().put("recipients", recipientsArray);
+        json.put("additional_data", additionalData);
+        return json.toString();
     }
 
     static class PdfFile {

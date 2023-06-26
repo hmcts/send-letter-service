@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync() throws IOException {
+    public void testSaveLetterAsync() throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json", 81, 82)
@@ -37,7 +38,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice() throws IOException {
+    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice()
+        throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
@@ -104,7 +106,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             logger.error(e.getMessage(), e);
         }
         return letterId;
