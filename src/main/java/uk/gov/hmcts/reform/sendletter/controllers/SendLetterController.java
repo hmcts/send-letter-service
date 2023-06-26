@@ -71,6 +71,7 @@ public class SendLetterController {
         @Valid @RequestBody LetterRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
+        // String serviceName = "test";
         UUID letterId = letterService.save(letter, serviceName, isAsync);
         return ok().body(new SendLetterResponse(letterId));
     }
@@ -92,6 +93,7 @@ public class SendLetterController {
         @Valid @RequestBody LetterWithPdfsRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
+        // String serviceName = "test";
         UUID letterId = letterService.save(letter, serviceName, isAsync);
         return ok().body(new SendLetterResponse(letterId));
     }
@@ -110,6 +112,7 @@ public class SendLetterController {
         @Valid @RequestBody LetterWithPdfsAndNumberOfCopiesRequest letter
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
+        // String serviceName = "test";
         UUID letterId = letterService.save(letter, serviceName, isAsync);
         return ok().body(new SendLetterResponse(letterId));
     }

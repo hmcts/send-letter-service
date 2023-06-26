@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter.model.in;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;

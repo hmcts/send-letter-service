@@ -37,7 +37,7 @@ class PrintLetterControllerTest {
 
     @Test
     void should_responsed_when_request_is_valid() throws Exception {
-        String serviceName = "sscs";
+        String serviceName = "test";
         UUID uuid = UUID.randomUUID();
 
         String responseJson = loadJson("print_job_response.json");
