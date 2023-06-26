@@ -94,7 +94,8 @@ class SendLetterControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false","true"})
-    void should_return_400_client_error_when_letter_is_sent_with_additional_data_no_recipients(String async) throws Exception {
+    void should_return_400_client_error_when_letter_is_sent_with_additional_data_no_recipients(String async)
+        throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-additional-data-no-recipients.json"), async)
             .andExpect(status().isBadRequest());
 
@@ -103,7 +104,8 @@ class SendLetterControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"false","true"})
-    void should_return_400_client_error_when_letter_is_sent_with_additional_data_empty_recipients(String async) throws Exception {
+    void should_return_400_client_error_when_letter_is_sent_with_additional_data_empty_recipients(String async)
+        throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-additional-data-empty-recipients.json"), async)
             .andExpect(status().isBadRequest());
 
