@@ -11,8 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
