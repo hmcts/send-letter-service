@@ -2,5 +2,6 @@
   "documents": [
     "<pdf>forgot to encode this pdf</pdf>"
   ],
-  "type": "someType"
+  "type": "someType",
+  "additional_data" : {"recipients": ["one", "two"]}
 }

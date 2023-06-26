@@ -98,21 +98,36 @@ class GetLetterStatusTest {
     }
 
     @Test
-    void should_return_200_when_valid_json_is_sent_without_additionaldata() throws Exception {
+    void should_return_400_when_valid_json_is_sent_with_additionaldata_but_no_recipients() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
 
-        String json = Resources.toString(getResource("letter-with-pdf.json"), UTF_8);
+        // no recipients in additional data
+        String json = Resources.toString(getResource("letter-with-pdf-no-recipients.json"), UTF_8);
+        mvc.perform(
+                post("/letters")
+                    .header("ServiceAuthorization", "auth-header-value")
+                    .contentType(MediaTypes.LETTER_V2)
+                    .content(json)
+            ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_200_when_duplicated_document_is_sent_attachments_and_with_recipients() throws Exception {
+        // given
+        given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
+
+        String letter = Resources.toString(getResource("letter-with-pdf-and-recipients.json"), UTF_8);
         MvcResult result = mvc
             .perform(
                 post("/letters")
                     .header("ServiceAuthorization", "auth-header-value")
                     .contentType(MediaTypes.LETTER_V2)
-                    .content(json)
+                    .content(letter)
             ).andReturn();
 
-        JSONObject jsonObject = new JSONObject(result.getResponse().getContentAsString());
-        String letterId = jsonObject.getString("letter_id");
+        JSONObject letterResult = new JSONObject(result.getResponse().getContentAsString());
+        String letterId = letterResult.getString("letter_id");
         getLetterStatus(letterId)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").isNotEmpty())
@@ -122,10 +137,18 @@ class GetLetterStatusTest {
             .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
             .andExpect(jsonPath("$.printed_at").isEmpty())
             .andExpect(jsonPath("$.additional_data").doesNotHaveJsonPath());
+
+        String duplicatedLetter = Resources.toString(getResource("letter-with-pdf-duplicate.json"), UTF_8);
+        mvc.perform(
+            post("/letters")
+                .header("ServiceAuthorization", "auth-header-value")
+                .contentType(MediaTypes.LETTER_V2)
+                .content(duplicatedLetter)
+        ).andExpect(status().isOk());
     }
 
     @Test
-    void should_return_200_when_duplicated_document_is_sent_with_no_recipients() throws Exception {
+    void should_return_400_when_duplicated_document_is_sent_with_no_additional_data() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
 

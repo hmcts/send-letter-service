@@ -1,0 +1,12 @@
+{
+  "documents": [
+    {
+      "template": "abc",
+      "values": {
+        "a": "b"
+      }
+    }
+  ],
+  "type": "typeA",
+  "additional_data": {}
+}

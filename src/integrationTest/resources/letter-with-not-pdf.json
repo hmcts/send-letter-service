@@ -2,5 +2,6 @@
   "documents": [
     "bm90IHBkZg=="
   ],
-  "type": "someType"
+  "type": "someType",
+  "additional_data" : {"recipients": ["one", "two"]}
 }
