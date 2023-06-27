@@ -59,7 +59,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
 
         // the same pdf document in another letter (preserve the order)
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json",
-            true, 142, 143);
+            false, 142, 143);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())

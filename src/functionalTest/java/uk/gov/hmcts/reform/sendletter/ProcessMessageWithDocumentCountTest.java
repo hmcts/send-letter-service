@@ -64,7 +64,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
 
         // the same pdf document in another letter (preserve the order)
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json",
-            true, 132, 133);
+            false, 132, 133);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
