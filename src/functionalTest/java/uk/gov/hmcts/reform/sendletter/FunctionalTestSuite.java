@@ -55,6 +55,7 @@ abstract class FunctionalTestSuite {
     @Value("${s2s-url}")
     private String s2sUrl;
 
+
     @Value("${s2s-name}")
     private String s2sName;
 

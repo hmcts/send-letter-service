@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -39,7 +40,7 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice()
+    public void testSaveLetterAsync_should_return_same_letter_id_if_same_document_sent_twice()
         throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
@@ -69,7 +70,9 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(SC_CONFLICT);
+                .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     private String verifyLetterCreated(String letterId) {
@@ -114,6 +117,5 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
             logger.error(e.getMessage(), e);
         }
         return letterId;
-
     }
 }

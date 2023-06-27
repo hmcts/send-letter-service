@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -38,7 +39,7 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_conflict_if_same_document_sent_twice() throws Exception {
+    void should_return_same_letter_id_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json",
@@ -74,7 +75,9 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(SC_CONFLICT);
+            .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     private String verifyLetterUploaded(String letterId) {

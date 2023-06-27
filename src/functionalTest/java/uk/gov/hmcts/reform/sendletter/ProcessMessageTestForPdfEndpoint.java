@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -42,7 +43,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_conflict_if_same_document_sent_twice() throws Exception {
+    void should_return_same_letter_id_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
             sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json",
@@ -72,7 +73,9 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
             .when()
             .post("/letters")
             .then()
-            .statusCode(SC_CONFLICT);
+            .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     @Test

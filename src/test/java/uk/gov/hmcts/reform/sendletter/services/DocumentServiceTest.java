@@ -138,19 +138,18 @@ class DocumentServiceTest {
     }
 
     @Test
-    void checkDocumentDuplicates_should_throw_if_duplicated_document() {
+    void checkDocumentDuplicates_should_return_letter_id_if_duplicated() {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
         given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
-            .willReturn(Optional.of(mock(uk.gov.hmcts.reform.sendletter.entity.Document.class)));
-
-        //when
+            .willReturn(Optional.of(new uk.gov.hmcts.reform.sendletter.entity.Document(UUID.randomUUID(),
+                letterId, "a checksum", "a rec checksum", LocalDateTime.now())));
 
         //then
-        assertThatThrownBy(() ->
-            documentService.checkDocumentDuplicates(singletonList(document1), "any")
-        ).isInstanceOf(DuplicateDocumentException.class);
+        Optional<UUID> duplicateCheck = documentService.checkDocumentDuplicates(singletonList(document1), "any");
+        assertThat(duplicateCheck.isPresent()).isTrue();
+        assertThat(duplicateCheck.get()).isEqualTo(letterId);
     }
 
     @Test

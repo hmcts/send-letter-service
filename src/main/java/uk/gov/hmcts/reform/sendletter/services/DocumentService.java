@@ -32,8 +32,8 @@ public class DocumentService {
         this.cutOff = cutOff;
     }
 
-    public void checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
-        documents.forEach((document) -> {
+    public Optional<UUID> checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
+        for (Object document : documents) {
             String checkSum = LetterChecksumGenerator.generateChecksum(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
@@ -42,15 +42,17 @@ public class DocumentService {
             );
             if (documentFound.isPresent()) {
                 String msg = String.format(
-                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s",
+                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s. Returning letterId: %s",
                     documentFound.get().getId(),
                     checkSum,
-                    recipientListChecksum
+                    recipientListChecksum,
+                    documentFound.get().getLetterId()
                 );
-                log.error(msg);
-                throw new DuplicateDocumentException(msg);
+                log.warn(msg);
+                return Optional.of(documentFound.get().getLetterId());
             }
-        });
+        }
+        return Optional.empty();
     }
 
     @Transactional

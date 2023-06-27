@@ -137,7 +137,14 @@ public class LetterService {
                 && Objects.requireNonNull(letter.getAdditionalData()).containsKey("recipients"))
                 ? Optional.of(generateChecksum(mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
                 : Optional.empty();
-        recipientsChecksum.ifPresent(s -> documentService.checkDocumentDuplicates(getDocumentsFromLetter(letter), s));
+
+        if (recipientsChecksum.isPresent()) {
+            Optional<UUID> duplicateDocUUID = documentService.checkDocumentDuplicates(
+                getDocumentsFromLetter(letter), recipientsChecksum.get());
+            if (duplicateDocUUID.isPresent()) {
+                return duplicateDocUUID.get();
+            }
+        }
 
         UUID letterId = UUID.randomUUID();
         String loggingContext = String.format(
