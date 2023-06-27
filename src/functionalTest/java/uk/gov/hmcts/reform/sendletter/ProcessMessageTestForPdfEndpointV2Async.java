@@ -51,7 +51,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
 
         // the same pdf document in another letter
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json",
-            true,123, 124, 125);
+            false,123, 124, 125);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
