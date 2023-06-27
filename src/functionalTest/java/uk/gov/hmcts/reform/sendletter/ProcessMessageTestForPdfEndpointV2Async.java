@@ -29,7 +29,8 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_three_pdf_documents() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs.json", 61, 62, 63)
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs.json",
+                true,61, 62, 63)
         );
 
         String letterStatus = verifyLetterCreated(letterId);
@@ -41,14 +42,16 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
             throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-2.json", 121, 122, 123)
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-2.json",
+                false, 121, 122, 123)
         );
 
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
 
         // the same pdf document in another letter
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json", 123, 124, 125);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json",
+            true,123, 124, 125);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -93,7 +96,8 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-four-pdfs.json", 41, 42, 43, 44)
+                sampleIndexedPdfLetterRequestJson("letter-with-four-pdfs.json",
+                    true, 41, 42, 43, 44)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);

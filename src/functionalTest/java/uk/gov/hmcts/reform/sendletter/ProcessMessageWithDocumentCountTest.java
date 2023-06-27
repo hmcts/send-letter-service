@@ -21,7 +21,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json",
+                true,11, 12)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -40,7 +41,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     void should_return_conflict_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json", 131, 132)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json",
+                false, 131, 132)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -61,7 +63,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         }
 
         // the same pdf document in another letter (preserve the order)
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json",
+            true, 132, 133);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -104,7 +107,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequest(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json", 21, 22)
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json",
+                    true, 21, 22)
             );
         } catch (Exception e) {
             e.printStackTrace();

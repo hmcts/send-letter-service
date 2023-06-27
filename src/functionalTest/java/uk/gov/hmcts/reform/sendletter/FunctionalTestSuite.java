@@ -203,7 +203,7 @@ abstract class FunctionalTestSuite {
         return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
     }
 
-    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, int... idxs)
+    String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, boolean uniqueRecipients, int... idxs)
         throws IOException, JSONException {
         String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
 
@@ -211,7 +211,7 @@ abstract class FunctionalTestSuite {
             byte[] pdf = toByteArray(getResource("test" + idx + ".pdf"));
             requestBody = requestBody.replace("{{pdf" + idx + "}}", new String(Base64.getEncoder().encode(pdf)));
         }
-        return getModifiedJsonWithRecipients(requestBody);
+        return uniqueRecipients ? getModifiedJsonWithRecipients(requestBody) : requestBody;
     }
 
     SSHClient getSshClient() throws IOException {

@@ -29,7 +29,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     public void testSaveLetterAsync() throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json", 81, 82)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json",
+                true,81, 82)
         );
 
         logger.info("Letter id created {}", letterId);
@@ -42,7 +43,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json",
+                false, 141, 142)
         );
 
         logger.info("Letter id created {}", letterId);
@@ -56,7 +58,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         }
 
         // the same pdf document in another letter (preserve the order)
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json",
+            true, 142, 143);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -102,7 +105,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json", 101, 102)
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json",
+                    true,101, 102)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);

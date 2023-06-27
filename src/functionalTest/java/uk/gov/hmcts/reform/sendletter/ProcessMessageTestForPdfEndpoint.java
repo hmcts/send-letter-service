@@ -25,7 +25,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         String letterId = sendPrintLetterRequest(
             signIn(),
             getModifiedJsonWithRecipients(
-                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51))
+                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json",
+                    true, 51))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -45,7 +46,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         String letterId = sendPrintLetterRequest(
             signIn(),
             getModifiedJsonWithRecipients(
-                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111))
+                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json",
+                    false, 111))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -61,7 +63,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
 
         // the same pdf document in another letter
         String jsonBody = getModifiedJsonWithRecipients(
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json", 111));
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json",
+                true, 111));
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -84,7 +87,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         try {
             letterId =  sendPrintLetterRequest(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
+                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json",
+                    true,91, 92, 93)
             );
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -96,7 +100,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-two-pdfs.json", 71, 72)
+            sampleIndexedPdfLetterRequestJson("letter-with-two-pdfs.json",
+                true, 71, 72)
         );
 
         String status = verifyLetterUploaded(letterId);
