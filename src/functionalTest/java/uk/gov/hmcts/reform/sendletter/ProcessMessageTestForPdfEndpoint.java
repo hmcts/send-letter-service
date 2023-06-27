@@ -45,9 +45,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_return_conflict_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            getModifiedJsonWithRecipients(
-                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json",
-                    false, 111))
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json",
+                false, 111)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -62,33 +61,32 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         });
 
         // the same pdf document in another letter
-        String jsonBody = getModifiedJsonWithRecipients(
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json",
-                false, 111));
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json",
+            false, 111);
         RestAssured.given()
-                .relaxedHTTPSValidation()
-                .header("ServiceAuthorization", "Bearer " + signIn())
-                .header(CONTENT_TYPE, getContentType())
-                .baseUri(sendLetterServiceUrl)
-                .body(jsonBody.getBytes())
-                .when()
-                .post("/letters")
-                .then()
-                .statusCode(SC_CONFLICT);
+            .relaxedHTTPSValidation()
+            .header("ServiceAuthorization", "Bearer " + signIn())
+            .header(CONTENT_TYPE, getContentType())
+            .baseUri(sendLetterServiceUrl)
+            .body(jsonBody.getBytes())
+            .when()
+            .post("/letters")
+            .then()
+            .statusCode(SC_CONFLICT);
     }
 
     @Test
-    void may_throw_ConflictException()  {
+    void may_throw_ConflictException() {
         executeMultiRequest(this::getLetterRequest);
     }
 
     private String getLetterRequest() {
         String letterId = "none";
         try {
-            letterId =  sendPrintLetterRequest(
+            letterId = sendPrintLetterRequest(
                 signIn(),
                 sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json",
-                    true,91, 92, 93)
+                    true, 91, 92, 93)
             );
         } catch (IOException | JSONException e) {
             e.printStackTrace();
