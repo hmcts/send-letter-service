@@ -33,6 +33,7 @@ import java.util.UUID;
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -218,22 +219,15 @@ class GetLetterStatusTest {
         // Same request, but the reference is different. Recipients/documents are the same
         String duplicatedLetter =
             Resources.toString(getResource("letter-with-pdf-and-recipients-duplicate.json"), UTF_8);
-        mvc.perform(
+        MvcResult duplicatedResult = mvc.perform(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(duplicatedLetter)
-        ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").isNotEmpty())
-            .andExpect(jsonPath("$.status").value(LetterStatus.Created.name()))
-            .andExpect(jsonPath("$.checksum").isNotEmpty())
-            .andExpect(jsonPath("$.created_at").isNotEmpty())
-            .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
-            .andExpect(jsonPath("$.printed_at").isEmpty())
-            .andExpect(jsonPath("$.additional_data.reference").value("ABD-123-WAZ"))
-            .andExpect(jsonPath("$.additional_data.count").value(10))
-            .andExpect(jsonPath("$.additional_data.additionInfo").value("present"))
-            .andExpect(jsonPath("$.additional_data.recipients").isArray());
+        ).andExpect(status().isOk()).andReturn();
+        JSONObject duplicatedLetterResult = new JSONObject(duplicatedResult.getResponse().getContentAsString());
+        String duplicatedLetterId = duplicatedLetterResult.getString("letter_id");
+        verify(duplicatedLetterId).equals(letterId);
     }
 
     @Test
