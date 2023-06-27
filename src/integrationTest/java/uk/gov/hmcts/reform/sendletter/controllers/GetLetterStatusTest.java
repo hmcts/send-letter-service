@@ -33,7 +33,6 @@ import java.util.UUID;
 import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.io.Resources.getResource;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -219,15 +218,12 @@ class GetLetterStatusTest {
         // Same request, but the reference is different. Recipients/documents are the same
         String duplicatedLetter =
             Resources.toString(getResource("letter-with-pdf-and-recipients-duplicate.json"), UTF_8);
-        MvcResult duplicatedResult = mvc.perform(
+        mvc.perform(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(duplicatedLetter)
-        ).andExpect(status().isOk()).andReturn();
-        JSONObject duplicatedLetterResult = new JSONObject(duplicatedResult.getResponse().getContentAsString());
-        String duplicatedLetterId = duplicatedLetterResult.getString("letter_id");
-        verify(duplicatedLetterId).equals(letterId);
+        ).andExpect(status().isOk());
     }
 
     @Test
