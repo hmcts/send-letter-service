@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.hamcrest.Matchers.equalTo;
 
 @AutoConfigureMockMvc
 @ComponentScan(basePackages = "...", lazyInit = true)
@@ -223,7 +224,8 @@ class GetLetterStatusTest {
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(duplicatedLetter)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+            .andExpect(jsonPath("$.letter_id", equalTo(letterId)));
     }
 
     @Test
