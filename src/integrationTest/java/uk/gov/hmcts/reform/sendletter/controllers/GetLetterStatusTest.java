@@ -105,11 +105,11 @@ class GetLetterStatusTest {
         // no recipients in additional data
         String json = Resources.toString(getResource("letter-with-pdf-no-recipients.json"), UTF_8);
         mvc.perform(
-                post("/letters")
-                    .header("ServiceAuthorization", "auth-header-value")
-                    .contentType(MediaTypes.LETTER_V2)
-                    .content(json)
-            ).andExpect(status().isBadRequest());
+            post("/letters")
+                .header("ServiceAuthorization", "auth-header-value")
+                .contentType(MediaTypes.LETTER_V2)
+                .content(json)
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -183,7 +183,8 @@ class GetLetterStatusTest {
     }
 
     @Test
-    void should_return_409_when_duplicated_document_is_sent_with_recipients() throws Exception {
+    void should_return_200_and_duplicated_letter_id_when_duplicated_document_is_sent_with_recipients()
+        throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
 
@@ -222,7 +223,17 @@ class GetLetterStatusTest {
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(duplicatedLetter)
-        ).andExpect(status().isConflict());
+        ).andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").isNotEmpty())
+            .andExpect(jsonPath("$.status").value(LetterStatus.Created.name()))
+            .andExpect(jsonPath("$.checksum").isNotEmpty())
+            .andExpect(jsonPath("$.created_at").isNotEmpty())
+            .andExpect(jsonPath("$.sent_to_print_at").isEmpty())
+            .andExpect(jsonPath("$.printed_at").isEmpty())
+            .andExpect(jsonPath("$.additional_data.reference").value("ABD-123-WAZ"))
+            .andExpect(jsonPath("$.additional_data.count").value(10))
+            .andExpect(jsonPath("$.additional_data.additionInfo").value("present"))
+            .andExpect(jsonPath("$.additional_data.recipients").isArray());
     }
 
     @Test
