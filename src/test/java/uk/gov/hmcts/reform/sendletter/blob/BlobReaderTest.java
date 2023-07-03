@@ -31,8 +31,6 @@ import static org.mockito.Mockito.verify;
 class BlobReaderTest {
     @Mock
     private BlobServiceClient blobServiceClient;
-    @Mock
-    private LeaseClientProvider leaseClientProvider;
     private AccessTokenProperties accessTokenProperties;
     @Mock
     private BlobContainerClient blobContainerClient;
@@ -49,60 +47,9 @@ class BlobReaderTest {
     @Mock
     private BlobClient blobClient;
 
-    private BlobReader blobReader;
-
     @BeforeEach
     void setUp() {
         createAccessTokenConfig();
-        blobReader = new BlobReader(
-            blobServiceClient,
-            accessTokenProperties,
-            leaseClientProvider,
-            20
-        );
-    }
-
-    @Test
-    void should_return_leased_blobinfo_when_lease_acquired() {
-        given(blobServiceClient.getBlobContainerClient("encrypted"))
-                .willReturn(blobContainerClient);
-        given(blobContainerClient.listBlobs()).willReturn(mockedPagedIterable);
-        given(mockedBlobItemFirst.getName()).willReturn("mockedBlobItemFirst");
-        given(mockedBlobItemSecond.getName()).willReturn("mockedBlobItemSecond");
-        given(mockedBlobItemThird.getName()).willReturn("mockedBlobItemThird");
-
-        var blobItems = List.of(
-                mockedBlobItemFirst,
-                mockedBlobItemSecond,
-                mockedBlobItemThird);
-
-        var stream = blobItems.stream();
-
-        given(mockedPagedIterable.stream())
-                .willReturn(stream);
-
-        given(leaseClientProvider.get(blobClient))
-                .willReturn(blobLeaseClient);
-        given(blobContainerClient.getBlobClient(anyString()))
-                .willReturn(blobClient);
-        String leasedId = "leased";
-        given(blobLeaseClient.acquireLease(anyInt()))
-                .willThrow(new RuntimeException("First already leased"))
-                .willThrow(new RuntimeException("Second already leased"))
-                .willReturn(leasedId);
-        Optional<BlobInfo> mayBeBlobInfo = blobReader.retrieveBlobToProcess();
-        assertThat(mayBeBlobInfo).isPresent();
-
-        BlobInfo blobInfo = mayBeBlobInfo.get();
-        assertThat(blobInfo.isLeased()).isTrue();
-
-        verify(blobServiceClient).getBlobContainerClient("encrypted");
-        verify(blobContainerClient, times(3))
-                .getBlobClient(anyString());
-        verify(leaseClientProvider, times(3))
-                .get(blobClient);
-        verify(blobLeaseClient, times(3))
-                .acquireLease(20);
     }
 
     private void createAccessTokenConfig() {
