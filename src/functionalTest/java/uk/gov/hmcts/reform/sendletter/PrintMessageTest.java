@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,7 +23,6 @@ import static com.google.common.io.Resources.getResource;
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class PrintMessageTest extends FunctionalTestSuite {
 
     private static final String destDirectory = "/var/tmp";
