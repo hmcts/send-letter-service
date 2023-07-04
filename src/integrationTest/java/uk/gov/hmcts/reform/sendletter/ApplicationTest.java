@@ -37,16 +37,16 @@ class ApplicationTest {
         mvc = webAppContextSetup(wac).addFilters(filter).build();
     }
 
-//    @Test
-//    void should_generate_swagger_docs() throws Exception {
-//        byte[] specs = mvc.perform(get("/v3/api-docs"))
-//            .andExpect(status().isOk())
-//            .andReturn()
-//            .getResponse()
-//            .getContentAsByteArray();
-//
-//        FileOutputStream outputStream = new FileOutputStream("/tmp/swagger-specs.json");
-//        outputStream.write(specs);
-//        outputStream.close();
-//    }
+    @Test
+    void should_generate_swagger_docs() throws Exception {
+        byte[] specs = mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsByteArray();
+
+        FileOutputStream outputStream = new FileOutputStream("/tmp/swagger-specs.json");
+        outputStream.write(specs);
+        outputStream.close();
+    }
 }
