@@ -64,6 +64,7 @@ module "send-letter-key-vault" {
   common_tags             = var.common_tags
 
   managed_identity_object_id = var.managed_identity_object_id
+  create_managed_identity    = true
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
