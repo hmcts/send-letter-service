@@ -42,6 +42,10 @@ java:
           alias: STORAGE_ACCOUNT_CONNECTION_STRING
         - name: actions-api-key
           alias: ACTIONS_API_KEY
+        - name: sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: offline-mode
+          alias: LAUNCH_DARKLY_OFFLINE_MODE
 
   environment:
     # db
