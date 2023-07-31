@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
@@ -50,9 +49,6 @@ public class SendLetterProviderConfiguration {
 
     @MockBean
     private DocumentRepository documentRepository;
-
-    @MockBean
-    private LaunchDarklyClient launchDarklyClient;
 
     @Bean
     @Primary
