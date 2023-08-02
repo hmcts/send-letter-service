@@ -10,9 +10,8 @@ import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClientFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.SEND_LETTER_SERVICE_TEST;
+
 
 @ExtendWith(SpringExtension.class)
 class SmokeTestLaunchDarkly {
