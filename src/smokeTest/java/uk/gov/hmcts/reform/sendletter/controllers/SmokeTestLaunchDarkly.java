@@ -11,15 +11,16 @@ import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClientFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.SEND_LETTER_SERVICE_TEST;
 
 @ExtendWith(SpringExtension.class)
 class SmokeTestLaunchDarkly {
 
     @MockBean
-    private LaunchDarklyClient lDclient;
+    private LaunchDarklyClient ldClient;
     @MockBean
-    private LaunchDarklyClientFactory lDfactory;
+    private LaunchDarklyClientFactory ldFactory;
 
     @Value("${sdk-key}")
     private String sdkKey;
@@ -29,14 +30,14 @@ class SmokeTestLaunchDarkly {
 
     @BeforeEach
     void setUp() {
-        lDfactory = new LaunchDarklyClientFactory();
-        lDclient = new LaunchDarklyClient(lDfactory, sdkKey, offlineMode);
+        ldFactory = new LaunchDarklyClientFactory();
+        ldClient = new LaunchDarklyClient(ldFactory, sdkKey, offlineMode);
     }
 
     @Test
     void testFlagCheck() {
-        Boolean test_feature = lDclient.isFeatureEnabled(SEND_LETTER_SERVICE_TEST);
-        assertThat(test_feature).isTrue();
+        Boolean testFlag = ldClient.isFeatureEnabled(SEND_LETTER_SERVICE_TEST);
+        assertThat(testFlag).isTrue();
         //SEND_LETTER_SERVICE_TEST is a test flag only and needs to be set to TRUE within LD.
     }
 }
