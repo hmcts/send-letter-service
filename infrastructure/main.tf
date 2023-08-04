@@ -145,6 +145,16 @@ data "azurerm_key_vault_secret" "encryption_public_key" {
   key_vault_id = module.send-letter-key-vault.key_vault_id
 }
 
+data "azurerm_key_vault_secret" "launch_darkly_sdk_key" {
+  name         = "launch-darkly-sdk-key"
+  key_vault_id = module.send-letter-key-vault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "launch_darkly_offline_mode" {
+  name         = "launch-darkly-offline-mode"
+  key_vault_id = module.send-letter-key-vault.key_vault_id
+}
+
 # region staging DB secrets
 resource "azurerm_key_vault_secret" "staging_db_user" {
   count        = var.num_staging_dbs
