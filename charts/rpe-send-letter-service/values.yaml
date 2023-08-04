@@ -40,9 +40,9 @@ java:
           alias: DELAYED_STALE_REPORT_RECIPIENTS
         - name: actions-api-key
           alias: ACTIONS_API_KEY
-        - name: sdk-key
+        - name: launch-darkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
-        - name: offline-mode
+        - name: launch-darkly-offline-mode
           alias: LAUNCH_DARKLY_OFFLINE_MODE
 
   environment:
