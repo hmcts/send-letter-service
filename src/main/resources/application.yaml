@@ -237,7 +237,7 @@ documents:
   duplicate:
     cut-off-time: ${DUPLICATES_CUT_OFF_TIME:1}
 
-launchDarkly:
+launchdarkly:
   sdk-key: ${LAUNCH_DARKLY_SDK_KEY}
   offline-mode: ${LAUNCH_DARKLY_OFFLINE_MODE:false}
 
