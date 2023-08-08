@@ -24,7 +24,7 @@ class SmokeTestLaunchDarkly {
     @Value("${sdk-key}")
     private String sdkKey;
 
-    @Value("${offline-mode}")
+    @Value("${offline-mode:false}")
     private Boolean offlineMode;
 
     @BeforeEach
