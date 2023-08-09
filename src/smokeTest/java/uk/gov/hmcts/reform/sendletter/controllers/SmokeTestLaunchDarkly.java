@@ -21,7 +21,7 @@ class SmokeTestLaunchDarkly {
     @MockBean
     private LaunchDarklyClientFactory ldFactory;
 
-    @Value("${sdk-key}")
+    @Value("${sdk-key:AAAAAAAAAAAAAAAA}")
     private String sdkKey;
 
     @Value("${offline-mode:false}")
