@@ -34,7 +34,7 @@ public class DocumentService {
 
     public Optional<UUID> checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
         for (Object document : documents) {
-            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+            String checkSum = LetterChecksumGenerator.generateChecksumForPdfPages(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
                 recipientListChecksum,
@@ -61,7 +61,7 @@ public class DocumentService {
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
             log.debug("Saving document, id {}, letterId {}", id, letterId);
-            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+            String checkSum = LetterChecksumGenerator.generateChecksumForPdfPages(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
                 recipientsChecksum,
