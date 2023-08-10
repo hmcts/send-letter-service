@@ -48,4 +48,16 @@ class LaunchDarklyClientTest {
         when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDUser.class), anyBoolean())).thenReturn(false);
         assertFalse(launchDarklyClient.isFeatureEnabled(FAKE_FEATURE, ldUser));
     }
+
+    @Test
+    void testFeatureEnabledWithoutUser() {
+        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDUser.class), anyBoolean())).thenReturn(true);
+        assertTrue(launchDarklyClient.isFeatureEnabled(FAKE_FEATURE));
+    }
+
+    @Test
+    void testFeatureDisabledWithoutUser() {
+        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDUser.class), anyBoolean())).thenReturn(false);
+        assertFalse(launchDarklyClient.isFeatureEnabled(FAKE_FEATURE));
+    }
 }
