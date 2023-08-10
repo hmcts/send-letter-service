@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.launchdarkly;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.server.interfaces.DataSourceStatusProvider;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,5 +30,9 @@ public class LaunchDarklyClient {
 
     public boolean isFeatureEnabled(String feature, LDUser user) {
         return internalClient.boolVariation(feature, user, false);
+    }
+
+    public DataSourceStatusProvider.Status getDataSourceStatus() {
+        return internalClient.getDataSourceStatusProvider().getStatus();
     }
 }

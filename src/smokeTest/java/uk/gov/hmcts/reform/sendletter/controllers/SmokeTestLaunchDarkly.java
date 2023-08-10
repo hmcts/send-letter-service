@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
+import com.launchdarkly.sdk.server.interfaces.DataSourceStatusProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,6 @@ import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClientFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.SEND_LETTER_SERVICE_TEST;
-
 
 @ExtendWith(SpringExtension.class)
 class SmokeTestLaunchDarkly {
@@ -21,7 +20,7 @@ class SmokeTestLaunchDarkly {
     @MockBean
     private LaunchDarklyClientFactory ldFactory;
 
-    @Value("${sdk-key:AAAAAAAAAAAAAAAA}")
+    @Value("${sdk-key:YYYYY}")
     private String sdkKey;
 
     @Value("${offline-mode:false}")
@@ -34,9 +33,8 @@ class SmokeTestLaunchDarkly {
     }
 
     @Test
-    void testFlagCheck() {
-        Boolean testFlag = ldClient.isFeatureEnabled(SEND_LETTER_SERVICE_TEST);
-        assertThat(testFlag).isTrue();
-        //SEND_LETTER_SERVICE_TEST is a test flag only and needs to be set to TRUE within LD.
+    void checkLaunchDarklyStatus() {
+        DataSourceStatusProvider.Status ldStatus = ldClient.getDataSourceStatus();
+        assertThat(ldStatus.getState()).isEqualTo(DataSourceStatusProvider.State.VALID);
     }
 }
