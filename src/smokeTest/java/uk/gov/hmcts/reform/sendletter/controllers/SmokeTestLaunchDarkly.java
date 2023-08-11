@@ -41,15 +41,11 @@ class SmokeTestLaunchDarkly {
         } while (System.currentTimeMillis() < endTime);
 
         assertThat(ldStatus.getState()).isEqualTo(DataSourceStatusProvider.State.VALID);
-    }
 
-    @Test
-    void checkLaunchDarklyTestFlag() {
-        LaunchDarklyClientFactory ldFactory = new LaunchDarklyClientFactory();
-        LaunchDarklyClient ldClient = new LaunchDarklyClient(ldFactory, sdkKey, offlineMode);
-
+        //check existing flag
         Boolean testFeatureBoolean = ldClient.isFeatureEnabled(SEND_LETTER_SERVICE_TEST);
         assertThat(testFeatureBoolean).isTrue();
         //SEND_LETTER_SERVICE_TEST is a test flag only and needs to be set to TRUE within LD.
+
     }
 }
