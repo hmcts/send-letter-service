@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.launchdarkly.sdk.server.interfaces.DataSourceStatusProvider;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +23,16 @@ class SmokeTestLaunchDarkly {
     @Value("${offline-mode:false}")
     private Boolean offlineMode;
 
+    private LaunchDarklyClient ldClient;
+
+    @BeforeEach
+    void setUp() {
+        LaunchDarklyClientFactory ldFactory = new LaunchDarklyClientFactory();
+        ldClient = new LaunchDarklyClient(ldFactory, sdkKey, offlineMode);
+    }
+
     @Test
     void checkLaunchDarklyStatus() throws InterruptedException {
-        LaunchDarklyClientFactory ldFactory = new LaunchDarklyClientFactory();
-        LaunchDarklyClient ldClient = new LaunchDarklyClient(ldFactory, sdkKey, offlineMode);
 
         long startTime = System.currentTimeMillis();
         long endTime = startTime + 60000; // One minute in milliseconds
@@ -37,12 +44,15 @@ class SmokeTestLaunchDarkly {
             if (ldStatus.getState() == DataSourceStatusProvider.State.VALID) {
                 break; // Exit the loop if status is VALID
             }
-            Thread.sleep(1000); // Wait for 1 second before polling again
+            Thread.sleep(5000); // Wait 5 seconds before polling again
         } while (System.currentTimeMillis() < endTime);
 
         assertThat(ldStatus.getState()).isEqualTo(DataSourceStatusProvider.State.VALID);
+    }
 
-        //check existing flag
+    @Test
+    void checkLaunchDarklyTestFlag() {
+
         Boolean testFeatureBoolean = ldClient.isFeatureEnabled(SEND_LETTER_SERVICE_TEST);
         assertThat(testFeatureBoolean).isTrue();
         //SEND_LETTER_SERVICE_TEST is a test flag only and needs to be set to TRUE within LD.
