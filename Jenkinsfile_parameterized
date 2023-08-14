@@ -8,7 +8,9 @@ secrets = [
   'rpe-send-letter-${env}': [
     secret('ftp-user', 'TEST_FTP_USER'),
     secret('ftp-private-key', 'TEST_FTP_PRIVATE_KEY'),
-    secret('ftp-public-key', 'TEST_FTP_PUBLIC_KEY')
+    secret('ftp-public-key', 'TEST_FTP_PUBLIC_KEY'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('launch-darkly-offline-mode', 'LAUNCH_DARKLY_OFFLINE_MODE')
   ]
 ]
 

@@ -144,6 +144,7 @@ ftp:
       folder: FPL
     - service: prl_cos_api
       folder: PRIVLAW
+
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
   lock_at_most_for: ${SCHEDULING_LOCK_AT_MOST_FOR:PT10M} # 10 minutes in ISO-8601
@@ -223,7 +224,6 @@ accesstoken:
       newContainerName: new-bulkprint
       validity: ${SAS_TOKEN_VALIDITY:300}
 
-
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.sendletter
   pathsToMatch: /**
@@ -236,3 +236,8 @@ actions:
 documents:
   duplicate:
     cut-off-time: ${DUPLICATES_CUT_OFF_TIME:1}
+
+launchdarkly:
+  sdk-key: ${LAUNCH_DARKLY_SDK_KEY:XXXXX}
+  offline-mode: ${LAUNCH_DARKLY_OFFLINE_MODE:false}
+
