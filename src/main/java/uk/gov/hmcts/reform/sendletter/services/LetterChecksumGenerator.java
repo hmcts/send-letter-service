@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
@@ -49,7 +50,6 @@ public final class LetterChecksumGenerator {
             // Only case above that throws this is when the MD5 for documents are being checked
             throw new ChecksumGenerationException(e.getMessage());
         }
-
     }
 
     public static String generateChecksumForPdfPages(Object obj) {
