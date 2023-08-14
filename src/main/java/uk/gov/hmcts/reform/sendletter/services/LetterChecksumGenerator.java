@@ -57,9 +57,9 @@ public final class LetterChecksumGenerator {
         return obj instanceof Doc
             ? DigestUtils.md5DigestAsHex(
             Objects.requireNonNull(serialize(calculateContentChecksum(((Doc) obj).content))))
-            // If we have an old request for the old Document type at present this is unavailable
-            // This is unlikely as the client being used targets the latest version of the endpoint
-            : UUID.randomUUID().toString();
+            // If we have an old request for the old Document type: at present this is unavailable.
+            // This is unlikely to be hit as the client being used targets the latest version of the endpoint
+            : generateChecksum(obj);
     }
 
     public static String generateChecksum(Object obj) {
