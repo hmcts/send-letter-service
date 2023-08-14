@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
-import java.util.UUID;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
