@@ -2,29 +2,18 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
-import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.format.DateTimeParseException;
-import java.util.Base64;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadResource;
 
 class LetterChecksumGeneratorTest {
 
@@ -38,14 +27,11 @@ class LetterChecksumGeneratorTest {
         Doc docTwo = letterWithPdfsAndNumberOfCopiesRequest.documents.get(1);
 
         // Simply send in the same documents through the check twice and assert they match
-        assertThat(LetterChecksumGenerator.generateChecksumForPdfPages(
-            LetterChecksumGenerator.generateChecksumForPdfPages(docOne)))
-            .isEqualTo(LetterChecksumGenerator.generateChecksumForPdfPages(
-                LetterChecksumGenerator.generateChecksumForPdfPages(docOne)));
-        assertThat(LetterChecksumGenerator.generateChecksumForPdfPages(
-            LetterChecksumGenerator.generateChecksumForPdfPages(docTwo)))
-            .isEqualTo(LetterChecksumGenerator.generateChecksumForPdfPages(
-                LetterChecksumGenerator.generateChecksumForPdfPages(docTwo)));
+        // Check that the parent method calls the calculateContentChecksum as well
+        assertThat(LetterChecksumGenerator.generateChecksumForPdfPages(docOne))
+            .isEqualTo(LetterChecksumGenerator.calculateContentChecksum(docOne.content));
+        assertThat(LetterChecksumGenerator.generateChecksumForPdfPages(docTwo))
+            .isEqualTo(LetterChecksumGenerator.calculateContentChecksum(docTwo.content));
     }
 
     @Test

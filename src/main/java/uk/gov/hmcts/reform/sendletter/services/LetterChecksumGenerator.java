@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
-import java.util.UUID;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
@@ -29,6 +27,8 @@ public final class LetterChecksumGenerator {
      * @return a checksum of the collective pages for the pdf
      */
     public static String calculateContentChecksum(byte[] pdfBytes) {
+
+        System.out.println("goes into this part");
 
         try (PDDocument document = PDDocument.load(pdfBytes)) {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -54,14 +54,14 @@ public final class LetterChecksumGenerator {
 
     public static String generateChecksumForPdfPages(Object obj) {
         return obj instanceof Doc
-            ? DigestUtils.md5DigestAsHex(
-            Objects.requireNonNull(serialize(calculateContentChecksum(((Doc) obj).content))))
+            ? calculateContentChecksum(((Doc) obj).content)
             // If we have an old request for the old Document type: at present this is unavailable.
             // This is unlikely to be hit as the client being used targets the latest version of the endpoint
             : generateChecksum(obj);
     }
 
     public static String generateChecksum(Object obj) {
+        System.out.println("goes into this other part");
         return DigestUtils.md5DigestAsHex(serialize(obj));
     }
 }
