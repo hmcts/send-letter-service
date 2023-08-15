@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
+import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
@@ -68,6 +69,8 @@ class UploadLettersTaskTest {
     @Mock
     private DocumentService documentService;
 
+    private LetterChecksumService letterChecksumService;
+
     @BeforeEach
     void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
@@ -89,7 +92,8 @@ class UploadLettersTaskTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService,
+            letterChecksumService);
     }
 
     @ParameterizedTest

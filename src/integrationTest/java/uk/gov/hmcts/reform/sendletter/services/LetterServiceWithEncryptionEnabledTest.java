@@ -51,6 +51,8 @@ class LetterServiceWithEncryptionEnabledTest {
     @Mock
     private DocumentService documentService;
 
+    private LetterChecksumService letterChecksumService;
+
     @AfterEach
     void tearDown() {
         letterRepository.deleteAll();
@@ -80,7 +82,8 @@ class LetterServiceWithEncryptionEnabledTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService,
+            letterChecksumService);
 
         UUID id = service.save(letterRequest, SERVICE_NAME, async);
 

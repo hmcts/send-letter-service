@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,8 +15,10 @@ import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
+import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import java.util.List;
@@ -40,13 +43,25 @@ import static uk.gov.hmcts.reform.sendletter.util.ResourceLoader.loadJson;
 @WebMvcTest(SendLetterController.class)
 class SendLetterControllerTest {
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @MockBean private LetterService letterService;
-    @MockBean private AuthService authService;
+    @MockBean
+    private LetterService letterService;
+    @MockBean
+    private AuthService authService;
+    @MockBean
+    private LaunchDarklyClient launchDarklyClient;
+    @MockBean
+    private LetterChecksumService letterChecksumService;
+
+    @BeforeEach
+    public void beforeAll() {
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+    }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_message_id_when_letter_is_successfully_sent(String async) throws Exception {
         UUID letterId = UUID.randomUUID();
 
@@ -63,7 +78,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_invalid_letter_is_sent(String async) throws Exception {
         sendLetter("", async).andExpect(status().isBadRequest());
 
@@ -71,7 +86,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_without_documents(String async) throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-without-doc.json"), async)
             .andExpect(status().isBadRequest())
@@ -82,7 +97,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_without_type(String async) throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-without-type.json"), async)
             .andExpect(status().isBadRequest())
@@ -93,7 +108,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_with_additional_data_no_recipients(String async)
         throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-additional-data-no-recipients.json"), async)
@@ -103,7 +118,18 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
+    void should_return_200_when_letter_is_sent_with_additional_data_no_recipients_but_toggle_off(String async)
+        throws Exception {
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(false);
+        sendLetter(readResource("controller/letter/v1/letter-additional-data-no-recipients.json"), async)
+            .andExpect(status().isOk());
+
+        verify(letterService, never()).save(any(LetterRequest.class), anyString(), eq(async));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_with_additional_data_empty_recipients(String async)
         throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-additional-data-empty-recipients.json"), async)
@@ -113,9 +139,9 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_without_template_in_document(String async)
-            throws Exception {
+        throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-without-template.json"), async)
             .andExpect(status().isBadRequest())
             .andExpect(content()
@@ -125,7 +151,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_sent_without_template_values_in_document(String async)
         throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-without-template-values.json"), async)
@@ -137,7 +163,7 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_400_client_error_when_letter_is_with_more_than_30_documents(String async)
         throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-with-multiple-docs.json"), async)
@@ -158,18 +184,18 @@ class SendLetterControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_return_403_if_service_throws_ServiceNotConfiguredException(String async) throws Exception {
         given(authService.authenticate("auth-header-value")).willReturn("service-name");
         given(letterService.save(any(), any(), eq(async)))
-                .willThrow(new ServiceNotConfiguredException("invalid service"));
+            .willThrow(new ServiceNotConfiguredException("invalid service"));
 
         sendLetter(readResource("controller/letter/v1/letter.json"), async)
             .andExpect(status().isForbidden());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void should_support_two_content_types(String async) throws Exception {
         given(authService.authenticate(anyString())).willReturn("my_service");
 

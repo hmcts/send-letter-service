@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import uk.gov.hmcts.reform.sendletter.exception.ChecksumGenerationException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 
 import java.io.IOException;
@@ -13,9 +15,13 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
-public final class LetterChecksumGenerator {
+@Service
+public class LetterChecksumService {
 
-    private LetterChecksumGenerator() {
+    private final LaunchDarklyClient launchDarklyClient;
+
+    public LetterChecksumService(LaunchDarklyClient launchDarklyClient) {
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     /**
@@ -26,10 +32,7 @@ public final class LetterChecksumGenerator {
      * @param pdfBytes the bytes for the pdf document
      * @return a checksum of the collective pages for the pdf
      */
-    public static String calculateContentChecksum(byte[] pdfBytes) {
-
-        System.out.println("goes into this part");
-
+    public String calculateContentChecksum(byte[] pdfBytes) {
         try (PDDocument document = PDDocument.load(pdfBytes)) {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -52,16 +55,18 @@ public final class LetterChecksumGenerator {
         }
     }
 
-    public static String generateChecksumForPdfPages(Object obj) {
-        return obj instanceof Doc
-            ? calculateContentChecksum(((Doc) obj).content)
-            // If we have an old request for the old Document type: at present this is unavailable.
-            // This is unlikely to be hit as the client being used targets the latest version of the endpoint
+    public String generateChecksumForPdfPages(Object obj) {
+        return launchDarklyClient.isFeatureEnabled("FACT-1388")
+            ? obj instanceof Doc
+                ? calculateContentChecksum(((Doc) obj).content)
+                // If we have an old request for the old Document type: at present this is unavailable.
+                // This is unlikely to be hit as the client being used targets the latest version of the endpoint
+                : generateChecksum(obj)
+            // if toggle disabled, go to default check
             : generateChecksum(obj);
     }
 
-    public static String generateChecksum(Object obj) {
-        System.out.println("goes into this other part");
+    public String generateChecksum(Object obj) {
         return DigestUtils.md5DigestAsHex(serialize(obj));
     }
 }

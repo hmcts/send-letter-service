@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.PdfDoc;
 import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
@@ -109,10 +111,17 @@ class LetterServiceTest {
     @Mock
     private DocumentService documentService;
 
+    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
 
     Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
-            objectMapper.convertValue(jsonNode,
-                    new TypeReference<Map<String, Integer>>() {});
+        objectMapper.convertValue(jsonNode,
+            new TypeReference<Map<String, Integer>>() {});
+
+    @BeforeEach
+    public void beforeEach() {
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -661,7 +670,8 @@ class LetterServiceTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService,
+            letterChecksumService);
     }
 
     private byte[] loadPublicKey() throws IOException {

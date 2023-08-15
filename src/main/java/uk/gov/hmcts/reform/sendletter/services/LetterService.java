@@ -53,7 +53,6 @@ import java.util.stream.IntStream;
 
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
-import static uk.gov.hmcts.reform.sendletter.services.LetterChecksumGenerator.generateChecksum;
 
 @Service(value = "LetterService")
 public class LetterService {
@@ -72,6 +71,7 @@ public class LetterService {
     private final ExecusionService asyncService;
     private final DuplicateLetterService duplicateLetterService;
     private final ExceptionLetterService exceptionLetterService;
+    private final LetterChecksumService letterChecksumService;
     private static final Map<String, Integer> DEFAULT_COPY = Map.of(getCopiesKey(1), 1);
 
     @SuppressWarnings("java:S107")
@@ -87,7 +87,8 @@ public class LetterService {
         ServiceFolderMapping serviceFolderMapping,
         ExecusionService asyncService,
         DuplicateLetterService duplicateLetterService,
-        ExceptionLetterService exceptionLetterService
+        ExceptionLetterService exceptionLetterService,
+        LetterChecksumService letterChecksumService
     ) {
         this.pdfCreator = pdfCreator;
         this.letterRepository = letterRepository;
@@ -101,11 +102,12 @@ public class LetterService {
         this.asyncService = asyncService;
         this.duplicateLetterService = duplicateLetterService;
         this.exceptionLetterService = exceptionLetterService;
+        this.letterChecksumService = letterChecksumService;
     }
 
     @Transactional
     public UUID save(ILetterRequest letter, String serviceName, String isAsync) {
-        String checksum = generateChecksum(letter);
+        String checksum = letterChecksumService.generateChecksum(letter);
         Asserts.notEmpty(serviceName, "serviceName");
 
         log.info("Saving letter, service {}, messageId {}", serviceName, checksum);
@@ -135,7 +137,8 @@ public class LetterService {
         Optional<String> recipientsChecksum =
             (!(letter.getAdditionalData() == null || letter.getAdditionalData().isEmpty())
                 && Objects.requireNonNull(letter.getAdditionalData()).containsKey("recipients"))
-                ? Optional.of(generateChecksum(mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
+                ? Optional.of(letterChecksumService.generateChecksum(
+                    mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
                 : Optional.empty();
 
         if (recipientsChecksum.isPresent()) {

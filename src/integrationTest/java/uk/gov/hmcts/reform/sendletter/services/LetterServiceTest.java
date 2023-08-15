@@ -55,6 +55,7 @@ class LetterServiceTest {
     private ExecusionService execusionService;
     private DuplicateLetterService duplicateLetterService;
     private ExceptionLetterService exceptionLetterService;
+    private LetterChecksumService letterChecksumService;
 
     @Autowired
     private LetterRepository letterRepository;
@@ -74,18 +75,19 @@ class LetterServiceTest {
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
         objectMapper = new ObjectMapper();
         service = new LetterService(
-                new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
-                letterRepository,
-                letterEventRepository,
-                documentService,
-                new Zipper(),
-                new ObjectMapper(),
-                false,
-                null,
-                serviceFolderMapping,
-                execusionService,
-                duplicateLetterService,
-                exceptionLetterService
+            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            letterRepository,
+            letterEventRepository,
+            documentService,
+            new Zipper(),
+            new ObjectMapper(),
+            false,
+            null,
+            serviceFolderMapping,
+            execusionService,
+            duplicateLetterService,
+            exceptionLetterService,
+            letterChecksumService
         );
     }
 
@@ -114,10 +116,10 @@ class LetterServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
     void generatesLetterWithAdditionalCopiesAndSaveZippedPdf(String async) throws Exception {
-        UUID id = service.save(SampleData.letterWithPdfAndCopiesRequest(4,10), SERVICE_NAME, async);
+        UUID id = service.save(SampleData.letterWithPdfAndCopiesRequest(4, 10), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
+            .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
         JsonNode copiesNode = result.getCopies();
         Map<String, Integer> copies = objectMapper.convertValue(copiesNode, new TypeReference<Map<String, Integer>>() {
         });
@@ -136,7 +138,7 @@ class LetterServiceTest {
         UUID id = service.save(SampleData.letterWithPdfsRequestWithAdditionalData(), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
+            .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
         assertThat(result.isEncrypted()).isFalse();
         assertThat(result.getEncryptionKeyFingerprint()).isNull();
         PdfHelper.validateZippedPdf(result.getFileContent());
@@ -159,7 +161,7 @@ class LetterServiceTest {
         UUID id = service.save(SampleData.letterWithPdfsRequestWithNoAdditionalData(), SERVICE_NAME, async);
 
         Letter result = letterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
+            .orElseThrow(() -> new RuntimeException("Letter not found " + id.toString()));
         assertThat(result.getAdditionalData()).isEmpty();
         assertThat(result.isEncrypted()).isFalse();
         assertThat(result.getEncryptionKeyFingerprint()).isNull();
@@ -174,7 +176,7 @@ class LetterServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
+    @ValueSource(strings = {"false", "true"})
     void returns_same_id_on_resubmit(String async) {
         // given
         LetterRequest sampleRequest = SampleData.letterRequest();

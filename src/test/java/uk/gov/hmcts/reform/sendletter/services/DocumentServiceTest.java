@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 
 import java.time.LocalDateTime;
@@ -31,13 +32,16 @@ class DocumentServiceTest {
 
     @Mock
     private DocumentRepository documentRepository;
+    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
 
     private DocumentService documentService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        documentService = new DocumentService(documentRepository, 1);
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+        documentService = new DocumentService(documentRepository, 1, letterChecksumService);
     }
 
     @Test
