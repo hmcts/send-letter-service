@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
