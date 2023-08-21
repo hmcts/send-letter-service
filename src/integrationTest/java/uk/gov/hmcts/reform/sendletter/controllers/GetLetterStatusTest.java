@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -66,6 +67,7 @@ class GetLetterStatusTest {
         WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
+
     }
 
     @AfterEach
@@ -99,18 +101,18 @@ class GetLetterStatusTest {
     }
 
     @Test
-    void should_return_400_when_valid_json_is_sent_with_additionaldata_but_no_recipients() throws Exception {
+    void should_return_200_when_valid_json_is_sent_with_additionaldata_but_no_recipients() throws Exception {
         // given
         given(tokenValidator.getServiceName("auth-header-value")).willReturn("some_service_name");
 
-        // no recipients in additional data
+        // no recipients in additional data - FACT-1388 flag means it'll be ok, so 200 unless switched on
         String json = Resources.toString(getResource("letter-with-pdf-no-recipients.json"), UTF_8);
         mvc.perform(
             post("/letters")
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(json)
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isOk());
     }
 
     @Test
