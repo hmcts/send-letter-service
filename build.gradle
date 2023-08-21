@@ -163,7 +163,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "bulkprint-send-letter-service"
     property "sonar.coverage.jacoco.xmlReportPaths", jacocoTestReport.reports.xml.destination.path
-    property 'sonar.exclusions', "**/config/**, **/BasicLetterInfo.java"
+    property 'sonar.exclusions', "**/config/**, **/BasicLetterInfo.java, **/exception/**"
   }
 }
 

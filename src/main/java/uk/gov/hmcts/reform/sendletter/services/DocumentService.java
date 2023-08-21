@@ -21,20 +21,23 @@ public class DocumentService {
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     private final DocumentRepository documentRepository;
+    private final LetterChecksumService letterChecksumService;
 
     private final int cutOff;
 
     public DocumentService(
         DocumentRepository documentRepository,
-        @Value("${documents.duplicate.cut-off-time:0}") int cutOff
+        @Value("${documents.duplicate.cut-off-time:0}") int cutOff,
+        LetterChecksumService letterChecksumService
     ) {
         this.documentRepository = documentRepository;
         this.cutOff = cutOff;
+        this.letterChecksumService = letterChecksumService;
     }
 
-    public void checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
-        documents.forEach((document) -> {
-            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+    public Optional<UUID> checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
+        for (Object document : documents) {
+            String checkSum = letterChecksumService.generateChecksumForPdfPages(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
                 recipientListChecksum,
@@ -42,15 +45,17 @@ public class DocumentService {
             );
             if (documentFound.isPresent()) {
                 String msg = String.format(
-                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s",
+                    "Duplicate document found, id %s, checkSum %s, recipientsChecksum %s. Returning letterId: %s",
                     documentFound.get().getId(),
                     checkSum,
-                    recipientListChecksum
+                    recipientListChecksum,
+                    documentFound.get().getLetterId()
                 );
-                log.error(msg);
-                throw new DuplicateDocumentException(msg);
+                log.warn(msg);
+                return Optional.of(documentFound.get().getLetterId());
             }
-        });
+        }
+        return Optional.empty();
     }
 
     @Transactional
@@ -59,7 +64,7 @@ public class DocumentService {
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
             log.debug("Saving document, id {}, letterId {}", id, letterId);
-            String checkSum = LetterChecksumGenerator.generateChecksum(document);
+            String checkSum = letterChecksumService.generateChecksumForPdfPages(document);
             Optional<Document> documentFound = documentRepository.findOneCreatedAfter(
                 checkSum,
                 recipientsChecksum,

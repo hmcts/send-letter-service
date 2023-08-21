@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -21,7 +22,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json", 11, 12)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count.json",
+                true,11, 12)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -37,10 +39,11 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_conflict_if_same_document_sent_twice() throws Exception {
+    void should_return_same_letter_id_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json", 131, 132)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-2.json",
+                false, 131, 132)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -61,7 +64,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         }
 
         // the same pdf document in another letter (preserve the order)
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json", 132, 133);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-3.json",
+            false, 132, 133);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -71,7 +75,9 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(SC_CONFLICT);
+            .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     private String verifyLetterUploaded(String letterId) {
@@ -104,7 +110,8 @@ public class ProcessMessageWithDocumentCountTest extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequest(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json", 21, 22)
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate.json",
+                    true, 21, 22)
             );
         } catch (Exception e) {
             e.printStackTrace();

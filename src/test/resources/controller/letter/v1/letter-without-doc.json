@@ -1,4 +1,5 @@
 {
   "documents": [],
-  "type": "typeA"
+  "type": "typeA",
+  "additional_data": {"recipients":  ["Joe Bloggins", "Jessica Jelly"]}
 }

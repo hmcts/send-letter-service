@@ -7,6 +7,5 @@
       }
     }
   ],
-  "type": "",
-  "additional_data": {"recipients":  ["Joe Bloggins", "Jessica Jelly"]}
+  "type": "typeA"
 }

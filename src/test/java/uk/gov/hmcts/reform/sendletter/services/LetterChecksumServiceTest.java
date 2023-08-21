@@ -1,9 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.sendletter.SampleData;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
+import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 
 import java.util.function.Supplier;
@@ -11,8 +16,35 @@ import java.util.function.Supplier;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
-class LetterChecksumGeneratorTest {
+class LetterChecksumServiceTest {
+
+    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
+
+    @BeforeEach
+    public void beforeEach() {
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+    }
+
+    @Test
+    void should_return_same_md5_checksum_hex_for_same_letter_document_objects_version_3() throws Exception {
+
+        final LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfsAndNumberOfCopiesRequest =
+            SampleData.letterWithPdfAndCopiesRequest(5, 10);
+
+        Doc docOne = letterWithPdfsAndNumberOfCopiesRequest.documents.get(0);
+        Doc docTwo = letterWithPdfsAndNumberOfCopiesRequest.documents.get(1);
+
+        // Simply send in the same documents through the check twice and assert they match
+        // Check that the parent method calls the calculateContentChecksum as well
+        assertThat(letterChecksumService.generateChecksumForPdfPages(docOne))
+            .isEqualTo(letterChecksumService.calculateContentChecksum(docOne.content));
+        assertThat(letterChecksumService.generateChecksumForPdfPages(docTwo))
+            .isEqualTo(letterChecksumService.calculateContentChecksum(docTwo.content));
+    }
 
     @Test
     void should_return_same_md5_checksum_hex_for_same_letter_objects() {
@@ -38,8 +70,8 @@ class LetterChecksumGeneratorTest {
         LetterRequest letter1 = letterSupplier.get();
         LetterRequest letter2 = letterSupplier.get();
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(letterChecksumService.generateChecksum(letter1))
+            .isEqualTo(letterChecksumService.generateChecksum(letter2));
     }
 
     @Test
@@ -61,8 +93,8 @@ class LetterChecksumGeneratorTest {
         LetterWithPdfsRequest letter1 = letterSupplier.get();
         LetterWithPdfsRequest letter2 = letterSupplier.get();
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(letterChecksumService.generateChecksum(letter1))
+            .isEqualTo(letterChecksumService.generateChecksum(letter2));
     }
 
     @Test
@@ -98,8 +130,8 @@ class LetterChecksumGeneratorTest {
             )
         );
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isNotEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(letterChecksumService.generateChecksum(letter1))
+            .isNotEqualTo(letterChecksumService.generateChecksum(letter2));
     }
 
     @Test
@@ -129,7 +161,7 @@ class LetterChecksumGeneratorTest {
             )
         );
 
-        assertThat(LetterChecksumGenerator.generateChecksum(letter1))
-            .isNotEqualTo(LetterChecksumGenerator.generateChecksum(letter2));
+        assertThat(letterChecksumService.generateChecksum(letter1))
+            .isNotEqualTo(letterChecksumService.generateChecksum(letter2));
     }
 }

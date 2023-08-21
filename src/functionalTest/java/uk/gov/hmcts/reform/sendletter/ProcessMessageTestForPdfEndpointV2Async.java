@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -28,7 +30,8 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_three_pdf_documents() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs.json", 61, 62, 63)
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs.json",
+                true,61, 62, 63)
         );
 
         String letterStatus = verifyLetterCreated(letterId);
@@ -36,18 +39,20 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_conflict_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
+    void should_return_same_letter_id_if_same_document_sent_twice_when_letter_contains_three_pdf_documents()
             throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-2.json", 121, 122, 123)
+            sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-2.json",
+                false, 121, 122, 123)
         );
 
         String letterStatus = verifyLetterCreated(letterId);
         assertThat(letterStatus).isEqualTo(LetterStatus.Created.name());
 
         // the same pdf document in another letter
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json", 123, 124, 125);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-3.json",
+            false,123, 124, 125);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -57,7 +62,9 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(SC_CONFLICT);
+            .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     private String verifyLetterCreated(String letterId) {
@@ -92,11 +99,12 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-four-pdfs.json", 41, 42, 43, 44)
+                sampleIndexedPdfLetterRequestJson("letter-with-four-pdfs.json",
+                    true, 41, 42, 43, 44)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             logger.error(e.getMessage(), e);
         }
         return letterId;

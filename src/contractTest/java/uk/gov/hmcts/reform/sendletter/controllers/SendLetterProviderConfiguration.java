@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
+import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
@@ -56,11 +57,16 @@ public class SendLetterProviderConfiguration {
         return new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
     }
 
+    @MockBean
+    private LetterChecksumService letterChecksumService;
+
     @Bean
     @Primary
     DocumentService documentService() {
-        return new DocumentService(documentRepository, 1);
+        return new DocumentService(documentRepository, 1, letterChecksumService);
     }
+
+
 
     @Bean
     @Primary
@@ -77,7 +83,8 @@ public class SendLetterProviderConfiguration {
             serviceFolderMapping,
             new ExecusionService(),
             duplicateLetterService,
-            exceptionLetterService
+            exceptionLetterService,
+            letterChecksumService
         );
     }
 

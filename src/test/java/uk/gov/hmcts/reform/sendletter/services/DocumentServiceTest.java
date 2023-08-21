@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 
 import java.time.LocalDateTime;
@@ -31,13 +32,16 @@ class DocumentServiceTest {
 
     @Mock
     private DocumentRepository documentRepository;
+    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
 
     private DocumentService documentService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        documentService = new DocumentService(documentRepository, 1);
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+        documentService = new DocumentService(documentRepository, 1, letterChecksumService);
     }
 
     @Test
@@ -138,19 +142,18 @@ class DocumentServiceTest {
     }
 
     @Test
-    void checkDocumentDuplicates_should_throw_if_duplicated_document() {
+    void checkDocumentDuplicates_should_return_letter_id_if_duplicated() {
         //given
         UUID letterId = UUID.randomUUID();
         Document document1 = new Document("temp1", new HashMap<>());
         given(documentRepository.findOneCreatedAfter(anyString(), anyString(), any(LocalDateTime.class)))
-            .willReturn(Optional.of(mock(uk.gov.hmcts.reform.sendletter.entity.Document.class)));
-
-        //when
+            .willReturn(Optional.of(new uk.gov.hmcts.reform.sendletter.entity.Document(UUID.randomUUID(),
+                letterId, "a checksum", "a rec checksum", LocalDateTime.now())));
 
         //then
-        assertThatThrownBy(() ->
-            documentService.checkDocumentDuplicates(singletonList(document1), "any")
-        ).isInstanceOf(DuplicateDocumentException.class);
+        Optional<UUID> duplicateCheck = documentService.checkDocumentDuplicates(singletonList(document1), "any");
+        assertThat(duplicateCheck.isPresent()).isTrue();
+        assertThat(duplicateCheck.get()).isEqualTo(letterId);
     }
 
     @Test

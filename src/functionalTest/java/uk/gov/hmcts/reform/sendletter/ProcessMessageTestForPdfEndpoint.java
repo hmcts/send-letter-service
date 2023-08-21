@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -23,7 +25,9 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json", 51)
+            getModifiedJsonWithRecipients(
+                sampleIndexedPdfLetterRequestJson("letter-with-single-pdf.json",
+                    true, 51))
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -39,10 +43,11 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
-    void should_return_conflict_if_same_document_sent_twice() throws Exception {
+    void should_return_same_letter_id_if_same_document_sent_twice() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json", 111)
+            sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-1.json",
+                false, 111)
         );
 
         String status = verifyLetterUploaded(letterId);
@@ -57,32 +62,36 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
         });
 
         // the same pdf document in another letter
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json", 111);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-single-pdf-2.json",
+            false, 111);
         RestAssured.given()
-                .relaxedHTTPSValidation()
-                .header("ServiceAuthorization", "Bearer " + signIn())
-                .header(CONTENT_TYPE, getContentType())
-                .baseUri(sendLetterServiceUrl)
-                .body(jsonBody.getBytes())
-                .when()
-                .post("/letters")
-                .then()
-                .statusCode(SC_CONFLICT);
+            .relaxedHTTPSValidation()
+            .header("ServiceAuthorization", "Bearer " + signIn())
+            .header(CONTENT_TYPE, getContentType())
+            .baseUri(sendLetterServiceUrl)
+            .body(jsonBody.getBytes())
+            .when()
+            .post("/letters")
+            .then()
+            .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     @Test
-    void may_throw_ConflictException()  {
+    void may_throw_ConflictException() {
         executeMultiRequest(this::getLetterRequest);
     }
 
     private String getLetterRequest() {
         String letterId = "none";
         try {
-            letterId =  sendPrintLetterRequest(
+            letterId = sendPrintLetterRequest(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json", 91, 92, 93)
+                sampleIndexedPdfLetterRequestJson("letter-with-three-pdfs-1.json",
+                    true, 91, 92, 93)
             );
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return letterId;
@@ -92,7 +101,8 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-two-pdfs.json", 71, 72)
+            sampleIndexedPdfLetterRequestJson("letter-with-two-pdfs.json",
+                true, 71, 72)
         );
 
         String status = verifyLetterUploaded(letterId);

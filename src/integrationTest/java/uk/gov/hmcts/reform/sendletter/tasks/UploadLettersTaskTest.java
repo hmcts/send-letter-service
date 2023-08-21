@@ -16,10 +16,12 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 import uk.gov.hmcts.reform.sendletter.helper.FtpHelper;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExceptionLetterService;
 import uk.gov.hmcts.reform.sendletter.services.ExecusionService;
+import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
@@ -39,6 +41,7 @@ import javax.persistence.EntityManager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +71,9 @@ class UploadLettersTaskTest {
     @Mock
     private DocumentService documentService;
 
+    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
+
     @BeforeEach
     void setUp() {
         when(availabilityChecker.isFtpAvailable(any(LocalTime.class))).thenReturn(true);
@@ -75,6 +81,8 @@ class UploadLettersTaskTest {
         ExecusionService execusionService = new ExecusionService();
         DuplicateLetterService duplicateLetterService = mock(DuplicateLetterService.class);
         ExceptionLetterService exceptionLetterService = mock(ExceptionLetterService.class);
+
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
 
         letterRepository.deleteAll();
         this.letterService = new LetterService(
@@ -89,7 +97,8 @@ class UploadLettersTaskTest {
             serviceFolderMapping,
             execusionService,
             duplicateLetterService,
-            exceptionLetterService);
+            exceptionLetterService,
+            letterChecksumService);
     }
 
     @ParameterizedTest

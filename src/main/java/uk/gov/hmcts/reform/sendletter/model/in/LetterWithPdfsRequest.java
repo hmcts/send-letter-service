@@ -27,6 +27,7 @@ public class LetterWithPdfsRequest implements Serializable, ILetterRequest {
 
     @Schema(description = "Optional field where services can store any additional information about the letter")
     @JsonProperty("additional_data")
+    @ValidRecipients
     public final Map<String, Object> additionalData;
 
     public LetterWithPdfsRequest(
