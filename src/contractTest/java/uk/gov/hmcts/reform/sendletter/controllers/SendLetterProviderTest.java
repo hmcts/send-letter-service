@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @Provider("rpeSendLetterService_SendLetterController")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
-    port = "${PACT_BROKER_PORT:80}", consumerVersionSelectors = {
+    port = "${PACT_BROKER_PORT:8484}", consumerVersionSelectors = {
         @VersionSelector(tag = "${PACT_BRANCH_NAME:Dev}")})
 @Import({SendLetterProviderConfiguration.class})
 public class SendLetterProviderTest {
