@@ -60,7 +60,6 @@ class LetterStatusV2Test {
                 ZonedDateTime.now(), ZonedDateTime.now().plusHours(1),
                 ZonedDateTime.now().plusHours(2), null,  null);
         JsonContent<LetterStatusV2> jsonContent = this.json.write(letterStatus);
-        System.out.println(jsonContent);
         assertThat(jsonContent).hasJsonPathStringValue("$.id")
                 .doesNotHaveJsonPath("$.additional_data")
                 .doesNotHaveJsonPath("$.copies");

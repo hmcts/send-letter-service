@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
+import uk.gov.hmcts.reform.sendletter.model.in.RecipientsValidator;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.DuplicateLetterService;
@@ -26,12 +28,13 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @TestConfiguration
 @ComponentScan(basePackageClasses = PdfCreator.class)
-@Import(PdfConversionConfig.class)
+@Import({PdfConversionConfig.class})
 public class SendLetterProviderConfiguration {
 
     @MockBean
@@ -57,23 +60,42 @@ public class SendLetterProviderConfiguration {
 
     @Bean
     @Primary
+    public LetterChecksumService letterChecksumService() {
+        return new LetterChecksumService(launchDarklyClient());
+    }
+
+    @Bean
+    @Primary
+    public LaunchDarklyClient launchDarklyClient() {
+        LaunchDarklyClient launchDarklyClientMock = Mockito.mock(LaunchDarklyClient.class);
+        when(launchDarklyClientMock.isFeatureEnabled(anyString())).thenReturn(true);
+        return launchDarklyClientMock;
+    }
+
+    @Bean
+    @Primary
+    public RecipientsValidator recipientsValidator() {
+        // Mock the RecipientsValidator interface
+        RecipientsValidator recipientsValidatorMock = Mockito.mock(RecipientsValidator.class);
+        when(recipientsValidatorMock.isValid(any(), any())).thenReturn(true);
+        return recipientsValidatorMock;
+    }
+
+    @Bean
+    @Primary
     PdfCreator pdfCreator() {
         return new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
     }
 
-    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
-    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
-
     @Bean
     @Primary
     DocumentService documentService() {
-        return new DocumentService(documentRepository, 1, letterChecksumService);
+        return new DocumentService(documentRepository, 1, letterChecksumService());
     }
 
     @Bean
     @Primary
     LetterService letterService() {
-        when(launchDarklyClient.isFeatureEnabled("FACT-1388")).thenReturn(true);
         return new LetterService(
             pdfCreator(),
             letterRepository,
@@ -87,7 +109,7 @@ public class SendLetterProviderConfiguration {
             new ExecusionService(),
             duplicateLetterService,
             exceptionLetterService,
-            letterChecksumService
+            letterChecksumService()
         );
     }
 
@@ -98,6 +120,5 @@ public class SendLetterProviderConfiguration {
     @Primary
     SendLetterController sendLetterController() {
         return new SendLetterController(letterService(), authService);
-
     }
 }
