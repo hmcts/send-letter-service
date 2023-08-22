@@ -35,7 +35,6 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         // Toggle: FACT-1388 for making recipients field mandatory
         if (launchDarklyClient != null && launchDarklyClient.isFeatureEnabled("FACT-1388")) {
-            System.out.println("goes into here");
             if (value == null) {
                 logger.error("Additional_data field is null");
                 return false; // Skip validation if the value is null
