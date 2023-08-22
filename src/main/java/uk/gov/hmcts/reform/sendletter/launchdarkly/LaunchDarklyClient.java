@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LaunchDarklyClient {
-    public static final LDUser SEND_LETTER_SERVICE_USER = new LDUser.Builder("send-letter-service")
+    public static final LDUser SEND_LETTER_SERVICE_USER = new LDUser.Builder("bulk-scan-print")
         .anonymous(true)
         .build();
 

@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.in.RecipientsValidator;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
@@ -57,6 +58,9 @@ public class SendLetterProviderTest {
 
     @Autowired
     SendLetterController sendLetterController;
+
+    @Autowired
+    RecipientsValidator recipientsValidator;
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)

@@ -16,6 +16,11 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
     private static final Logger logger = LoggerFactory.getLogger(RecipientsValidator.class);
     private final LaunchDarklyClient launchDarklyClient;
 
+    public RecipientsValidator() {
+        // for pact testing only - default is @Autowired constructor
+        launchDarklyClient = null;
+    }
+
     @Autowired
     public RecipientsValidator(LaunchDarklyClient launchDarklyClient) {
         this.launchDarklyClient = launchDarklyClient;
@@ -29,7 +34,7 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         // Toggle: FACT-1388 for making recipients field mandatory
-        if (launchDarklyClient.isFeatureEnabled("FACT-1388")) {
+        if (launchDarklyClient != null && launchDarklyClient.isFeatureEnabled("FACT-1388")) {
             if (value == null) {
                 logger.error("Additional_data field is null");
                 return false; // Skip validation if the value is null
@@ -49,7 +54,7 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
                 return false; // Field does not exist or is empty
             }
         } else {
-            logger.debug("toggle is turned off for FACT-1388");
+            logger.debug("toggle is turned off for FACT-1388, or LD Client is null");
             return true;
         }
     }
