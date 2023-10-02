@@ -65,6 +65,7 @@ module "send-letter-key-vault" {
 
   managed_identity_object_id = var.managed_identity_object_id
   create_managed_identity    = true
+  additional_managed_identities_access = ["rpe-shared"]
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
