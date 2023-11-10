@@ -1,7 +1,7 @@
 # Postgres 15 flexible server store secrets in key vault
 locals {
   flexible_secret_prefix         = "${var.component}-POSTGRES-FLEXIBLE"
-  flexible_secret_prefix_staging = "${var.component}-POSTGRES-FLEXIBLE-STG"
+  flexible_secret_prefix_staging = "${var.component}-staging-db-flexible"
 
   flexible_secrets = [
     {
@@ -28,19 +28,19 @@ locals {
 
   flexible_secrets_staging = [
     {
-      name_suffix = "PASS"
+      name_suffix = "password"
       value       = module.postgresql-staging.password
     },
     {
-      name_suffix = "HOST"
+      name_suffix = "host"
       value       = module.postgresql-staging.fqdn
     },
     {
-      name_suffix = "USER"
+      name_suffix = "user"
       value       = module.postgresql-staging.username
     },
     {
-      name_suffix = "PORT"
+      name_suffix = "port"
       value       = "5432"
     },
     {

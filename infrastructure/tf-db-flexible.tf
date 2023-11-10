@@ -34,7 +34,7 @@ module "postgresql-staging" {
     azurerm.postgres_network = azurerm.postgres_network
   }
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  name                 = "${var.component}-stg-flexible-postgres-db-v15"
+  name                 = "${var.component}-stg-db-v15"
   product              = var.product
   component            = var.component
   location             = var.location_db
