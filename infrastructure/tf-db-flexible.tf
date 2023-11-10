@@ -13,7 +13,7 @@ module "postgresql" {
   name                 = local.db_host_name
   product              = var.product
   component            = var.component
-  location             = var.location
+  location             = var.location_db
   env                  = var.env
   pgsql_admin_username = local.db_name
   pgsql_databases = [
@@ -39,7 +39,7 @@ module "postgresql-staging" {
   name                 = "${var.component}-stg-flexible-postgres-db-v15"
   product              = var.product
   component            = var.component
-  location             = var.location
+  location             = var.location_db
   env                  = var.env
   pgsql_admin_username = local.db_name
   pgsql_databases = [
