@@ -63,7 +63,7 @@ resource "azurerm_key_vault_secret" "flexible_secret" {
 }
 
 resource "azurerm_key_vault_secret" "flexible_secret_staging" {
-  for_each     = { for secret in local.flexible_secrets_staging : secret.name_suffix => secret } && var.env == "aat"
+  for_each     = { for secret in local.flexible_secrets_staging : secret.name_suffix => secret }
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${local.flexible_secret_prefix_staging}-${each.value.name_suffix}"
   value        = each.value.value
