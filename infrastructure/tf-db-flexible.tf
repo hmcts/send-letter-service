@@ -5,6 +5,10 @@ locals {
 }
 
 module "postgresql" {
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   name                 = local.db_host_name
   product              = var.product
@@ -26,6 +30,10 @@ module "postgresql" {
 }
 
 module "postgresql-staging" {
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
   count                = var.num_staging_dbs
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   name                 = "${var.component}-stg-flexible-postgres-db-v15"
