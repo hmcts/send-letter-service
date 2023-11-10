@@ -33,14 +33,12 @@ module "postgresql-staging" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
-
-  count                = var.num_staging_dbs
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   name                 = "${var.component}-stg-flexible-postgres-db-v15"
   product              = var.product
   component            = var.component
   location             = var.location_db
-  env                  = var.env
+  env                  = "aat"
   pgsql_admin_username = local.db_name
   pgsql_databases = [
     {
