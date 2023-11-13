@@ -25,6 +25,7 @@ locals {
       value       = local.db_name
     }
   ]
+}
 
 resource "azurerm_key_vault_secret" "flexible_staging_db_user" {
   count        = var.num_staging_dbs
