@@ -30,11 +30,11 @@ module "postgresql" {
 }
 
 module "postgresql-staging" {
+  count                = var.env == "aat" ? 1 : 0
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  count                = var.env == "aat" ? 1 : 0
   name                 = "${var.component}-stg-db-v15"
   product              = var.product
   component            = var.component

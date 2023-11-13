@@ -25,39 +25,51 @@ locals {
       value       = local.db_name
     }
   ]
+
+  flexible_secrets_staging = [
+    {
+      name_suffix = "password"
+      value       = module.postgresql-staging[0].password
+    },
+    {
+      name_suffix = "host"
+      value       = module.postgresql-staging[0].fqdn
+    },
+    {
+      name_suffix = "user"
+      value       = module.postgresql-staging[0].username
+    },
+    {
+      name_suffix = "port"
+      value       = "5432"
+    },
+    {
+      name_suffix = "DATABASE"
+      value       = local.db_name
+    }
+  ]
 }
 
-resource "azurerm_key_vault_secret" "flexible_staging_db_user" {
-  count        = var.num_staging_dbs
+resource "azurerm_key_vault_secret" "flexible_secret" {
+  for_each     = { for secret in local.flexible_secrets : secret.name_suffix => secret }
   key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${local.flexible_secret_prefix_staging}-user"
-  value        = try(module.postgresql-staging[0].username, "null")
+  name         = "${local.flexible_secret_prefix}-${each.value.name_suffix}"
+  value        = each.value.value
+  tags = merge(var.common_tags, {
+    "source" : "${var.component} PostgreSQL"
+  })
+  content_type    = ""
+  expiration_date = timeadd(timestamp(), "17520h")
 }
 
-resource "azurerm_key_vault_secret" "flexible_staging_db_password" {
-  count        = var.num_staging_dbs
+resource "azurerm_key_vault_secret" "flexible_secret_staging" {
+  for_each     = { for secret in local.flexible_secrets_staging : secret.name_suffix => secret }
   key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${local.flexible_secret_prefix_staging}-password"
-  value        = try(module.postgresql-staging[0].password, "null")
-}
-
-resource "azurerm_key_vault_secret" "flexible_staging_db_host" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${local.flexible_secret_prefix_staging}-host"
-  value        = try(module.postgresql-staging[0].fqdn, "null")
-}
-
-resource "azurerm_key_vault_secret" "flexible_staging_db_port" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${local.flexible_secret_prefix_staging}-port"
-  value        = "5432"
-}
-
-resource "azurerm_key_vault_secret" "flexible_staging_db_name" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${local.flexible_secret_prefix_staging}-name"
-  value        = try(module.postgresql-staging[0].db_name, "null")
+  name         = "${local.flexible_secret_prefix_staging}-${each.value.name_suffix}"
+  value        = each.value.value
+  tags = merge(var.common_tags, {
+    "source" : "${var.component} PostgreSQL"
+  })
+  content_type    = ""
+  expiration_date = timeadd(timestamp(), "17520h")
 }
