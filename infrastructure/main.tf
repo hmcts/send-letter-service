@@ -18,37 +18,6 @@ locals {
   tags    = var.common_tags
 }
 
-module "db-v11" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.component}-db"
-  location           = var.location_db
-  env                = var.env
-  database_name      = "send_letter"
-  postgresql_user    = "send_letter"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_4"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-  sku_capacity       = "4"
-  storage_mb         = "102400"
-}
-
-module "staging-db" {
-  count              = var.num_staging_dbs
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.component}-stg-db"
-  location           = var.location_db
-  env                = var.env
-  database_name      = "send_letter"
-  postgresql_user    = "send_letter"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
 # region Azure Key Vault
 module "send-letter-key-vault" {
   source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
