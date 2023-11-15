@@ -3,9 +3,9 @@ module "send-letter-service-pending-letter-alert" {
   location          = azurerm_application_insights.appinsights.location
   app_insights_name = azurerm_application_insights.appinsights.name
 
-  enabled    = var.env == "prod"
-  alert_name = "Send_Letter_Service_Pending_Letter_-_BSP"
-  alert_desc = "Triggers when send letter service records a pending letter message within a 15 minutes window timeframe."
+  enabled     = var.env == "prod"
+  alert_name  = "Send_Letter_Service_Pending_Letter_-_BSP"
+  alert_desc  = "Triggers when send letter service records a pending letter message within a 15 minutes window timeframe."
   common_tags = var.common_tags
 
   app_insights_query = <<EOF

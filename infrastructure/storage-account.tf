@@ -57,6 +57,7 @@ module "storage_account" {
   role_assignments = [
     "Storage Blob Data Reader"
   ]
+  pim_roles = {}
 
   common_tags = local.tags
 }
