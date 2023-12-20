@@ -6,7 +6,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.flywaydb.flyway' version '9.22.3'
+  id 'org.flywaydb.flyway' version '9.20.0'
   id 'org.springframework.boot' version '2.7.18'
   id 'org.owasp.dependencycheck' version '9.0.4'
   id 'com.github.ben-manes.versions' version '0.50.0'
@@ -246,8 +246,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.22.3'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
 
 implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.10.2'
