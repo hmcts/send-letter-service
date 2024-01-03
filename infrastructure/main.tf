@@ -104,7 +104,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "app-insights-instrumentation-key"
-  value        = azurerm_application_insights.appinsights.instrumentation_key
+  value        = module.application_insights.instrumentation_key
 }
 
 # endregion
