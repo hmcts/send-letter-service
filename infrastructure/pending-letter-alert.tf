@@ -1,7 +1,7 @@
 module "send-letter-service-pending-letter-alert" {
   source            = "git@github.com:hmcts/cnp-module-metric-alert"
-  location          = azurerm_application_insights.appinsights.location
-  app_insights_name = azurerm_application_insights.appinsights.name
+  location          = var.appinsights_location
+  app_insights_name = module.application_insights.name
 
   enabled     = var.env == "prod"
   alert_name  = "Send_Letter_Service_Pending_Letter_-_BSP"
