@@ -135,7 +135,7 @@ public class UploadLettersTask {
         }
     }
 
-    private void uploadLetter(Letter letter, String folder, SFTPClient sftpClient) {
+    protected void uploadLetter(Letter letter, String folder, SFTPClient sftpClient) {
         FileToSend file = new FileToSend(
             FileNameHelper.generateName(letter),
             letter.getFileContent(),
