@@ -33,15 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
@@ -111,11 +104,11 @@ class UploadLettersTaskTest {
             .mapToInt(function -> function.apply(sftpClient))
             .sum();
 
-//        UploadLettersTask upTask = spy(UploadLettersTask.class);
-//        ArgumentArgumentCaptorCaptor<String> capturedServiceFolder = ArgumentCaptor.forClass(String.class);
-//        verify(upTask).uploadLetter(any(),capturedServiceFolder.capture(),any());
-//        String serviceFolder = capturedServiceFolder.getValue();
-//        assertThat(serviceFolder).isEqualTo(null); //null since additionalData is null for this letter
+        UploadLettersTask upTask = spy(UploadLettersTask.class);
+        ArgumentCaptor<String> capturedServiceFolder = ArgumentCaptor.forClass(String.class);
+        verify(upTask).uploadLetter(any(),capturedServiceFolder.capture(),any());
+        String serviceFolder = capturedServiceFolder.getValue();
+        assertThat(serviceFolder).isEqualTo(null); //null since additionalData is null for this letter
 
         // then
         assertThat(uploadAttempts).isEqualTo(2);
