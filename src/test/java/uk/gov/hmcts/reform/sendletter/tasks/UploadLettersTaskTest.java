@@ -41,6 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
@@ -109,6 +110,12 @@ class UploadLettersTaskTest {
             .stream()
             .mapToInt(function -> function.apply(sftpClient))
             .sum();
+
+//        UploadLettersTask upTask = spy(UploadLettersTask.class);
+//        ArgumentArgumentCaptorCaptor<String> capturedServiceFolder = ArgumentCaptor.forClass(String.class);
+//        verify(upTask).uploadLetter(any(),capturedServiceFolder.capture(),any());
+//        String serviceFolder = capturedServiceFolder.getValue();
+//        assertThat(serviceFolder).isEqualTo(null); //null since additionalData is null for this letter
 
         // then
         assertThat(uploadAttempts).isEqualTo(2);
@@ -280,6 +287,10 @@ class UploadLettersTaskTest {
         return letter("cmc", type, copies);
     }
 
+    private Letter internationalLetterOfType(String type,  Map<String, Integer> copies) {
+        return internationalLetter("cmc", type, copies);
+    }
+
     private Letter letterForService(String serviceName,  Map<String, Integer> copies) {
         return letter(serviceName, "type", copies);
     }
@@ -290,6 +301,21 @@ class UploadLettersTaskTest {
             "msgId",
             service,
             null,
+            type,
+            "hello".getBytes(),
+            true,
+            "9c61b7da4e6c94416be51136122ed01acea9884f",
+            now(),
+            objectMapper.valueToTree(copies)
+        );
+    }
+
+    private Letter internationalLetter(String service, String type, Map<String, Integer> copies) {
+        return new Letter(
+            UUID.randomUUID(),
+            "msgId",
+            service,
+            new ObjectMapper().createObjectNode().put("isInternational",true),
             type,
             "hello".getBytes(),
             true,

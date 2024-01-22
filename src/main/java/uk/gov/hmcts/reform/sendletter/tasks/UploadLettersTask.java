@@ -35,6 +35,7 @@ public class UploadLettersTask {
     public static final int BATCH_SIZE = 10;
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
     private static final String TASK_NAME = "UploadLetters";
+    private static final String INTERNATIONAL_FOLDER = "/international";
 
     private final LetterRepository repo;
     private final FtpClient ftp;
@@ -108,11 +109,16 @@ public class UploadLettersTask {
     }
 
     private boolean processLetter(Letter letter, SFTPClient sftpClient) {
+
         Optional<String> serviceFolder = serviceFolderMapping.getFolderFor(letter.getService());
 
         if (serviceFolder.isPresent()) {
-            uploadLetter(letter, serviceFolder.get(), sftpClient);
-
+            String grabbedServiceFolder = serviceFolder.get();
+            if(letter.getAdditionalData() != null && letter.getAdditionalData().has("isInternational") &&
+                letter.getAdditionalData().get("isInternational").asBoolean()){
+                grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
+            }
+            uploadLetter(letter, grabbedServiceFolder , sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
             repo.saveAndFlush(letter);
