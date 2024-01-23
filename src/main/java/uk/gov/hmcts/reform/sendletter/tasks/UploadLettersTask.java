@@ -114,11 +114,12 @@ public class UploadLettersTask {
 
         if (serviceFolder.isPresent()) {
             String grabbedServiceFolder = serviceFolder.get();
-            if(letter.getAdditionalData() != null && letter.getAdditionalData().has("isInternational") &&
-                letter.getAdditionalData().get("isInternational").asBoolean()){
+            if (letter.getAdditionalData() != null
+                && letter.getAdditionalData().has("isInternational")
+                && letter.getAdditionalData().get("isInternational").asBoolean()) {
                 grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
             }
-            uploadLetter(letter, grabbedServiceFolder , sftpClient);
+            uploadLetter(letter, grabbedServiceFolder, sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
             repo.saveAndFlush(letter);
@@ -145,11 +146,15 @@ public class UploadLettersTask {
         ftp.upload(file, folder, sftpClient);
 
         logger.info(
-            "Uploaded letter id: {}, checksum: {}, file name: {}, additional data: {}",
-            letter.getId(),
-            letter.getChecksum(),
-            file.filename,
-            letter.getAdditionalData()
+            String.format(
+                "Uploaded letter id: %s, checksum: %s, file name: %s, folder: %s, additional data: %s",
+                letter.getId(),
+                letter.getChecksum(),
+                file.filename,
+                folder,
+                letter.getAdditionalData()
+
+            )
         );
     }
 
