@@ -108,7 +108,7 @@ class UploadLettersTaskTest {
         ArgumentCaptor<String> capturedServiceFolder = ArgumentCaptor.forClass(String.class);
         verify(upTask).uploadLetter(any(),capturedServiceFolder.capture(),any());
         String serviceFolder = capturedServiceFolder.getValue();
-        assertThat(serviceFolder).isEqualTo("some_folder"); //null since additionalData is null for this letter
+        assertThat(serviceFolder).isEqualTo(null); //null since additionalData is null for this letter
 
         // then
         assertThat(uploadAttempts).isEqualTo(2);
