@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.schmizz.sshj.sftp.SFTPClient;
+import nl.altindag.log.LogCaptor;
+import nl.altindag.log.model.LogEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +33,7 @@ import java.util.function.Function;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -44,6 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
+import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,12 +73,19 @@ class UploadLettersTaskTest {
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+
     private final ArgumentCaptor<FileToSend> captureFileToSend = ArgumentCaptor.forClass(FileToSend.class);
 
     @Captor
     private ArgumentCaptor<Function<SFTPClient, Integer>> captureRunWith;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private LogCaptor uploadLettersTaskLogCaptor = LogCaptor.forClass(UploadLettersTask.class);
+
+    private static final String ASSERTION_MESSAGE = "Expected and actual logs did not match";
 
     @BeforeEach
     void setUp() {
@@ -89,6 +102,8 @@ class UploadLettersTaskTest {
     void should_handle_smoke_test_letters() {
         // given
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+
+        given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
 
         given(repo.countByStatus(Created)).willReturn(2);
 
@@ -121,6 +136,41 @@ class UploadLettersTaskTest {
                 .stream()
                 .map(file -> file.isSmokeTest)
         ).containsExactlyInAnyOrder(false, true);
+
+        List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
+        assertTrue(logEvents.get(2).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
+    }
+
+    @Test
+    void should_handle_smoke_test_international_letters() {
+        // given
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder/international"));
+
+        given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
+
+        given(repo.countByStatus(Created)).willReturn(2);
+
+        given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
+            .willReturn(Optional.of(internationalLetterOfType(SMOKE_TEST_LETTER_TYPE, Map.of("Document_1", 1))))
+            .willReturn(Optional.of(internationalLetterOfType(
+                "not_" + SMOKE_TEST_LETTER_TYPE, Map.of("Document_1", 1))))
+            .willReturn(Optional.empty());
+
+        // when
+        task().run();
+
+        // and
+        verify(ftpClient).runWith(captureRunWith.capture());
+
+        // when
+        captureRunWith
+            .getAllValues()
+            .stream()
+            .mapToInt(function -> function.apply(sftpClient))
+            .sum();
+
+        List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
+        assertTrue(logEvents.get(2).getMessage().contains("folder: some_folder/international"),ASSERTION_MESSAGE);
     }
 
     @Test
@@ -280,6 +330,10 @@ class UploadLettersTaskTest {
         return letter("cmc", type, copies);
     }
 
+    private Letter internationalLetterOfType(String type,  Map<String, Integer> copies) {
+        return internationalLetter("cmc", type, copies);
+    }
+
     private Letter letterForService(String serviceName,  Map<String, Integer> copies) {
         return letter(serviceName, "type", copies);
     }
@@ -299,6 +353,21 @@ class UploadLettersTaskTest {
         );
     }
 
+    private Letter internationalLetter(String service, String type, Map<String, Integer> copies) {
+        return new Letter(
+            UUID.randomUUID(),
+            "msgId",
+            service,
+            new ObjectMapper().createObjectNode().put("isInternational",true),
+            type,
+            "hello".getBytes(),
+            true,
+            "9c61b7da4e6c94416be51136122ed01acea9884f",
+            now(),
+            objectMapper.valueToTree(copies)
+        );
+    }
+
     private UploadLettersTask task() {
         return new UploadLettersTask(
             repo,
@@ -306,6 +375,7 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
+            launchDarklyClient,
             0
         );
     }

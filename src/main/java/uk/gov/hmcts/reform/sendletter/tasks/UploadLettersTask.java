@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
+import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 @Component
@@ -35,27 +37,31 @@ public class UploadLettersTask {
     public static final int BATCH_SIZE = 10;
     public static final String SMOKE_TEST_LETTER_TYPE = "smoke_test";
     private static final String TASK_NAME = "UploadLetters";
+    private static final String INTERNATIONAL_FOLDER = "/international";
 
     private final LetterRepository repo;
     private final FtpClient ftp;
     private final IFtpAvailabilityChecker availabilityChecker;
     private final LetterEventService letterEventService;
     private final ServiceFolderMapping serviceFolderMapping;
+    private final LaunchDarklyClient launchDarklyClient;
     private final int dbPollDelay;
 
     public UploadLettersTask(
-            LetterRepository repo,
-            FtpClient ftp,
-            IFtpAvailabilityChecker availabilityChecker,
-            LetterEventService letterEventService,
-            ServiceFolderMapping serviceFolderMapping,
-            @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
+        LetterRepository repo,
+        FtpClient ftp,
+        IFtpAvailabilityChecker availabilityChecker,
+        LetterEventService letterEventService,
+        ServiceFolderMapping serviceFolderMapping,
+        LaunchDarklyClient launchDarklyClient,
+        @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
     ) {
         this.repo = repo;
         this.ftp = ftp;
         this.availabilityChecker = availabilityChecker;
         this.letterEventService = letterEventService;
         this.serviceFolderMapping = serviceFolderMapping;
+        this.launchDarklyClient = launchDarklyClient;
         this.dbPollDelay = dbPollDelay;
     }
 
@@ -108,11 +114,19 @@ public class UploadLettersTask {
     }
 
     private boolean processLetter(Letter letter, SFTPClient sftpClient) {
+
         Optional<String> serviceFolder = serviceFolderMapping.getFolderFor(letter.getService());
 
         if (serviceFolder.isPresent()) {
-            uploadLetter(letter, serviceFolder.get(), sftpClient);
-
+            String grabbedServiceFolder = serviceFolder.get();
+            if (launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)) {
+                if (letter.getAdditionalData() != null
+                    && letter.getAdditionalData().has("isInternational")
+                    && letter.getAdditionalData().get("isInternational").asBoolean()) {
+                    grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
+                }
+            }
+            uploadLetter(letter, grabbedServiceFolder, sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
             repo.saveAndFlush(letter);
@@ -139,11 +153,15 @@ public class UploadLettersTask {
         ftp.upload(file, folder, sftpClient);
 
         logger.info(
-            "Uploaded letter id: {}, checksum: {}, file name: {}, additional data: {}",
-            letter.getId(),
-            letter.getChecksum(),
-            file.filename,
-            letter.getAdditionalData()
+            String.format(
+                "Uploaded letter id: %s, checksum: %s, file name: %s, folder: %s, additional data: %s",
+                letter.getId(),
+                letter.getChecksum(),
+                file.filename,
+                folder,
+                letter.getAdditionalData()
+
+            )
         );
     }
 
