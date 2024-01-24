@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
+import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,6 +72,9 @@ class UploadLettersTaskTest {
 
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
+
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     private final ArgumentCaptor<FileToSend> captureFileToSend = ArgumentCaptor.forClass(FileToSend.class);
 
@@ -97,6 +102,8 @@ class UploadLettersTaskTest {
     void should_handle_smoke_test_letters() {
         // given
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
+
+        given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
 
         given(repo.countByStatus(Created)).willReturn(2);
 
@@ -138,6 +145,8 @@ class UploadLettersTaskTest {
     void should_handle_smoke_test_international_letters() {
         // given
         given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder/international"));
+
+        given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
 
         given(repo.countByStatus(Created)).willReturn(2);
 
@@ -366,6 +375,7 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
+            launchDarklyClient,
             0
         );
     }
