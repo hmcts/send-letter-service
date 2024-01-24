@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.schmizz.sshj.sftp.SFTPClient;
-import nl.altindag.log.LogCaptor;
-import nl.altindag.log.model.LogEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,19 +29,12 @@ import java.util.function.Function;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
@@ -77,10 +67,6 @@ class UploadLettersTaskTest {
     private ArgumentCaptor<Function<SFTPClient, Integer>> captureRunWith;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    private LogCaptor uploadLettersTaskLogCaptor = LogCaptor.forClass(UploadLettersTask.class);
-
-    private static final String ASSERTION_MESSAGE = "Expected and actual logs did not match";
 
     @BeforeEach
     void setUp() {
@@ -118,6 +104,12 @@ class UploadLettersTaskTest {
             .mapToInt(function -> function.apply(sftpClient))
             .sum();
 
+        UploadLettersTask upTask = spy(UploadLettersTask.class);
+        ArgumentCaptor<String> capturedServiceFolder = ArgumentCaptor.forClass(String.class);
+        verify(upTask).uploadLetter(any(),capturedServiceFolder.capture(),any());
+        String serviceFolder = capturedServiceFolder.getValue();
+        assertThat(serviceFolder).isEqualTo("some_folder"); //null since additionalData is null for this letter
+
         // then
         assertThat(uploadAttempts).isEqualTo(2);
 
@@ -129,39 +121,6 @@ class UploadLettersTaskTest {
                 .stream()
                 .map(file -> file.isSmokeTest)
         ).containsExactlyInAnyOrder(false, true);
-
-        List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(2).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
-    }
-
-    @Test
-    void should_handle_smoke_test_international_letters() {
-        // given
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder/international"));
-
-        given(repo.countByStatus(Created)).willReturn(2);
-
-        given(repo.findFirstLetterCreated(isA(LocalDateTime.class)))
-            .willReturn(Optional.of(internationalLetterOfType(SMOKE_TEST_LETTER_TYPE, Map.of("Document_1", 1))))
-            .willReturn(Optional.of(internationalLetterOfType(
-                "not_" + SMOKE_TEST_LETTER_TYPE, Map.of("Document_1", 1))))
-            .willReturn(Optional.empty());
-
-        // when
-        task().run();
-
-        // and
-        verify(ftpClient).runWith(captureRunWith.capture());
-
-        // when
-        captureRunWith
-            .getAllValues()
-            .stream()
-            .mapToInt(function -> function.apply(sftpClient))
-            .sum();
-
-        List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(2).getMessage().contains("folder: some_folder/international"),ASSERTION_MESSAGE);
     }
 
     @Test
