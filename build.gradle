@@ -266,7 +266,7 @@ implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-t
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.5'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.37.0'
-  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.29'
+  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.30'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
@@ -328,7 +328,7 @@ implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-t
 
   contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
 
-  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.28'
+  contractTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.30'
 
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
