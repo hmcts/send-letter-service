@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Skipped;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
+import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.INTERNATIONAL_FOLDER;
 import static uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask.SMOKE_TEST_LETTER_TYPE;
 
 @ExtendWith(MockitoExtension.class)
@@ -144,7 +145,7 @@ class UploadLettersTaskTest {
     @Test
     void should_handle_smoke_test_international_letters() {
         // given
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder/international"));
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder" + INTERNATIONAL_FOLDER));
 
         given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
 
