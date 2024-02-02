@@ -85,13 +85,19 @@ public class UploadLettersTask {
     private int processLetters() {
         return ftp.runWith(client -> {
             int uploadCount = 0;
-
             for (int i = 0; i < BATCH_SIZE; i++) {
                 Optional<Letter> letterOpt
                         = repo.findFirstLetterCreated(LocalDateTime.now().minusMinutes(dbPollDelay));
 
                 if (letterOpt.isPresent()) {
                     Letter letter = letterOpt.get();
+                    logger.info("letterOpt, id: {}, service: {}, type: {}, additionalData: {}, createdAt: {}",
+                        letter.getId(),
+                        letter.getService(),
+                        letter.getType(),
+                        letter.getAdditionalData(),
+                        letter.getCreatedAt()
+                    );
                     try {
                         boolean uploaded = processLetter(letter, client);
                         if (uploaded) {
@@ -126,11 +132,11 @@ public class UploadLettersTask {
                     grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
                 }
             }
+            logger.info("Service folder found for letter service: {}", grabbedServiceFolder);
             uploadLetter(letter, grabbedServiceFolder, sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
             repo.saveAndFlush(letter);
-
             return true;
 
         } else {
