@@ -37,7 +37,6 @@ class LettersCountSummaryRepositoryTest {
         repository.deleteAll();
     }
 
-
     @Test
     void should_get_letters_count_group_by_service() {
         //given

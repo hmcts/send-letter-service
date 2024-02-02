@@ -144,6 +144,12 @@ The order of documents in the envelope will be the same as provided in the reque
 `additional_data` is an optional JSON object where services can store any additional information about the letter,
 e.g. a corresponding ID in their system.
 
+You can get the Base64-encoded content of a pdf file by executing the below command, this will copy the base64 output for you:
+
+```
+base64 -i test_file.pdf | pbcopy
+```
+
 If your request is successful, you should receive a response containing the ID of the newly created letter:
 
 ```

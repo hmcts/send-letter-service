@@ -11,8 +11,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
+import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import static java.lang.String.join;
@@ -32,6 +34,15 @@ class SendLetterWithPdfsControllerTest {
 
     @MockBean private LetterService letterService;
     @MockBean private AuthService authService;
+    @MockBean
+    private LaunchDarklyClient launchDarklyClient;
+    @MockBean
+    private LetterChecksumService letterChecksumService;
+
+    @BeforeEach
+    public void beforeAll() {
+        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
+    }
 
     private String validJson;
 

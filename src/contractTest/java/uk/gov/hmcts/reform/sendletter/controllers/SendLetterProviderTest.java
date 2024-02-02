@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.sendletter.entity.DocumentRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.model.in.RecipientsValidator;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.DocumentService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
@@ -32,7 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 @Provider("rpeSendLetterService_SendLetterController")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
-    port = "${PACT_BROKER_PORT:80}", consumerVersionSelectors = {
+    port = "${PACT_BROKER_PORT:8484}", consumerVersionSelectors = {
         @VersionSelector(tag = "${PACT_BRANCH_NAME:Dev}")})
 @Import({SendLetterProviderConfiguration.class})
 public class SendLetterProviderTest {
@@ -57,6 +58,9 @@ public class SendLetterProviderTest {
 
     @Autowired
     SendLetterController sendLetterController;
+
+    @Autowired
+    RecipientsValidator recipientsValidator;
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)

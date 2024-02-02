@@ -60,11 +60,10 @@ module "send-letter-key-vault" {
   resource_group_name = azurerm_resource_group.rg.name
 
   # dcd_cc-dev group object ID
-  product_group_object_id = "38f9dea6-e861-4a50-9e73-21e64f563537"
-  common_tags             = var.common_tags
-
-  managed_identity_object_id = var.managed_identity_object_id
-  create_managed_identity    = true
+  product_group_object_id              = "38f9dea6-e861-4a50-9e73-21e64f563537"
+  common_tags                          = var.common_tags
+  create_managed_identity              = true
+  additional_managed_identities_access = ["rpe-shared"]
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
@@ -105,7 +104,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "app-insights-instrumentation-key"
-  value        = azurerm_application_insights.appinsights.instrumentation_key
+  value        = module.application_insights.instrumentation_key
 }
 
 # endregion

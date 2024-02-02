@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.sendletter;
 
 import io.restassured.RestAssured;
+import org.hamcrest.Matchers;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -11,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
@@ -25,10 +27,11 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync() throws IOException {
+    public void testSaveLetterAsync() throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json", 81, 82)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-1.json",
+                true,81, 82)
         );
 
         logger.info("Letter id created {}", letterId);
@@ -37,10 +40,12 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     }
 
     @Test
-    public void testSaveLetterAsync_should_return_conflict_if_same_document_sent_twice() throws IOException {
+    public void testSaveLetterAsync_should_return_same_letter_id_if_same_document_sent_twice()
+        throws IOException, JSONException {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),
-            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json", 141, 142)
+            sampleIndexedPdfLetterRequestJson("letter-with-document-count-4.json",
+                false, 141, 142)
         );
 
         logger.info("Letter id created {}", letterId);
@@ -54,7 +59,8 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         }
 
         // the same pdf document in another letter (preserve the order)
-        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json", 142, 143);
+        String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count-5.json",
+            false, 142, 143);
         RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", "Bearer " + signIn())
@@ -64,7 +70,9 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
                 .when()
                 .post("/letters")
                 .then()
-                .statusCode(SC_CONFLICT);
+                .statusCode(SC_OK)
+            .and()
+            .body("letter_id", Matchers.equalTo(letterId));
     }
 
     private String verifyLetterCreated(String letterId) {
@@ -100,14 +108,14 @@ public class ProcessSaveV3Asyn extends FunctionalTestSuite {
         try {
             letterId = sendPrintLetterRequestAsync(
                 signIn(),
-                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json", 101, 102)
+                sampleIndexedPdfLetterRequestJson("letter-with-document-count_duplicate_async-1.json",
+                    true,101, 102)
             );
             String letterStatus = verifyLetterCreated(letterId);
             logger.info("Letter id {} , status {} ",  letterId, letterStatus);
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             logger.error(e.getMessage(), e);
         }
         return letterId;
-
     }
 }

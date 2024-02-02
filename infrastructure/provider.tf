@@ -22,3 +22,10 @@ provider "azurerm" {
   alias           = "aks_perftest_mgmt"
   subscription_id = "7a4e3bd5-ae3a-4d0c-b441-2188fee3ff1c"
 }
+
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.aks_subscription_id
+}

@@ -119,10 +119,6 @@ variable "common_tags" {
   type = map(string)
 }
 
-variable "managed_identity_object_id" {
-  default = ""
-}
-
 variable "enable_ase" {
   default = false
 }
@@ -133,8 +129,8 @@ variable "num_staging_dbs" {
 
 variable "mgmt_subscription_id" {}
 
-variable aks_subscription_id {}
+variable "aks_subscription_id" {}
 
-variable storage_account_repl_type {
+variable "storage_account_repl_type" {
   default = "LRS"
 }
