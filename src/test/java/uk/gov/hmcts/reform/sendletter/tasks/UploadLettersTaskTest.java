@@ -139,13 +139,13 @@ class UploadLettersTaskTest {
         ).containsExactlyInAnyOrder(false, true);
 
         List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(2).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
+        assertTrue(logEvents.get(5).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
     }
 
     @Test
     void should_handle_smoke_test_international_letters() {
         // given
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder" + INTERNATIONAL_FOLDER));
+        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
 
         given(launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)).willReturn(true);
 
@@ -171,7 +171,7 @@ class UploadLettersTaskTest {
             .sum();
 
         List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(2).getMessage()
+        assertTrue(logEvents.get(5).getMessage() //be sure to change this if logs change around
             .contains("folder: some_folder" + INTERNATIONAL_FOLDER),ASSERTION_MESSAGE);
     }
 
