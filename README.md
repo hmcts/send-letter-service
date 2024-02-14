@@ -6,7 +6,7 @@
 
 [Swagger API Specs](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/send-letter-service.json)
 
-## Table of Contents
+## Table of Contents.
 
 * [Running the application](#running-the-application)
     * [Locally](#locally)
