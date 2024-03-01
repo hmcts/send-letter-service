@@ -134,3 +134,7 @@ variable "aks_subscription_id" {}
 variable "storage_account_repl_type" {
   default = "LRS"
 }
+
+variable "deploy_single_server_db" {
+  default = 0
+}
