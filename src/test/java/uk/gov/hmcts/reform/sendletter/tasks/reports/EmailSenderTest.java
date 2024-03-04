@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.mail.util.MimeMessageParser;
+import jakarta.activation.DataSource;
+import jakarta.mail.Address;
+import jakarta.mail.internet.MimeMessage;
+//import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.commons.mail2.jakarta.util.MimeMessageParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -15,9 +19,6 @@ import uk.gov.hmcts.reform.sendletter.jupiter.GreenMailExtension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Properties;
-import javax.activation.DataSource;
-import javax.mail.Address;
-import javax.mail.internet.MimeMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
