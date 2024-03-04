@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,7 +47,6 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.atLeastOnce;
 import static org.mockito.BDDMockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DELETED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DOWNLOADED;
@@ -83,14 +79,6 @@ class BaseTest {
 
     @Autowired
     private WebApplicationContext wac;
-
-    @BeforeEach
-    void setUp() {
-        var filter = new WebRequestTrackingFilter();
-        filter.init(new MockFilterConfig());
-        mvc = webAppContextSetup(wac).addFilters(filter).build();
-        repository.deleteAll();
-    }
 
     @AfterEach
     public void cleanUp() {
