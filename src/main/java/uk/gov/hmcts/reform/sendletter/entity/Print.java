@@ -1,22 +1,20 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "prints")
-@TypeDef(name = "json", typeClass = JsonBinaryType.class)
 public class Print {
     @Id
     private UUID id;
@@ -32,7 +30,7 @@ public class Print {
     // The following Type annotation instructs jpa to JSON serialize this field.
     // The column annotation instructs jpa that this field is stored as a json column
     // in our database and should be addressed with ::json in SQL fragments.
-    @Type(type = "json")
+    @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private JsonNode documents;
     private String caseId;
