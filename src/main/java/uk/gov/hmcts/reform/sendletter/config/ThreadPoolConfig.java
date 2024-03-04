@@ -34,7 +34,7 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
     private static final Supplier<Long> CURRENT_MILLIS_SUPPLIER = () -> getCurrentEuropeLondonInstant().toEpochMilli();
 
     private static final Supplier<RequestTelemetryContext> REQUEST_CONTEXT_SUPPLIER = () ->
-        new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get(), null);
+        new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get());
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
@@ -121,7 +121,6 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
             }
 
             ThreadContext.setRequestTelemetryContext(requestContext);
-
             task.run();
         }
     }
