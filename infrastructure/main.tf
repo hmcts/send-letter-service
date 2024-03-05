@@ -58,35 +58,30 @@ data "azurerm_key_vault" "s2s_key_vault" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  count        = var.deploy_single_server_db
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-POSTGRES-USER"
   value        = module.db-v11.user_name
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  count        = var.deploy_single_server_db
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-POSTGRES-PASS"
   value        = module.db-v11.postgresql_password
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  count        = var.deploy_single_server_db
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-POSTGRES-HOST"
   value        = module.db-v11.host_name
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  count        = var.deploy_single_server_db
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-POSTGRES-PORT"
   value        = module.db-v11.postgresql_listen_port
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  count        = var.deploy_single_server_db
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${var.component}-POSTGRES-DATABASE"
   value        = module.db-v11.postgresql_database
