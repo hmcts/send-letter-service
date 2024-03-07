@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
-import org.apache.pdfbox.preflight.PreflightDocument;
-import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.pdfparser.PDFParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,11 +16,9 @@ public final class PdfHelper {
         try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(data))) {
 
             zip.getNextEntry(); //positions the stream at the beginning of the entry data
-            PreflightParser preflightParser = new PreflightParser(new ByteArrayDataSource(zip));
-            preflightParser.parse();
-            PreflightDocument document = preflightParser.getPreflightDocument();
 
-            document.validate();
+            PDFParser pdfParser = new PDFParser(new RandomAccessReadBuffer(zip));
+            pdfParser.parse();
         }
     }
 

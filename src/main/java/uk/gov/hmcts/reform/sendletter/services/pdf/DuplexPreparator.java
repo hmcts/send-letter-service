@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class DuplexPreparator {
      */
     public byte[] prepare(byte[] pdf, String loggingContext) {
         logger.info("File size is {} KB", pdf.length / 1024);
-        try (var pdDoc = PDDocument.load(pdf)) {
+        try (var pdDoc = Loader.loadPDF(pdf)) {
             int numberOfPages = pdDoc.getNumberOfPages();
             logger.info("File has {} pages.", numberOfPages);
             if (numberOfPages % 2 == 1) {
