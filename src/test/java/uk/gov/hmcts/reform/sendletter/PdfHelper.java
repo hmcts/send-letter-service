@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.preflight.PreflightDocument;
 
@@ -18,9 +18,9 @@ public final class PdfHelper {
 
             zip.getNextEntry(); //positions the stream at the beginning of the entry data
 
-            PDFParser pdfParser1 = new PDFParser(new RandomAccessReadBuffer(zip));
-            pdfParser1.parse();
-            PreflightDocument document = (PreflightDocument) pdfParser1.getPDDocument();
+            PDFParser pdfParser = new PDFParser(new RandomAccessBufferedFileInputStream(zip));
+            pdfParser.parse();
+            PreflightDocument document = (PreflightDocument) pdfParser.getPDDocument();
 
             document.validate();
         }
