@@ -4,10 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+import com.microsoft.applicationinsights.telemetry.TelemetryContext;
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -15,15 +18,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.helper.FakeFtpAvailabilityChecker;
+import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
@@ -46,6 +50,8 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.atLeastOnce;
 import static org.mockito.BDDMockito.verify;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_FILE_UPLOADED;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPORT_DELETED;
@@ -69,7 +75,13 @@ class BaseTest {
     private FakeFtpAvailabilityChecker fakeFtpAvailabilityChecker;
 
     @SpyBean
+    private AppInsights insights;
+
+    @Mock
     private TelemetryClient telemetryClient;
+
+    @Mock
+    private final TelemetryContext context = new TelemetryContext();
 
     @Captor
     private ArgumentCaptor<RequestTelemetry> requestTelemetryCaptor;
@@ -77,14 +89,19 @@ class BaseTest {
     @Captor
     private ArgumentCaptor<RemoteDependencyTelemetry> dependencyTelemetryCaptor;
 
-    @Autowired
-    private WebApplicationContext wac;
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(insights, "telemetryClient", telemetryClient);
+        context.setInstrumentationKey("some-key");
+        when(telemetryClient.getContext()).thenReturn(context);
+    }
 
     @AfterEach
     public void cleanUp() {
         // This test commits transactions to the database
         // so we must clean up afterwards
         repository.deleteAll();
+        reset(telemetryClient);
     }
 
     void shouldUploadLetterAndMarkPosted(
@@ -95,7 +112,7 @@ class BaseTest {
 
             // sftp servers is ups, now the background jobs can start connecting to it
             fakeFtpAvailabilityChecker.setAvailable(true);
-
+            System.out.println("REQUEST: " + request.toString());
             mvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
