@@ -206,7 +206,7 @@ repositories {
 }
 
 def versions = [
-  bouncycastle: '1.70',
+  bouncycastle: '1.77',
   junit: '5.10.2',
   junitPlatform: '1.10.2',
   reformLogging: '6.1.4',
@@ -264,7 +264,7 @@ dependencies {
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.10.2'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
@@ -285,9 +285,9 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.3'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
-  implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
+  implementation group: 'org.bouncycastle', name: 'bcpg-jdk18on', version: versions.bouncycastle
 
   implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.25.1'
 
@@ -340,9 +340,9 @@ dependencies {
   contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.service_auth
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcpg-jdk18on', version: versions.bouncycastle
 
   contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
 
