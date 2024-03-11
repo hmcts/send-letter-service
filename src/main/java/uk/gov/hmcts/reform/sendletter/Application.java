@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableHystrix
 @EnableAsync
-@EnableFeignClients(basePackages = {"uk.gov.hmcts.reform"})
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
 
