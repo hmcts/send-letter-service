@@ -76,6 +76,7 @@ test {
 
 task functional(type: Test) {
   description = 'Runs functional tests.'
+  logger.lifecycle("Running functional Tests")
   group = 'Verification'
 
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
@@ -83,6 +84,7 @@ task functional(type: Test) {
 }
 
 task integration(type: Test) {
+  logger.lifecycle("Running integration Tests")
   description = 'Runs integration tests.'
   group = 'Verification'
 
@@ -98,6 +100,7 @@ task integration(type: Test) {
 
 task smoke(type: Test) {
   description = 'Runs Smoke tests.'
+  logger.lifecycle("Running smoke Tests")
   group = 'Verification'
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
