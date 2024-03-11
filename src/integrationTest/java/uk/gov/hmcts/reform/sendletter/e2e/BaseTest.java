@@ -59,10 +59,11 @@ import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPOR
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyName.FTP_CLIENT;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyType.FTP;
 
+
 @AutoConfigureMockMvc
 @ComponentScan(basePackages = "...", lazyInit = true)
 @ContextConfiguration
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BaseTest {
 
     @Autowired
@@ -94,6 +95,8 @@ class BaseTest {
         ReflectionTestUtils.setField(insights, "telemetryClient", telemetryClient);
         context.setInstrumentationKey("some-key");
         when(telemetryClient.getContext()).thenReturn(context);
+        //Must clean up before tests as repository from last controller test does not clear itself properly
+        repository.deleteAll();
     }
 
     @AfterEach
