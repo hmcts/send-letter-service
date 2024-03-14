@@ -8,11 +8,17 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Configuration properties for reports service.
+ */
 @ConfigurationProperties(prefix = "reports")
 public class ReportsServiceConfig {
 
     private Map<String, String> serviceConfig;
 
+    /**
+     * Mapping class for service display name.
+     */
     public static class Mapping {
 
         private String service;
@@ -43,12 +49,21 @@ public class ReportsServiceConfig {
         return serviceConfig;
     }
 
+    /**
+     * Set the service display name.
+     * @param mappings The mappings
+     */
     public void setServiceConfig(List<Mapping> mappings) {
         this.serviceConfig = mappings
             .stream()
             .collect(toMap(Mapping::getService, Mapping::getDisplayName));
     }
 
+    /**
+     * Get the display name for a service.
+     * @param serviceName The name of the service
+     * @return The display name
+     */
     public Optional<String> getDisplayName(String serviceName) {
         return Optional.ofNullable(serviceConfig.get(serviceName));
     }

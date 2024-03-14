@@ -7,9 +7,18 @@ import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
 
+/**
+ * Configuration for RetryTemplate.
+ */
 @Configuration
 public class RetryConfig {
 
+    /**
+     * Create a RetryTemplate.
+     * @param numberOfRetries The number of retries
+     * @param timeToWait The time to wait
+     * @return The RetryTemplate
+     */
     @Bean
     public RetryTemplate retryTemplate(@Value("${file-upoad.retries}") int numberOfRetries,
                                        @Value("${file-upoad.wait-time-in-ms}") long timeToWait) {

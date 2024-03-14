@@ -10,24 +10,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Configuration for RestTemplate.
+ */
 @Configuration
 public class RestTemplateConfiguration {
 
+    /**
+     * Create a Feign HttpClient.
+     * @return The Feign HttpClient
+     */
     @Bean
     public Client getFeignHttpClient() {
         return new ApacheHttpClient(getHttpClient());
     }
 
+    /**
+     * Create a RestTemplate.
+     * @return The RestTemplate
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate(clientHttpRequestFactory());
     }
 
+    /**
+     * Create a HttpComponentsClientHttpRequestFactory.
+     * @return The HttpComponentsClientHttpRequestFactory
+     */
     @Bean
     public HttpComponentsClientHttpRequestFactory clientHttpRequestFactory() {
         return new HttpComponentsClientHttpRequestFactory(getHttpClient());
     }
 
+    /**
+     * Create a CloseableHttpClient.
+     * @return The CloseableHttpClient
+     */
     private CloseableHttpClient getHttpClient() {
         RequestConfig config = RequestConfig.custom()
             .setConnectTimeout(30000)

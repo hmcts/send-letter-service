@@ -9,10 +9,18 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * Configuration for async executor.
+ */
 @Configuration
 public class AsyncConfiguration {
     private Logger logger = LoggerFactory.getLogger(AsyncConfiguration.class);
 
+    /**
+     * Get the async executor.
+     * @param threadPoolSize The size of the thread pool
+     * @return The async executor
+     */
     @Bean(name = "AsyncExecutor")
     public Executor getExecutor(@Value("${async.threadpool-size}") int threadPoolSize) {
         logger.info("thread pool size {}", threadPoolSize);

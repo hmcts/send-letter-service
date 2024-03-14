@@ -7,9 +7,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.api.filters.SensitiveHeadersRequestTraceFilter;
 
+/**
+ * Configuration for tracing.
+ */
 @Configuration
 public class TracingConfiguration {
 
+    /**
+     * Create a SensitiveHeadersRequestTraceFilter.
+     * @return The SensitiveHeadersRequestTraceFilter
+     */
     @Bean
     public SensitiveHeadersRequestTraceFilter requestTraceFilter() {
         return new SensitiveHeadersRequestTraceFilter(Include.defaultIncludes());
