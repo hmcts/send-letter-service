@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
+/**
+ * Controller response messages.
+ */
 @SuppressWarnings({"squid:S1118", "HideUtilityClassConstructor"})
 final class ControllerResponseMessage {
 

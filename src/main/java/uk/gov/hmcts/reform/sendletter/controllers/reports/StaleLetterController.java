@@ -21,16 +21,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * Controller for stale letters.
+ */
 @RestController
 @RequestMapping(path = "/stale-letters")
 public class StaleLetterController {
 
     private final StaleLetterService staleLetterService;
 
+    /**
+     * Constructor for the StaleLetterController.
+     * @param staleLetterService The stale letter service
+     */
     public StaleLetterController(StaleLetterService staleLetterService) {
         this.staleLetterService = staleLetterService;
     }
 
+    /**
+     * Retrieves stale letters.
+     * @return The stale letters response
+     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Retrieves stale letters")
     @ApiResponses({
@@ -50,7 +61,10 @@ public class StaleLetterController {
         return new StaleLetterResponse(staleLetters);
     }
 
-
+    /**
+     * Downloads file with stale letters.
+     * @return The csv file
+     */
     @GetMapping(value = "download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Operation(description = "Downloads file with stale letters")
     @ApiResponses({
@@ -66,7 +80,11 @@ public class StaleLetterController {
                 .body(Files.readAllBytes(csvFile.toPath()));
     }
 
-
+    /**
+     * Maps a basic letter info to a stale letter.
+     * @param dbLetter The basic letter info
+     * @return The stale letter
+     */
     private StaleLetter mapToStaleLetter(BasicLetterInfo dbLetter) {
         return new StaleLetter(
             dbLetter.getId(),
