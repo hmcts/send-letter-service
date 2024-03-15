@@ -60,8 +60,8 @@ public class AppInsights {
 
     /**
      * Aspect for scheduled tasks.
-     * @param joinPoint
-     * @throws Throwable
+     * @param joinPoint The join point
+     * @throws Throwable The throwable error
      */
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void aroundSchedule(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -79,9 +79,9 @@ public class AppInsights {
 
     /**
      * Handle request telemetry.
-     * @param requestTelemetryContext
-     * @param caller
-     * @param success
+     * @param requestTelemetryContext The request telemetry context
+     * @param caller The caller
+     * @param success The success
      */
     private void handleRequestTelemetry(
         RequestTelemetryContext requestTelemetryContext,
@@ -107,10 +107,10 @@ public class AppInsights {
 
     /**
      * Handle request telemetry.
-     * @param requestTelemetry
-     * @param requestName
-     * @param start
-     * @param success
+     * @param requestTelemetry The request telemetry
+     * @param requestName The request name
+     * @param start The start
+     * @param success The success
      */
     private void handleRequestTelemetry(
         RequestTelemetry requestTelemetry,
@@ -131,7 +131,7 @@ public class AppInsights {
 
     /**
      * Use advice on dependency.
-     * @param dependency
+     * @param dependency The dependency
      */
     @Pointcut("@annotation(dependency)")
     public void useAdviceOnDependency(Dependency dependency) {
@@ -140,10 +140,10 @@ public class AppInsights {
 
     /**
      * Around dependency.
-     * @param joinPoint
-     * @param dependency
-     * @return joinPoint.proceed()
-     * @throws Throwable
+     * @param joinPoint The join point
+     * @param dependency The dependency
+     * @return joinPoint.proceed() The join point proceed
+     * @throws Throwable The throwable error
      */
     @Around("useAdviceOnDependency(dependency)")
     public Object aroundDependency(ProceedingJoinPoint joinPoint, Dependency dependency) throws Throwable {
@@ -163,9 +163,9 @@ public class AppInsights {
 
     /**
      * Handle dependency telemetry.
-     * @param dependency
-     * @param durationInMillis
-     * @param success
+     * @param dependency The dependency
+     * @param durationInMillis The duration in milliseconds
+     * @param success The success
      */
     private void handleDependencyTelemetry(Dependency dependency, long durationInMillis, boolean success) {
         // dependency definition
@@ -199,7 +199,7 @@ public class AppInsights {
 
     /**
      * Track stale letter.
-     * @param staleLetter
+     * @param staleLetter The stale letter
      */
     public void trackStaleLetter(BasicLetterInfo staleLetter) {
         Map<String, String> properties = new HashMap<>();
@@ -216,7 +216,7 @@ public class AppInsights {
 
     /**
      * Get sent to print at.
-     * @param staleLetter
+     * @param staleLetter The stale letter
      * @return date if not empty as string
      */
     private String getSentToPrintAt(BasicLetterInfo staleLetter) {
@@ -227,7 +227,7 @@ public class AppInsights {
 
     /**
      * Get sent to print on.
-     * @param staleLetter
+     * @param staleLetter The stale letter
      * @return day of week as string
      */
     private String getSentToPrintOn(BasicLetterInfo staleLetter) {
@@ -238,7 +238,7 @@ public class AppInsights {
 
     /**
      * Track pending letter.
-     * @param pendingLetter
+     * @param pendingLetter The pending letter
      */
     public void trackPendingLetter(BasicLetterInfo pendingLetter) {
         Map<String, String> properties = new HashMap<>();
@@ -254,7 +254,7 @@ public class AppInsights {
 
     /**
      * Track print report received.
-     * @param report
+     * @param report The report
      */
     public void trackPrintReportReceived(ParsedReport report) {
         telemetryClient.trackEvent(

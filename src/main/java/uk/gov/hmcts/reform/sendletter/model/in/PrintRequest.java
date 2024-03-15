@@ -38,12 +38,6 @@ public class PrintRequest implements Serializable {
 
     /**
      * Constructor.
-     *
-     * @param type the type
-     * @param documents the list of documents
-     * @param caseId the case id
-     * @param caseRef the case reference
-     * @param letterType the letter type
      */
     private PrintRequest() {
         type = null;
