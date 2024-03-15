@@ -19,6 +19,9 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * Task to send daily report of FTP uploaded letters.
+ */
 @Component
 @ConditionalOnBean(EmailSender.class)
 @ConditionalOnProperty(prefix = "reports.ftp-uploaded-letters-summary", name = "enabled")
@@ -33,7 +36,12 @@ public class DailyFtpLetterUploadSummaryReport {
     public static final String ATTACHMENT_NAME_FORMAT = "Bulk-Print-FTP-Letters-Daily-Report-%s-%s.csv";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-
+    /**
+     * Constructor for the DailyFtpLetterUploadSummaryReport.
+     * @param ftpFileSummaryService The service for FTP file summary
+     * @param emailSender The service for email sender
+     * @param recipients The recipients of the email
+     */
     public DailyFtpLetterUploadSummaryReport(
         FtpFileSummaryService ftpFileSummaryService,
         EmailSender emailSender,
@@ -44,6 +52,9 @@ public class DailyFtpLetterUploadSummaryReport {
         this.recipients = recipients;
     }
 
+    /**
+     * Send the daily report of FTP uploaded letters.
+     */
     @SchedulerLock(name = "daily-ftp-uploaded-letters-summary", lockAtLeastFor = "PT5S")
     @Scheduled(cron = "${reports.ftp-uploaded-letters-summary.cron}", zone = EUROPE_LONDON)
     public void send() {
@@ -63,6 +74,11 @@ public class DailyFtpLetterUploadSummaryReport {
         }
     }
 
+    /**
+     * Get the attachments for the email.
+     * @param csvFiles The CSV files
+     * @return The attachments
+     */
     private List<Attachment> getAttachments(Map<String, File> csvFiles) {
         List<Attachment> attachments = new ArrayList<>();
         LocalDate today = LocalDate.now();

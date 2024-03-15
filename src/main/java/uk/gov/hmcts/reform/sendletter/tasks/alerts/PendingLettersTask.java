@@ -17,6 +17,9 @@ import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * This class is responsible for sending alerts for pending letters.
+ */
 @Component
 @ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class PendingLettersTask {
@@ -26,6 +29,12 @@ public class PendingLettersTask {
     private final AppInsights insights;
     private final int lettersBeforeMins;
 
+    /**
+     * Constructor for the PendingLettersTask.
+     * @param pendingLettersService The service for pending letters
+     * @param insights The service for application insights
+     * @param lettersBeforeMins The number of minutes before the letters are considered pending
+     */
     public PendingLettersTask(PendingLettersService pendingLettersService, AppInsights insights,
                               @Value("${tasks.pending-letters-report.before-mins}") int lettersBeforeMins) {
         this.pendingLettersService = pendingLettersService;

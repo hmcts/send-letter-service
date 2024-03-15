@@ -31,6 +31,12 @@ public class ClearOldLetterContentTask {
     private final Duration ttl;
     private final Clock clock;
 
+    /**
+     * Constructor for the ClearOldLetterContentTask.
+     * @param letterService The service for letter data access
+     * @param ttl The time to live
+     * @param clock The clock
+     */
     public ClearOldLetterContentTask(
         LetterDataAccessService letterService,
         @Value("${old-letter-content-cleanup.ttl}") Duration ttl,
@@ -41,6 +47,9 @@ public class ClearOldLetterContentTask {
         this.clock = clock;
     }
 
+    /**
+     * Run the task to clear the 'fileContent' of old letters.
+     */
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "${old-letter-content-cleanup.cron}", zone = EUROPE_LONDON)
     public void run() {

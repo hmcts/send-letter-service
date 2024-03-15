@@ -29,6 +29,9 @@ import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * Task to upload letters to SFTP.
+ */
 @Component
 @ConditionalOnProperty(value = "scheduling.enabled", matchIfMissing = true)
 public class UploadLettersTask {
@@ -47,6 +50,16 @@ public class UploadLettersTask {
     private final LaunchDarklyClient launchDarklyClient;
     private final int dbPollDelay;
 
+    /**
+     * Constructor for the UploadLettersTask.
+     * @param repo The letter repository
+     * @param ftp The FTP client
+     * @param availabilityChecker The FTP availability checker
+     * @param letterEventService The service for letter event
+     * @param serviceFolderMapping The service folder mapping
+     * @param launchDarklyClient The LaunchDarkly client
+     * @param dbPollDelay The database poll delay
+     */
     public UploadLettersTask(
         LetterRepository repo,
         FtpClient ftp,
@@ -65,6 +78,9 @@ public class UploadLettersTask {
         this.dbPollDelay = dbPollDelay;
     }
 
+    /**
+     * Run the task to upload letters to SFTP.
+     */
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
     public void run() {
@@ -82,6 +98,10 @@ public class UploadLettersTask {
         }
     }
 
+    /**
+     * Process letters to upload.
+     * @return The number of letters uploaded
+     */
     private int processLetters() {
         return ftp.runWith(client -> {
             int uploadCount = 0;
@@ -119,6 +139,12 @@ public class UploadLettersTask {
         });
     }
 
+    /**
+     * Process a letter to upload.
+     * @param letter The letter to upload
+     * @param sftpClient The SFTP client
+     * @return True if the letter was uploaded, otherwise false
+     */
     private boolean processLetter(Letter letter, SFTPClient sftpClient) {
 
         Optional<String> serviceFolder = serviceFolderMapping.getFolderFor(letter.getService());
@@ -149,6 +175,12 @@ public class UploadLettersTask {
         }
     }
 
+    /**
+     * Upload a letter to SFTP.
+     * @param letter The letter to upload
+     * @param folder The folder to upload to
+     * @param sftpClient The SFTP client
+     */
     private void uploadLetter(Letter letter, String folder, SFTPClient sftpClient) {
         FileToSend file = new FileToSend(
             FileNameHelper.generateName(letter),
@@ -171,6 +203,11 @@ public class UploadLettersTask {
         );
     }
 
+    /**
+     * Check if the letter is a smoke test.
+     * @param letter The letter to check
+     * @return True if the letter is a smoke test, otherwise false
+     */
     private boolean isSmokeTest(Letter letter) {
         return Objects.equals(letter.getType(), SMOKE_TEST_LETTER_TYPE);
     }

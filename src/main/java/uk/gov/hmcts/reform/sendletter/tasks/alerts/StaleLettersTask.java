@@ -26,6 +26,11 @@ public class StaleLettersTask {
     private final StaleLetterService staleLetterService;
     private final AppInsights insights;
 
+    /**
+     * Constructor for the StaleLettersTask.
+     * @param staleLetterService The service for stale letters
+     * @param insights The service for application insights
+     */
     public StaleLettersTask(
         StaleLetterService staleLetterService,
         AppInsights insights
