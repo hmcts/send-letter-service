@@ -15,6 +15,13 @@ public class LetterStatusEvent {
     @JsonProperty("created_at")
     public final ZonedDateTime createdAt;
 
+    /**
+     * Constructor.
+     *
+     * @param type the type
+     * @param notes the notes
+     * @param createdAt the created at
+     */
     public LetterStatusEvent(String type, String notes, ZonedDateTime createdAt) {
         this.type = type;
         this.notes = notes;

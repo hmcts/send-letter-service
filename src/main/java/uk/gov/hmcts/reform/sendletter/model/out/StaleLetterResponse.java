@@ -11,6 +11,11 @@ public class StaleLetterResponse {
     @JsonProperty("stale_letters")
     public final List<StaleLetter> staleLetters;
 
+    /**
+     * Constructor.
+     *
+     * @param staleLetters the stale letters
+     */
     public StaleLetterResponse(List<StaleLetter> staleLetters) {
         this.staleLetters = staleLetters;
         this.count = staleLetters.size();

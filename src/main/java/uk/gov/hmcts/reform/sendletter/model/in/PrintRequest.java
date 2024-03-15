@@ -10,6 +10,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+/**
+ * This class represents the print request.
+ */
 public class PrintRequest implements Serializable {
 
     private static final long serialVersionUID = 4312487677760800172L;
@@ -33,7 +36,15 @@ public class PrintRequest implements Serializable {
     @JsonProperty("letter_type")
     public final String letterType;
 
-
+    /**
+     * Constructor.
+     *
+     * @param type the type
+     * @param documents the list of documents
+     * @param caseId the case id
+     * @param caseRef the case reference
+     * @param letterType the letter type
+     */
     private PrintRequest() {
         type = null;
         documents = null;
@@ -42,6 +53,15 @@ public class PrintRequest implements Serializable {
         letterType = null;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param type the type
+     * @param documents the list of documents
+     * @param caseId the case id
+     * @param caseRef the case reference
+     * @param letterType the letter type
+     */
     public PrintRequest(
         String type,
         List<Document> documents,

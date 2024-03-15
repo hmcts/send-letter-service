@@ -10,6 +10,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+/**
+ * This class represents the letter request.
+ */
 public class LetterRequest implements Serializable, ILetterRequest {
 
     private static final long serialVersionUID = -7737087336283080072L;
@@ -28,6 +31,13 @@ public class LetterRequest implements Serializable, ILetterRequest {
     @ValidRecipients
     public final Map<String, Object> additionalData;
 
+    /**
+     * Constructor.
+     *
+     * @param documents the list of documents
+     * @param type the type
+     * @param additionalData the additional data
+     */
     public LetterRequest(
         @JsonProperty("documents") List<Document> documents,
         @JsonProperty("type") String type,

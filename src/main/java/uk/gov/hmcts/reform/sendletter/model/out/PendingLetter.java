@@ -19,6 +19,14 @@ public class PendingLetter {
     @JsonProperty("key_fingerprint")
     public final String keyFingerprint;
 
+    /**
+     * Constructor.
+     *
+     * @param id the id
+     * @param service the service
+     * @param createdAt the created at
+     * @param keyFingerprint the key fingerprint
+     */
     public PendingLetter(UUID id, String service, LocalDateTime createdAt, String keyFingerprint) {
         this.id = id;
         this.service = service;

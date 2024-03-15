@@ -6,6 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * This class represents the in memory downloaded file.
+ */
 public class InMemoryDownloadedFile extends InMemoryDestFile {
 
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

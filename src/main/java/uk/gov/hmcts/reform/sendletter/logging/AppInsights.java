@@ -29,6 +29,9 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.getCurrentEuropeLondonInstant;
 
+/**
+ * Aspect for Application Insights.
+ */
 @Aspect
 @Component
 public class AppInsights {
@@ -45,12 +48,21 @@ public class AppInsights {
 
     private final TelemetryClient telemetryClient;
 
+    /**
+     * Constructor for the AppInsights.
+     * @param telemetryClient The telemetry client
+     */
     public AppInsights(TelemetryClient telemetryClient) {
         this.telemetryClient = telemetryClient;
     }
 
     // schedules
 
+    /**
+     * Aspect for scheduled tasks.
+     * @param joinPoint
+     * @throws Throwable
+     */
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void aroundSchedule(ProceedingJoinPoint joinPoint) throws Throwable {
         RequestTelemetryContext requestTelemetry = ThreadContext.getRequestTelemetryContext();
@@ -65,6 +77,12 @@ public class AppInsights {
         }
     }
 
+    /**
+     * Handle request telemetry.
+     * @param requestTelemetryContext
+     * @param caller
+     * @param success
+     */
     private void handleRequestTelemetry(
         RequestTelemetryContext requestTelemetryContext,
         String caller,
@@ -87,6 +105,13 @@ public class AppInsights {
         }
     }
 
+    /**
+     * Handle request telemetry.
+     * @param requestTelemetry
+     * @param requestName
+     * @param start
+     * @param success
+     */
     private void handleRequestTelemetry(
         RequestTelemetry requestTelemetry,
         String requestName,
@@ -104,11 +129,22 @@ public class AppInsights {
 
     // dependencies
 
+    /**
+     * Use advice on dependency.
+     * @param dependency
+     */
     @Pointcut("@annotation(dependency)")
     public void useAdviceOnDependency(Dependency dependency) {
         // empty pointcut definition
     }
 
+    /**
+     * Around dependency.
+     * @param joinPoint
+     * @param dependency
+     * @return joinPoint.proceed()
+     * @throws Throwable
+     */
     @Around("useAdviceOnDependency(dependency)")
     public Object aroundDependency(ProceedingJoinPoint joinPoint, Dependency dependency) throws Throwable {
         Instant start = Instant.now();
@@ -125,6 +161,12 @@ public class AppInsights {
         }
     }
 
+    /**
+     * Handle dependency telemetry.
+     * @param dependency
+     * @param durationInMillis
+     * @param success
+     */
     private void handleDependencyTelemetry(Dependency dependency, long durationInMillis, boolean success) {
         // dependency definition
         RemoteDependencyTelemetry dependencyTelemetry = new RemoteDependencyTelemetry(
@@ -155,6 +197,10 @@ public class AppInsights {
 
     // events
 
+    /**
+     * Track stale letter.
+     * @param staleLetter
+     */
     public void trackStaleLetter(BasicLetterInfo staleLetter) {
         Map<String, String> properties = new HashMap<>();
 
@@ -168,18 +214,32 @@ public class AppInsights {
         telemetryClient.trackEvent(LETTER_NOT_PRINTED, properties, null);
     }
 
+    /**
+     * Get sent to print at.
+     * @param staleLetter
+     * @return date if not empty as string
+     */
     private String getSentToPrintAt(BasicLetterInfo staleLetter) {
         return isNotEmpty(staleLetter.getSentToPrintAt())
             ? staleLetter.getSentToPrintAt().format(DATE_TIME_FORMAT)
             : EMPTY;
     }
 
+    /**
+     * Get sent to print on.
+     * @param staleLetter
+     * @return day of week as string
+     */
     private String getSentToPrintOn(BasicLetterInfo staleLetter) {
         return isNotEmpty(staleLetter.getSentToPrintAt())
             ? staleLetter.getSentToPrintAt().getDayOfWeek().name()
             : EMPTY;
     }
 
+    /**
+     * Track pending letter.
+     * @param pendingLetter
+     */
     public void trackPendingLetter(BasicLetterInfo pendingLetter) {
         Map<String, String> properties = new HashMap<>();
 
@@ -192,6 +252,10 @@ public class AppInsights {
         telemetryClient.trackEvent(PENDING_LETTER, properties, null);
     }
 
+    /**
+     * Track print report received.
+     * @param report
+     */
     public void trackPrintReportReceived(ParsedReport report) {
         telemetryClient.trackEvent(
             LETTER_PRINT_REPORT,

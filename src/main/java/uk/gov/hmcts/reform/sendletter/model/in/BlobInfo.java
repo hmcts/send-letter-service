@@ -4,10 +4,18 @@ import com.azure.storage.blob.BlobClient;
 
 import java.util.Optional;
 
+/**
+ * This class represents the information of a blob.
+ */
 public class BlobInfo {
     private final BlobClient blobClient;
     private Optional<String> leaseId;
 
+    /**
+     * Constructor.
+     *
+     * @param blobClient the blob client
+     */
     public BlobInfo(BlobClient blobClient) {
         this.blobClient = blobClient;
         this.leaseId = Optional.empty();

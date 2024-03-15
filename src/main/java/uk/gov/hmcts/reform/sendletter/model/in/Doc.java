@@ -7,6 +7,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * This class represents the document to be sent.
+ */
 public class Doc implements Serializable {
 
     private static final long serialVersionUID = -1718267310344700595L;
@@ -18,6 +21,12 @@ public class Doc implements Serializable {
     @Max(100)
     public final int copies;
 
+    /**
+     * Constructor.
+     *
+     * @param content the document content
+     * @param copies the number of copies
+     */
     public Doc(
         @JsonProperty("content") byte[] content,
         @JsonProperty("copies") int copies
