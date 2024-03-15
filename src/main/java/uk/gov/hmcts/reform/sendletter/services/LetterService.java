@@ -54,6 +54,9 @@ import java.util.stream.IntStream;
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
 
+/**
+ * Service to handle letters.
+ */
 @Service(value = "LetterService")
 public class LetterService {
 
@@ -74,6 +77,22 @@ public class LetterService {
     private final LetterChecksumService letterChecksumService;
     private static final Map<String, Integer> DEFAULT_COPY = Map.of(getCopiesKey(1), 1);
 
+    /**
+     * Constructor for the LetterService.
+     * @param pdfCreator The pdf creator
+     * @param letterRepository The repository for letter
+     * @param letterEventRepository The repository for letter event
+     * @param documentService The document service
+     * @param zipper The zipper
+     * @param mapper The object mapper
+     * @param isEncryptionEnabled The encryption enabled flag
+     * @param encryptionPublicKey The encryption public key
+     * @param serviceFolderMapping The service folder mapping
+     * @param asyncService The async service
+     * @param duplicateLetterService The duplicate letter service
+     * @param exceptionLetterService The exception letter service
+     * @param letterChecksumService The letter checksum service
+     */
     @SuppressWarnings("java:S107")
     public LetterService(
         PdfCreator pdfCreator,
@@ -105,6 +124,13 @@ public class LetterService {
         this.letterChecksumService = letterChecksumService;
     }
 
+    /**
+     * Save a letter.
+     * @param letter The letter to save
+     * @param serviceName The name of the service
+     * @param isAsync The async flag
+     * @return The id of the saved letter
+     */
     @Transactional
     public UUID save(ILetterRequest letter, String serviceName, String isAsync) {
         String checksum = letterChecksumService.generateChecksum(letter);
@@ -133,6 +159,14 @@ public class LetterService {
             .orElseGet(() -> saveNewLetter(letter, checksum, serviceName, isAsync));
     }
 
+    /**
+     * Save a new letter.
+     * @param letter The letter to save
+     * @param messageId The message id
+     * @param serviceName The name of the service
+     * @param isAsync The async flag
+     * @return The id of the saved letter
+     */
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
         Optional<String> recipientsChecksum =
             (!(letter.getAdditionalData() == null || letter.getAdditionalData().isEmpty())
@@ -220,6 +254,15 @@ public class LetterService {
         return letterId;
     }
 
+    /**
+     * Save a letter.
+     * @param letter The letter to save
+     * @param messageId The message id
+     * @param serviceName The name of the service
+     * @param id The id of the letter
+     * @param zipContent The zip content
+     * @param recipientsChecksum The recipients checksum
+     */
     @Transactional
     public void saveLetter(ILetterRequest letter, String messageId, String serviceName, UUID id,
                            Function<LocalDateTime, byte[]> zipContent, Optional<String> recipientsChecksum) {
@@ -244,6 +287,14 @@ public class LetterService {
         log.info("Created new letter record with id {} for service {}, messageId {}", id, serviceName, messageId);
     }
 
+    /**
+     * Save a duplicate letter.
+     * @param letter The letter to save
+     * @param id The id of the letter
+     * @param checksum The checksum
+     * @param serviceName The name of the service
+     * @param isAsync The async flag
+     */
     @Transactional
     public void saveDuplicate(ILetterRequest letter, UUID id, String checksum, String serviceName,
                               String isAsync) {
@@ -253,6 +304,14 @@ public class LetterService {
         log.info("Created new duplicate record with id {} for service {}", id, serviceName);
     }
 
+    /**
+     * Save an exception.
+     * @param letter The letter to save
+     * @param id The id of the letter
+     * @param serviceName The name of the service
+     * @param message The message
+     * @param isAsync The async flag
+     */
     @Transactional
     public void saveException(ILetterRequest letter, UUID id, String serviceName, String message, String isAsync) {
         ExceptionLetter exceptionLetter = new ExceptionLetter(id, serviceName, LocalDateTime.now(),
@@ -261,6 +320,15 @@ public class LetterService {
         log.info("Created new exception record with id {} for service {}", id, serviceName);
     }
 
+    /**
+     * Get a duplicate letter.
+     * @param letter The letter
+     * @param id The id of the letter
+     * @param checksum The checksum
+     * @param serviceName The name of the service
+     * @param isAsync The async flag
+     * @return The duplicate letter
+     */
     private DuplicateLetter getDuplicateLetter(ILetterRequest letter, UUID id,
                                                String checksum, String serviceName,
                                                String isAsync) {
@@ -277,6 +345,15 @@ public class LetterService {
         );
     }
 
+    /**
+     * Get the file content.
+     * @param id The id of the letter
+     * @param letter The letter
+     * @param serviceName The name of the service
+     * @param createdAtTime The created at time
+     * @param zipContent The zip content
+     * @return The file content
+     */
     private byte[] getFileContent(UUID id, ILetterRequest letter, String serviceName,
                                   LocalDateTime createdAtTime, byte[] zipContent) {
         if (isEncryptionEnabled) {
@@ -285,6 +362,15 @@ public class LetterService {
         return zipContent;
     }
 
+    /**
+     * Encrypt the zip contents.
+     * @param letter The letter
+     * @param serviceName The name of the service
+     * @param id The id of the letter
+     * @param zipContent The zip content
+     * @param createdAt The created at time
+     * @return The encrypted zip contents
+     */
     private byte[] encryptZipContents(
         ILetterRequest letter,
         String serviceName,
@@ -304,6 +390,10 @@ public class LetterService {
         return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey);
     }
 
+    /**
+     * Get the encryption key fingerprint.
+     * @return The encryption key fingerprint
+     */
     private String getEncryptionKeyFingerprint() {
         if (isEncryptionEnabled) {
             return Hex.encodeHexString(this.pgpPublicKey.getFingerprint());
@@ -312,6 +402,11 @@ public class LetterService {
         }
     }
 
+    /**
+     * Load a PGP public key.
+     * @param encryptionPublicKey The encryption public key
+     * @return The PGP public key
+     */
     private PGPPublicKey loadPgpPublicKey(String encryptionPublicKey) {
         if (!isEncryptionEnabled) {
             log.info("""
@@ -324,6 +419,11 @@ public class LetterService {
         }
     }
 
+    /**
+     * Get the documents from a letter.
+     * @param letter The letter
+     * @return The documents
+     */
     private List<?> getDocumentsFromLetter(ILetterRequest letter) {
         if (letter instanceof LetterRequest) {
             return ((LetterRequest) letter).documents;
@@ -336,6 +436,12 @@ public class LetterService {
         }
     }
 
+    /**
+     * Get the PDF content.
+     * @param letter The letter
+     * @param loggingContext The logging context
+     * @return The PDF content
+     */
     private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
         if (letter instanceof LetterRequest) {
             return pdfCreator.createFromTemplates(((LetterRequest) letter).documents, loggingContext);
@@ -352,12 +458,22 @@ public class LetterService {
         }
     }
 
+    /**
+     * Get the copies.
+     * @param letter The letter
+     * @return The copies
+     */
     private Map<String, Integer> getCopies(LetterWithPdfsAndNumberOfCopiesRequest letter) {
         return IntStream.range(0, letter.documents.size())
             .collect(HashMap::new, (map, count) -> map.put(getCopiesKey(count + 1),
                 letter.documents.get(count).copies), Map::putAll);
     }
 
+    /**
+     * Get the copies.
+     * @param letter The letter
+     * @return The copies as a LetterWithPdfsAndNumberOfCopiesRequest
+     */
     private Map<String, Integer> getCopies(ILetterRequest letter) {
         if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
             return getCopies((LetterWithPdfsAndNumberOfCopiesRequest) letter);
@@ -365,10 +481,22 @@ public class LetterService {
         return DEFAULT_COPY;
     }
 
+    /**
+     * Get the copies.
+     * @param count The count
+     * @return The copies key
+     */
     private static String getCopiesKey(int count) {
         return String.join("_", "Document", String.valueOf(count));
     }
 
+    /**
+     * Get the letter status.
+     * @param id The id of the letter
+     * @param isAdditionalDataRequired The additional data required flag
+     * @param isDuplicate The duplicate flag
+     * @return The letter status
+     */
     public LetterStatus getStatus(UUID id, String isAdditionalDataRequired, String isDuplicate) {
         log.info("Getting letter status for id {} ", id);
         exceptionCheck(id);
@@ -401,6 +529,13 @@ public class LetterService {
         return letterStatus;
     }
 
+    /**
+     * Get the extended letter status.
+     * @param id The id of the letter
+     * @param isAdditionalDataRequired The additional data required flag
+     * @param isDuplicate The duplicate flag
+     * @return The extended letter status
+     */
     public ExtendedLetterStatus getExtendedStatus(
         UUID id,
         String isAdditionalDataRequired,
@@ -438,6 +573,11 @@ public class LetterService {
         return letterStatus;
     }
 
+    /**
+     * Get the latest status.
+     * @param id The id of the letter
+     * @return The latest status (V2)
+     */
     public LetterStatusV2 getLatestStatus(UUID id) {
         log.info("Getting v2 letter status for id {} ", id);
 
@@ -460,12 +600,21 @@ public class LetterService {
         return letterStatus;
     }
 
+    /**
+     * Check for exception.
+     * @param id The id of the letter
+     */
     private void exceptionCheck(UUID id) {
         if (exceptionLetterService.isException(id).isPresent()) {
             throw new LetterSaveException();
         }
     }
 
+    /**
+     * Check for duplicate.
+     * @param id The id of the letter
+     * @param isDuplicate The duplicate flag
+     */
     private void duplicateCheck(UUID id, String isDuplicate) {
         if (Boolean.parseBoolean(isDuplicate)) {
             Optional<DuplicateLetter> optDuplicateLetter = duplicateLetterService.isDuplicate(id);
@@ -479,6 +628,11 @@ public class LetterService {
         }
     }
 
+    /**
+     * Get the letter status events.
+     * @param letter The letter
+     * @return The letter status events
+     */
     private List<LetterStatusEvent> getLetterStatusEvents(Letter letter) {
         List<LetterEvent> letterEvents = letterEventRepository.findAllByLetterOrderByCreatedAt(letter);
         return letterEvents.stream().map(
@@ -495,6 +649,11 @@ public class LetterService {
         ).toList();
     }
 
+    /**
+     * Convert a LocalDateTime to a ZonedDateTime.
+     * @param dateTime The date time
+     * @return The zoned date time
+     */
     static ZonedDateTime toDateTime(LocalDateTime dateTime) {
         if (null == dateTime) {
             return null;

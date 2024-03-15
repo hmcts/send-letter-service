@@ -20,6 +20,9 @@ import java.util.Map;
 import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * Service for FTP file summary data.
+ */
 @Service
 public class FtpFileSummaryService {
     private static final Logger log = LoggerFactory.getLogger(FtpFileSummaryService.class);
@@ -28,7 +31,12 @@ public class FtpFileSummaryService {
     private final FtpClient ftp;
     private final ServiceFolderMapping serviceFolderMapping;
 
-    // region constructor
+    /**
+     * Constructor for the FtpFileSummaryService.
+     * @param ftpAvailabilityChecker The FTP availability checker
+     * @param ftp The FTP client
+     * @param serviceFolderMapping The service folder mapping
+     */
     public FtpFileSummaryService(IFtpAvailabilityChecker ftpAvailabilityChecker,
                                  FtpClient ftp,
                                  ServiceFolderMapping serviceFolderMapping) {
@@ -36,8 +44,11 @@ public class FtpFileSummaryService {
         this.ftp = ftp;
         this.serviceFolderMapping = serviceFolderMapping;
     }
-    // endregion
 
+    /**
+     * Get the FTP file upload summary files.
+     * @return The FTP file upload summary files
+     */
     public Map<String, File> getFtpFileUploadSummaryFiles() {
         if (!ftpAvailabilityChecker.isFtpAvailable(LocalTime.now(ZoneId.of(EUROPE_LONDON)))) {
             log.info("Not generating Bulk Print FTP Uploaded Letters Summary due to FTP downtime window");
@@ -53,6 +64,10 @@ public class FtpFileSummaryService {
         return emptyMap();
     }
 
+    /**
+     * List letters for all services.
+     * @return The letters for all services
+     */
     private Map<String, List<FileInfo>> listLettersForAllServices() {
         Map<String, List<FileInfo>> ftpUploadedLetters = new HashMap<>();
         log.info("Started listing uploaded letters to FTP server at {}", LocalTime.now(ZoneId.of(EUROPE_LONDON)));

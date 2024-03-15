@@ -24,11 +24,20 @@ import java.util.Objects;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
+/**
+ * Utility class to parse reports.
+ */
 @Component
 public class ReportParser {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportParser.class);
 
+    /**
+     * Parses the given report and returns the parsed report.
+     *
+     * @param report The report to parse
+     * @return The parsed report
+     */
     public ParsedReport parse(Report report) {
         try (CSVParser parser = parserFor(report.content)) {
 
@@ -48,6 +57,12 @@ public class ReportParser {
         }
     }
 
+    /**
+     * Creates a CSV parser for the given CSV content.
+     * @param csv The CSV content
+     * @return The CSV parser
+     * @throws IOException If an error occurs while creating the parser
+     */
     private CSVParser parserFor(byte[] csv) throws IOException {
         return CSVFormat
             .DEFAULT
@@ -56,8 +71,9 @@ public class ReportParser {
     }
 
     /**
-     * Converts cvs row into a letter print status object.
-     * Returns null if conversion fails.
+     * Converts the given CSV record to a letter print status.
+     * @param csvRecord The CSV record
+     * @return The letter print status
      */
     private LetterPrintStatus toPrintStatus(CSVRecord csvRecord) {
         try {

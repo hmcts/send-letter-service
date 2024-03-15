@@ -4,9 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+/**
+ * This class represents the holidays.
+ */
 public class Holidays {
     public final List<Event> events;
 
+    /**
+     * Constructor.
+     *
+     * @param events the events
+     */
     public Holidays(
         @JsonProperty("events") List<Event> events
     ) {

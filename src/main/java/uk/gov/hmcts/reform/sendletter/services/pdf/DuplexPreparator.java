@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * This class represents the duplex preparator.
+ */
 @Component
 public class DuplexPreparator {
     private static final Logger logger = LoggerFactory.getLogger(DuplexPreparator.class);

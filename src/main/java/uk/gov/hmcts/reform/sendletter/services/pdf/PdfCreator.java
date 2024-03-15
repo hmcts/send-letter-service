@@ -13,17 +13,31 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Service for creating PDFs.
+ */
 @Service
 public class PdfCreator {
     private static final Logger logger = LoggerFactory.getLogger(PdfCreator.class);
     private final DuplexPreparator duplexPreparator;
     private final IHtmlToPdfConverter converter;
 
+    /**
+     * Constructor for the PdfCreator.
+     * @param duplexPreparator The duplex preparator
+     * @param converter The HTML to PDF converter
+     */
     public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
         this.duplexPreparator = duplexPreparator;
         this.converter = converter;
     }
 
+    /**
+     * Create a PDF from a list of documents.
+     * @param documents The documents
+     * @param loggingContext The logging context
+     * @return The PDF
+     */
     public byte[] createFromTemplates(List<Document> documents, String loggingContext) {
         Asserts.notNull(documents, "documents");
 
@@ -37,6 +51,12 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(docs, loggingContext);
     }
 
+    /**
+     * Create a PDF from a list of base64 decoded PDFs.
+     * @param base64decodedDocs The base64 decoded PDFs
+     * @param loggingContext The logging context
+     * @return The PDF
+     */
     public byte[] createFromBase64Pdfs(List<byte[]> base64decodedDocs, String loggingContext) {
         Asserts.notNull(base64decodedDocs, "base64decodedDocs");
 
@@ -48,6 +68,12 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(docs, loggingContext);
     }
 
+    /**
+     * Create a PDF from a list of base64 decoded PDFs with copies.
+     * @param docs The documents
+     * @param loggingContext The logging context
+     * @return The PDF
+     */
     public byte[] createFromBase64PdfWithCopies(List<Doc> docs, String loggingContext) {
         Asserts.notNull(docs, "base64decodedDocs");
 
@@ -62,6 +88,11 @@ public class PdfCreator {
         return PdfMerger.mergeDocuments(pdfs, loggingContext);
     }
 
+    /**
+     * Create a PDF from a document.
+     * @param document The document
+     * @return The PDF
+     */
     private byte[] generatePdf(Document document) {
         synchronized (PdfCreator.class) {
             return converter.apply(document.template.getBytes(), document.values);

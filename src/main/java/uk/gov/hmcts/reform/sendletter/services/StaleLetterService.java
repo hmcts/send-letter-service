@@ -38,6 +38,9 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.UTC;
 
+/**
+ * Service to handle stale letters.
+ */
 @Service
 public class StaleLetterService {
     private static final Logger log = LoggerFactory.getLogger(StaleLetterService.class);
@@ -54,6 +57,16 @@ public class StaleLetterService {
     public static final  List<LetterStatus> LETTER_STATUS_TO_IGNORE =
             List.of(LetterStatus.Posted, LetterStatus.Aborted, LetterStatus.NotSent);
 
+    /**
+     * Constructor for the StaleLetterService.
+     *
+     * @param dateCalculator The date calculator
+     * @param letterRepository The repository for letter
+     * @param letterEventRepository The repository for letter event
+     * @param minStaleLetterAgeInBusinessDays The minimum stale letter age in business days
+     * @param ftpDowntimeStart The FTP downtime start
+     * @param clock The clock
+     */
     public StaleLetterService(
         DateCalculator dateCalculator,
         LetterRepository letterRepository,
@@ -70,6 +83,11 @@ public class StaleLetterService {
         this.clock = clock;
     }
 
+    /**
+     * Get stale letters.
+     *
+     * @return The stale letters
+     */
     public List<BasicLetterInfo> getStaleLetters() {
         LocalDateTime localDateTime = calculateCutOffCreationDate()
                 .withZoneSameInstant(DB_TIME_ZONE_ID)
@@ -78,6 +96,12 @@ public class StaleLetterService {
         return letterRepository.findStaleLetters(localDateTime);
     }
 
+    /**
+     * Get weekly stale letters.
+     *
+     * @return The weekly stale letters
+     * @throws IOException If an I/O error occurs
+     */
     @Transactional
     public File getWeeklyStaleLetters() throws IOException {
         LocalDateTime localDateTime = calculateCutOffCreationDate()
@@ -92,6 +116,12 @@ public class StaleLetterService {
         }
     }
 
+    /**
+     * Mark stale letter as not sent.
+     *
+     * @param id The id of the letter
+     * @return The number of letters marked as not sent
+     */
     @Transactional
     public int markStaleLetterAsNotSent(UUID id) {
         log.info("Marking stale letter as not sent {} as being stale", id);
@@ -105,6 +135,12 @@ public class StaleLetterService {
         return letterRepository.markStaleLetterAsNotSent(id);
     }
 
+    /**
+     * Mark stale letter as created.
+     *
+     * @param id The id of the letter
+     * @return The number of letters marked as created
+     */
     @Transactional
     public int markStaleLetterAsCreated(UUID id) {
         log.info("Marking the letter id {} as created to re-upload to FTP server", id);
@@ -118,6 +154,13 @@ public class StaleLetterService {
         return letterRepository.markLetterAsCreated(id);
     }
 
+    /**
+     * Prepare changing letter status.
+     *
+     * @param id The id of the letter
+     * @param manuallyMarkedStatus The manually marked status
+     * @param notes The notes
+     */
     private void prepareChangingLetterStatus(UUID id, EventType manuallyMarkedStatus, String notes) {
         Optional<Letter> letterOpt = letterRepository.findById(id);
 
@@ -136,6 +179,11 @@ public class StaleLetterService {
         );
     }
 
+    /**
+     * Check if letter is stale.
+     *
+     * @param letter The letter
+     */
     private void checkIfLetterIsStale(Letter letter) {
         LocalDateTime localDateTime = calculateCutOffCreationDate()
                 .withZoneSameInstant(DB_TIME_ZONE_ID)
@@ -145,6 +193,13 @@ public class StaleLetterService {
         }
     }
 
+    /**
+     * Create letter event.
+     *
+     * @param letter The letter
+     * @param type The type
+     * @param notes The notes
+     */
     private void createLetterEvent(Letter letter, EventType type, String notes) {
         log.info("Creating letter event {} for letter {}, notes {}", type, letter.getId(), notes);
 
@@ -183,6 +238,12 @@ public class StaleLetterService {
         );
     }
 
+    /**
+     * Get download file.
+     *
+     * @return The download file
+     * @throws IOException If an I/O error occurs
+     */
     public File getDownloadFile() throws IOException {
         List<BasicLetterInfo> staleLetters = getStaleLetters();
         return CsvWriter.writeStaleLettersToCsv(staleLetters);

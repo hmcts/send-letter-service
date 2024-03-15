@@ -13,6 +13,9 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * This class represents the date calculator.
+ */
 @Service
 public class DateCalculator {
 
@@ -20,10 +23,22 @@ public class DateCalculator {
 
     private final BankHolidaysClient bankHolidaysClient;
 
+    /**
+     * Constructor.
+     *
+     * @param bankHolidaysClient the bank holidays client
+     */
     public DateCalculator(BankHolidaysClient bankHolidaysClient) {
         this.bankHolidaysClient = bankHolidaysClient;
     }
 
+    /**
+     * Subtract business days from a date time.
+     *
+     * @param dateTime the date time
+     * @param numberOfBusinessDays the number of business days
+     * @return the adjusted date time
+     */
     public ZonedDateTime subtractBusinessDays(ZonedDateTime dateTime, int numberOfBusinessDays) {
         int daysSubtracted = 0;
         ZonedDateTime adjustedDateTime = dateTime;
@@ -40,11 +55,19 @@ public class DateCalculator {
         return adjustedDateTime;
     }
 
+    /**
+     * Check if a date time is a business day.
+     * @param dateTime the date time
+     * @param bankHolidays the bank holidays
+     */
     private boolean isBusinessDay(ZonedDateTime dateTime, List<LocalDate> bankHolidays) {
         return dateTime.getDayOfWeek().getValue() < DayOfWeek.SATURDAY.getValue()
             && !bankHolidays.contains(dateTime.toLocalDate());
     }
 
+    /**
+     * Get the bank holiday dates.
+     */
     private List<LocalDate> getBankHolidayDates() {
         try {
             return this.bankHolidaysClient
