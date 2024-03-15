@@ -8,9 +8,19 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Document repository.
+ */
 @SuppressWarnings("checkstyle:LineLength")
 public interface DocumentRepository extends JpaRepository<Document, UUID> {
 
+    /**
+     * Find one by checksum.
+     * @param checkSum The checksum
+     * @param recipientsChecksum The recipients checksum
+     * @param createdAfter The created after
+     * @return The document
+     */
     @Query(value = "select * from documents d "
         + " WHERE d.checksum = :checkSum "
         + " AND d.recipients_checksum = :recipientsChecksum "

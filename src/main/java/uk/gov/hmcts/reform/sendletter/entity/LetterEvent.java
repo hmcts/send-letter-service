@@ -11,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * Letter event entity.
+ */
 @Entity
 @Table(name = "letter_events")
 public class LetterEvent {
@@ -33,6 +36,13 @@ public class LetterEvent {
     private LetterEvent() {
     }
 
+    /**
+     * Constructor for the LetterEvent.
+     * @param letter The letter
+     * @param type The type of the event
+     * @param notes The notes of the event
+     * @param createdAt The creation date of the event
+     */
     public LetterEvent(
         Letter letter,
         EventType type,

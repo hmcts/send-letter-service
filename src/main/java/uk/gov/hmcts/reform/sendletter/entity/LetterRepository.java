@@ -14,16 +14,36 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+/**
+ * Letter repository.
+ */
 @SuppressWarnings("checkstyle:LineLength")
 public interface LetterRepository extends JpaRepository<Letter, UUID> {
 
+    /**
+     * Find the first letter that was created before a given date.
+     *
+     * @param createdBefore the date
+     * @return the letter
+     */
     @Query(value = "select * from letters l "
         + " where l.status = 'Created' "
         + " and l.created_at <= :createdBefore order by l.created_at asc limit 1", nativeQuery = true)
     Optional<Letter> findFirstLetterCreated(@Param("createdBefore") LocalDateTime createdBefore);
 
+    /**
+     * Find letters by status.
+     *
+     * @param status the status
+     * @return the letters
+     */
     List<Letter> findByStatus(LetterStatus status);
 
+    /**
+     * Find stale letters.
+     * @param createdBefore
+     * @return BasicLetterInfo letters
+     */
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
         + " where l.status in ('Created', 'Uploaded', 'FailedToUpload')"
@@ -34,10 +54,21 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         @Param("createdBefore") LocalDateTime createdBefore
     );
 
-
+    /**
+     * Find by status not in and type not and created at between order by created at asc.
+     * @param letterStatuses
+     * @param type
+     * @param from
+     * @param to
+     * @return BasicLetterInfo letters
+     */
     Stream<BasicLetterInfo> findByStatusNotInAndTypeNotAndCreatedAtBetweenOrderByCreatedAtAsc(Collection<LetterStatus> letterStatuses,
                                                                String type, LocalDateTime from, LocalDateTime to);
 
+    /**
+     * Find pending letters.
+     * @return BasicLetterInfo letters
+     */
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
         + " where l.status = 'Created'"
@@ -45,8 +76,20 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         + " order by l.createdAt asc")
     List<BasicLetterInfo> findPendingLetters();
 
+    /**
+     * Find by created at before and status and type not.
+     * @param createdBefore
+     * @param status
+     * @param type
+     * @return BasicLetterInfo letters
+     */
     Stream<BasicLetterInfo> findByCreatedAtBeforeAndStatusAndTypeNot(LocalDateTime createdBefore, LetterStatus status, String type);
 
+    /**
+     * Find by created at.
+     * @param createdAt
+     * @return BasicLetterInfo letters
+     */
     @Query("select new uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo(l.id, l.checksum, l.service, l.status, l.type, l.encryptionKeyFingerprint, l.createdAt, l.sentToPrintAt, l.printedAt)"
         + " from Letter l "
         + " where date(l.createdAt) = :createdAt "
@@ -54,17 +97,45 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         + " order by l.createdAt asc")
     List<BasicLetterInfo> findCreatedAt(@Param("createdAt") LocalDate createdAt);
 
+    /**
+     * Find by checksum and status order by created at desc.
+     * @param checksum
+     * @param status
+     * @return Letter
+     */
     Optional<Letter> findByChecksumAndStatusOrderByCreatedAtDesc(String checksum, LetterStatus status);
 
+    /**
+     * Find by id.
+     * @param id
+     * @return Letter
+     */
     Optional<Letter> findById(UUID id);
 
+    /**
+     * Find letter status.
+     * @param id
+     * @return LetterStatus
+     */
     @Query("SELECT l.status FROM Letter l WHERE l.id = :id")
     Optional<LetterStatus> findLetterStatus(@Param("id") UUID id);
 
+    /**
+     * Mark letter as printed.
+     * @param id
+     * @param printedAt
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l SET l.status = 'Posted', l.printedAt = :printedAt, l.fileContent = null WHERE l.id = :id")
     int markLetterAsPosted(@Param("id") UUID id, @Param("printedAt") LocalDateTime printedAt);
 
+    /**
+     * Clear file content.
+     * @param createdBefore
+     * @param status
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
         + " SET l.fileContent = null "
@@ -76,11 +147,27 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
         @Param("status") LetterStatus status
     );
 
+    /**
+     * Count by status.
+     * @param status
+     * @return int
+     */
     int countByStatus(LetterStatus status);
 
-
+    /**
+     * Find by status and created at between order by created at asc.
+     * @param status
+     * @param from
+     * @param to
+     * @return BasicLetterInfo letters
+     */
     Stream<BasicLetterInfo> findByStatusAndCreatedAtBetweenOrderByCreatedAtAsc(LetterStatus status, LocalDateTime from, LocalDateTime to);
 
+    /**
+     * Mark stale letter as not sent.
+     * @param id
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
             + " SET l.status = 'NotSent'"
@@ -88,6 +175,11 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     )
     int markStaleLetterAsNotSent(@Param("id") UUID id);
 
+    /**
+     * Mark letter as created.
+     * @param id
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
         + " SET l.status = 'Created'"
@@ -95,6 +187,11 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     )
     int markLetterAsCreated(@Param("id") UUID id);
 
+    /**
+     * Mark letter as aborted.
+     * @param id
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
         + " SET l.status = 'Aborted'"
@@ -102,6 +199,11 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     )
     int markLetterAsAborted(@Param("id") UUID id);
 
+    /**
+     * Mark letter as posted locally.
+     * @param id
+     * @return int
+     */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Letter l"
         + " SET l.status = 'PostedLocally'"
