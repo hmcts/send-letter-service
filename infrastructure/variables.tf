@@ -134,3 +134,13 @@ variable "aks_subscription_id" {}
 variable "storage_account_repl_type" {
   default = "LRS"
 }
+
+variable "enable_schema_ownership" {
+  type        = bool
+  default     = false
+}
+
+variable "kv_subscription" {
+  default     = "DCD-CNP-DEV"
+  type        = string
+}
