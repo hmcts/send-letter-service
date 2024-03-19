@@ -17,15 +17,30 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Service for delayed print data.
+ */
 @Service
 public class DelayedPrintService {
     private final LetterRepository letterRepository;
 
+    /**
+     * Constructor for the DelayedPrintService.
+     * @param letterRepository The repository for letter
+     */
     @Autowired
     public DelayedPrintService(LetterRepository letterRepository) {
         this.letterRepository = letterRepository;
     }
 
+    /**
+     * Get the delayed print letters.
+     * @param fromCreatedDate The from created date
+     * @param toCreatedDate The to created date
+     * @param minProcessingDays The minimum processing days
+     * @return The delayed print letters
+     * @throws IOException If an I/O error occurs
+     */
     @Transactional
     public File getDelayLettersAttachment(LocalDateTime fromCreatedDate,
                                           LocalDateTime toCreatedDate,

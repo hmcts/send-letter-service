@@ -23,15 +23,30 @@ public class LetterDataAccessService {
         this.repository = repository;
     }
 
+    /**
+     * Finds letter status by id.
+     * @param id letter id
+     * @return letter status
+     */
     public Optional<LetterStatus> findLetterStatus(UUID id) {
         return repository.findLetterStatus(id);
     }
 
+    /**
+     * Marks letter as posted.
+     * @param id letter id
+     * @param printedAt time when letter was printed
+     */
     @Transactional
     public void markLetterAsPosted(UUID id, LocalDateTime printedAt) {
         repository.markLetterAsPosted(id, printedAt);
     }
 
+    /**
+     * Clears file content of letters that were created before given date and have given status.
+     * @param createdBefore date
+     * @param status letter status
+     */
     @Transactional
     public int clearFileContent(LocalDateTime createdBefore, LetterStatus status) {
         return repository.clearFileContent(createdBefore, status);

@@ -39,7 +39,13 @@ public class DeleteOldFilesTask {
     private final Duration ttl;
     private final IFtpAvailabilityChecker ftpAvailabilityChecker;
 
-    // region constructor
+    /**
+     * Constructor for the DeleteOldFilesTask.
+     * @param ftp The FTP client
+     * @param serviceFolderMapping The service folder mapping
+     * @param ttl The time to live
+     * @param ftpAvailabilityChecker The FTP availability checker
+     */
     public DeleteOldFilesTask(
         FtpClient ftp,
         ServiceFolderMapping serviceFolderMapping,
@@ -51,8 +57,10 @@ public class DeleteOldFilesTask {
         this.ttl = ttl;
         this.ftpAvailabilityChecker = ftpAvailabilityChecker;
     }
-    // endregion
 
+    /**
+     * Run the task to delete old files from SFTP.
+     */
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "${file-cleanup.cron}", zone = EUROPE_LONDON)
     public void run() {
@@ -88,6 +96,12 @@ public class DeleteOldFilesTask {
         logger.info("Completed {} task", TASK_NAME);
     }
 
+    /**
+     * Deletes files from SFTP.
+     * @param ftpFolder The folder to delete files from
+     * @param filesToDelete The files to delete
+     * @param sftpClient The SFTP client
+     */
     private void deleteFiles(String ftpFolder, List<FileInfo> filesToDelete, SFTPClient sftpClient) {
         logger.info("Deleting {} old files from {}", filesToDelete.size(), ftpFolder);
 

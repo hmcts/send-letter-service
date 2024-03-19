@@ -8,6 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Represents a letter status.
+ */
 public class LetterStatus {
 
     public final UUID id;
@@ -38,7 +41,18 @@ public class LetterStatus {
     @JsonProperty("copies")
     public final Integer copies;
 
-
+    /**
+     * Constructor.
+     *
+     * @param id the id
+     * @param status the status
+     * @param checksum the checksum
+     * @param createdAt the created at
+     * @param sentToPrintAt the sent to print at
+     * @param printedAt the printed at
+     * @param additionalData the additional data
+     * @param copies the copies
+     */
     public LetterStatus(
         final UUID id,
         final String status,

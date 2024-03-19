@@ -10,17 +10,28 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Configuration for time.
+ */
 @Configuration
 public class TimeConfiguration {
 
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+    /**
+     * Create a Clock.
+     * @return The Clock
+     */
     @Bean
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
 
     // global setting via config files not working with java8
+    /**
+     * Create a Jackson2ObjectMapperBuilderCustomizer.
+     * @return The Jackson2ObjectMapperBuilderCustomizer
+     */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomiser() {
         return builder -> {

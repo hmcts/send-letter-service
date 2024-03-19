@@ -7,6 +7,9 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Configuration properties for FTP.
+ */
 @ConfigurationProperties(prefix = "ftp")
 public class FtpConfigProperties {
 

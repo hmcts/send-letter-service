@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +33,9 @@ import javax.validation.Valid;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+/**
+ * Controller for sending letters.
+ */
 @RestController
 @Validated
 @RequestMapping(
@@ -45,6 +47,11 @@ public class SendLetterController {
     private final LetterService letterService;
     private final AuthService authService;
 
+    /**
+     * Construct a new SendLetterController.
+     * @param letterService the letter service
+     * @param authService the auth service
+     */
     public SendLetterController(
         LetterService letterService,
         AuthService authService
@@ -53,6 +60,13 @@ public class SendLetterController {
         this.authService = authService;
     }
 
+    /**
+     * Send letter to print and post service.
+     * @param serviceAuthHeader the service authorization header
+     * @param isAsync the isAsync flag
+     * @param letter the letter
+     * @return The send letter response
+     */
     @PostMapping(
         consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.LETTER_V1},
         produces = MediaType.APPLICATION_JSON_VALUE
@@ -75,6 +89,13 @@ public class SendLetterController {
         return ok().body(new SendLetterResponse(letterId));
     }
 
+    /**
+     * Send letter to print and post service.
+     * @param serviceAuthHeader the service authorization header
+     * @param isAsync the isAsync flag
+     * @param letter the letter
+     * @return The send letter response
+     */
     @PostMapping(consumes = MediaTypes.LETTER_V2, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Send letter to print and post service")
     @ApiResponses({
@@ -96,6 +117,13 @@ public class SendLetterController {
         return ok().body(new SendLetterResponse(letterId));
     }
 
+    /**
+     * Send letter to print and post service.
+     * @param serviceAuthHeader the service authorization header
+     * @param isAsync the isAsync flag
+     * @param letter the letter
+     * @return The send letter response
+     */
     @PostMapping(consumes = MediaTypes.LETTER_V3, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Send letter to print and post service")
     @ApiResponses({
@@ -114,6 +142,13 @@ public class SendLetterController {
         return ok().body(new SendLetterResponse(letterId));
     }
 
+    /**
+     * Get letter status.
+     * @param id the letter id
+     * @param isAdditionalInfoRequired the isAdditionalInfoRequired flag
+     * @param isDuplicate the isDuplicate flag
+     * @return The letter status
+     */
     @GetMapping(path = "/{id}/extended-status")
     @Operation(description = "Get extended letter status")
     @ApiResponses({
@@ -135,6 +170,13 @@ public class SendLetterController {
         return ok(letterStatus);
     }
 
+    /**
+     * Get letter status.
+     * @param id the letter id
+     * @param isAdditionalInfoRequired the isAdditionalInfoRequired flag
+     * @param isDuplicate the isDuplicate flag
+     * @return The letter status
+     */
     @GetMapping(path = "/{id}")
     @Operation(description = "Get letter status")
     @ApiResponses({
@@ -152,6 +194,11 @@ public class SendLetterController {
         return ok(letterStatus);
     }
 
+    /**
+     * Get letter status with copies requested.
+     * @param id the letter id
+     * @return The letter status
+     */
     @GetMapping(path = "/v2/{id}")
     @Operation(description = "Get letter status with copies requested")
     @ApiResponses({
@@ -167,6 +214,11 @@ public class SendLetterController {
         return ok(letterStatus);
     }
 
+    /**
+     * Get letter id from string.
+     * @param letterId the letter id
+     * @return The letter id
+     */
     private UUID getLetterIdFromString(String letterId) {
         try {
             return UUID.fromString(letterId);

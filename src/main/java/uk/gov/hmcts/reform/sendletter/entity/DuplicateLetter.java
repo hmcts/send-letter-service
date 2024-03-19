@@ -37,6 +37,17 @@ public class DuplicateLetter {
     protected DuplicateLetter() {
     }
 
+    /**
+     * Constructor for the DuplicateLetter.
+     * @param id The ID
+     * @param checksum The checksum
+     * @param service The service
+     * @param additionalData The additional data
+     * @param type The type
+     * @param createdAt The created at
+     * @param copies The copies
+     * @param isAsync The is async
+     */
     public DuplicateLetter(
         UUID id,
         String checksum,

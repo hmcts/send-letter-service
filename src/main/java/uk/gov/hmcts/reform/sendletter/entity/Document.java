@@ -20,6 +20,14 @@ public class Document {
     private Document() {
     }
 
+    /**
+     * Constructor for the Document.
+     * @param id The ID
+     * @param letterId The letter ID
+     * @param checksum The checksum
+     * @param recipientsChecksum The recipients checksum
+     * @param createdAt The created at
+     */
     public Document(
         UUID id,
         UUID letterId,

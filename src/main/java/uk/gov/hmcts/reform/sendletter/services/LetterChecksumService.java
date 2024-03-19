@@ -15,11 +15,18 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.springframework.util.SerializationUtils.serialize;
 
+/**
+ * Service for letter checksum.
+ */
 @Service
 public class LetterChecksumService {
 
     private final LaunchDarklyClient launchDarklyClient;
 
+    /**
+     * Constructor for the LetterChecksumService.
+     * @param launchDarklyClient The client for launch darkly
+     */
     public LetterChecksumService(LaunchDarklyClient launchDarklyClient) {
         this.launchDarklyClient = launchDarklyClient;
     }
@@ -55,6 +62,12 @@ public class LetterChecksumService {
         }
     }
 
+    /**
+     * Generates a checksum for a given object.
+     *
+     * @param obj the object to generate a checksum for
+     * @return the checksum
+     */
     public String generateChecksumForPdfPages(Object obj) {
         return launchDarklyClient.isFeatureEnabled("FACT-1388")
             ? obj instanceof Doc
@@ -66,6 +79,12 @@ public class LetterChecksumService {
             : generateChecksum(obj);
     }
 
+    /**
+     * Generates a checksum for a given object.
+     *
+     * @param obj the object to generate a checksum for
+     * @return the checksum
+     */
     public String generateChecksum(Object obj) {
         return DigestUtils.md5DigestAsHex(serialize(obj));
     }

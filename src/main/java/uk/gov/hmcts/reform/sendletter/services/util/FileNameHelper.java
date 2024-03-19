@@ -10,20 +10,43 @@ import java.util.UUID;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
+/**
+ * Utility class for generating file names.
+ */
 public final class FileNameHelper {
 
     public static final DateTimeFormatter dateTimeFormatter = ofPattern("ddMMyyyyHHmmss");
     private static final String SEPARATOR = "_";
 
+    /**
+     * Generates a PDF file name for a given letter.
+     *
+     * @param letter The letter
+     * @return The PDF file name
+     */
     public static String generatePdfName(Letter letter) {
         return generatePdfName(letter.getType(), letter.getService(), letter.getId());
     }
 
+    /**
+     * Generates a PDF file name for a given letter.
+     *
+     * @param type       The letter type
+     * @param serviceName The service name
+     * @param id         The letter ID
+     * @return The PDF file name
+     */
     public static String generatePdfName(String type, String serviceName, UUID id) {
         String strippedService = serviceName.replace(SEPARATOR, "");
         return type + SEPARATOR + strippedService + SEPARATOR + id + ".pdf";
     }
 
+    /**
+     * Extracts the letter ID from a PDF file name.
+     *
+     * @param fileName The PDF file name
+     * @return The letter ID
+     */
     public static UUID extractIdFromPdfName(String fileName) {
         String[] parts = FilenameUtils.removeExtension(fileName).split(SEPARATOR);
         if (parts.length < 3) {
@@ -37,6 +60,12 @@ public final class FileNameHelper {
         }
     }
 
+    /**
+     * Generates a file name for a given letter.
+     *
+     * @param letter The letter
+     * @return The file name
+     */
     public static String generateName(Letter letter) {
         return generateName(
             letter.getType(),
@@ -47,6 +76,16 @@ public final class FileNameHelper {
         );
     }
 
+    /**
+     * Generates a file name for a given letter.
+     *
+     * @param type             The letter type
+     * @param service          The service name
+     * @param createdAtDateTime The creation date and time
+     * @param id               The letter ID
+     * @param isEncrypted      Whether the letter is encrypted
+     * @return The file name
+     */
     public static String generateName(
         String type,
         String service,

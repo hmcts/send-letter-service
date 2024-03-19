@@ -14,16 +14,30 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * Utility for filling zero rows.
+ */
 @Component
 @EnableConfigurationProperties(ReportsServiceConfig.class)
 public class ZeroRowFiller {
 
     private final Map<String, String> reportsServiceConfig;
 
+    /**
+     * Constructor for the ZeroRowFiller.
+     *
+     * @param reportsServiceConfig The configuration for reports service
+     */
     public ZeroRowFiller(ReportsServiceConfig reportsServiceConfig) {
         this.reportsServiceConfig = reportsServiceConfig.getServiceConfig();
     }
 
+    /**
+     * Fill the list with zero rows.
+     *
+     * @param listToFill The list to fill
+     * @return The list filled with zero rows
+     */
     public List<LettersCountSummary> fill(List<LettersCountSummary> listToFill) {
         return Stream.concat(
             listToFill.stream(),
@@ -33,6 +47,12 @@ public class ZeroRowFiller {
         ).collect(toList());
     }
 
+    /**
+     * Get the missing service names.
+     *
+     * @param listToFill The list to fill
+     * @return The missing service names
+     */
     private Set<String> missingServiceNames(List<LettersCountSummary> listToFill) {
         return Sets.difference(
             Sets.newHashSet(reportsServiceConfig.values()), //All service names

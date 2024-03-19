@@ -11,15 +11,28 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Contributes letter status information to the /actuator/info endpoint.
+ */
 @Component
 public class LetterStatusInfoContributor implements InfoContributor {
 
     private final LetterRepository repo;
 
+    /**
+     * Create a new instance.
+     *
+     * @param repo the repository to get letter status information from
+     */
     public LetterStatusInfoContributor(LetterRepository repo) {
         this.repo = repo;
     }
 
+    /**
+     * Contributes letter status information to the /actuator/info endpoint.
+     *
+     * @param builder the builder to contribute to
+     */
     @Override
     public void contribute(Info.Builder builder) {
         builder.withDetail(

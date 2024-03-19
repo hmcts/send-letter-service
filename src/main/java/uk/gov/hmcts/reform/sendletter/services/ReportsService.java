@@ -16,6 +16,9 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.localDateTimeWithUtc;
 
+/**
+ * Service to handle reports.
+ */
 @Service
 public class ReportsService {
 
@@ -31,6 +34,15 @@ public class ReportsService {
 
     private final String timeToHour;
 
+    /**
+     * Constructor for the ReportsService.
+     *
+     * @param repo The repository for letters count summary
+     * @param reportsServiceConfig The configuration for reports service
+     * @param zeroRowFiller The utility for filling zero rows
+     * @param downtimeFromHour The downtime from hour
+     * @param downtimeToHour The downtime to hour
+     */
     public ReportsService(
         LettersCountSummaryRepository repo,
         ReportsServiceConfig reportsServiceConfig,
@@ -45,6 +57,12 @@ public class ReportsService {
         this.timeToHour = downtimeFromHour;
     }
 
+    /**
+     * Get count for a date.
+     *
+     * @param date the date
+     * @return the count for the date
+     */
     public List<LettersCountSummary> getCountFor(LocalDate date) {
         LocalDateTime dateTimeFrom = localDateTimeWithUtc(date.minusDays(1), LocalTime.parse(timeFromHour));
         LocalDateTime dateTimeTo = localDateTimeWithUtc(date, LocalTime.parse(timeToHour));
@@ -58,6 +76,12 @@ public class ReportsService {
             .collect(toList());
     }
 
+    /**
+     * Get count for a date range.
+     *
+     * @param dbSummary the db summary
+     * @return letters count summary
+     */
     private LettersCountSummary fromDb(ServiceLettersCountSummary dbSummary) {
         return new LettersCountSummary(
             reportsServiceConfig.getDisplayName(dbSummary.getService()).orElse(dbSummary.getService()),

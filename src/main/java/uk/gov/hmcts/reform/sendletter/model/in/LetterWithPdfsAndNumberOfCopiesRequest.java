@@ -10,6 +10,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+/**
+ * This class represents the letter request.
+ */
 public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILetterRequest {
 
     private static final long serialVersionUID = 1471737409853792378L;
@@ -26,6 +29,13 @@ public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILe
     @ValidRecipients
     public final Map<String, Object> additionalData;
 
+    /**
+     * Constructor.
+     *
+     * @param documents the list of documents
+     * @param type the type
+     * @param additionalData the additional data
+     */
     public LetterWithPdfsAndNumberOfCopiesRequest(
         @JsonProperty("documents") List<Doc> documents,
         @JsonProperty("type") String type,

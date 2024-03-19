@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Represents a letter info.
+ */
 public class LetterInfo {
 
     @JsonProperty("id")
@@ -28,6 +31,17 @@ public class LetterInfo {
     @JsonProperty("printed_at")
     public final LocalDateTime printedAt;
 
+    /**
+     * Constructor.
+     *
+     * @param id the id
+     * @param service the service
+     * @param type the type
+     * @param status the status
+     * @param createdAt the created at
+     * @param sentToPrintAt the sent to print at
+     * @param printedAt the printed at
+     */
     public LetterInfo(
         UUID id,
         String service,

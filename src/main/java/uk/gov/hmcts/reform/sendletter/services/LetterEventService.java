@@ -15,6 +15,9 @@ import java.time.Instant;
 import static uk.gov.hmcts.reform.sendletter.entity.EventType.FAILED_TO_UPLOAD;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 
+/**
+ * Service to handle letter events.
+ */
 @Service
 public class LetterEventService {
     private static final Logger log = LoggerFactory.getLogger(LetterEventService.class);
@@ -22,6 +25,11 @@ public class LetterEventService {
     private final LetterRepository letterRepository;
     private final LetterEventRepository letterEventRepository;
 
+    /**
+     * Constructor for the LetterEventService.
+     * @param letterRepository The repository for letter
+     * @param letterEventRepository The repository for letter event
+     */
     public LetterEventService(
             LetterRepository letterRepository,
             LetterEventRepository letterEventRepository
@@ -30,6 +38,10 @@ public class LetterEventService {
         this.letterEventRepository = letterEventRepository;
     }
 
+    /**
+     * Create failed letter event.
+     * @param letter letter
+     */
     @Transactional
     public void failLetterUpload(Letter letter, Exception ex) {
         log.error("Error uploading letter {}", letter.getId(), ex);
@@ -44,6 +56,12 @@ public class LetterEventService {
         );
     }
 
+    /**
+     * Create letter event.
+     * @param letter letter
+     * @param type event type
+     * @param notes notes
+     */
     private void createLetterEvent(Letter letter, EventType type, String notes) {
         log.info("Creating letter event {} for letter {}, notes {}", type, letter.getId(), notes);
 

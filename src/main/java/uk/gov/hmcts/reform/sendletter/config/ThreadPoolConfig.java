@@ -33,14 +33,25 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
 
     private static final Supplier<Long> CURRENT_MILLIS_SUPPLIER = () -> getCurrentEuropeLondonInstant().toEpochMilli();
 
+    /**
+     * Supplier for the request context.
+     */
     private static final Supplier<RequestTelemetryContext> REQUEST_CONTEXT_SUPPLIER = () ->
         new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get(), null);
 
+    /**
+     * Configure the scheduled tasks.
+     * @param taskRegistrar The task registrar
+     */
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setTaskScheduler(sendLetterTaskScheduler());
     }
 
+    /**
+     * Create a TaskScheduler.
+     * @return The TaskScheduler
+     */
     @Bean
     public TaskScheduler sendLetterTaskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new SendLetterTaskScheduler();
@@ -59,21 +70,44 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
      */
     private static class SendLetterTaskScheduler extends ThreadPoolTaskScheduler {
 
+        /**
+         * Execute a command.
+         * @param command The command
+         */
         @Override
         public void execute(Runnable command) {
             super.execute(new WrappedRunnable(command, REQUEST_CONTEXT_SUPPLIER.get()));
         }
 
+        /**
+         * Schedule a task.
+         * @param task The task
+         * @param trigger The trigger
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
             return super.schedule(new WrappedRunnable(task, REQUEST_CONTEXT_SUPPLIER.get()), trigger);
         }
 
+        /**
+         * Schedule a task.
+         * @param task The task
+         * @param startTime The start time
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> schedule(Runnable task, Date startTime) {
             return super.schedule(new WrappedRunnable(task, REQUEST_CONTEXT_SUPPLIER.get()), startTime);
         }
 
+        /**
+         * Schedule a task at fixed rate.
+         * @param task The task
+         * @param startTime The start time
+         * @param period The period
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Date startTime, long period) {
             return super.scheduleAtFixedRate(new WrappedRunnable(
@@ -82,11 +116,24 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
             ), startTime, period);
         }
 
+        /**
+         * Schedule a task at fixed rate.
+         * @param task The task
+         * @param period The period
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long period) {
             return super.scheduleAtFixedRate(new WrappedRunnable(task, REQUEST_CONTEXT_SUPPLIER.get()), period);
         }
 
+        /**
+         * Schedule a task with fixed delay.
+         * @param task The task
+         * @param startTime The start time
+         * @param delay The delay
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Date startTime, long delay) {
             return super.scheduleWithFixedDelay(new WrappedRunnable(
@@ -95,6 +142,12 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
             ), startTime, delay);
         }
 
+        /**
+         * Schedule a task with fixed delay.
+         * @param task The task
+         * @param delay The delay
+         * @return The ScheduledFuture
+         */
         @Override
         public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
             return super.scheduleWithFixedDelay(new WrappedRunnable(task, REQUEST_CONTEXT_SUPPLIER.get()), delay);
@@ -106,11 +159,19 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
         private final Runnable task;
         private RequestTelemetryContext requestContext;
 
+        /**
+         * Constructor for the WrappedRunnable.
+         * @param task The task
+         * @param requestContext The request context
+         */
         WrappedRunnable(Runnable task, RequestTelemetryContext requestContext) {
             this.task = task;
             this.requestContext = requestContext;
         }
 
+        /**
+         * Run the task.
+         */
         @Override
         public void run() {
             if (ThreadContext.getRequestTelemetryContext() != null) {

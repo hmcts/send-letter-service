@@ -8,6 +8,10 @@ import java.util.stream.Stream;
 
 public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
 
+    /**
+     * Migrate the database.
+     * @param flyway The flyway instance
+     */
     @Override
     public void migrate(Flyway flyway) {
         Stream.of(flyway.info().all())

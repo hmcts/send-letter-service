@@ -21,6 +21,9 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * Task to send daily report of uploaded letters.
+ */
 @Component
 @ConditionalOnBean(EmailSender.class)
 @ConditionalOnProperty(prefix = "reports.upload-summary", name = "enabled")
@@ -39,6 +42,12 @@ public class DailyLetterUploadSummaryReport {
 
     private final String[] recipients;
 
+    /**
+     * Constructor for the DailyLetterUploadSummaryReport.
+     * @param reportService The service for reports
+     * @param emailSender The service for email sender
+     * @param recipients The recipients of the email
+     */
     public DailyLetterUploadSummaryReport(
         ReportsService reportService,
         EmailSender emailSender,
@@ -58,6 +67,9 @@ public class DailyLetterUploadSummaryReport {
         }
     }
 
+    /**
+     * Send the daily report of uploaded letters.
+     */
     @SchedulerLock(name = "daily-letter-upload-summary", lockAtLeastFor = "PT5S")
     @Scheduled(cron = "${reports.upload-summary.cron}", zone = EUROPE_LONDON)
     public void send() {

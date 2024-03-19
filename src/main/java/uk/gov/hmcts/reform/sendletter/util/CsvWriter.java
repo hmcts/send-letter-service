@@ -25,6 +25,9 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
+/**
+ * Utility class to write CSV files.
+ */
 public final class CsvWriter {
     private static final Logger logger = LoggerFactory.getLogger(CsvWriter.class);
 
@@ -51,10 +54,19 @@ public final class CsvWriter {
         "FileName", "UploadedAt"
     };
 
+    /**
+     * Utility class constructor.
+     */
     private CsvWriter() {
-        // utility class constructor
     }
 
+    /**
+     * Writes the letters count summary to a CSV file.
+     *
+     * @param lettersCountSummary The letters count summary
+     * @return The CSV file
+     * @throws IOException If an I/O error occurs
+     */
     public static File writeLettersCountSummaryToCsv(
         List<LettersCountSummary> lettersCountSummary
     ) throws IOException {
@@ -71,6 +83,13 @@ public final class CsvWriter {
         return csvFile;
     }
 
+    /**
+     * Writes the stale letters to a CSV file.
+     *
+     * @param staleLetters The stale letters
+     * @return The CSV file
+     * @throws IOException If an I/O error occurs
+     */
     public static File writeStaleLettersToCsv(List<BasicLetterInfo> staleLetters) throws IOException {
         var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
@@ -87,6 +106,13 @@ public final class CsvWriter {
         return csvFile;
     }
 
+    /**
+     * Writes the delayed posted letters to a CSV file.
+     *
+     * @param letters The delayed posted letters
+     * @return The CSV file
+     * @throws IOException If an I/O error occurs
+     */
     public static File writeDelayedPostedLettersToCsv(Stream<BasicLetterInfo> letters) throws IOException {
         var path = Files.createTempFile("Delayed-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
@@ -102,6 +128,13 @@ public final class CsvWriter {
         return csvFile;
     }
 
+    /**
+     * Writes the stale letters report to a CSV file.
+     *
+     * @param letters The stale letters
+     * @return The CSV file
+     * @throws IOException If an I/O error occurs
+     */
     public static File writeStaleLettersReport(Stream<BasicLetterInfo> letters) throws IOException {
         var path = Files.createTempFile("Stale-letters-", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
@@ -117,6 +150,13 @@ public final class CsvWriter {
         return csvFile;
     }
 
+    /**
+     * Writes the FTP uploaded letters to CSV files.
+     *
+     * @param serviceToLetters The service to letters
+     * @return The CSV files for services
+     * @throws IOException If an I/O error occurs
+     */
     public static Map<String, File> writeFtpLettersToCsvFiles(
         Map<String, List<FileInfo>> serviceToLetters
     ) throws IOException {
@@ -143,6 +183,13 @@ public final class CsvWriter {
         return csvFilesForServices;
     }
 
+    /**
+     * Prints the FTP uploaded letters to a CSV file.
+     *
+     * @param fileInfo The file information
+     * @param printer The CSV printer
+     * @param count The count of the printed records
+     */
     private static void printFtpUploadedFile(FileInfo fileInfo, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(fileInfo.path, fileInfo.modifiedAt);
@@ -152,6 +199,13 @@ public final class CsvWriter {
         }
     }
 
+    /**
+     * Prints the stale records to a CSV file.
+     *
+     * @param letter The letter
+     * @param printer The CSV printer
+     * @param count The count of the printed records
+     */
     private static void printStaleRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(FileNameHelper.generateName(letter.getType(),
@@ -164,6 +218,13 @@ public final class CsvWriter {
         }
     }
 
+    /**
+     * Prints the delay records to a CSV file.
+     *
+     * @param letter The letter
+     * @param printer The CSV printer
+     * @param count The count of the printed records
+     */
     private static void printDelayRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(FileNameHelper.generateName(letter.getType(),

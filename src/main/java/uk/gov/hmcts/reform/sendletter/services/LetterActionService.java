@@ -32,6 +32,9 @@ import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.FailedToUpload;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Posted;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
+/**
+ * Service for letter actions.
+ */
 @Service
 public class LetterActionService {
     private static final Logger log = LoggerFactory.getLogger(StaleLetterService.class);
@@ -40,6 +43,12 @@ public class LetterActionService {
     private final LetterEventRepository letterEventRepository;
     private final StaleLetterService staleLetterService;
 
+    /**
+     * Constructor for the LetterActionService.
+     * @param letterRepository The repository for letter
+     * @param letterEventRepository The repository for letter event
+     * @param staleLetterService The service for stale letter
+     */
     public LetterActionService(LetterRepository letterRepository,
                                LetterEventRepository letterEventRepository,
                                StaleLetterService staleLetterService) {
@@ -48,6 +57,11 @@ public class LetterActionService {
         this.staleLetterService = staleLetterService;
     }
 
+    /**
+     * Mark a letter as aborted.
+     * @param id The id of the letter to mark as aborted
+     * @return The number of letters marked as aborted
+     */
     @Transactional
     public int markLetterAsAborted(UUID id) {
         log.info("Marking the letter id {} as Aborted", id);
@@ -66,6 +80,11 @@ public class LetterActionService {
         return letterRepository.markLetterAsAborted(id);
     }
 
+    /**
+     * Mark a letter as created to re-upload to SFTP server.
+     * @param id The id of the letter to mark as created
+     * @return The number of letters marked as created
+     */
     @Transactional
     public int markLetterAsCreated(UUID id) {
         log.info("Marking the letter id {} as Created to re-upload to SFTP server", id);
@@ -87,6 +106,11 @@ public class LetterActionService {
         }
     }
 
+    /**
+     * Mark a letter as posted locally.
+     * @param id The id of the letter to mark as posted locally
+     * @return The number of letters marked as posted locally
+     */
     @Transactional
     public int markLetterAsPostedLocally(UUID id) {
         log.info("Marking the letter id {} as PostedLocally", id);
@@ -108,6 +132,13 @@ public class LetterActionService {
         return letterRepository.markLetterAsPostedLocally(id);
     }
 
+    /**
+     * Mark a letter as posted.
+     * @param id The id of the letter to mark as posted
+     * @param printedOn The date the letter was printed
+     * @param printedAt The time the letter was printed
+     * @return The number of letters marked as posted
+     */
     @Transactional
     public int markLetterAsPosted(UUID id,
                                   LocalDate printedOn,
@@ -132,6 +163,10 @@ public class LetterActionService {
         return letterRepository.markLetterAsPosted(id, printedDateTime.toLocalDateTime());
     }
 
+    /**
+     * Check if a letter can be re-processed.
+     * @param letter The letter to check
+     */
     private void checkLetterStatusForLetterReUpload(Letter letter) {
         if (!List.of(FailedToUpload, Uploaded).contains(letter.getStatus())) {
             throw new UnableToReprocessLetterException(
@@ -141,6 +176,10 @@ public class LetterActionService {
 
     }
 
+    /**
+     * Check if a letter can be marked as posted locally.
+     * @param letter The letter to check
+     */
     private void checkLetterStatusForMarkPostedLocally(Letter letter) {
         if (!List.of(Uploaded, Posted).contains(letter.getStatus())) {
             throw new UnableToMarkLetterPostedLocallyException(
@@ -150,6 +189,10 @@ public class LetterActionService {
 
     }
 
+    /**
+     * Check if a letter can be marked as posted.
+     * @param letter The letter to check
+     */
     private void checkLetterStatusForMarkPosted(Letter letter) {
         if (letter.getStatus() == Posted) {
             throw new UnableToMarkLetterPostedException(
@@ -159,6 +202,12 @@ public class LetterActionService {
 
     }
 
+    /**
+     * Create a letter event.
+     * @param letter The letter
+     * @param type The event type
+     * @param notes The notes
+     */
     private void createLetterEvent(Letter letter, EventType type, String notes) {
         log.info("Creating letter event {} for letter {}, notes {}", type, letter.getId(), notes);
 
