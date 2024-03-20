@@ -7,6 +7,11 @@ public class LettersInfoResponse {
     public final int count;
     public final List<LetterInfo> letters;
 
+    /**
+     * Constructor.
+     *
+     * @param letters the letters
+     */
     public LettersInfoResponse(List<LetterInfo> letters) {
         this.letters = letters;
         this.count = letters.size();

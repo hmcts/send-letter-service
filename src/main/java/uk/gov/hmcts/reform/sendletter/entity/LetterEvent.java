@@ -12,6 +12,9 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
+/**
+ * Letter event entity.
+ */
 @Entity
 @Table(name = "letter_events")
 public class LetterEvent {
@@ -34,6 +37,13 @@ public class LetterEvent {
     private LetterEvent() {
     }
 
+    /**
+     * Constructor for the LetterEvent.
+     * @param letter The letter
+     * @param type The type of the event
+     * @param notes The notes of the event
+     * @param createdAt The creation date of the event
+     */
     public LetterEvent(
         Letter letter,
         EventType type,

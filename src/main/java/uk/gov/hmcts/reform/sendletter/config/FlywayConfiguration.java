@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.sendletter.data.migration.FlywayNoOpStrategy;
 
+/**
+ * Configuration for Flyway.
+ */
 @AutoConfigureAfter({
     DataSourceAutoConfiguration.class,
     HibernateJpaAutoConfiguration.class
@@ -23,12 +26,20 @@ import uk.gov.hmcts.reform.sendletter.data.migration.FlywayNoOpStrategy;
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 public class FlywayConfiguration {
 
+    /**
+     * Create a bean of FlywayMigrationStrategy.
+     * @return The FlywayMigrationStrategy
+     */
     @Bean
     @ConditionalOnProperty(prefix = "flyway.noop", name = "strategy", matchIfMissing = true)
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return new FlywayNoOpStrategy();
     }
 
+    /**
+     * Create a bean of FlywayMigrationStrategy.
+     * @return The FlywayMigrationStrategy
+     */
     @Bean
     @ConditionalOnProperty(prefix = "flyway.noop", name = "strategy", havingValue = "false")
     public FlywayMigrationStrategy flywayVoidMigrationStrategy() {

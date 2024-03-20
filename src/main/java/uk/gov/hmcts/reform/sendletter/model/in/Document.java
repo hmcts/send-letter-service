@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Map;
 
+/**
+ * This class represents the document to be sent.
+ */
 public class Document implements Serializable {
 
     private static final long serialVersionUID = -2374030102074056382L;
@@ -19,6 +22,12 @@ public class Document implements Serializable {
     @NotEmpty
     public final Map<String, Object> values;
 
+    /**
+     * Constructor.
+     *
+     * @param template the template to be used
+     * @param values the template values
+     */
     public Document(
         @JsonProperty("template") String template,
         @JsonProperty("values") Map<String, Object> values

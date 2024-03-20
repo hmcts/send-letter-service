@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+/**
+ * The main application class.
+ */
 @SpringBootApplication
 @EnableHystrix
 @EnableAsync

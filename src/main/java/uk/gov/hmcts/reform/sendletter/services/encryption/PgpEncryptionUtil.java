@@ -33,6 +33,9 @@ import static org.bouncycastle.bcpg.CompressionAlgorithmTags.ZIP;
 import static org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags.AES_256;
 import static org.bouncycastle.openpgp.PGPUtil.getDecoderStream;
 
+/**
+ * This class represents the PGP encryption utility.
+ */
 public final class PgpEncryptionUtil {
 
     private static final Logger log = LoggerFactory.getLogger(PgpEncryptionUtil.class);
@@ -107,6 +110,12 @@ public final class PgpEncryptionUtil {
         return Optional.empty();
     }
 
+    /**
+     * Writes the encrypted data to the output stream.
+     * @param bout the byte array output stream
+     * @param encryptedDataGenerator the encrypted data generator
+     * @return the encrypted data
+     */
     private static byte[] writeEncryptedDataToOutputStream(
         ByteArrayOutputStream bout,
         PGPEncryptedDataGenerator encryptedDataGenerator
@@ -121,6 +130,11 @@ public final class PgpEncryptionUtil {
         return byteArrayOutputStream.toByteArray();
     }
 
+    /**
+     * Prepares the data encryptor.
+     * @param pgpPublicKey the public key
+     * @return the encrypted data generator
+     */
     private static PGPEncryptedDataGenerator prepareDataEncryptor(PGPPublicKey pgpPublicKey) {
         var dataEncryptor = new BcPGPDataEncryptorBuilder(AES_256);
         dataEncryptor.setWithIntegrityPacket(true);
@@ -131,6 +145,12 @@ public final class PgpEncryptionUtil {
         return encryptedDataGenerator;
     }
 
+    /**
+     * Compresses and writes the file to literal data.
+     * @param inputFile the input file
+     * @param fileName the file name
+     * @return the byte array output stream
+     */
     private static ByteArrayOutputStream compressAndWriteFileToLiteralData(
         byte[] inputFile,
         String fileName
@@ -152,6 +172,12 @@ public final class PgpEncryptionUtil {
         return byteArrayOutputStream;
     }
 
+    /**
+     * Creates a temporary file.
+     * @param inputFile the input file
+     * @param fileName the file name
+     * @return the temporary file
+     */
     private static File createTempFile(
         byte[] inputFile,
         String fileName

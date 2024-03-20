@@ -15,15 +15,27 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
+/**
+ * Controller for letter list.
+ */
 @RestController
 public class LetterListController {
 
     private final LetterRepository repository;
 
+    /**
+     * Constructor for the LetterListController.
+     * @param repository The letter repository
+     */
     public LetterListController(LetterRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Get letters by date.
+     * @param date The date
+     * @return The letters info response
+     */
     @GetMapping(path = "/letters")
     public LettersInfoResponse getLetters(@RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date) {
 

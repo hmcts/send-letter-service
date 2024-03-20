@@ -13,6 +13,9 @@ import org.hibernate.annotations.Type;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * The type Print.
+ */
 @Entity
 @Table(name = "prints")
 public class Print {
@@ -40,6 +43,19 @@ public class Print {
     private Print() {
     }
 
+    /**
+     * Instantiates a new Print.
+     *
+     * @param id             the id
+     * @param service        the service
+     * @param createdAt      the created at
+     * @param type           the type
+     * @param idempotencyKey the idempotency key
+     * @param documents      the documents
+     * @param caseId         the case id
+     * @param caseRef        the case ref
+     * @param letterType     the letter type
+     */
     @SuppressWarnings("squid:S00107")
     public Print(
         UUID id,

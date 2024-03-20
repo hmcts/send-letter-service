@@ -36,6 +36,14 @@ public class MarkLettersPostedTask {
     private static final Logger logger = LoggerFactory.getLogger(MarkLettersPostedTask.class);
     private static final String TASK_NAME = "MarkLettersPosted";
 
+    /**
+     * Constructor for the MarkLettersPostedTask.
+     * @param dataAccessService The service for letter data access
+     * @param ftp The FTP client
+     * @param checker The FTP availability checker
+     * @param parser The report parser
+     * @param insights The application insights
+     */
     public MarkLettersPostedTask(
         LetterDataAccessService dataAccessService,
         FtpClient ftp,
@@ -50,6 +58,9 @@ public class MarkLettersPostedTask {
         this.insights = insights;
     }
 
+    /**
+     * Fetches reports from SFTP and sets status as Posted in the database.
+     */
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "${tasks.mark-letters-posted.cron}", zone = EUROPE_LONDON)
     public void run() {
@@ -90,6 +101,11 @@ public class MarkLettersPostedTask {
         }
     }
 
+    /**
+     * Marks the letter as posted in the database.
+     * @param letterPrintStatus The letter print status
+     * @param reportFileName The report file name
+     */
     private void markAsPosted(LetterPrintStatus letterPrintStatus, String reportFileName) {
         dataAccessService
             .findLetterStatus(letterPrintStatus.id)

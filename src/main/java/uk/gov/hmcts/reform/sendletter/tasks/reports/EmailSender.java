@@ -11,6 +11,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+/**
+ * Service for sending emails.
+ */
 @Component
 @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 public class EmailSender {
@@ -22,6 +25,11 @@ public class EmailSender {
     private final JavaMailSender mailSender;
     private final String from;
 
+    /**
+     * Constructor for the EmailSender.
+     * @param mailSender The mail sender
+     * @param from The sender of the email
+     */
     public EmailSender(
         JavaMailSender mailSender,
         @Value("${spring.mail.username}") String from
@@ -30,6 +38,11 @@ public class EmailSender {
         this.from = from;
     }
 
+    /**
+     * Send an email with the given subject and recipients.
+     * @param subject The subject of the email
+     * @param recipients The recipients of the email
+     */
     public void send(
         String subject,
         String[] recipients,

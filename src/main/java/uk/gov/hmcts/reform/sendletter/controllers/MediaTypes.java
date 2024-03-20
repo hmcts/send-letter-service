@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.controllers;
 
+/**
+ * Media types for the letter service.
+ */
 public final class MediaTypes {
 
     public static final String LETTER_V1 = "application/vnd.uk.gov.hmcts.letter-service.in.letter.v1+json";

@@ -15,6 +15,9 @@ import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 
+/**
+ * Service for document data.
+ */
 @Service
 public class DocumentService {
 
@@ -25,6 +28,12 @@ public class DocumentService {
 
     private final int cutOff;
 
+    /**
+     * Constructor for the DocumentService.
+     * @param documentRepository The repository for document
+     * @param cutOff The cut off
+     * @param letterChecksumService The service for letter checksum
+     */
     public DocumentService(
         DocumentRepository documentRepository,
         @Value("${documents.duplicate.cut-off-time:0}") int cutOff,
@@ -35,6 +44,12 @@ public class DocumentService {
         this.letterChecksumService = letterChecksumService;
     }
 
+    /**
+     * Check for duplicate documents.
+     * @param documents The documents
+     * @param recipientListChecksum The recipient list checksum
+     * @return The letter id
+     */
     public Optional<UUID> checkDocumentDuplicates(List<?> documents, String recipientListChecksum) {
         for (Object document : documents) {
             String checkSum = letterChecksumService.generateChecksumForPdfPages(document);
@@ -58,6 +73,12 @@ public class DocumentService {
         return Optional.empty();
     }
 
+    /**
+     * Save documents.
+     * @param letterId The letter id
+     * @param documents The documents
+     * @param recipientsChecksum The recipients checksum
+     */
     @Transactional
     public void saveDocuments(UUID letterId, List<?> documents, String recipientsChecksum) {
         log.info("Saving {} documents, letterId {}", documents.size(), letterId);

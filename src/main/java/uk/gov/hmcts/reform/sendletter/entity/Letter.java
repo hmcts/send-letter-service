@@ -15,6 +15,9 @@ import java.util.UUID;
 
 
 
+/**
+ * Letter entity.
+ */
 @Entity
 @Table(name = "letters")
 public class Letter {
@@ -46,6 +49,19 @@ public class Letter {
     private Letter() {
     }
 
+    /**
+     * Constructor for the Letter.
+     * @param id The id of the letter
+     * @param checksum The checksum of the letter
+     * @param service The service of the letter
+     * @param additionalData The additional data of the letter
+     * @param type The type of the letter
+     * @param fileContent The file content of the letter
+     * @param isEncrypted The isEncrypted of the letter
+     * @param encryptionKeyFingerprint The encryptionKeyFingerprint of the letter
+     * @param createdAt The created at of the letter
+     * @param copies The copies of the letter
+     */
     public Letter(
         UUID id,
         String checksum,

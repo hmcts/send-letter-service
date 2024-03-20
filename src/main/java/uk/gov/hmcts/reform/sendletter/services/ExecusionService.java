@@ -10,10 +10,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Consumer;
 
+/**
+ * Service for execution of tasks.
+ */
 @Service
 public class ExecusionService {
     private static final Logger logger = LoggerFactory.getLogger(ExecusionService.class);
 
+    /**
+     * Run a task asynchronously.
+     * @param runnable The task to run
+     * @param infoLogger The info logger
+     * @param duplicate The duplicate task
+     * @param exception The exception
+     */
     @Async(value = "AsyncExecutor")
     public void run(final Runnable runnable, final Runnable infoLogger,
                     final Execute duplicate, final Consumer<String> exception)  {
@@ -29,11 +39,18 @@ public class ExecusionService {
         }
     }
 
+    /**
+     * Execute a task.
+     * @param execute The task to execute
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void execute(final Execute execute) {
         execute.invoke();
     }
 
+    /**
+     * The execute interface.
+     */
     public interface Execute {
         void invoke();
     }

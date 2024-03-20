@@ -11,6 +11,9 @@ import org.springframework.context.annotation.DependsOn;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration for Scheduler.
+ */
 @Configuration
 @AutoConfigureAfter(FlywayConfiguration.class)
 @DependsOn({"flyway", "flywayInitializer"})
@@ -18,6 +21,11 @@ import javax.sql.DataSource;
 @EnableSchedulerLock(defaultLockAtMostFor = "${scheduling.lock_at_most_for}")
 public class SchedulerConfiguration {
 
+    /**
+     * Create a LockProvider.
+     * @param dataSource The data source
+     * @return The LockProvider
+     */
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
         return new JdbcTemplateLockProvider(dataSource);

@@ -9,6 +9,9 @@ import java.io.Serializable;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * This class represents the document.
+ */
 public class Document implements Serializable {
     private static final long serialVersionUID = -8034446485215946927L;
 
@@ -24,12 +27,22 @@ public class Document implements Serializable {
     @Min(1)
     public final Integer copies;
 
+    /**
+     * Constructor.
+     */
     private Document() {
         fileName = null;
         uploadToPath = null;
         copies = null;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param fileName the file name
+     * @param uploadToPath the upload to path
+     * @param copies the copies
+     */
     public Document(
         String fileName,
         String uploadToPath,

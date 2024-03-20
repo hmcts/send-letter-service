@@ -15,6 +15,18 @@ public class BasicLetterInfo {
     private LocalDateTime sentToPrintAt;
     private LocalDateTime printedAt;
 
+    /**
+     * Constructor for the BasicLetterInfo.
+     * @param id The ID
+     * @param checksum The checksum
+     * @param service The service
+     * @param status The status
+     * @param type The type
+     * @param encryptionKeyFingerprint The encryption key fingerprint
+     * @param createdAt The created at
+     * @param sentToPrintAt The sent to print at
+     * @param printedAt The printed at
+     */
     public BasicLetterInfo(
         UUID id,
         String checksum,

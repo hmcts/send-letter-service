@@ -35,6 +35,9 @@ import static uk.gov.hmcts.reform.sendletter.logging.DependencyCommand.FTP_REPOR
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyName.FTP_CLIENT;
 import static uk.gov.hmcts.reform.sendletter.logging.DependencyType.FTP;
 
+/**
+ * FTP client for uploading and downloading files.
+ */
 @Component
 @EnableConfigurationProperties(FtpConfigProperties.class)
 public class FtpClient {
@@ -44,7 +47,12 @@ public class FtpClient {
     private final Supplier<SSHClient> sshClientSupplier;
     private final RetryTemplate retryTemplate;
 
-    // region constructor
+    /**
+     * Constructor for the FtpClient.
+     * @param sshClientSupplier The supplier for SSH client
+     * @param configProperties The FTP configuration properties
+     * @param retryTemplate The retry template
+     */
     public FtpClient(
         Supplier<SSHClient> sshClientSupplier,
         FtpConfigProperties configProperties,
@@ -54,8 +62,13 @@ public class FtpClient {
         this.configProperties = configProperties;
         this.retryTemplate = retryTemplate;
     }
-    // endregion
 
+    /**
+     * Uploads a file to the FTP server.
+     * @param file The file to upload
+     * @param serviceFolder The folder to upload the file to
+     * @param sftpClient The SFTP client
+     */
     @Dependency(name = FTP_CLIENT, command = FTP_FILE_UPLOADED, type = FTP)
     public void upload(FileToSend file, String serviceFolder, SFTPClient sftpClient) {
         String folder = file.isSmokeTest
@@ -99,7 +112,8 @@ public class FtpClient {
     }
 
     /**
-     * Downloads ALL files from reports directory.
+     * Downloads reports from the FTP server.
+     * @return The list of reports
      */
     @Dependency(name = FTP_CLIENT, command = FTP_REPORT_DOWNLOADED, type = FTP)
     public List<Report> downloadReports() {
@@ -134,6 +148,10 @@ public class FtpClient {
         });
     }
 
+    /**
+     * Deletes a report from the FTP server.
+     * @param reportPath The path of the report to delete
+     */
     @Dependency(name = FTP_CLIENT, command = FTP_REPORT_DELETED, type = FTP)
     public void deleteReport(String reportPath) {
         logger.info("Deleting report '{}'", reportPath);
@@ -149,6 +167,11 @@ public class FtpClient {
         });
     }
 
+    /**
+     * Lists files in a folder on the FTP server.
+     * @param serviceFolder The folder to list files from
+     * @return The list of files
+     */
     @Dependency(name = FTP_CLIENT, command = FTP_LIST_FILES, type = FTP)
     public List<FileInfo> listLetters(String serviceFolder, SFTPClient sftpClient) {
         String path = String.join("/", configProperties.getTargetFolder(), serviceFolder);
@@ -167,6 +190,10 @@ public class FtpClient {
         }
     }
 
+    /**
+     * Deletes a file from the FTP server.
+     * @param filePath The path of the file to delete
+     */
     @Dependency(name = FTP_CLIENT, command = FTP_FILE_DELETED, type = FTP)
     public void deleteFile(String filePath, SFTPClient sftpClient) {
         try {
@@ -178,6 +205,12 @@ public class FtpClient {
         }
     }
 
+    /**
+     * Runs an action with the SFTP client.
+     * @param action The action to run
+     * @param <T> The return type of the action
+     * @return The result of the action
+     */
     public <T> T runWith(Function<SFTPClient, T> action) {
         SSHClient ssh = null;
 
@@ -202,6 +235,11 @@ public class FtpClient {
         }
     }
 
+    /**
+     * Gets an SSH client.
+     * @return The SSH client
+     * @throws IOException If an error occurs while getting the SSH client
+     */
     @Dependency(name = FTP_CLIENT, command = FTP_CONNECTED, type = FTP)
     public SSHClient getSshClient() throws IOException {
         SSHClient ssh = sshClientSupplier.get();
@@ -221,6 +259,11 @@ public class FtpClient {
         return ssh;
     }
 
+    /**
+     * Checks if a file is a report file.
+     * @param resourceInfo The resource info
+     * @return True if the file is a report file, false otherwise
+     */
     private boolean isReportFile(RemoteResourceInfo resourceInfo) {
         return resourceInfo.isRegularFile()
             && resourceInfo.getName().toLowerCase(Locale.getDefault()).endsWith(".csv");

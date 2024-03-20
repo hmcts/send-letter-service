@@ -20,6 +20,9 @@ import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
+/**
+ * Task to send weekly report of delayed print and stale letters.
+ */
 @Component
 @ConditionalOnBean(EmailSender.class)
 @ConditionalOnProperty(prefix = "reports.delayed-stale-report", name = "enabled")
@@ -37,7 +40,14 @@ public class DelayAndStaleReport {
     public static final String ATTACHMENT_STALE_LETTER_PREFIX = "Stale-Letter-Weekly-Report-";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-
+    /**
+     * Constructor for the DelayAndStaleReport.
+     * @param delayedPrintService The service for delayed print
+     * @param staleLetterService The service for stale letter
+     * @param emailSender The service for email sender
+     * @param recipients The recipients of the email
+     * @param minStaleLetterAgeInBusinessDays The minimum stale letter age in business days
+     */
     public DelayAndStaleReport(DelayedPrintService delayedPrintService,
                                StaleLetterService staleLetterService,
                                EmailSender emailSender,
@@ -51,6 +61,9 @@ public class DelayAndStaleReport {
         this.minStaleLetterAgeInBusinessDays = minStaleLetterAgeInBusinessDays;
     }
 
+    /**
+     * Send the weekly report of delayed print and stale letters.
+     */
     @SchedulerLock(name = "delayed-stale-report-summary", lockAtLeastFor = "PT5S")
     @Scheduled(cron = "${reports.delayed-stale-report.cron}", zone = EUROPE_LONDON)
     public void send() {
@@ -78,7 +91,11 @@ public class DelayAndStaleReport {
         }
     }
 
-
+    /**
+     * Get the attachment for the stale letter.
+     * @param toDate The date to
+     * @return The attachment
+     */
     private Attachment getStaleLetterAttachment(LocalDateTime toDate) {
         Attachment staleLetterAttachment = null;
         try {
@@ -93,6 +110,12 @@ public class DelayAndStaleReport {
         return staleLetterAttachment;
     }
 
+    /**
+     * Get the attachment for the delayed print.
+     * @param fromDate The date from
+     * @param toDate The date to
+     * @return The attachment
+     */
     private Attachment getDelayedAttachment(LocalDateTime fromDate, LocalDateTime toDate) {
         Attachment delayLettersAttachment = null;
         try {

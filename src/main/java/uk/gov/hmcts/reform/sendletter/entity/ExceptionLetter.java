@@ -21,6 +21,15 @@ public class ExceptionLetter {
     ExceptionLetter() {
     }
 
+    /**
+     * Constructor for the ExceptionLetter.
+     * @param id The id of the exception
+     * @param service The service of the exception
+     * @param createdAt The created at of the exception
+     * @param type The type of the exception
+     * @param message The message of the exception
+     * @param isAsync The isAsync of the exception
+     */
     public ExceptionLetter(UUID id, String service, LocalDateTime createdAt,
                            String type, String message, String isAsync) {
         this.id = id;

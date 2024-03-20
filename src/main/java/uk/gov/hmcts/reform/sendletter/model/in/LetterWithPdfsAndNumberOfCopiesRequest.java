@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class represents the letter request.
+ */
 public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILetterRequest {
 
     private static final long serialVersionUID = 1471737409853792378L;
@@ -26,6 +29,13 @@ public class LetterWithPdfsAndNumberOfCopiesRequest implements Serializable, ILe
     @ValidRecipients
     public final Map<String, Object> additionalData;
 
+    /**
+     * Constructor.
+     *
+     * @param documents the list of documents
+     * @param type the type
+     * @param additionalData the additional data
+     */
     public LetterWithPdfsAndNumberOfCopiesRequest(
         @JsonProperty("documents") List<Doc> documents,
         @JsonProperty("type") String type,

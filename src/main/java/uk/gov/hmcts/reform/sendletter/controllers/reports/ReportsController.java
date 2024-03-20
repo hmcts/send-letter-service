@@ -26,16 +26,28 @@ import java.util.List;
 
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
+/**
+ * Controller for reports.
+ */
 @RestController
 @RequestMapping(path = "/reports")
 public class ReportsController {
 
     private final ReportsService reportsService;
 
+    /**
+     * Constructor for the ReportsController.
+     * @param reportsService The reports service
+     */
     public ReportsController(ReportsService reportsService) {
         this.reportsService = reportsService;
     }
 
+    /**
+     * Retrieves uploaded letters count summary report.
+     * @param date The date
+     * @return The csv report
+     */
     @GetMapping(path = "/count-summary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Operation(description = "Retrieves uploaded letters count summary report")
     @ApiResponses({

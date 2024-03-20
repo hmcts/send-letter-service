@@ -11,15 +11,26 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Controller for pending letters.
+ */
 @RestController
 public class PendingLettersController {
 
     private final PendingLettersService service;
 
+    /**
+     * Constructor for the PendingLettersController.
+     * @param service The pending letters service
+     */
     public PendingLettersController(PendingLettersService service) {
         this.service = service;
     }
 
+    /**
+     * Retrieves letters that were not uploaded to SFTP yet.
+     * @return The pending letters response
+     */
     @GetMapping(path = "/pending-letters")
     @Operation(description = "Retrieves letters that were not uploaded to SFTP yet.")
     public PendingLettersResponse getPendingLetters() {

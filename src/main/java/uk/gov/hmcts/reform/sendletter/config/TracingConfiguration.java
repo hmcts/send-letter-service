@@ -5,6 +5,9 @@ import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration for tracing.
+ */
 @Configuration
 public class TracingConfiguration {
 

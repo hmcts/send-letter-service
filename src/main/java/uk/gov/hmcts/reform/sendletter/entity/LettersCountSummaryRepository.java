@@ -9,8 +9,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The interface Letters count summary repository.
+ */
 public interface LettersCountSummaryRepository extends JpaRepository<Letter, UUID> {
 
+    /**
+     * Count by date.
+     *
+     * @param dateFrom the date from
+     * @param dateTo   the date to
+     * @return the list
+     */
     @Query(
         nativeQuery = true,
         value = "SELECT COUNT(1) as uploaded, service FROM letters\n"

@@ -10,6 +10,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class represents the print job.
+ */
 public class PrintJob implements Serializable {
     private static final long serialVersionUID = 3711622159588476678L;
 
@@ -47,7 +50,9 @@ public class PrintJob implements Serializable {
     @JsonProperty("letter_type")
     public final String letterType;
 
-
+    /**
+     * Constructor.
+     */
     private PrintJob() {
         id = null;
         createdAt = null;
@@ -63,6 +68,22 @@ public class PrintJob implements Serializable {
         letterType = null;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param id the id
+     * @param createdAt the created at
+     * @param printedAt the printed at
+     * @param sentToPrintAt the sent to print at
+     * @param service the service
+     * @param type the type
+     * @param containerName the container name
+     * @param printStatus the print status
+     * @param documents the documents
+     * @param caseId the case id
+     * @param caseRef the case ref
+     * @param letterType the letter type
+     */
     @SuppressWarnings("squid:S00107")
     public PrintJob(UUID id,
                     ZonedDateTime createdAt,

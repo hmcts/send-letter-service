@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
+/**
+ * Validator for the recipients field in the AdditionalData object.
+ */
 public class RecipientsValidator implements ConstraintValidator<ValidRecipients, Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(RecipientsValidator.class);
@@ -21,16 +24,33 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
         launchDarklyClient = null;
     }
 
+    /**
+     * Constructor for the RecipientsValidator.
+     *
+     * @param launchDarklyClient The LaunchDarklyClient
+     */
     @Autowired
     public RecipientsValidator(LaunchDarklyClient launchDarklyClient) {
         this.launchDarklyClient = launchDarklyClient;
     }
 
+    /**
+     * Initializes the validator.
+     *
+     * @param constraintAnnotation the constraint annotation
+     */
     @Override
     public void initialize(ValidRecipients constraintAnnotation) {
         // Initialization logic, if any
     }
 
+    /**
+     * Validates the recipients field in the AdditionalData object.
+     *
+     * @param value   the object to validate
+     * @param context the validation context
+     * @return true if the recipients field is valid, false otherwise
+     */
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         // Toggle: FACT-1388 for making recipients field mandatory

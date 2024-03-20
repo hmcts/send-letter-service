@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class represents the letter request.
+ */
 public class LetterWithPdfsRequest implements Serializable, ILetterRequest {
 
     private static final long serialVersionUID = 5528476697055795883L;
@@ -30,6 +33,13 @@ public class LetterWithPdfsRequest implements Serializable, ILetterRequest {
     @ValidRecipients
     public final Map<String, Object> additionalData;
 
+    /**
+     * Constructor.
+     *
+     * @param documents the list of documents
+     * @param type the type
+     * @param additionalData the additional data
+     */
     public LetterWithPdfsRequest(
         @JsonProperty("documents") List<byte[]> documents,
         @JsonProperty("type") String type,
