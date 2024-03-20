@@ -4,7 +4,6 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.activation.DataSource;
 import jakarta.mail.Address;
 import jakarta.mail.internet.MimeMessage;
-//import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.commons.mail2.jakarta.util.MimeMessageParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
