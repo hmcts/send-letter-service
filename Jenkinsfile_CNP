@@ -21,7 +21,7 @@ secrets = [
     secret('ftp-public-key', 'TEST_FTP_PUBLIC_KEY'),
     secret('xerox-ftp-hostname', 'TEST_FTP_HOSTNAME'),
     secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
-    secret('launch-darkly-offline-mode', 'LAUNCH_DARKLY_OFFLINE_MODE'),
+    secret('launch-darkly-offline-mode', 'LAUNCH_DARKLY_OFFLINE_MODE')
   ]
 ]
 
