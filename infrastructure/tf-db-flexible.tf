@@ -4,6 +4,17 @@ locals {
   db_name      = "send_letter"
 }
 
+# Secrets for schema perms
+data "azurerm_key_vault_secret" "POSTGRES-USER" {
+  name         = "send-letter-service-POSTGRES-USER"
+  key_vault_id = module.send-letter-key-vault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name         = "send-letter-service-POSTGRES-PASS"
+  key_vault_id = module.send-letter-key-vault.key_vault_id
+}
+
 module "postgresql" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
@@ -11,7 +22,7 @@ module "postgresql" {
 
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   name                 = local.db_host_name
-  product              = var.product
+  product              = "send-letter"
   component            = var.component
   location             = var.location_db
   env                  = var.env
@@ -27,6 +38,9 @@ module "postgresql" {
   subnet_suffix = "expanded"
 
   admin_user_object_id = var.jenkins_AAD_objectId
+  kv_name = module.send-letter-key-vault.key_vault_name
+  user_secret_name = azurerm_key_vault_secret.POSTGRES-USER.name
+  pass_secret_name = azurerm_key_vault_secret.POSTGRES-PASS.name
 
   # Force user permissions
   force_user_permissions_trigger = "1"
