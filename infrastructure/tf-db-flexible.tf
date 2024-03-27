@@ -43,7 +43,7 @@ module "postgresql" {
   pass_secret_name = azurerm_key_vault_secret.POSTGRES-PASS.name
 
   # Force user permissions
-  force_user_permissions_trigger = "1"
+  force_user_permissions_trigger = "2"
 }
 
 module "postgresql-staging" {
