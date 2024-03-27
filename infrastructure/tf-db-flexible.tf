@@ -27,6 +27,9 @@ module "postgresql" {
   subnet_suffix = "expanded"
 
   admin_user_object_id = var.jenkins_AAD_objectId
+
+  # Force user permissions
+  force_user_permissions_trigger = "1"
 }
 
 module "postgresql-staging" {
