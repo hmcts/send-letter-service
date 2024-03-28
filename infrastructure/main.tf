@@ -18,37 +18,6 @@ locals {
   tags    = var.common_tags
 }
 
-module "db-v11" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.component}-db"
-  location           = var.location_db
-  env                = var.env
-  database_name      = "send_letter"
-  postgresql_user    = "send_letter"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_4"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-  sku_capacity       = "4"
-  storage_mb         = "102400"
-}
-
-module "staging-db" {
-  count              = var.num_staging_dbs
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.component}-stg-db"
-  location           = var.location_db
-  env                = var.env
-  database_name      = "send_letter"
-  postgresql_user    = "send_letter"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
   source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
@@ -69,36 +38,6 @@ module "send-letter-key-vault" {
 data "azurerm_key_vault" "s2s_key_vault" {
   name                = "s2s-${var.env}"
   resource_group_name = "rpe-service-auth-provider-${var.env}"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-POSTGRES-USER"
-  value        = module.db-v11.user_name
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-POSTGRES-PASS"
-  value        = module.db-v11.postgresql_password
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-POSTGRES-HOST"
-  value        = module.db-v11.host_name
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-POSTGRES-PORT"
-  value        = module.db-v11.postgresql_listen_port
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-POSTGRES-DATABASE"
-  value        = module.db-v11.postgresql_database
 }
 
 resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
@@ -153,40 +92,3 @@ data "azurerm_key_vault_secret" "launch_darkly_offline_mode" {
   name         = "launch-darkly-offline-mode"
   key_vault_id = module.send-letter-key-vault.key_vault_id
 }
-
-# region staging DB secrets
-resource "azurerm_key_vault_secret" "staging_db_user" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-staging-db-user"
-  value        = try(module.staging-db[0].user_name, "null")
-}
-
-resource "azurerm_key_vault_secret" "staging_db_password" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-staging-db-password"
-  value        = try(module.staging-db[0].postgresql_password, "null")
-}
-
-resource "azurerm_key_vault_secret" "staging_db_host" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-staging-db-host"
-  value        = try(module.staging-db[0].host_name, "null")
-}
-
-resource "azurerm_key_vault_secret" "staging_db_port" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-staging-db-port"
-  value        = try(module.staging-db[0].postgresql_listen_port, "null")
-}
-
-resource "azurerm_key_vault_secret" "staging_db_name" {
-  count        = var.num_staging_dbs
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "${var.component}-staging-db-name"
-  value        = try(module.staging-db[0].postgresql_database, "null")
-}
-# endregion
