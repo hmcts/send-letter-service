@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 class ProcessMessageTest extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTest.class);
 

@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpoint.class);
 

@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class ProcessSaveV3Asyn extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessSaveV3Asyn.class);
 
