@@ -134,3 +134,9 @@ variable "aks_subscription_id" {}
 variable "storage_account_repl_type" {
   default = "LRS"
 }
+
+variable "pgsql_storage_mb" {
+  description = "Max storage allowed for the PGSql Flexibile instance"
+  type        = number
+  default     = 65536
+}
