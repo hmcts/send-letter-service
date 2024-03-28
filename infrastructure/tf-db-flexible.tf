@@ -44,6 +44,10 @@ module "postgresql" {
 
   # Force user permissions
   force_user_permissions_trigger = "1"
+
+  # Database storage
+  pgsql_storage_mb = var.pgsql_storage_mb
+  
 }
 
 module "postgresql-staging" {
