@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
