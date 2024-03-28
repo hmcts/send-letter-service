@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.io.ByteStreams;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class PdfCreatorTest {
         verify(duplexPreparator, times(1)).prepare(doc1.content, loggingContext);
         verify(duplexPreparator, times(1)).prepare(doc2.content, loggingContext);
 
-        try (PDDocument doc = PDDocument.load(result)) {
+        try (PDDocument doc = Loader.loadPDF(result)) {
             assertThat(doc.getNumberOfPages()).isEqualTo(doc1.copies + doc2.copies);
         }
     }
@@ -111,7 +112,7 @@ class PdfCreatorTest {
     }
 
     private InputStream getPdfPageContents(byte[] pdf, int pageNumber) throws Exception {
-        try (PDDocument doc = PDDocument.load(pdf)) {
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
             byte[] data = ByteStreams.toByteArray(doc.getPage(pageNumber).getContents());
             return new ByteArrayInputStream(data);
         }

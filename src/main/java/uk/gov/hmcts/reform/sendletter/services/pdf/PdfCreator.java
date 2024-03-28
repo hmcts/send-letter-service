@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.pdf;
 
-import org.apache.http.util.Asserts;
+import org.apache.hc.core5.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

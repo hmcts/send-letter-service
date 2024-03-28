@@ -2,25 +2,14 @@ package uk.gov.hmcts.reform.sendletter.config;
 
 import com.microsoft.applicationinsights.extensibility.TelemetryProcessor;
 import com.microsoft.applicationinsights.telemetry.RemoteDependencyTelemetry;
-import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.api.filters.SensitiveHeadersRequestTraceFilter;
 
 /**
  * Configuration for tracing.
  */
 @Configuration
 public class TracingConfiguration {
-
-    /**
-     * Create a SensitiveHeadersRequestTraceFilter.
-     * @return The SensitiveHeadersRequestTraceFilter
-     */
-    @Bean
-    public SensitiveHeadersRequestTraceFilter requestTraceFilter() {
-        return new SensitiveHeadersRequestTraceFilter(Include.defaultIncludes());
-    }
 
     /**
      * Custom {@link TelemetryProcessor} which amends the type of {@link RemoteDependencyTelemetry} before publishing.

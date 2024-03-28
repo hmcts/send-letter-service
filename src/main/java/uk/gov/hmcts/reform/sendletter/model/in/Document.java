@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.sendletter.model.in;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.Map;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * This class represents the document to be sent.

@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.sendletter;
 
-import org.apache.pdfbox.preflight.PreflightDocument;
-import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.pdfparser.PDFParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,12 +17,8 @@ public final class PdfHelper {
 
             zip.getNextEntry(); //positions the stream at the beginning of the entry data
 
-            PreflightParser pdfParser = new PreflightParser(new ByteArrayDataSource(zip));
+            PDFParser pdfParser = new PDFParser(new RandomAccessReadBuffer(zip));
             pdfParser.parse();
-            PreflightDocument document = pdfParser.getPreflightDocument();
-            // This will throw an exception if the file format is invalid,
-            // but ignores more minor errors such as missing metadata.
-            document.validate();
         }
     }
 

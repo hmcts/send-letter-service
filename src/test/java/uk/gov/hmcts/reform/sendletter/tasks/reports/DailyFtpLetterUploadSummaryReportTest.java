@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -41,6 +43,7 @@ class DailyFtpLetterUploadSummaryReportTest {
     @Captor
     ArgumentCaptor<String[]> recipientsCaptor;
 
+    @InjectMocks
     private DailyFtpLetterUploadSummaryReport dailyFtpLetterUploadSummaryReport;
 
     String[] recipients = null;
@@ -63,10 +66,13 @@ class DailyFtpLetterUploadSummaryReportTest {
 
         // then
         verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
-            attachmentArgumentCaptor.capture());
+            attachmentArgumentCaptor.capture(), attachmentArgumentCaptor.capture());
+
+        List<Attachment> attachmentArgumentCapturedValues = attachmentArgumentCaptor.getAllValues();
+
         assertThat(emailSubjectCaptor.getValue()).isEqualTo(EMAIL_SUBJECT);
         assertThat(recipientsCaptor.getValue()).isEqualTo(recipients);
-        assertThat(attachmentArgumentCaptor.getAllValues()).hasSize(2)
+        assertThat(attachmentArgumentCapturedValues).hasSize(2)
             .extracting(attachment -> tuple(attachment.filename, attachment.file))
             .containsExactlyInAnyOrder(
                 tuple(generateFileNameFor("service1"), serviceFile1),

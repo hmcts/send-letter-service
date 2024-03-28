@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
 
 import java.io.File;
-import javax.mail.internet.MimeMessage;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;

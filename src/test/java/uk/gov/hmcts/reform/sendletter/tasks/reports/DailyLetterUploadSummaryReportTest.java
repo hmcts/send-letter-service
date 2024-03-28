@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.tasks.reports;
 
+import jakarta.mail.Address;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +16,6 @@ import uk.gov.hmcts.reform.sendletter.services.ReportsService;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

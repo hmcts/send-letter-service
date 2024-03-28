@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.model.in;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 /**
  * Validator for the recipients field in the AdditionalData object.

@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
@@ -53,9 +54,10 @@ class AppInsightsTest {
 
     @BeforeEach
     void setUp() {
+        insights = new AppInsights();
+        ReflectionTestUtils.setField(insights, "telemetryClient", telemetry);
         context.setInstrumentationKey("some-key");
         when(telemetry.getContext()).thenReturn(context);
-        insights = new AppInsights(telemetry);
     }
 
     @AfterEach

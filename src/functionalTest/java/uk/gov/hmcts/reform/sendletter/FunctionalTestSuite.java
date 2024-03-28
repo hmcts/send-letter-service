@@ -10,6 +10,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -350,7 +351,7 @@ abstract class FunctionalTestSuite {
             PdfFile pdfFile = unzipFile(zipFile);
             assertThat(pdfFile.name).matches(getPdfFileNamePattern(letterId));
 
-            try (PDDocument pdfDocument = PDDocument.load(pdfFile.content)) {
+            try (PDDocument pdfDocument = Loader.loadPDF(pdfFile.content)) {
                 assertThat(pdfDocument.getNumberOfPages()).isEqualTo(noOfDocuments);
             }
         } catch (IOException e) {
