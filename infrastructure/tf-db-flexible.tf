@@ -47,6 +47,7 @@ module "postgresql" {
 
   # Database storage
   pgsql_storage_mb = var.pgsql_storage_mb
+  pgsql_sku        = var.pgsql_sku
   
 }
 
