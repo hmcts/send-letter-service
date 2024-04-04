@@ -50,7 +50,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static java.time.LocalDateTime.now;
@@ -548,7 +547,7 @@ public class LetterService {
      * @param id The `id` parameter is a unique identifier (UUID) for the letter whose status is being retrieved.
      * @param additionDataFunction The `additionDataFunction` parameter in the `getStatusWithRetries`
      *                             method is a `Function` that takes a `JsonNode` as input and
-     *                             returns a `Map<String, Object>`.
+     *                             returns a map of string/object.
      * @return The `getStatusWithRetries` method returns an `Optional` object that may contain
      *      a `LetterStatus` if it is successfully retrieved from the repository after up to 3 retries.
      *      If the status is not found even after the retries, an empty `Optional` is returned.
@@ -587,7 +586,7 @@ public class LetterService {
      * @param id The `id` parameter is a UUID (Universally Unique Identifier) used to uniquely
      *           identify a letter in the repository.
      * @param additionDataFunction The `additionDataFunction` parameter is a `Function`
-     *                             that takes a `JsonNode` as input and returns a `Map<String, Object>`.
+     *                             that takes a `JsonNode` as input and returns a map of string/object.
      * @return An Optional object containing a LetterStatus object is being returned. The LetterStatus
      *      object is created using data retrieved from the letterRepository based on the provided id.
      *      The data includes the status name, checksum, creation date, sent to print date, printed date,
