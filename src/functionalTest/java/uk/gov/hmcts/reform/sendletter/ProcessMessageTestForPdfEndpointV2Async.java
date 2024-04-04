@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled //just testing v2 version of existing test, async is tested in below test anyway
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_three_pdf_documents() throws Exception {
         String letterId = sendPrintLetterRequestAsync(
             signIn(),

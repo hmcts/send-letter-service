@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.sendletter;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMessageTestForPdfEndpoint.class);
 
     @Test
+    @Disabled // upload is already tested in below test.
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
@@ -98,6 +100,7 @@ class ProcessMessageTestForPdfEndpoint extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled // upload works with 3 pdfs in other tests already.
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_pdf_document() throws Exception {
         String letterId = sendPrintLetterRequest(
             signIn(),
