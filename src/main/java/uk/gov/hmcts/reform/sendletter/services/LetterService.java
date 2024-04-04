@@ -531,45 +531,7 @@ public class LetterService {
             return null;
         };
 
-        // Attempt to get the status of the letter. This happens right after calling the endpoint
-        // to save it, so there can be a delay between the commit happening. Therefore it needs
-        // to be polled briefly to avoid exceptions being raised alongside multiple retries from the client.
-        Supplier<Optional<LetterStatus>> getStatusSupplier = () -> {
-            for (int retryCount = 0; retryCount < 3; retryCount++) {
-                try {
-                    Optional<LetterStatus> optionalLetterStatus = letterRepository
-                        .findById(id)
-                        .map(letter -> new LetterStatus(
-                            id,
-                            letter.getStatus().name(),
-                            letter.getChecksum(),
-                            toDateTime(letter.getCreatedAt()),
-                            toDateTime(letter.getSentToPrintAt()),
-                            toDateTime(letter.getPrintedAt()),
-                            additionDataFunction.apply(letter.getAdditionalData()),
-                            null
-                        ));
-
-                    if (optionalLetterStatus.isPresent()) {
-                        return optionalLetterStatus;
-                    }
-                } catch (LetterNotFoundException e) {
-                    if (retryCount == 0) {
-                        log.warn("Letter {} not found after {} attempts.", id, retryCount + 1);
-                        throw e;
-                    }
-                }
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            // Should not get here, but if so, return empty
-            return Optional.empty();
-        };
-
-        Optional<LetterStatus> optionalLetterStatus = getStatusSupplier.get();
+        Optional<LetterStatus> optionalLetterStatus = getStatusWithRetries(id, additionDataFunction);
         if (optionalLetterStatus.isPresent()) {
             log.info("Returning  letter status for letter {}, letter id {}",
                 optionalLetterStatus.get().status, id);
@@ -579,7 +541,74 @@ public class LetterService {
         }
     }
 
+    /**
+     * The function `getStatusWithRetries` attempts to retrieve the status of a letter with retries in case of delays,
+     * returning an optional `LetterStatus`.
+     *
+     * @param id The `id` parameter is a unique identifier (UUID) for the letter whose status is being retrieved.
+     * @param additionDataFunction The `additionDataFunction` parameter in the `getStatusWithRetries`
+     *                             method is a `Function` that takes a `JsonNode` as input and
+     *                             returns a `Map<String, Object>`.
+     * @return The `getStatusWithRetries` method returns an `Optional` object that may contain
+     *      a `LetterStatus` if it is successfully retrieved from the repository after up to 3 retries.
+     *      If the status is not found even after the retries, an empty `Optional` is returned.
+     */
+    private Optional<LetterStatus> getStatusWithRetries(
+        // Attempt to get the status of the letter. This happens right after calling the endpoint
+        // to save it, so there can be a delay between the commit happening. Therefore it needs
+        // to be polled briefly to avoid exceptions being raised alongside multiple retries from the client.
+        UUID id, Function<JsonNode, Map<String, Object>> additionDataFunction) {
+        for (int retryCount = 0; retryCount < 3; retryCount++) {
+            try {
+                Optional<LetterStatus> optionalLetterStatus = getLetterStatusFromRepository(id, additionDataFunction);
+                if (optionalLetterStatus.isPresent()) {
+                    return optionalLetterStatus;
+                }
+            } catch (LetterNotFoundException e) {
+                if (retryCount == 2) {
+                    log.warn("Letter {} not found after {} attempts.", id, retryCount + 1);
+                    throw e;
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        // Should not get here, but if so, return empty
+        return Optional.empty();
+    }
 
+    /**
+     * This function retrieves a LetterStatus object from a repository based on a given UUID
+     * and additional data function.
+     *
+     * @param id The `id` parameter is a UUID (Universally Unique Identifier) used to uniquely
+     *           identify a letter in the repository.
+     * @param additionDataFunction The `additionDataFunction` parameter is a `Function`
+     *                             that takes a `JsonNode` as input and returns a `Map<String, Object>`.
+     * @return An Optional object containing a LetterStatus object is being returned. The LetterStatus
+     *      object is created using data retrieved from the letterRepository based on the provided id.
+     *      The data includes the status name, checksum, creation date, sent to print date, printed date,
+     *      additional data obtained by applying the additionDataFunction to the letter's additional
+     *      data, and a null value for another field.
+     */
+    private Optional<LetterStatus> getLetterStatusFromRepository(
+        UUID id, Function<JsonNode, Map<String, Object>> additionDataFunction) {
+        return letterRepository
+            .findById(id)
+            .map(letter -> new LetterStatus(
+                id,
+                letter.getStatus().name(),
+                letter.getChecksum(),
+                toDateTime(letter.getCreatedAt()),
+                toDateTime(letter.getSentToPrintAt()),
+                toDateTime(letter.getPrintedAt()),
+                additionDataFunction.apply(letter.getAdditionalData()),
+                null
+            ));
+    }
 
     /**
      * Get the extended letter status.
