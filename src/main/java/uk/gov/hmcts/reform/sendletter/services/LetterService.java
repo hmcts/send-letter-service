@@ -558,16 +558,9 @@ public class LetterService {
         // to be polled briefly to avoid exceptions being raised alongside multiple retries from the client.
         UUID id, Function<JsonNode, Map<String, Object>> additionDataFunction) {
         for (int retryCount = 0; retryCount < 3; retryCount++) {
-            try {
-                Optional<LetterStatus> optionalLetterStatus = getLetterStatusFromRepository(id, additionDataFunction);
-                if (optionalLetterStatus.isPresent()) {
-                    return optionalLetterStatus;
-                }
-            } catch (LetterNotFoundException e) {
-                if (retryCount == 2) {
-                    log.warn("Letter {} not found after {} attempts.", id, retryCount + 1);
-                    throw e;
-                }
+            Optional<LetterStatus> optionalLetterStatus = getLetterStatusFromRepository(id, additionDataFunction);
+            if (optionalLetterStatus.isPresent()) {
+                return optionalLetterStatus;
             }
             try {
                 TimeUnit.SECONDS.sleep(1);
