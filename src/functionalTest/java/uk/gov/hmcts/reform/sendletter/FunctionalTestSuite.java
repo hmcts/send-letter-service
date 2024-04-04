@@ -275,7 +275,7 @@ abstract class FunctionalTestSuite {
         String letterId,
         BiConsumer<RemoteResourceInfo, SFTPClient> action
     ) throws IOException, InterruptedException {
-        Date waitUntil = addSeconds(now(), 60);
+        Date waitUntil = addSeconds(now(), 30);
 
         Boolean fileExists = false;
 
