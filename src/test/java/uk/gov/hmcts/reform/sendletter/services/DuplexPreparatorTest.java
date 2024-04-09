@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
@@ -21,7 +22,7 @@ class DuplexPreparatorTest {
 
         // then
         assertThat(after).isNotEqualTo(before);
-        try (PDDocument pdDoc = PDDocument.load(after)) {
+        try (PDDocument pdDoc = Loader.loadPDF(after)) {
             assertThat(pdDoc.getNumberOfPages()).as("number of pages").isEqualTo(2);
         }
     }

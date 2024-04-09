@@ -79,7 +79,7 @@ class DelayAndStaleReportTest {
 
 
         verify(emailSender).send(emailSubjectCaptor.capture(), recipientsCaptor.capture(),
-                attachmentArgumentCaptor.capture());
+                attachmentArgumentCaptor.capture(), attachmentArgumentCaptor.capture());
 
         assertThat(emailSubjectCaptor.getValue()).isEqualTo(EMAIL_SUBJECT);
         assertThat(recipientsCaptor.getValue()).isEqualTo(recipients);
