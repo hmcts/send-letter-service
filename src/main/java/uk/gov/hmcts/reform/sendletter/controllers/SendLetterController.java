@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -137,9 +138,11 @@ public class SendLetterController {
         @RequestParam(name = "isAsync", defaultValue = "false") String isAsync,
         @Valid @RequestBody LetterWithPdfsAndNumberOfCopiesRequest letter
     ) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_TYPE, "application/json");
         String serviceName = authService.authenticate(serviceAuthHeader);
         UUID letterId = letterService.save(letter, serviceName, isAsync);
-        return ok().body(new SendLetterResponse(letterId));
+        return ok().headers(responseHeaders).body(new SendLetterResponse(letterId));
     }
 
     /**
