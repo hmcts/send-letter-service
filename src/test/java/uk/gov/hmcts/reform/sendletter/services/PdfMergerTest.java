@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.exception.PdfMergeException;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfMerger;
@@ -58,7 +58,7 @@ class PdfMergerTest {
     }
 
     private InputStream getPdfPageContents(byte[] pdf, int pageNumber) throws IOException {
-        return PDDocument.load(pdf).getPage(pageNumber).getContents();
+        return Loader.loadPDF(pdf).getPage(pageNumber).getContents();
     }
 
     private static void merge() {

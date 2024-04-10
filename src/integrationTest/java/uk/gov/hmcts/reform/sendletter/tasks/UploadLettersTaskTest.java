@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -36,7 +37,6 @@ import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
-import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
