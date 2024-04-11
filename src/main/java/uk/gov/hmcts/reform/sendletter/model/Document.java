@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.sendletter.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class LetterChecksumService {
      * @return a checksum of the collective pages for the pdf
      */
     public String calculateContentChecksum(byte[] pdfBytes) {
-        try (PDDocument document = PDDocument.load(pdfBytes)) {
+        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
             for (PDPage page : document.getPages()) {

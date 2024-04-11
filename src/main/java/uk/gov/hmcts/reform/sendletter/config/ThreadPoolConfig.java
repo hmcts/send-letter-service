@@ -37,7 +37,7 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
      * Supplier for the request context.
      */
     private static final Supplier<RequestTelemetryContext> REQUEST_CONTEXT_SUPPLIER = () ->
-        new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get(), null);
+        new RequestTelemetryContext(CURRENT_MILLIS_SUPPLIER.get());
 
     /**
      * Configure the scheduled tasks.
@@ -182,7 +182,6 @@ public class ThreadPoolConfig implements SchedulingConfigurer {
             }
 
             ThreadContext.setRequestTelemetryContext(requestContext);
-
             task.run();
         }
     }
