@@ -2,6 +2,7 @@
 locals {
   flexible_secret_prefix         = "${var.component}-POSTGRES-FLEXIBLE"
   flexible_secret_prefix_staging = "${var.component}-staging-flexible-db"
+  standard_secret_prefix         = "${var.component}-POSTGRES"
 
   flexible_secrets = [
     {
@@ -57,6 +58,18 @@ resource "azurerm_key_vault_secret" "flexible_secret" {
   for_each     = { for secret in local.flexible_secrets : secret.name_suffix => secret }
   key_vault_id = module.send-letter-key-vault.key_vault_id
   name         = "${local.flexible_secret_prefix}-${each.value.name_suffix}"
+  value        = each.value.value
+  tags = merge(var.common_tags, {
+    "source" : "${var.component} PostgreSQL"
+  })
+  content_type    = ""
+  expiration_date = timeadd(timestamp(), "17520h")
+}
+
+resource "azurerm_key_vault_secret" "flexible_secret_standard_format" {
+  for_each     = { for secret in local.flexible_secrets : secret.name_suffix => secret }
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${local.standard_secret_prefix}-${each.value.name_suffix}"
   value        = each.value.value
   tags = merge(var.common_tags, {
     "source" : "${var.component} PostgreSQL"
