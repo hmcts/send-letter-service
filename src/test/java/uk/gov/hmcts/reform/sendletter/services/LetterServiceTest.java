@@ -582,6 +582,16 @@ class LetterServiceTest {
     }
 
     @Test
+    void should_return_letter_not_found_exception() {
+        createLetterService(false, null);
+        ZonedDateTime now = ZonedDateTime.of(2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.systemDefault());
+        given(letterRepository.findById(isA(UUID.class))).willReturn(Optional.empty());
+        assertThrows(LetterNotFoundException.class, () -> {
+            service.getStatus(UUID.randomUUID(), "false", "true");
+        });
+    }
+
+    @Test
     void should_return_extended_letter_status() {
         // given
         createLetterService(false, null);
