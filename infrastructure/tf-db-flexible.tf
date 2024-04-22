@@ -39,8 +39,8 @@ module "postgresql" {
 
   admin_user_object_id = var.jenkins_AAD_objectId
   kv_name = module.send-letter-key-vault.key_vault_name
-  user_secret_name = azurerm_key_vault_secret.POSTGRES-USER.name
-  pass_secret_name = azurerm_key_vault_secret.POSTGRES-PASS.name
+  user_secret_name = data.azurerm_key_vault_secret.POSTGRES-USER.name
+  pass_secret_name = data.azurerm_key_vault_secret.POSTGRES-PASS.name
 
   # Force user permissions
   force_user_permissions_trigger = "1"
@@ -48,7 +48,7 @@ module "postgresql" {
   # Database storage
   pgsql_storage_mb = var.pgsql_storage_mb
   pgsql_sku        = var.pgsql_sku
-  
+
 }
 
 module "postgresql-staging" {
