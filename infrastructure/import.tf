@@ -24,7 +24,7 @@ locals {
 }
 
 import {
-  for_each = { for import in local.demo_imports : import if var.env == "demo" }
-  id = each.value.id
+  for_each = { for import in local.demo_imports : import.id => import if var.env == "demo" }
+  id = each.key
   to = each.value.to
 }
