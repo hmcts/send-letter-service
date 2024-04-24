@@ -290,7 +290,7 @@ dependencies {
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.25.1'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.25.4'
 
   implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot3', version: '2.2.0'
 
