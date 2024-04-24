@@ -26,5 +26,5 @@ locals {
 import {
   for_each = { for k, v in local.demo_imports: k => v if var.env == "demo" }
   id = each.key
-  to = each.value.to
+  to = azurerm_key_vault_secret.flexible_secret_standard_format[each.key]
 }
