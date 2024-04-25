@@ -92,7 +92,7 @@ abstract class FunctionalTestSuite {
 
     static final int LETTER_STATUS_RETRY_COUNT = 5;
     static final int LETTER_STATUS_RETRY_INTERVAL = 500;
-    static final int LETTER_UPLOAD_DELAY = 30000;
+    static final int LETTER_UPLOAD_DELAY = 15000;
 
     /**
      * Sign in to s2s.
@@ -276,7 +276,7 @@ abstract class FunctionalTestSuite {
         String letterId,
         BiConsumer<RemoteResourceInfo, SFTPClient> action
     ) throws IOException, InterruptedException {
-        Date waitUntil = addSeconds(now(), 60);
+        Date waitUntil = addSeconds(now(), 30);
 
         Boolean fileExists = false;
 

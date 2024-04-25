@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -79,19 +80,20 @@ public class LetterService {
 
     /**
      * Constructor for the LetterService.
-     * @param pdfCreator The pdf creator
-     * @param letterRepository The repository for letter
-     * @param letterEventRepository The repository for letter event
-     * @param documentService The document service
-     * @param zipper The zipper
-     * @param mapper The object mapper
-     * @param isEncryptionEnabled The encryption enabled flag
-     * @param encryptionPublicKey The encryption public key
-     * @param serviceFolderMapping The service folder mapping
-     * @param asyncService The async service
+     *
+     * @param pdfCreator             The pdf creator
+     * @param letterRepository       The repository for letter
+     * @param letterEventRepository  The repository for letter event
+     * @param documentService        The document service
+     * @param zipper                 The zipper
+     * @param mapper                 The object mapper
+     * @param isEncryptionEnabled    The encryption enabled flag
+     * @param encryptionPublicKey    The encryption public key
+     * @param serviceFolderMapping   The service folder mapping
+     * @param asyncService           The async service
      * @param duplicateLetterService The duplicate letter service
      * @param exceptionLetterService The exception letter service
-     * @param letterChecksumService The letter checksum service
+     * @param letterChecksumService  The letter checksum service
      */
     @SuppressWarnings("java:S107")
     public LetterService(
@@ -126,9 +128,10 @@ public class LetterService {
 
     /**
      * Save a letter.
-     * @param letter The letter to save
+     *
+     * @param letter      The letter to save
      * @param serviceName The name of the service
-     * @param isAsync The async flag
+     * @param isAsync     The async flag
      * @return The id of the saved letter
      */
     @Transactional
@@ -161,10 +164,11 @@ public class LetterService {
 
     /**
      * Save a new letter.
-     * @param letter The letter to save
-     * @param messageId The message id
+     *
+     * @param letter      The letter to save
+     * @param messageId   The message id
      * @param serviceName The name of the service
-     * @param isAsync The async flag
+     * @param isAsync     The async flag
      * @return The id of the saved letter
      */
     private UUID saveNewLetter(ILetterRequest letter, String messageId, String serviceName, String isAsync) {
@@ -172,7 +176,7 @@ public class LetterService {
             (!(letter.getAdditionalData() == null || letter.getAdditionalData().isEmpty())
                 && Objects.requireNonNull(letter.getAdditionalData()).containsKey("recipients"))
                 ? Optional.of(letterChecksumService.generateChecksum(
-                    mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
+                mapper.valueToTree(letter.getAdditionalData().get("recipients"))))
                 : Optional.empty();
 
         if (recipientsChecksum.isPresent()) {
@@ -256,11 +260,12 @@ public class LetterService {
 
     /**
      * Save a letter.
-     * @param letter The letter to save
-     * @param messageId The message id
-     * @param serviceName The name of the service
-     * @param id The id of the letter
-     * @param zipContent The zip content
+     *
+     * @param letter             The letter to save
+     * @param messageId          The message id
+     * @param serviceName        The name of the service
+     * @param id                 The id of the letter
+     * @param zipContent         The zip content
      * @param recipientsChecksum The recipients checksum
      */
     @Transactional
@@ -289,11 +294,12 @@ public class LetterService {
 
     /**
      * Save a duplicate letter.
-     * @param letter The letter to save
-     * @param id The id of the letter
-     * @param checksum The checksum
+     *
+     * @param letter      The letter to save
+     * @param id          The id of the letter
+     * @param checksum    The checksum
      * @param serviceName The name of the service
-     * @param isAsync The async flag
+     * @param isAsync     The async flag
      */
     @Transactional
     public void saveDuplicate(ILetterRequest letter, UUID id, String checksum, String serviceName,
@@ -306,11 +312,12 @@ public class LetterService {
 
     /**
      * Save an exception.
-     * @param letter The letter to save
-     * @param id The id of the letter
+     *
+     * @param letter      The letter to save
+     * @param id          The id of the letter
      * @param serviceName The name of the service
-     * @param message The message
-     * @param isAsync The async flag
+     * @param message     The message
+     * @param isAsync     The async flag
      */
     @Transactional
     public void saveException(ILetterRequest letter, UUID id, String serviceName, String message, String isAsync) {
@@ -322,11 +329,12 @@ public class LetterService {
 
     /**
      * Get a duplicate letter.
-     * @param letter The letter
-     * @param id The id of the letter
-     * @param checksum The checksum
+     *
+     * @param letter      The letter
+     * @param id          The id of the letter
+     * @param checksum    The checksum
      * @param serviceName The name of the service
-     * @param isAsync The async flag
+     * @param isAsync     The async flag
      * @return The duplicate letter
      */
     private DuplicateLetter getDuplicateLetter(ILetterRequest letter, UUID id,
@@ -347,11 +355,12 @@ public class LetterService {
 
     /**
      * Get the file content.
-     * @param id The id of the letter
-     * @param letter The letter
-     * @param serviceName The name of the service
+     *
+     * @param id            The id of the letter
+     * @param letter        The letter
+     * @param serviceName   The name of the service
      * @param createdAtTime The created at time
-     * @param zipContent The zip content
+     * @param zipContent    The zip content
      * @return The file content
      */
     private byte[] getFileContent(UUID id, ILetterRequest letter, String serviceName,
@@ -364,11 +373,12 @@ public class LetterService {
 
     /**
      * Encrypt the zip contents.
-     * @param letter The letter
+     *
+     * @param letter      The letter
      * @param serviceName The name of the service
-     * @param id The id of the letter
-     * @param zipContent The zip content
-     * @param createdAt The created at time
+     * @param id          The id of the letter
+     * @param zipContent  The zip content
+     * @param createdAt   The created at time
      * @return The encrypted zip contents
      */
     private byte[] encryptZipContents(
@@ -392,6 +402,7 @@ public class LetterService {
 
     /**
      * Get the encryption key fingerprint.
+     *
      * @return The encryption key fingerprint
      */
     private String getEncryptionKeyFingerprint() {
@@ -404,6 +415,7 @@ public class LetterService {
 
     /**
      * Load a PGP public key.
+     *
      * @param encryptionPublicKey The encryption public key
      * @return The PGP public key
      */
@@ -421,6 +433,7 @@ public class LetterService {
 
     /**
      * Get the documents from a letter.
+     *
      * @param letter The letter
      * @return The documents
      */
@@ -438,7 +451,8 @@ public class LetterService {
 
     /**
      * Get the PDF content.
-     * @param letter The letter
+     *
+     * @param letter         The letter
      * @param loggingContext The logging context
      * @return The PDF content
      */
@@ -460,6 +474,7 @@ public class LetterService {
 
     /**
      * Get the copies.
+     *
      * @param letter The letter
      * @return The copies
      */
@@ -471,6 +486,7 @@ public class LetterService {
 
     /**
      * Get the copies.
+     *
      * @param letter The letter
      * @return The copies as a LetterWithPdfsAndNumberOfCopiesRequest
      */
@@ -483,6 +499,7 @@ public class LetterService {
 
     /**
      * Get the copies.
+     *
      * @param count The count
      * @return The copies key
      */
@@ -492,9 +509,10 @@ public class LetterService {
 
     /**
      * Get the letter status.
-     * @param id The id of the letter
+     *
+     * @param id                       The id of the letter
      * @param isAdditionalDataRequired The additional data required flag
-     * @param isDuplicate The duplicate flag
+     * @param isDuplicate              The duplicate flag
      * @return The letter status
      */
     public LetterStatus getStatus(UUID id, String isAdditionalDataRequired, String isDuplicate) {
@@ -512,7 +530,65 @@ public class LetterService {
             return null;
         };
 
-        LetterStatus letterStatus = letterRepository
+        Optional<LetterStatus> optionalLetterStatus = getStatusWithRetries(id, additionDataFunction);
+        if (optionalLetterStatus.isPresent()) {
+            log.info("Returning  letter status for letter {}, letter id {}",
+                optionalLetterStatus.get().status, id);
+            return optionalLetterStatus.get();
+        } else {
+            throw new LetterNotFoundException(id);
+        }
+    }
+
+    /**
+     * The function `getStatusWithRetries` attempts to retrieve the status of a letter with retries in case of delays,
+     * returning an optional `LetterStatus`.
+     *
+     * @param id The `id` parameter is a unique identifier (UUID) for the letter whose status is being retrieved.
+     * @param additionDataFunction The `additionDataFunction` parameter in the `getStatusWithRetries`
+     *                             method is a `Function` that takes a `JsonNode` as input and
+     *                             returns a map of string/object.
+     * @return The `getStatusWithRetries` method returns an `Optional` object that may contain
+     *      a `LetterStatus` if it is successfully retrieved from the repository after up to 3 retries.
+     *      If the status is not found even after the retries, an empty `Optional` is returned.
+     */
+    private Optional<LetterStatus> getStatusWithRetries(
+        // Attempt to get the status of the letter. This happens right after calling the endpoint
+        // to save it, so there can be a delay between the commit happening. Therefore it needs
+        // to be polled briefly to avoid exceptions being raised alongside multiple retries from the client.
+        UUID id, Function<JsonNode, Map<String, Object>> additionDataFunction) {
+        for (int retryCount = 0; retryCount < 3; retryCount++) {
+            Optional<LetterStatus> optionalLetterStatus = getLetterStatusFromRepository(id, additionDataFunction);
+            if (optionalLetterStatus.isPresent()) {
+                return optionalLetterStatus;
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        // Should not get here, but if so, return empty
+        return Optional.empty();
+    }
+
+    /**
+     * This function retrieves a LetterStatus object from a repository based on a given UUID
+     * and additional data function.
+     *
+     * @param id The `id` parameter is a UUID (Universally Unique Identifier) used to uniquely
+     *           identify a letter in the repository.
+     * @param additionDataFunction The `additionDataFunction` parameter is a `Function`
+     *                             that takes a `JsonNode` as input and returns a map of string/object.
+     * @return An Optional object containing a LetterStatus object is being returned. The LetterStatus
+     *      object is created using data retrieved from the letterRepository based on the provided id.
+     *      The data includes the status name, checksum, creation date, sent to print date, printed date,
+     *      additional data obtained by applying the additionDataFunction to the letter's additional
+     *      data, and a null value for another field.
+     */
+    private Optional<LetterStatus> getLetterStatusFromRepository(
+        UUID id, Function<JsonNode, Map<String, Object>> additionDataFunction) {
+        return letterRepository
             .findById(id)
             .map(letter -> new LetterStatus(
                 id,
@@ -523,17 +599,15 @@ public class LetterService {
                 toDateTime(letter.getPrintedAt()),
                 additionDataFunction.apply(letter.getAdditionalData()),
                 null
-            ))
-            .orElseThrow(() -> new LetterNotFoundException(id));
-        log.info("Returning  letter status for letter {}, letter id {}", letterStatus.status, id);
-        return letterStatus;
+            ));
     }
 
     /**
      * Get the extended letter status.
-     * @param id The id of the letter
+     *
+     * @param id                       The id of the letter
      * @param isAdditionalDataRequired The additional data required flag
-     * @param isDuplicate The duplicate flag
+     * @param isDuplicate              The duplicate flag
      * @return The extended letter status
      */
     public ExtendedLetterStatus getExtendedStatus(
@@ -575,6 +649,7 @@ public class LetterService {
 
     /**
      * Get the latest status.
+     *
      * @param id The id of the letter
      * @return The latest status (V2)
      */
@@ -602,6 +677,7 @@ public class LetterService {
 
     /**
      * Check for exception.
+     *
      * @param id The id of the letter
      */
     private void exceptionCheck(UUID id) {
@@ -612,7 +688,8 @@ public class LetterService {
 
     /**
      * Check for duplicate.
-     * @param id The id of the letter
+     *
+     * @param id          The id of the letter
      * @param isDuplicate The duplicate flag
      */
     private void duplicateCheck(UUID id, String isDuplicate) {
@@ -630,6 +707,7 @@ public class LetterService {
 
     /**
      * Get the letter status events.
+     *
      * @param letter The letter
      * @return The letter status events
      */
@@ -651,6 +729,7 @@ public class LetterService {
 
     /**
      * Convert a LocalDateTime to a ZonedDateTime.
+     *
      * @param dateTime The date time
      * @return The zoned date time
      */

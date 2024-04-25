@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled // one doc covered above and odd pages covered below
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_one_document_with_odd_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
@@ -57,6 +59,7 @@ class ProcessMessageTest extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled // two docs covered below and even pages covered above
     void should_send_letter_and_upload_file_on_sftp_server_when_letter_contains_two_documents_with_even_pages()
         throws Exception {
         String letterId = sendPrintLetterRequest(
