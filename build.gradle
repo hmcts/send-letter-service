@@ -130,7 +130,7 @@ task fortifyScan(type: JavaExec)  {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.12.1'
+  toolVersion = '10.15.0'
   // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
@@ -260,7 +260,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.10.2'
@@ -311,7 +311,7 @@ dependencies {
   testImplementation 'org.apache.commons:commons-email2-jakarta:2.0.0-M1-SNAPSHOT'
 //  testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.6.0'
 // the snapshot version of commons-email for jakarta
-  testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+  testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.1'
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: versions.pdfbox, withoutJunit4
   testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '3.0.1', withoutJunit4
