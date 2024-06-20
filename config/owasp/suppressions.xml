@@ -25,7 +25,7 @@
         <cve>CVE-2023-36052</cve>
     </suppress>
     <suppress>
-        <notes>Apache Http Client being brought in transitively by service-auth-provider-java-client, wait for fix</notes>
+        <notes>Apache Http Client being brought in transitively by service-auth-provider-java-client. No fix as of 20/06/24. </notes>
         <cve>CVE-2020-13956</cve>
     </suppress>
 </suppressions>
