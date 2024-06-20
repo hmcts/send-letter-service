@@ -206,7 +206,7 @@ repositories {
 }
 
 def versions = [
-  bouncycastle: '1.70',
+  bouncycastle: '1.77',
   junit: '5.10.2',
   junitPlatform: '1.10.2',
   reformLogging: '6.1.4',
