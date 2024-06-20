@@ -236,7 +236,7 @@ dependencyManagement {
       entry 'commons-fileupload'
     }
     //CVE-2023-33202
-    dependencySet(group: 'org.bouncycastle', version: '1.77') {
+    dependencySet(group: 'org.bouncycastle', version: '1.78.1') {
       entry 'bcprov-jdk15on'
       entry 'bouncy-castle-crypto-package'
       entry 'bouncy_castle_crypto_package'
