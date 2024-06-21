@@ -18,15 +18,19 @@
         <cve>CVE-2023-6481</cve>
     </suppress>
     <suppress>
-        <notes>Bouncy castle waiting for com.github.hmcts.rpe-pdf-service jdk15on to jdk18on fix</notes>
-        <cve>CVE-2023-33202</cve>
-    </suppress>
-    <suppress>
         <notes>Azure Cli, No fix as of 20/06/24</notes>
         <cve>CVE-2023-36052</cve>
     </suppress>
     <suppress>
         <notes>Apache Http Client being brought in transitively by service-auth-provider-java-client. No fix as of 20/06/24. </notes>
         <cve>CVE-2020-13956</cve>
+    </suppress>
+    <suppress>
+        <notes>Bouncy castle waiting for com.github.hmcts.rpe-pdf-service jdk15on needs to be jdk18on</notes>
+        <cve>CVE-2023-33202</cve>
+        <cve>CVE-2020-15522</cve>
+        <cve>CVE-2017-13098</cve>
+        <cve>CVE-2018-1000180</cve>
+        <cve>CVE-2020-26939</cve>
     </suppress>
 </suppressions>
