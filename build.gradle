@@ -28,6 +28,9 @@ flyway {
   password = System.getenv('FLYWAY_PASSWORD')
   baselineOnMigrate = true
   baselineVersion = '000'
+  pluginConfiguration = [
+    postgresqlTransactionalLock: 'false'
+  ]
 }
 
 group = 'uk.gov.hmcts.reform'
