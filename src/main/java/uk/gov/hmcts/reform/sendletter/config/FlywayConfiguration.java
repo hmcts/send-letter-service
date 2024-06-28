@@ -6,12 +6,15 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.sendletter.data.migration.FlywayNoOpStrategy;
+
+import java.util.Map;
 
 /**
  * Configuration for Flyway.
@@ -44,5 +47,10 @@ public class FlywayConfiguration {
     @ConditionalOnProperty(prefix = "flyway.noop", name = "strategy", havingValue = "false")
     public FlywayMigrationStrategy flywayVoidMigrationStrategy() {
         return null;
+    }
+
+    @Bean
+    public FlywayConfigurationCustomizer flywayCustomizer() {
+        return configuration -> configuration.configuration(Map.of("flyway.postgresql.transactional.lock", "false"));
     }
 }
