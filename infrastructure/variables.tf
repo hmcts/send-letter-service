@@ -123,10 +123,6 @@ variable "enable_ase" {
   default = false
 }
 
-variable "num_staging_dbs" {
-  default = 0
-}
-
 variable "mgmt_subscription_id" {}
 
 variable "aks_subscription_id" {}
