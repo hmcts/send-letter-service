@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.sendletter.util;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
-import org.testcontainers.containers.DockerComposeContainer;
-
-import java.io.File;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /*
 * The Microsoft Azure storage emulator provides a local environment
@@ -23,7 +22,9 @@ public class TestUploadStorageHelper {
     private static TestUploadStorageHelper INSTANCE;
     public static final String CONTAINER_NAME = "encrypted";
 
-    private static DockerComposeContainer<?> dockerComposeContainer;
+    private static GenericContainer<?> dockerComposeContainer =
+        new GenericContainer<>(DockerImageName.parse("mcr.microsoft.com/azure-storage/azurite:3.29.0"))
+            .withExposedPorts(10000);
     private static String dockerHost;
     public static final String STORAGE_CONN_STRING = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;"
         + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
@@ -43,17 +44,19 @@ public class TestUploadStorageHelper {
     }
 
     private static void createDocker() {
-        dockerComposeContainer = new DockerComposeContainer<>(
-            new File("src/integrationTest/resources/docker/docker-compose.yml")
-        ).withExposedService("azure-storage", 10000)
-        .withLocalCompose(true);
+        dockerComposeContainer.withEnv("executable", "blob");
+        dockerComposeContainer.withNetworkAliases("azurite");
         dockerComposeContainer.start();
-        dockerHost = dockerComposeContainer.getServiceHost("azure-storage", 10000);
+        dockerHost = dockerComposeContainer.getHost();
     }
 
     private static void initializeStorage() {
         blobServiceClient = new BlobServiceClientBuilder()
-            .connectionString(String.format(STORAGE_CONN_STRING, dockerHost, 10000))
+            .connectionString(String.format(
+                STORAGE_CONN_STRING,
+                dockerHost,
+                dockerComposeContainer.getMappedPort(10000)
+            ))
             .buildClient();
     }
 
