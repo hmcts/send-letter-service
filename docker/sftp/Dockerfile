@@ -1,4 +1,4 @@
-FROM atmoz/sftp:alpine
+FROM hmctspublic.azurecr.io/imported/atmoz/sftp:alpine
 
 COPY keys/keypair.pub /home/sftp/.ssh/keys/keypair.pub
 COPY keys/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
