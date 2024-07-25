@@ -299,7 +299,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.3'
+  implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.8.2'
 
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
