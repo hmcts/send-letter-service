@@ -1,21 +1,8 @@
-
-
 # Make sure the resource group exists
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
-  location = var.location_app
+  location = var.location
   tags     = var.common_tags
-}
-
-locals {
-  ftp_private_key = data.azurerm_key_vault_secret.ftp_private_key.value
-  ftp_public_key  = data.azurerm_key_vault_secret.ftp_public_key.value
-  ftp_user        = data.azurerm_key_vault_secret.ftp_user.value
-
-  encryption_public_key = data.azurerm_key_vault_secret.encryption_public_key.value
-
-  product = "bulk-print"
-  tags    = var.common_tags
 }
 
 # region save DB details to Azure Key Vault
@@ -34,19 +21,6 @@ module "send-letter-key-vault" {
   create_managed_identity              = true
   additional_managed_identities_access = ["rpe-shared", "bulk-scan"]
 }
-
-data "azurerm_key_vault" "s2s_key_vault" {
-  name                = "s2s-${var.env}"
-  resource_group_name = "rpe-service-auth-provider-${var.env}"
-}
-
-resource "azurerm_key_vault_secret" "APP-INSTRUMENTATION-KEY" {
-  key_vault_id = module.send-letter-key-vault.key_vault_id
-  name         = "app-insights-instrumentation-key"
-  value        = module.application_insights.instrumentation_key
-}
-
-# endregion
 
 data "azurerm_key_vault_secret" "smtp_username" {
   name         = "reports-email-username"

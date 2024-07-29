@@ -13,7 +13,7 @@ module "postgresql" {
   name                 = local.db_host_name
   product              = "send-letter"
   component            = var.component
-  location             = var.location_db
+  location             = var.location
   env                  = var.env
   pgsql_admin_username = local.db_name
   pgsql_databases = [
