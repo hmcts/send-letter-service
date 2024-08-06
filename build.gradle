@@ -12,7 +12,7 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.1.4'
+  id 'io.spring.dependency-management' version '1.1.6'
   id 'org.flywaydb.flyway' version '10.13.0'
   id 'org.springframework.boot' version '3.2.3'
   id 'org.owasp.dependencycheck' version '9.0.8'
@@ -276,8 +276,8 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.13.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.10.2'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.14.0'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.14.0'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
@@ -290,7 +290,7 @@ dependencies {
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.1'
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.3'
 //  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.2'
 
   implementation group: 'com.hierynomus', name: 'sshj', version: '0.38.0'
@@ -299,7 +299,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.3'
+  implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.8.2'
 
   implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
   implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
@@ -342,11 +342,11 @@ dependencies {
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
-  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.4.0'
+  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.0'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
-  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.4.0'
+  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.0'
 
   contractTestImplementation sourceSets.test.runtimeClasspath
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
