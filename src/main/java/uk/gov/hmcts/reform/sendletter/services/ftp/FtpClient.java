@@ -247,6 +247,13 @@ public class FtpClient {
         ssh.addHostKeyVerifier(configProperties.getFingerprint());
         ssh.connect(configProperties.getHostname(), configProperties.getPort());
 
+        logger.info("********** TEST");
+        logger.info(configProperties.getHostname());
+        logger.info(configProperties.getFingerprint());
+        logger.info(configProperties.getPrivateKey());
+        logger.info(configProperties.getPrivateKey());
+        logger.info("**********");
+
         ssh.authPublickey(
             configProperties.getUsername(),
             ssh.loadKeys(
