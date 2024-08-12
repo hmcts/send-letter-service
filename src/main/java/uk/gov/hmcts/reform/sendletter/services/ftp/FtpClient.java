@@ -251,7 +251,7 @@ public class FtpClient {
         logger.info(configProperties.getHostname());
         logger.info(configProperties.getFingerprint());
         logger.info(configProperties.getPrivateKey());
-        logger.info(configProperties.getPrivateKey());
+        logger.info(configProperties.getPublicKey());
         logger.info("**********");
 
         ssh.authPublickey(
