@@ -30,7 +30,7 @@ class ApplicationTest {
             .getResponse()
             .getContentAsByteArray();
 
-        FileOutputStream outputStream = new FileOutputStream("/tmp/swagger-specs.json");
+        FileOutputStream outputStream = new FileOutputStream("/tmp/openapi-specs.json");
         outputStream.write(specs);
         outputStream.close();
     }

@@ -1,5 +1,6 @@
 # Send Letter Service
 
+## Architectural Diagram
 ![Diagram](./doc/arch/diagram.png)
 > You can edit this diagram by importing `./doc/arch/diagram.drawio` into [draw.io](https://www.draw.io/).
 
@@ -8,13 +9,48 @@
 
 ## Table of Contents
 
+* [Overview](#overview)
+  * [Bulk Print](#bulk-print)
+  * [Send Letter Service](#send-letter-service)
 * [Running the application](#running-the-application)
-    * [Locally](#locally)
-    * [Docker environment](#docker-environment)
+  * [Prerequisites](#prerequisites)
+  * [Quick Start](#quick-start)
+  * [Locally](#locally)
+  * [Docker environment](#docker-environment)
 * [Onboarding new services](#onboarding-new-services)
 * [License](#license)
 
+## Overview
+
+### Bulk Print
+
+Send Letter is a key part of the Bulk Print system infrastructure. At a high level, Bulk Print is a system
+that allows a Document Owner (DO) to send a request to a 3rd party Printing Company (PC). The PC will then print and post the letter
+to a Recipient.
+
+### Send Letter Service
+
+Send Letter Service's role in the system is to:
+
+* Receive the requests from the DOs and store this information (PDF byte
+data) to its database
+* Periodically check these letter requests and upload the letters to the server of the PC. (`UploadLettersTask`)
+* Periodically fetch reports from the PC's server checking if the letter has been posted and updating
+its database accordingly. (`MarkLettersPostedTask`)
+* Send daily report of uploaded letters
+* Send weekly report of letters that were uploaded more than six days before current date but have not been posted (stale letters)
+
 ## Running the application
+
+### Prerequisites
+
+- [JDK 17](https://www.oracle.com/java)
+- Project requires Spring Boot v3.x to be present
+
+### Quick Start
+An alternative faster way getting started is by using the automated setup script. This script will help set up all
+bulk scan/print repos including send-letter-service and its dependencies.
+See [common-dev-env-bsbp](https://github.com/hmcts/common-dev-env-bsbp) repository for more information.
 
 ### Locally
 
@@ -196,4 +232,3 @@ A letter can be in one of the following statuses:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-

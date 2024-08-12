@@ -1,12 +1,19 @@
 import org.flywaydb.gradle.task.FlywayMigrateTask
 
+buildscript {
+  dependencies {
+    classpath("org.postgresql:postgresql:42.7.3")
+    classpath("org.flywaydb:flyway-database-postgresql:10.13.0")
+  }
+}
+
 plugins {
   id 'application'
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.flywaydb.flyway' version '9.22.1'
+  id 'org.flywaydb.flyway' version '10.13.0'
   id 'org.springframework.boot' version '3.2.3'
   id 'org.owasp.dependencycheck' version '9.0.8'
   id 'com.github.ben-manes.versions' version '0.50.0'
@@ -205,7 +212,7 @@ repositories {
 }
 
 def versions = [
-  bouncycastle: '1.70',
+  bouncycastle: '1.78.1',
   junit: '5.10.2',
   junitPlatform: '1.10.2',
   reformLogging: '6.1.4',
@@ -234,6 +241,12 @@ dependencyManagement {
     dependencySet(group: 'commons-fileupload', version: '1.5') {
       entry 'commons-fileupload'
     }
+    //CVE-2023-33202
+    dependencySet(group: 'org.bouncycastle', version: '1.78.1') {
+      entry 'bcprov-jdk18on'
+      entry 'bcpkix-jdk18on'
+      entry 'bcpg-jdk18on'
+    }
   }
 }
 
@@ -258,7 +271,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
+  runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.13.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.13.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
@@ -285,9 +299,10 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.3'
-  implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
-  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
-  implementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
+
+  implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
+  implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
+  implementation group: 'org.bouncycastle', name: 'bcpg-jdk18on', version: versions.bouncycastle
 
   implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.25.1'
 
@@ -340,9 +355,9 @@ dependencies {
   contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.service_auth
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: versions.bouncycastle
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bouncycastle
-  contractTestImplementation group: 'org.bouncycastle', name: 'bcpg-jdk15on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
+  contractTestImplementation group: 'org.bouncycastle', name: 'bcpg-jdk18on', version: versions.bouncycastle
 
   contractTestImplementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version: '1.0.2'
 
