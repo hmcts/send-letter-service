@@ -243,16 +243,8 @@ public class FtpClient {
     @Dependency(name = FTP_CLIENT, command = FTP_CONNECTED, type = FTP)
     public SSHClient getSshClient() throws IOException {
         SSHClient ssh = sshClientSupplier.get();
-
         ssh.addHostKeyVerifier(configProperties.getFingerprint());
         ssh.connect(configProperties.getHostname(), configProperties.getPort());
-
-        logger.info("********** TEST");
-        logger.info(configProperties.getHostname());
-        logger.info(configProperties.getFingerprint());
-        logger.info(configProperties.getPrivateKey());
-        logger.info(configProperties.getPublicKey());
-        logger.info("**********");
 
         ssh.authPublickey(
             configProperties.getUsername(),
