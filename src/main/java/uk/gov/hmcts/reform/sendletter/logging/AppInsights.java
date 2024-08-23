@@ -47,7 +47,7 @@ public class AppInsights {
     static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final TelemetryClient telemetryClient = new TelemetryClient();
-  
+
 
     public AppInsights() {
 
@@ -188,7 +188,12 @@ public class AppInsights {
             );
         }
 
-        telemetryClient.trackDependency(dependencyTelemetry);
+        String dependencyName = dependency.name();
+        if (!dependencyName.startsWith("GET /health")
+            && !dependencyName.contains("shedlock")
+            && !dependencyName.equalsIgnoreCase("send_letter")) {
+            telemetryClient.trackDependency(dependencyTelemetry);
+        }
     }
 
     // events
