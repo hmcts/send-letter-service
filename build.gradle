@@ -272,7 +272,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.13.0'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.13.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.17.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
