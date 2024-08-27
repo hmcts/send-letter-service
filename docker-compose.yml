@@ -55,13 +55,13 @@ services:
     ports:
       - 5440:5432
   send-letter-sftp:
-    build:
-      context: docker/sftp
-    command: sftp::::incoming,incoming/BULKPRINT,SMOKE_TEST
-    healthcheck:
-      retries: 40
+    image: emberstack/sftp
     ports:
-      - "12222:22"
+      - "2222:22"
+    volumes:
+      - ./docker/sftp/sftp.json:/app/config/sftp.json:ro
+      - ./docker/sftp/ssh/id_rsa.pub:/home/mosh/ssh/keys/id_rsa.pub:ro
+      - ./docker/sftp/ssh/id_ed25519.pub:/home/mosh/ssh/keys/id_ed25519.pub:ro
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     healthcheck:
@@ -76,6 +76,5 @@ services:
       JWT_KEY: wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       MICROSERVICEKEYS_SEND_LETTER_TESTS: AAAAAAAAAAAAAAAA
       TESTING_SUPPORT_ENABLED: 'true'
-
 volumes:
   send-letter-database:
