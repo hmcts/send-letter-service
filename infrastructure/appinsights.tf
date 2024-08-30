@@ -5,7 +5,7 @@ resource "azurerm_key_vault_secret" "app_insights_connection_string" {
 }
 
 module "application_insights" {
-  source = "git@github.com:hmcts/terraform-module-application-insights?ref=main"
+  source = "git@github.com:hmcts/terraform-module-application-insights?ref=4.x"
 
   env                 = var.env
   product             = var.product
