@@ -325,7 +325,7 @@ dependencies {
   testImplementation 'org.apache.commons:commons-email2-jakarta:2.0.0-M2-SNAPSHOT'
 //  testImplementation group: 'org.apache.commons', name: 'commons-email', version: '1.6.0'
 // the snapshot version of commons-email for jakarta
-  testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.15.0'
+  testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: versions.pdfbox
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: versions.pdfbox, withoutJunit4
   testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '3.0.1', withoutJunit4
