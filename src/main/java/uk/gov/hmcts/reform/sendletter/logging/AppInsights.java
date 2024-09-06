@@ -190,8 +190,8 @@ public class AppInsights {
 
         String dependencyName = dependency.name();
         if (!dependencyName.startsWith("GET /health")
-            && !dependencyName.contains("shedlock")
-            && !dependencyName.equalsIgnoreCase("send_letter")) {
+            || !dependencyName.contains("shedlock")
+            || !dependencyName.equalsIgnoreCase("send_letter")) {
             telemetryClient.trackDependency(dependencyTelemetry);
         }
     }
