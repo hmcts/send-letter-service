@@ -2,5 +2,15 @@
   "connectionString": "${file:/mnt/secrets/rpe-send-letter/APP_INSIGHTS_CONNECTION_STRING}",
   "role": {
     "name": "rpe-send-letter-service"
+  },
+  "preview": {
+    "sampling": {
+      "overrides": [
+        {
+          "telemetryType": "dependency",
+          "percentage": 0
+        }
+      ]
+    }
   }
 }
