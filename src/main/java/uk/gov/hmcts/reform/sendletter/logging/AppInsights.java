@@ -47,7 +47,7 @@ public class AppInsights {
     static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final TelemetryClient telemetryClient = new TelemetryClient();
-  
+
 
     public AppInsights() {
 
