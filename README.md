@@ -18,6 +18,7 @@
   * [Locally](#locally)
   * [Docker environment](#docker-environment)
 * [Onboarding new services](#onboarding-new-services)
+* [Manual Testing](#manual-testing)
 * [License](#license)
 
 ## Overview
@@ -228,6 +229,10 @@ A letter can be in one of the following statuses:
 * `Posted` - letter has been physically posted
 * `Aborted` - processing of the letter has been aborted (result of a manual intervention)
 * `Skipped` - letter was skipped due to an unrecoverable issue (requires manual action)
+
+## Manual Testing
+
+You can test the different environments of Send Letter Service by using [Send Letter Mock](https://github.com/hmcts/send-letter-mock).
 
 ## License
 
