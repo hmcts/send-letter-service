@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>Apache Http Client being brought in transitively by service-auth-provider-java-client. No fix as of 20/06/24. </notes>
-        <cve>CVE-2020-13956</cve>
-    </suppress>
-    <suppress>
         <notes>Bouncy castle waiting for com.github.hmcts.rpe-pdf-service jdk15on needs to be jdk18on</notes>
         <cve>CVE-2023-33202</cve>
         <cve>CVE-2020-15522</cve>
