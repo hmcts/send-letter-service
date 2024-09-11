@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>Bouncy castle waiting for com.github.hmcts.rpe-pdf-service jdk15on needs to be jdk18on</notes>
+        <notes>Bouncy castle waiting for com.github.hmcts.rpe-pdf-service (hasn't had new release since 2017) jdk15on needs to be jdk18on</notes>
         <cve>CVE-2023-33202</cve>
         <cve>CVE-2020-15522</cve>
         <cve>CVE-2017-13098</cve>
