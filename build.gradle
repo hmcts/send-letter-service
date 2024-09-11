@@ -1,9 +1,12 @@
 import org.flywaydb.gradle.task.FlywayMigrateTask
 
 buildscript {
+  ext {
+    flywayVersion = '10.17.3'
+  }
   dependencies {
-    classpath("org.postgresql:postgresql:42.7.4")
-    classpath("org.flywaydb:flyway-database-postgresql:10.17.3") // must match flyway version
+    classpath("org.postgresql:postgresql:42.7.4") // must be compatible with flyway version
+    classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion") // flyway dependency/plugin versions must always match
   }
 }
 
@@ -13,7 +16,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.6'
-  id 'org.flywaydb.flyway' version '10.17.3' // must match flyway version
+  id 'org.flywaydb.flyway' version "$flywayVersion"
   id 'org.springframework.boot' version '3.3.3'
   id 'org.owasp.dependencycheck' version '10.0.4'
   id 'com.github.ben-manes.versions' version '0.51.0'
@@ -220,7 +223,7 @@ def versions = [
   pact_version: '4.6.7',
   service_auth: '5.2.0',
   pdfbox: '3.0.2',
-  flyway: '10.17.3'
+  flyway: "$flywayVersion"
 ]
 
 configurations.all {
