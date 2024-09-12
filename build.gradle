@@ -3,9 +3,10 @@ import org.flywaydb.gradle.task.FlywayMigrateTask
 buildscript {
   ext {
     flywayVersion = '10.17.3'
+    postgresqlVersion = '42.7.4'
   }
   dependencies {
-    classpath("org.postgresql:postgresql:42.7.4") // must be compatible with flyway version
+    classpath("org.postgresql:postgresql:$postgresqlVersion") // must be compatible with flyway version
     classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion") // flyway dependency/plugin versions must always match
   }
 }
@@ -223,7 +224,8 @@ def versions = [
   pact_version: '4.6.7',
   service_auth: '5.2.0',
   pdfbox: '3.0.2',
-  flyway: "$flywayVersion"
+  flyway: "$flywayVersion",
+  postgresql: "$postgresqlVersion"
 ]
 
 configurations.all {
@@ -275,7 +277,7 @@ dependencies {
 
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flyway
   implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
+  implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.15.1'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.15.1'
