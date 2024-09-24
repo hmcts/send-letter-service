@@ -295,7 +295,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.4'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.3'
 
-  implementation group: 'com.hierynomus', name: 'sshj', version: '0.38.0'
+  implementation group: 'com.hierynomus', name: 'sshj', version: '0.39.0'
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: versions.pdfbox
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
