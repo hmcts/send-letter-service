@@ -2,7 +2,7 @@ import org.flywaydb.gradle.task.FlywayMigrateTask
 
 buildscript {
   ext {
-    flywayVersion = '10.17.3'
+    flywayVersion = '10.18.0'
     postgresqlVersion = '42.7.4'
   }
   dependencies {
