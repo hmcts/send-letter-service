@@ -38,9 +38,9 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
-  enableFortifyScan('rpe-send-letter-aat')
+  // enableFortifyScan('rpe-send-letter-aat')
   enableSlackNotifications(channel)
-  afterSuccess('fortify-scan') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
+  // afterSuccess('fortify-scan') {
+  //  steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  //}
 }
