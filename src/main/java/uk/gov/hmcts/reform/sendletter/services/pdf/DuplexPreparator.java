@@ -38,7 +38,7 @@ public class DuplexPreparator {
             }
         } catch (IOException exc) {
             String errorMessage = "Failed to parse the documents for " + loggingContext;
-            logger.error(errorMessage);
+            logger.error("{}, exception was {}", errorMessage, exc.getMessage());
             throw new DuplexException(errorMessage, exc);
         }
     }
