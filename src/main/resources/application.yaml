@@ -97,6 +97,8 @@ reports:
       display-name: FPLA
     - service: prl_cos_api
       display-name: PRIVATELAW
+    - service: civil_general_applications
+      display-name: general_applications
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -126,6 +128,8 @@ ftp:
     - service: civil_service
       folder: CMC
       enabled: ${CIVIL_SERVICE_ENABLED:false}
+    - service: civil_general_applications
+      folder: CMC
     - service: send_letter_tests
       folder: BULKPRINT
     - service: nfdiv_case_api
@@ -184,45 +188,6 @@ async:
 file-upoad:
   retries: ${DEFAULT_RETRIES:5}
   wait-time-in-ms: ${DEFAULT_WAIT_TIME_IN_MS:2000}
-
-accesstoken:
-  serviceConfig:
-    - serviceName: cmc_claim_store
-      newContainerName: new-cmc
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: civil_service
-      newContainerName: new-cmc
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: send_letter_tests
-      newContainerName: new-bulkprint
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: divorce_frontend
-      newContainerName: new-divorce
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: probate_backend
-      newContainerName: new-probate
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: sscs
-      newContainerName: new-sscs
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: finrem_document_generator
-      newContainerName: new-finrem
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: finrem_case_orchestration
-      newContainerName: new-finrem
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: fpl_case_service
-      newContainerName: new-fpl
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: nfdiv_case_api
-      newContainerName: new-nfdivorce
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: send_letter_service
-      newContainerName: encrypted
-      validity: ${SAS_TOKEN_VALIDITY:300}
-    - serviceName: prl_cos_api
-      newContainerName: new-bulkprint
-      validity: ${SAS_TOKEN_VALIDITY:300}
 
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.sendletter
