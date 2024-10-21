@@ -98,7 +98,7 @@ reports:
     - service: prl_cos_api
       display-name: PRIVATELAW
     - service: civil_general_applications
-      display-name: GA
+      display-name: general_applications
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -128,6 +128,8 @@ ftp:
     - service: civil_service
       folder: CMC
       enabled: ${CIVIL_SERVICE_ENABLED:false}
+    - service: civil_general_applications
+      folder: CMC
     - service: send_letter_tests
       folder: BULKPRINT
     - service: nfdiv_case_api
@@ -146,8 +148,6 @@ ftp:
       folder: FPL
     - service: prl_cos_api
       folder: PRIVLAW
-    - service: civil_general_applications
-      folder: CMC
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
