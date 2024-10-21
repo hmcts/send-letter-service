@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.launchdarkly;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.DataSourceStatusProvider;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,7 @@ public class LaunchDarklyClient {
     /**
      * The user to use when checking feature flags.
      */
-    public static final LDUser SEND_LETTER_SERVICE_USER = new LDUser.Builder("bulk-scan-print")
-        .anonymous(true)
-        .build();
+    public final LDContext sendLetterServiceContext;
 
     private final LDClientInterface internalClient;
 
@@ -34,6 +32,7 @@ public class LaunchDarklyClient {
         @Value("${launchdarkly.offline-mode:false}") Boolean offlineMode
     ) {
         this.internalClient = launchDarklyClientFactory.create(sdkKey, offlineMode);
+        this.sendLetterServiceContext =  LDContext.builder(sdkKey).build();
     }
 
     /**
@@ -42,7 +41,7 @@ public class LaunchDarklyClient {
      * @return Whether the feature is enabled
      */
     public boolean isFeatureEnabled(String feature) {
-        return internalClient.boolVariation(feature, LaunchDarklyClient.SEND_LETTER_SERVICE_USER, false);
+        return internalClient.boolVariation(feature, sendLetterServiceContext, false);
     }
 
     /**
@@ -51,7 +50,7 @@ public class LaunchDarklyClient {
      * @param user The user to check for
      * @return Whether the feature is enabled
      */
-    public boolean isFeatureEnabled(String feature, LDUser user) {
+    public boolean isFeatureEnabled(String feature, LDContext user) {
         return internalClient.boolVariation(feature, user, false);
     }
 
