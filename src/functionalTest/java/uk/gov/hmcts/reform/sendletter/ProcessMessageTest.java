@@ -130,7 +130,7 @@ class ProcessMessageTest extends FunctionalTestSuite {
                 logger.info("Retrieving letter id {} and retry count {} ", letterId, counter++);
                 letterStatus = getLetterStatus(letterId);
             } catch (AssertionError e) {
-                logger.info("Retry error " + e.getMessage());
+                logger.error("Retry error " + e.getMessage());
             } catch (InterruptedException interruptedException) {
                 logger.error(interruptedException.getMessage(), interruptedException);
             }

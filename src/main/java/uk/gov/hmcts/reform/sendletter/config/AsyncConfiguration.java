@@ -23,7 +23,6 @@ public class AsyncConfiguration {
      */
     @Bean(name = "AsyncExecutor")
     public Executor getExecutor(@Value("${async.threadpool-size}") int threadPoolSize) {
-        logger.info("thread pool size {}", threadPoolSize);
         return Executors.newFixedThreadPool(threadPoolSize,
             (Runnable r) -> {
                 Thread t = new Thread(r);
