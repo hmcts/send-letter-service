@@ -20,39 +20,6 @@
         {
           "telemetryType": "dependency",
           "percentage": 0
-        },
-        {
-          "telemetryType": "trace",
-          "attributes": [
-            {
-              "key": "log.record.original",
-              "value": ".*Started 'UploadLetters' task with.*",
-              "matchType": "regexp"
-            }
-          ],
-          "percentage": 0
-        },
-        {
-          "telemetryType": "trace",
-          "attributes": [
-            {
-              "key": "log.record.original",
-              "value": ".*Completed 'UploadLetters' task.*",
-              "matchType": "regexp"
-            }
-          ],
-          "percentage": 0
-        },
-        {
-          "telemetryType": "trace",
-          "attributes": [
-            {
-              "key": "log.record.original",
-              "value": ".*net.schmizz.sshj.*",
-              "matchType": "regexp"
-            }
-          ],
-          "percentage": 0
         }
       ]
     }
