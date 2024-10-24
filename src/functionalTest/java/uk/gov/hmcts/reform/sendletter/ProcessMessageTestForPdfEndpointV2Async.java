@@ -77,7 +77,7 @@ class ProcessMessageTestForPdfEndpointV2Async extends FunctionalTestSuite {
                 logger.info("Retrieving letter id {} and retry count {} ", letterId, counter++);
                 letterStatus = getLetterStatus(letterId);
             } catch (AssertionError e) {
-                logger.info("Retry error " + e.getMessage());
+                logger.warn("Retry error " + e.getMessage());
                 if (e.getMessage().contains("409")) {
                     throw e;
                 }

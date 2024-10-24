@@ -332,7 +332,7 @@ abstract class FunctionalTestSuite {
                 .map(CompletableFuture::join)
                 .forEach(logger::info);
         } catch (CompletionException e) {
-            logger.info("completionException is {} ", e.getMessage());
+            logger.error("completionException is {} ", e.getMessage());
             assertThat(e.getMessage()).contains("Expected status code <200> but was <409>");
         }
     }
