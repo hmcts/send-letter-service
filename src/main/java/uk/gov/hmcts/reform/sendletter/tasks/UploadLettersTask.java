@@ -158,7 +158,6 @@ public class UploadLettersTask {
                     grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
                 }
             }
-            logger.info("Service folder found for letter service: {}", grabbedServiceFolder);
             uploadLetter(letter, grabbedServiceFolder, sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
