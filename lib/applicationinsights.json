@@ -25,7 +25,7 @@
           "telemetryType": "trace",
           "attributes": [
             {
-              "key": "Trace.Message",
+              "key": "log.record.original",
               "value": ".*Started 'UploadLetters' task with.*",
               "matchType": "regexp"
             }
@@ -36,7 +36,7 @@
           "telemetryType": "trace",
           "attributes": [
             {
-              "key": "Trace.Message",
+              "key": "log.record.original",
               "value": ".*Completed 'UploadLetters' task.*",
               "matchType": "regexp"
             }
@@ -47,7 +47,7 @@
           "telemetryType": "trace",
           "attributes": [
             {
-              "key": "Logger.Name",
+              "key": "log.record.original",
               "value": ".*net.schmizz.sshj.*",
               "matchType": "regexp"
             }
