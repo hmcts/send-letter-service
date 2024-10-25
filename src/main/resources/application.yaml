@@ -208,4 +208,4 @@ launchdarkly:
 
 logging:
   level:
-    net.schmizz.sshj: "off"
+    net.schmizz.sshj: "error"
