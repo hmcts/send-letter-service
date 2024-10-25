@@ -1,7 +1,13 @@
 {
+
   "connectionString": "${file:/mnt/secrets/rpe-send-letter/APP_INSIGHTS_CONNECTION_STRING}",
   "role": {
     "name": "rpe-send-letter-service"
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "WARN"
+    }
   },
   "preview": {
     "sampling": {
