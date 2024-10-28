@@ -21,9 +21,9 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "operation.name",
-              "value": "UploadLettersTask.run",
-              "matchType": "strict"
+              "key": "event.name",
+              "value": ".*run.*",
+              "matchType": "regexp"
             }
           ],
           "percentage": 1
