@@ -195,7 +195,6 @@ public class LetterService {
             messageId, mapper.valueToTree(letter.getAdditionalData())
         );
 
-        log.info("letterId {}, service {}, messageId {}", letterId, serviceName, messageId);
         byte[] zipContent = zipper.zip(
             new PdfDoc(
                 FileNameHelper.generatePdfName(letter.getType(), serviceName, letterId),
