@@ -10,9 +10,20 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "url.full",
+              "key": "http.url",
               "value": "https?://[^/]+/health.*",
               "matchType": "regexp"
+            }
+          ],
+          "percentage": 0
+        },
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "operation.name",
+              "value": "UploadLettersTask.run",
+              "matchType": "strict"
             }
           ],
           "percentage": 1
