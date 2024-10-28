@@ -26,7 +26,7 @@
               "matchType": "regexp"
             }
           ],
-          "percentage": 1
+          "percentage": 0
         },
         {
           "telemetryType": "dependency",
