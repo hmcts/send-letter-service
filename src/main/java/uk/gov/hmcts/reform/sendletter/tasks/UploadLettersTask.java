@@ -84,12 +84,15 @@ public class UploadLettersTask {
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(fixedDelayString = "${tasks.upload-letters.interval-ms}")
     public void run() {
+        logger.debug("Started '{}' task with db-poll-delay of {} ", TASK_NAME, dbPollDelay);
         if (!availabilityChecker.isFtpAvailable(now(ZoneId.of(EUROPE_LONDON)).toLocalTime())) {
             logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
         } else {
             if (repo.countByStatus(LetterStatus.Created) > 0) {
                 int uploadCount = processLetters();
                 logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, uploadCount);
+            } else {
+                logger.debug("Completed '{}' task. No letters to upload.", TASK_NAME);
             }
         }
     }

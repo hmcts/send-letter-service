@@ -3,11 +3,6 @@
   "role": {
     "name": "rpe-send-letter-service"
   },
-  "instrumentation": {
-    "logging": {
-      "level": "WARN"
-    }
-  },
   "preview": {
     "sampling": {
       "overrides": [
