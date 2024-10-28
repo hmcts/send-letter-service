@@ -58,9 +58,7 @@ class LetterServiceWithEncryptionEnabledTest {
     private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
 
     @BeforeEach
-    void setUp() {
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
-    }
+    void setUp() {}
 
     @AfterEach
     void tearDown() {

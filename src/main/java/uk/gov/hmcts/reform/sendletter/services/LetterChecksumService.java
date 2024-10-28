@@ -6,7 +6,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import uk.gov.hmcts.reform.sendletter.exception.ChecksumGenerationException;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 
 import java.io.IOException;
@@ -22,15 +21,10 @@ import static org.springframework.util.SerializationUtils.serialize;
 @Service
 public class LetterChecksumService {
 
-    private final LaunchDarklyClient launchDarklyClient;
-
     /**
      * Constructor for the LetterChecksumService.
-     * @param launchDarklyClient The client for launch darkly
      */
-    public LetterChecksumService(LaunchDarklyClient launchDarklyClient) {
-        this.launchDarklyClient = launchDarklyClient;
-    }
+    public LetterChecksumService() {}
 
     /**
      * Creates a document for a PDF based upon the contents of each page.
@@ -70,14 +64,10 @@ public class LetterChecksumService {
      * @return the checksum
      */
     public String generateChecksumForPdfPages(Object obj) {
-        return launchDarklyClient.isFeatureEnabled("FACT-1388")
-            ? obj instanceof Doc
-                ? calculateContentChecksum(((Doc) obj).content)
-                // If we have an old request for the old Document type: at present this is unavailable.
-                // This is unlikely to be hit as the client being used targets the latest version of the endpoint
-                : generateChecksum(obj)
-            // if toggle disabled, go to default check
+        return (obj instanceof Doc)
+            ? calculateContentChecksum(((Doc) obj).content)
             : generateChecksum(obj);
+
     }
 
     /**

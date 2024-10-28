@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
-import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.FACT_1593_INTERNATIONAL_POST_FLAG;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
 /**
@@ -151,12 +150,10 @@ public class UploadLettersTask {
 
         if (serviceFolder.isPresent()) {
             String grabbedServiceFolder = serviceFolder.get();
-            if (launchDarklyClient.isFeatureEnabled(FACT_1593_INTERNATIONAL_POST_FLAG)) {
-                if (letter.getAdditionalData() != null
-                    && letter.getAdditionalData().has("isInternational")
-                    && letter.getAdditionalData().get("isInternational").asBoolean()) {
-                    grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
-                }
+            if (letter.getAdditionalData() != null
+                && letter.getAdditionalData().has("isInternational")
+                && letter.getAdditionalData().get("isInternational").asBoolean()) {
+                grabbedServiceFolder = serviceFolder.get() + INTERNATIONAL_FOLDER;
             }
             logger.info("Service folder found for letter service: {}", grabbedServiceFolder);
             uploadLetter(letter, grabbedServiceFolder, sftpClient);

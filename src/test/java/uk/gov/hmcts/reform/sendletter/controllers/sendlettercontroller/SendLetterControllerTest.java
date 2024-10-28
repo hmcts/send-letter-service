@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.controllers.SendLetterController;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
@@ -50,15 +49,9 @@ class SendLetterControllerTest {
     private LetterService letterService;
     @MockBean
     private AuthService authService;
-    @MockBean
-    private LaunchDarklyClient launchDarklyClient;
-    @MockBean
-    private LetterChecksumService letterChecksumService;
 
     @BeforeEach
-    public void beforeAll() {
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
-    }
+    public void beforeAll() {}
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -113,17 +106,6 @@ class SendLetterControllerTest {
         throws Exception {
         sendLetter(readResource("controller/letter/v1/letter-additional-data-no-recipients.json"), async)
             .andExpect(status().isBadRequest());
-
-        verify(letterService, never()).save(any(LetterRequest.class), anyString(), eq(async));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void should_return_200_when_letter_is_sent_with_additional_data_no_recipients_but_toggle_off(String async)
-        throws Exception {
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(false);
-        sendLetter(readResource("controller/letter/v1/letter-additional-data-no-recipients.json"), async)
-            .andExpect(status().isOk());
 
         verify(letterService, never()).save(any(LetterRequest.class), anyString(), eq(async));
     }

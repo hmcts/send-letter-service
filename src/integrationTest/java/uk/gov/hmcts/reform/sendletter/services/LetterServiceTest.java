@@ -77,7 +77,6 @@ class LetterServiceTest {
         exceptionLetterService = mock(ExceptionLetterService.class);
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
         objectMapper = new ObjectMapper();
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
         service = new LetterService(
             new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
             letterRepository,

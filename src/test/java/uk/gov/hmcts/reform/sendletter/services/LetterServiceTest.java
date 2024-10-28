@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.PdfDoc;
 import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
@@ -111,17 +110,14 @@ class LetterServiceTest {
     @Mock
     private DocumentService documentService;
 
-    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
-    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService();
 
     Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
         objectMapper.convertValue(jsonNode,
             new TypeReference<Map<String, Integer>>() {});
 
     @BeforeEach
-    public void beforeEach() {
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
-    }
+    public void beforeEach() {}
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.SampleData;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
@@ -16,18 +15,13 @@ import java.util.function.Supplier;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 class LetterChecksumServiceTest {
 
-    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
-    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService();
 
     @BeforeEach
-    public void beforeEach() {
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
-    }
+    public void beforeEach() {}
 
     @Test
     void should_return_same_md5_checksum_hex_for_same_letter_document_objects_version_3() throws Exception {
