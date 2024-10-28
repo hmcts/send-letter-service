@@ -10,7 +10,7 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "http.url",
+              "key": "url.full",
               "value": "https?://[^/]+/health.*",
               "matchType": "regexp"
             }
