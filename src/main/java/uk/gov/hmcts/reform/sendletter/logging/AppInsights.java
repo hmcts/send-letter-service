@@ -27,7 +27,6 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.sendletter.util.TimeZones.getCurrentEuropeLondonInstant;
 
 /**
  * Aspect for Application Insights.
