@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
@@ -73,8 +72,6 @@ class UploadLettersTaskTest {
     @Mock
     private ServiceFolderMapping serviceFolderMapping;
 
-    @Mock
-    private LaunchDarklyClient launchDarklyClient;
 
     private final ArgumentCaptor<FileToSend> captureFileToSend = ArgumentCaptor.forClass(FileToSend.class);
 
@@ -372,7 +369,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
     }

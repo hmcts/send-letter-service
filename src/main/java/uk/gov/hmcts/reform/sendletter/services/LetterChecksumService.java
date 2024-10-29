@@ -22,13 +22,6 @@ import static org.springframework.util.SerializationUtils.serialize;
 public class LetterChecksumService {
 
     /**
-     * Constructor for the LetterChecksumService.
-     */
-    public LetterChecksumService() {
-
-    }
-
-    /**
      * Creates a document for a PDF based upon the contents of each page.
      * This is done because the entire PDF will have metadata against it. This means
      * the checksum will be different if the same document is created at different times.
@@ -66,10 +59,9 @@ public class LetterChecksumService {
      * @return the checksum
      */
     public String generateChecksumForPdfPages(Object obj) {
-        return (obj instanceof Doc)
-            ? calculateContentChecksum(((Doc) obj).content)
+        return (obj instanceof Doc doc)
+            ? calculateContentChecksum(doc.content)
             : generateChecksum(obj);
-
     }
 
     /**

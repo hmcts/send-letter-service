@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.services.LetterEventService;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -46,7 +45,6 @@ public class UploadLettersTask {
     private final IFtpAvailabilityChecker availabilityChecker;
     private final LetterEventService letterEventService;
     private final ServiceFolderMapping serviceFolderMapping;
-    private final LaunchDarklyClient launchDarklyClient;
     private final int dbPollDelay;
 
     /**
@@ -56,7 +54,6 @@ public class UploadLettersTask {
      * @param availabilityChecker The FTP availability checker
      * @param letterEventService The service for letter event
      * @param serviceFolderMapping The service folder mapping
-     * @param launchDarklyClient The LaunchDarkly client
      * @param dbPollDelay The database poll delay
      */
     public UploadLettersTask(
@@ -65,7 +62,6 @@ public class UploadLettersTask {
         IFtpAvailabilityChecker availabilityChecker,
         LetterEventService letterEventService,
         ServiceFolderMapping serviceFolderMapping,
-        LaunchDarklyClient launchDarklyClient,
         @Value("${tasks.upload-letters.db-poll-delay}") int dbPollDelay
     ) {
         this.repo = repo;
@@ -73,7 +69,6 @@ public class UploadLettersTask {
         this.availabilityChecker = availabilityChecker;
         this.letterEventService = letterEventService;
         this.serviceFolderMapping = serviceFolderMapping;
-        this.launchDarklyClient = launchDarklyClient;
         this.dbPollDelay = dbPollDelay;
     }
 

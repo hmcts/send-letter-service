@@ -16,10 +16,6 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
 
     private static final Logger logger = LoggerFactory.getLogger(RecipientsValidator.class);
 
-    public RecipientsValidator() {
-
-    }
-
     /**
      * Initializes the validator.
      *
