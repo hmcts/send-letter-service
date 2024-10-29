@@ -27,17 +27,6 @@
           "percentage": 0
         },
         {
-          "telemetryType": "request",
-          "attributes": [
-            {
-              "key": "http.response.status_code",
-              "value": "0",
-              "matchType": "strict"
-            }
-          ],
-          "percentage": 0
-        },
-        {
           "telemetryType": "dependency",
           "percentage": 0
         }
