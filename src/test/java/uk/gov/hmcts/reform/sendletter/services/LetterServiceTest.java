@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -115,9 +114,6 @@ class LetterServiceTest {
     Function<JsonNode, Map<String, Integer>> getCopies = jsonNode ->
         objectMapper.convertValue(jsonNode,
             new TypeReference<Map<String, Integer>>() {});
-
-    @BeforeEach
-    public void beforeEach() {}
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})

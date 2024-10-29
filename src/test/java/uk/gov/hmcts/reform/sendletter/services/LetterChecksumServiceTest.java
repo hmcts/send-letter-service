@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
@@ -19,9 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LetterChecksumServiceTest {
 
     private final LetterChecksumService letterChecksumService = new LetterChecksumService();
-
-    @BeforeEach
-    public void beforeEach() {}
 
     @Test
     void should_return_same_md5_checksum_hex_for_same_letter_document_objects_version_3() throws Exception {

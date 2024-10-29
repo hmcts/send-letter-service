@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
@@ -28,7 +26,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,11 +51,7 @@ class LetterServiceWithEncryptionEnabledTest {
     @Mock
     private DocumentService documentService;
 
-    private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
-    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
-
-    @BeforeEach
-    void setUp() {}
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService();
 
     @AfterEach
     void tearDown() {

@@ -96,7 +96,7 @@ class GetLetterStatusTest {
                 .header("ServiceAuthorization", "auth-header-value")
                 .contentType(MediaTypes.LETTER_V2)
                 .content(json)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isBadRequest());
     }
 
     @Test

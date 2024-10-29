@@ -24,7 +24,9 @@ public class LetterChecksumService {
     /**
      * Constructor for the LetterChecksumService.
      */
-    public LetterChecksumService() {}
+    public LetterChecksumService() {
+
+    }
 
     /**
      * Creates a document for a PDF based upon the contents of each page.

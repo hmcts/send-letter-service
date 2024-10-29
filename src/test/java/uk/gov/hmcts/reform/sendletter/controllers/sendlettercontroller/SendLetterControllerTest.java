@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.services.AuthService;
-import uk.gov.hmcts.reform.sendletter.services.LetterChecksumService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import java.util.List;
@@ -49,9 +47,6 @@ class SendLetterControllerTest {
     private LetterService letterService;
     @MockBean
     private AuthService authService;
-
-    @BeforeEach
-    public void beforeAll() {}
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,6 @@ class SendLetterWithPdfsAndCopiesControllerTest {
 
     @MockBean private LetterService letterService;
     @MockBean private AuthService authService;
-
-    @BeforeEach
-    public void beforeAll() {}
 
     @ParameterizedTest
     @ValueSource(strings = {"false","true"})
