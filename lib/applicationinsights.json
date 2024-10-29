@@ -3,6 +3,15 @@
   "role": {
     "name": "rpe-send-letter-service"
   },
+  "selfDiagnostics": {
+    "destination": "file+console",
+    "level": "INFO",
+    "file": {
+      "path": "applicationinsights.log",
+      "maxSizeMb": 5,
+      "maxHistory": 1
+    }
+  },
   "preview": {
     "sampling": {
       "overrides": [

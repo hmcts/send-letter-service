@@ -171,7 +171,7 @@ class UploadLettersTaskTest {
             .sum();
 
         List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(4).getMessage() //be sure to change this if logs change around
+        assertTrue(logEvents.get(3).getMessage() //be sure to change this if logs change around
             .contains("folder: some_folder" + INTERNATIONAL_FOLDER),ASSERTION_MESSAGE);
     }
 
