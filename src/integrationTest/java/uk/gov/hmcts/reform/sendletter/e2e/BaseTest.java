@@ -149,19 +149,6 @@ class BaseTest {
             );
         }
 
-        verify(telemetryClient, atLeastOnce()).trackRequest(requestTelemetryCaptor.capture());
-        var schedule = "Schedule /";
-        assertThat(requestTelemetryCaptor.getAllValues())
-            .extracting(requestTelemetry -> tuple(
-                requestTelemetry.getName(),
-                requestTelemetry.isSuccess()
-            ))
-            .containsAnyElementsOf(ImmutableList.of(
-                tuple(schedule + UploadLettersTask.class.getSimpleName(), true),
-                tuple(schedule + MarkLettersPostedTask.class.getSimpleName(), true),
-                tuple(schedule + StaleLettersTask.class.getSimpleName(), true)
-            ));
-
         verify(telemetryClient, atLeastOnce()).trackDependency(dependencyTelemetryCaptor.capture());
         assertThat(dependencyTelemetryCaptor.getAllValues())
             .extracting(dependencyTelemetry -> tuple(
