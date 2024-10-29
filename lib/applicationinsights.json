@@ -21,9 +21,9 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "event.name",
-              "value": ".*run.*",
-              "matchType": "regexp"
+              "key": "http.response.status_code",
+              "value": "0",
+              "matchType": "strict"
             }
           ],
           "percentage": 0

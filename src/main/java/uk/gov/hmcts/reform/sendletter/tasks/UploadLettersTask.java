@@ -90,7 +90,7 @@ public class UploadLettersTask {
         } else {
             if (repo.countByStatus(LetterStatus.Created) > 0) {
                 int uploadCount = processLetters();
-                logger.info("Completed '{}' task. Uploaded {} letters", TASK_NAME, uploadCount);
+                logger.debug("Completed '{}' task. Uploaded {} letters", TASK_NAME, uploadCount);
             } else {
                 logger.debug("Completed '{}' task. No letters to upload.", TASK_NAME);
             }
