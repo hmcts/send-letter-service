@@ -108,7 +108,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
@@ -146,7 +145,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
@@ -183,7 +181,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
