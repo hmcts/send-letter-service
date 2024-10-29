@@ -139,7 +139,7 @@ class UploadLettersTaskTest {
         ).containsExactlyInAnyOrder(false, true);
 
         List<LogEvent> logEvents = uploadLettersTaskLogCaptor.getLogEvents();
-        assertTrue(logEvents.get(4).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
+        assertTrue(logEvents.get(3).getMessage().contains("folder: some_folder"),ASSERTION_MESSAGE);
     }
 
     @Test
