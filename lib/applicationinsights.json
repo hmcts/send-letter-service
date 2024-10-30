@@ -5,7 +5,7 @@
   },
   "selfDiagnostics": {
     "destination": "file+console",
-    "level": "INFO",
+    "level": "DEBUG",
     "file": {
       "path": "applicationinsights.log",
       "maxSizeMb": 5,
