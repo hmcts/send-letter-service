@@ -12,6 +12,11 @@
       "maxHistory": 1
     }
   },
+  "instrumentation": {
+    "springScheduling": {
+      "enabled": false
+    }
+  },
   "preview": {
     "sampling": {
       "overrides": [
