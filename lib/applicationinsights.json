@@ -30,9 +30,9 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "event.name",
-              "value": ".*run.*",
-              "matchType": "regexp"
+              "key": "code.namespace",
+              "value": "uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask",
+              "matchType": "strict"
             }
           ],
           "percentage": 0
