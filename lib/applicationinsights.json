@@ -3,15 +3,6 @@
   "role": {
     "name": "rpe-send-letter-service"
   },
-  "selfDiagnostics": {
-    "destination": "file+console",
-    "level": "DEBUG",
-    "file": {
-      "path": "applicationinsights.log",
-      "maxSizeMb": 5,
-      "maxHistory": 1
-    }
-  },
   "instrumentation": {
     "springScheduling": {
       "enabled": false
