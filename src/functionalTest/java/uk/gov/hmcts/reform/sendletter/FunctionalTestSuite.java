@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteFile;
+import net.schmizz.sshj.sftp.RemoteResourceFilter;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import org.apache.pdfbox.Loader;
@@ -309,7 +310,7 @@ abstract class FunctionalTestSuite {
     ) throws IOException {
         String lettersFolder = String.join("/", ftpTargetFolder, "BULKPRINT");
 
-        List<RemoteResourceInfo> matchingFiles = sftp.ls(lettersFolder, file -> file.getName().contains(letterId));
+        List<RemoteResourceInfo> matchingFiles = sftp.ls(lettersFolder, (RemoteResourceFilter) file -> file.getName().contains(letterId));
 
         if (matchingFiles.size() > 1) {
             String failMessage = String.format(
