@@ -195,7 +195,6 @@ public class LetterService {
             messageId, mapper.valueToTree(letter.getAdditionalData())
         );
 
-        log.info("letterId {}, service {}, messageId {}", letterId, serviceName, messageId);
         byte[] zipContent = zipper.zip(
             new PdfDoc(
                 FileNameHelper.generatePdfName(letter.getType(), serviceName, letterId),
@@ -516,7 +515,6 @@ public class LetterService {
      * @return The letter status
      */
     public LetterStatus getStatus(UUID id, String isAdditionalDataRequired, String isDuplicate) {
-        log.info("Getting letter status for id {} ", id);
         exceptionCheck(id);
         duplicateCheck(id, isDuplicate);
 
@@ -532,8 +530,6 @@ public class LetterService {
 
         Optional<LetterStatus> optionalLetterStatus = getStatusWithRetries(id, additionDataFunction);
         if (optionalLetterStatus.isPresent()) {
-            log.info("Returning  letter status for letter {}, letter id {}",
-                optionalLetterStatus.get().status, id);
             return optionalLetterStatus.get();
         } else {
             throw new LetterNotFoundException(id);

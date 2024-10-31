@@ -80,14 +80,14 @@ public class FtpClient {
 
         retryTemplate.execute(arg -> {
             try {
-                logger.info(
+                logger.debug(
                     "Uploading file {}, size {} to SFTP server",
                     file.filename,
                     file.getLength() / 1024 + "KB"
                 );
                 sftpClient.getFileTransfer().upload(file, path);
 
-                logger.info(
+                logger.debug(
                     "File {} uploaded. Time: {}, Size: {}, Folder: {}",
                     file.filename,
                     ChronoUnit.MILLIS.between(start, Instant.now()) + "ms",
