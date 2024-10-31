@@ -310,7 +310,8 @@ abstract class FunctionalTestSuite {
     ) throws IOException {
         String lettersFolder = String.join("/", ftpTargetFolder, "BULKPRINT");
 
-        List<RemoteResourceInfo> matchingFiles = sftp.ls(lettersFolder, (RemoteResourceFilter) file -> file.getName().contains(letterId));
+        List<RemoteResourceInfo> matchingFiles =
+            sftp.ls(lettersFolder, (RemoteResourceFilter) file -> file.getName().contains(letterId));
 
         if (matchingFiles.size() > 1) {
             String failMessage = String.format(
