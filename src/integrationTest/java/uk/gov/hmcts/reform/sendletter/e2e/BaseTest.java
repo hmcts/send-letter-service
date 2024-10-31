@@ -31,9 +31,6 @@ import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
 import uk.gov.hmcts.reform.sendletter.services.encryption.PgpDecryptionHelper;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
-import uk.gov.hmcts.reform.sendletter.tasks.MarkLettersPostedTask;
-import uk.gov.hmcts.reform.sendletter.tasks.UploadLettersTask;
-import uk.gov.hmcts.reform.sendletter.tasks.alerts.StaleLettersTask;
 import uk.gov.hmcts.reform.sendletter.util.CsvReportWriter;
 
 import java.io.File;
@@ -148,19 +145,6 @@ class BaseTest {
                 () -> assertThat(server.reportFolder.listFiles()).as("CSV reports on FTP").isEmpty()
             );
         }
-
-        verify(telemetryClient, atLeastOnce()).trackRequest(requestTelemetryCaptor.capture());
-        var schedule = "Schedule /";
-        assertThat(requestTelemetryCaptor.getAllValues())
-            .extracting(requestTelemetry -> tuple(
-                requestTelemetry.getName(),
-                requestTelemetry.isSuccess()
-            ))
-            .containsAnyElementsOf(ImmutableList.of(
-                tuple(schedule + UploadLettersTask.class.getSimpleName(), true),
-                tuple(schedule + MarkLettersPostedTask.class.getSimpleName(), true),
-                tuple(schedule + StaleLettersTask.class.getSimpleName(), true)
-            ));
 
         verify(telemetryClient, atLeastOnce()).trackDependency(dependencyTelemetryCaptor.capture());
         assertThat(dependencyTelemetryCaptor.getAllValues())

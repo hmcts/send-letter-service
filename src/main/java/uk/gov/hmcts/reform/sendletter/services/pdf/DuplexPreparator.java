@@ -22,10 +22,10 @@ public class DuplexPreparator {
      * Adds an extra blank page if the total number of pages is odd.
      */
     public byte[] prepare(byte[] pdf, String loggingContext) {
-        logger.info("File size is {} KB", pdf.length / 1024);
+        logger.debug("File size is {} KB", pdf.length / 1024);
         try (var pdDoc = Loader.loadPDF(pdf)) {
             int numberOfPages = pdDoc.getNumberOfPages();
-            logger.info("File has {} pages.", numberOfPages);
+            logger.debug("File has {} pages.", numberOfPages);
             if (numberOfPages % 2 == 1) {
                 PDRectangle lastPageMediaBox = pdDoc.getPage(numberOfPages - 1).getMediaBox();
                 pdDoc.addPage(new PDPage(lastPageMediaBox));
