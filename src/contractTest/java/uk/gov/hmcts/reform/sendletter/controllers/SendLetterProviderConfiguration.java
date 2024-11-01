@@ -61,7 +61,7 @@ public class SendLetterProviderConfiguration {
     @Bean
     @Primary
     public LetterChecksumService letterChecksumService() {
-        return new LetterChecksumService(launchDarklyClient());
+        return new LetterChecksumService();
     }
 
     @Bean
