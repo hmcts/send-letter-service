@@ -41,7 +41,6 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,7 +71,7 @@ class UploadLettersTaskTest {
     private DocumentService documentService;
 
     private final LaunchDarklyClient launchDarklyClient = mock(LaunchDarklyClient.class);
-    private final LetterChecksumService letterChecksumService = new LetterChecksumService(launchDarklyClient);
+    private final LetterChecksumService letterChecksumService = new LetterChecksumService();
 
     @BeforeEach
     void setUp() {
@@ -81,8 +80,6 @@ class UploadLettersTaskTest {
         ExecusionService execusionService = new ExecusionService();
         DuplicateLetterService duplicateLetterService = mock(DuplicateLetterService.class);
         ExceptionLetterService exceptionLetterService = mock(ExceptionLetterService.class);
-
-        given(launchDarklyClient.isFeatureEnabled("FACT-1388")).willReturn(true);
 
         letterRepository.deleteAll();
         this.letterService = new LetterService(
@@ -111,7 +108,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
@@ -149,7 +145,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
@@ -186,7 +181,6 @@ class UploadLettersTaskTest {
             availabilityChecker,
             letterEventService,
             serviceFolderMapping,
-            launchDarklyClient,
             0
         );
 
