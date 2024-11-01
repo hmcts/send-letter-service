@@ -81,7 +81,7 @@ public class DocumentService {
      */
     @Transactional
     public void saveDocuments(UUID letterId, List<?> documents, String recipientsChecksum) {
-        log.info("Saving {} documents, letterId {}", documents.size(), letterId);
+        log.debug("Saving {} documents, letterId {}", documents.size(), letterId);
         documents.forEach((document) -> {
             UUID id = UUID.randomUUID();
             log.debug("Saving document, id {}, letterId {}", id, letterId);
