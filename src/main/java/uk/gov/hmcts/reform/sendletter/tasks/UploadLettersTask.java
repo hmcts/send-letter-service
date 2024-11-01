@@ -160,19 +160,13 @@ public class UploadLettersTask {
             uploadLetter(letter, grabbedServiceFolder, sftpClient);
             letter.setStatus(LetterStatus.Uploaded);
             letter.setSentToPrintAt(now());
-            try {
-                repo.saveAndFlush(letter);
-            } catch (Exception ex) {
-                logger.error("Letter was successfully uploaded but failed in saving to the database", ex);
-                letter.setStatus(LetterStatus.FailedDbUpload);
-                repo.saveAndFlush(letter);
-            }
+            repo.saveAndFlush(letter);
             return true;
 
         } else {
             logger.error("Folder for service {} not found. Skipping letter {}", letter.getService(), letter.getId());
 
-                letter.setStatus(LetterStatus.Skipped);
+            letter.setStatus(LetterStatus.Skipped);
             repo.saveAndFlush(letter);
 
             return false;
