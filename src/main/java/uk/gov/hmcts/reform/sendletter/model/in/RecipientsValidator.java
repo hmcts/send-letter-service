@@ -4,6 +4,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,6 +17,22 @@ import java.util.Optional;
 public class RecipientsValidator implements ConstraintValidator<ValidRecipients, Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(RecipientsValidator.class);
+    private final LaunchDarklyClient launchDarklyClient;
+
+    public RecipientsValidator() {
+        // for pact testing only - default is @Autowired constructor
+        launchDarklyClient = null;
+    }
+
+    /**
+     * Constructor for the RecipientsValidator.
+     *
+     * @param launchDarklyClient The LaunchDarklyClient
+     */
+    @Autowired
+    public RecipientsValidator(LaunchDarklyClient launchDarklyClient) {
+        this.launchDarklyClient = launchDarklyClient;
+    }
 
     /**
      * Initializes the validator.
