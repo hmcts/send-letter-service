@@ -4,7 +4,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
 import java.util.ArrayList;
@@ -22,16 +21,6 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
     public RecipientsValidator() {
         // for pact testing only - default is @Autowired constructor
         launchDarklyClient = null;
-    }
-
-    /**
-     * Constructor for the RecipientsValidator.
-     *
-     * @param launchDarklyClient The LaunchDarklyClient
-     */
-    @Autowired
-    public RecipientsValidator(LaunchDarklyClient launchDarklyClient) {
-        this.launchDarklyClient = launchDarklyClient;
     }
 
     /**
@@ -53,29 +42,23 @@ public class RecipientsValidator implements ConstraintValidator<ValidRecipients,
      */
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        // Toggle: FACT-1388 for making recipients field mandatory
-        if (launchDarklyClient != null && launchDarklyClient.isFeatureEnabled("FACT-1388")) {
-            if (value == null) {
-                logger.error("Additional_data field is null");
-                return false; // Skip validation if the value is null
-            }
+        if (value == null) {
+            logger.error("Additional_data field is null");
+            return false; // Skip validation if the value is null
+        }
 
-            // Check if the "recipients" field exists using reflection
-            try {
-                ArrayList recipients = (ArrayList) Optional.ofNullable(((LinkedHashMap) value).get("recipients"))
-                    .orElseThrow(() -> new NoSuchFieldException("Recipients field is not present"));
-                if (recipients.isEmpty()) { // Check it is not an empty string as well
-                    throw new NoSuchFieldException("Recipients field is empty");
-                }
-                logger.debug("Additional_data field is populated and recipients are: {}", recipients);
-                return true;
-            } catch (NoSuchFieldException e) {
-                logger.error(e.toString());
-                return false; // Field does not exist or is empty
+        // Check if the "recipients" field exists using reflection
+        try {
+            ArrayList recipients = (ArrayList) Optional.ofNullable(((LinkedHashMap) value).get("recipients"))
+                .orElseThrow(() -> new NoSuchFieldException("Recipients field is not present"));
+            if (recipients.isEmpty()) { // Check it is not an empty string as well
+                throw new NoSuchFieldException("Recipients field is empty");
             }
-        } else {
-            logger.debug("toggle is turned off for FACT-1388, or LD Client is null");
+            logger.debug("Additional_data field is populated and recipients are: {}", recipients);
             return true;
+        } catch (NoSuchFieldException e) {
+            logger.error(e.toString());
+            return false; // Field does not exist or is empty
         }
     }
 }
