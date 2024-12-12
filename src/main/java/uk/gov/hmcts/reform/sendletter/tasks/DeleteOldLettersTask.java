@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
+import java.util.Optional;
+
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.SEND_LETTER_SERVICE_DELETE_LETTERS_CRON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 
@@ -26,37 +28,9 @@ public class DeleteOldLettersTask {
 
     private final LaunchDarklyClient launchDarklyClient;
 
+    private final Integer BATCH_SIZE = 1000;
 
-    private static final String DELETE_QUERY = """
-        WITH letters_to_delete AS (
-        SELECT id -- selecting indexed id column is all we need. also is faster then doing 'select *'
-        FROM letters
-        WHERE created_at < (
-        CASE
-            WHEN service = 'civil_general_applications' THEN NOW() - INTERVAL '6 YEARS'
-            WHEN service = 'civil_service' THEN NOW() - INTERVAL '6 YEARS'
-            WHEN service = 'cmc_claim_store' THEN NOW() - INTERVAL '2 YEARS'
-            WHEN service = 'divorce_frontend' THEN NOW() - INTERVAL '3 MONTHS'
-            WHEN service = 'finrem_case_orchestration' THEN NOW() - INTERVAL '3 MONTHS'
-            WHEN service = 'finrem_document_generator' THEN NOW() - INTERVAL '3 MONTHS'
-            WHEN service = 'fpl_case_service' THEN NOW() - INTERVAL '2 YEARS'
-            WHEN service = 'nfdiv_case_api' THEN NOW() - INTERVAL '3 MONTHS'
-            WHEN service = 'prl_cos_api' THEN NOW() - INTERVAL '18 YEARS'
-            WHEN service = 'probate_backend' THEN NOW() - INTERVAL '1 YEAR'
-            WHEN service = 'send_letter_tests' THEN NOW() - INTERVAL '2 YEARS'
-            WHEN service = 'sscs' THEN NOW() - INTERVAL '3 MONTHS'
-            -- no default case
-        END
-        )
-        -- For below don't delete old unprocessed / things that need investigating at some point
-        AND status IN ('Posted', 'PostedLocally', 'Aborted', 'Skipped')
-        ORDER BY created_at ASC -- Prioritize oldest rows first
-        LIMIT 30000 -- Limit so it doesn't delete too many at once but needs to be high enough to make a difference
-    )
-    DELETE FROM letters
-    USING letters_to_delete
-    WHERE letters.id = letters_to_delete.id;
-        """;
+    private final String DELETE_QUERY = "SELECT batch_delete_letters(?);";
 
     /**
      * Constructor for the DeleteOldLettersTask.
@@ -77,9 +51,19 @@ public class DeleteOldLettersTask {
         logger.info("Starting {} task", TASK_NAME);
         if (launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)) {
             logger.info("Flag enabled. Task {} running", TASK_NAME);
+
+            int totalRowsDeleted = 0;
+            int rowsDeleted;
+
             try {
-                int rowsDeleted = jdbcTemplate.update(DELETE_QUERY);
-                logger.info("{} task completed. {} rows deleted", TASK_NAME, rowsDeleted);
+                do {
+                    rowsDeleted = Optional.ofNullable(
+                        jdbcTemplate.queryForObject(DELETE_QUERY, new Object[]{BATCH_SIZE}, Integer.class)
+                    ).orElse(0);
+                    totalRowsDeleted += rowsDeleted;
+                    logger.info("Batch deleted: {} rows, Total deleted: {} rows", rowsDeleted, totalRowsDeleted);
+                } while (rowsDeleted > 0);
+                logger.info("{} task completed. Total rows deleted: {}", TASK_NAME, totalRowsDeleted);
             } catch (Exception e) {
                 logger.error("Error occurred during {} task", TASK_NAME, e);
             }
