@@ -28,9 +28,10 @@ public class DeleteOldLettersTask {
 
     private final LaunchDarklyClient launchDarklyClient;
 
-    private final Integer BATCH_SIZE = 1000;
+    private final Integer batchSize = 1000;
 
-    private final String DELETE_QUERY = "SELECT batch_delete_letters(?);";
+    // See V028__Add_batch_delete_letters_function.sql for sql function
+    private final String deleteQuery = "SELECT batch_delete_letters(?);";
 
     /**
      * Constructor for the DeleteOldLettersTask.
@@ -42,7 +43,7 @@ public class DeleteOldLettersTask {
     }
 
     /**
-     * Run the task to delete old letters from the database.
+     * Deletes old letters from the database in batches based on the batch_delete_letters query.
      */
     @SchedulerLock(name = TASK_NAME)
     @Scheduled(cron = "0 0 17 ? * SAT", zone = EUROPE_LONDON) // Every Saturday at 5 PM
@@ -58,7 +59,7 @@ public class DeleteOldLettersTask {
             try {
                 do {
                     rowsDeleted = Optional.ofNullable(
-                        jdbcTemplate.queryForObject(DELETE_QUERY, new Object[]{BATCH_SIZE}, Integer.class)
+                        jdbcTemplate.queryForObject(deleteQuery, new Object[]{batchSize}, Integer.class)
                     ).orElse(0);
                     totalRowsDeleted += rowsDeleted;
                     logger.info("Batch deleted: {} rows, Total deleted: {} rows", rowsDeleted, totalRowsDeleted);
