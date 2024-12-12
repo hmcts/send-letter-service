@@ -56,7 +56,7 @@ public class DeleteOldLettersTask {
     DELETE FROM letters
     USING letters_to_delete
     WHERE letters.id = letters_to_delete.id;
-    """;
+        """;
 
     /**
      * Constructor for the DeleteOldLettersTask.
@@ -75,7 +75,7 @@ public class DeleteOldLettersTask {
     //@Scheduled(cron = "0 */2 * * * ?", zone = EUROPE_LONDON) // Every 2 minutes for testing
     public void run() {
         logger.info("Starting {} task", TASK_NAME);
-        if(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)){
+        if (launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)) {
             logger.info("Flag enabled. Task {} running", TASK_NAME);
             try {
                 int rowsDeleted = jdbcTemplate.update(DELETE_QUERY);
