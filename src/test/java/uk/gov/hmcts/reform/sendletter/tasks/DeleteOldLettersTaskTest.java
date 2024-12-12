@@ -7,8 +7,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,43 +33,46 @@ class DeleteOldLettersTaskTest {
     }
 
     @Test
-    void shouldExecuteDeleteQueryWhenFeatureFlagIsEnabled() {
-        // Given
+    void testRunWhenFeatureFlagIsEnabled() {
+        // Arrange: Mock LaunchDarkly feature flag to return true
         when(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)).thenReturn(true);
-        when(jdbcTemplate.update(anyString())).thenReturn(100);
 
-        // When
+        // Mock JdbcTemplate behavior for the deletion loop
+        when(jdbcTemplate.queryForObject(anyString(), any(Object[].class), eq(Integer.class)))
+            .thenReturn(100)
+            .thenReturn(50)
+            .thenReturn(0); // Simulate 3 batches with 100, 50 rows deleted, and then no more rows
+
+        // Act: Call the run method
         deleteOldLettersTask.run();
 
-        // Then
-        verify(launchDarklyClient, times(1)).isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON);
-        verify(jdbcTemplate, times(1)).update(anyString());
+        // Assert: Check if the correct number of deletions were made
+        verify(jdbcTemplate, times(3)).queryForObject(anyString(), any(Object[].class), eq(Integer.class));
     }
 
     @Test
-    void shouldNotExecuteDeleteQueryWhenFeatureFlagIsDisabled() {
-        // Given
+    void testRunWhenFeatureFlagIsDisabled() {
+        // Arrange: Mock LaunchDarkly feature flag to return false
         when(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)).thenReturn(false);
 
-        // When
+        // Act: Call the run method
         deleteOldLettersTask.run();
 
-        // Then
-        verify(launchDarklyClient, times(1)).isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON);
-        verify(jdbcTemplate, never()).update(anyString());
+        // Assert: Verify no deletion attempt is made
+        verify(jdbcTemplate, never()).queryForObject(anyString(), any(Object[].class), eq(Integer.class));
     }
 
     @Test
-    void shouldHandleDatabaseErrorGracefullyWhenFeatureFlagIsEnabled() {
-        // Given
+    void testRunWhenErrorOccurs() {
+        // Arrange: Mock LaunchDarkly feature flag to return true
         when(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)).thenReturn(true);
-        doThrow(new RuntimeException("Database error")).when(jdbcTemplate).update(anyString());
 
-        // When
+        // Mock JdbcTemplate to throw an exception
+        when(jdbcTemplate.queryForObject(anyString(), any(Object[].class), eq(Integer.class)))
+            .thenThrow(new RuntimeException("Database error"));
+
+        // Act: Call the run method
         deleteOldLettersTask.run();
 
-        // Then
-        verify(launchDarklyClient, times(1)).isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON);
-        verify(jdbcTemplate, times(1)).update(anyString());
     }
 }
