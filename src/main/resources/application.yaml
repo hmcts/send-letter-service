@@ -205,3 +205,20 @@ documents:
 launchdarkly:
   sdk-key: ${LAUNCH_DARKLY_SDK_KEY:XXXXX}
   offline-mode: ${LAUNCH_DARKLY_OFFLINE_MODE:false}
+
+delete-old-letters:
+  batch-size: ${BATCH_SIZE:1000}
+  civil-general-applications-interval: ${CIVIL_GENERAL_APPLICATIONS_INTERVAL:6 years}
+  civil-service-interval: ${CIVIL_SERVICE_INTERVAL:6 years}
+  cmc-claim-store-interval: ${CMC_CLAIM_STORE_INTERVAL:2 years}
+  divorce-frontend-interval: ${DIVORCE_FRONTEND_INTERVAL:3 months}
+  finrem-case-orchestration-interval: ${FINREM_CASE_ORCHESTRATION_INTERVAL:3 months}
+  finrem-document-generator-interval: ${FINREM_DOCUMENT_GENERATOR_INTERVAL:3 months}
+  fpl-case-service-interval: ${FPL_CASE_SERVICE_INTERVAL:2 years}
+  nfdiv-case-api-interval: ${NFDIV_CASE_API_INTERVAL:3 months}
+  prl-cos-api-interval: ${PRL_COS_API_INTERVAL:18 years}
+  probate-backend-interval: ${PROBATE_BACKEND_INTERVAL:1 year}
+  send-letter-tests-interval: ${SEND_LETTER_TESTS_INTERVAL:2 years}
+  sscs-interval: ${SSCS_INTERVAL:3 months}
+
+
