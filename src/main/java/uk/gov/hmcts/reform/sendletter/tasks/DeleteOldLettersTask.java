@@ -100,8 +100,7 @@ public class DeleteOldLettersTask {
      * Deletes old letters from the database in batches based on the batch_delete_letters query.
      */
     @SchedulerLock(name = TASK_NAME)
-    //@Scheduled(cron = "0 0 17 ? * SAT", zone = EUROPE_LONDON) // Every Saturday at 5 PM
-    @Scheduled(cron = "0 */2 * * * ?", zone = EUROPE_LONDON) // Every 2 minutes for testing
+    @Scheduled(cron = "${delete-old-letters.cron:0 0 17 ? * SAT}", zone = EUROPE_LONDON) // default: Every Saturday at 5 PM
     public void run() {
         logger.info("Starting {} task", TASK_NAME);
         if (launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)) {
@@ -117,7 +116,7 @@ public class DeleteOldLettersTask {
                             deleteQuery,
                             new Object[]{
                                 batchSize,
-                                civilGeneralApplicationsInterval,  // civil_general_applications_interval
+                                civilGeneralApplicationsInterval, // civil_general_applications_interval
                                 civilServiceInterval,             // civil_service_interval
                                 cmcClaimStoreInterval,            // cmc_claim_store_interval
                                 divorceFrontendInterval,          // divorce_frontend_interval
