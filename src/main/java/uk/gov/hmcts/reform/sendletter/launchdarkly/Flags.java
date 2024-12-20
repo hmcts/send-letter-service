@@ -6,4 +6,5 @@ public final class Flags {
     }
 
     public static final String SEND_LETTER_SERVICE_TEST = "send-letter-service-test";
+    public static final String SEND_LETTER_SERVICE_DELETE_LETTERS_CRON = "send-letter-service-delete-letters-cron";
 }
