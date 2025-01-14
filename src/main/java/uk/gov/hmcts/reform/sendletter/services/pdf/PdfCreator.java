@@ -4,6 +4,8 @@ import org.apache.hc.core5.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
 
@@ -21,15 +23,18 @@ public class PdfCreator {
     private static final Logger logger = LoggerFactory.getLogger(PdfCreator.class);
     private final DuplexPreparator duplexPreparator;
     private final IHtmlToPdfConverter converter;
+    private final PDFServiceClient pdfServiceClient;
+
 
     /**
      * Constructor for the PdfCreator.
      * @param duplexPreparator The duplex preparator
      * @param converter The HTML to PDF converter
      */
-    public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
+    public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter, PDFServiceClient pdfServiceClient) {
         this.duplexPreparator = duplexPreparator;
         this.converter = converter;
+        this.pdfServiceClient = pdfServiceClient;
     }
 
     /**
@@ -44,7 +49,7 @@ public class PdfCreator {
         List<byte[]> docs =
             documents
                 .stream()
-                .map(this::generatePdf)
+                .map(this::generatePdfWithClient)
                 .map(pdf -> duplexPreparator.prepare(pdf, loggingContext))
                 .collect(toList());
 
@@ -96,6 +101,18 @@ public class PdfCreator {
     private byte[] generatePdf(Document document) {
         synchronized (PdfCreator.class) {
             return converter.apply(document.template.getBytes(), document.values);
+        }
+    }
+
+    /**
+     * Create a PDF from a document using cmc PDF service client.
+     * @param document The document
+     * @return The PDF
+     */
+    private byte[] generatePdfWithClient(Document document) {
+        System.out.println("NEW PDF CONVERTER!");
+        synchronized (PdfCreator.class) {
+            return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
         }
     }
 }
