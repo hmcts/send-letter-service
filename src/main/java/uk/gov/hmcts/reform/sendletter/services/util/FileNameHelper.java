@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.FilenameUtils;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
@@ -118,7 +116,7 @@ public final class FileNameHelper {
      * @param service The letter type
      * @param additionalData The additional data
      * @return "_IB" if the type is "sscs" and if isIbca in additionalInfo infected blood param is true,
-     * otherwise an empty string.
+     *      otherwise an empty string.
      *
      */
     public static String infectedBloodInfix(String service, Map<String, Object> additionalData) {
