@@ -209,7 +209,7 @@ public final class CsvWriter {
     private static void printStaleRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(FileNameHelper.generateName(letter.getType(),
-                letter.getService(), letter.getCreatedAt(), letter.getId(), true),
+                letter.getService(), letter.getCreatedAt(), letter.getId(), true, null),
                     letter.getService(), letter.getCreatedAt(),
                     letter.getSentToPrintAt());
             count.incrementAndGet();
@@ -228,7 +228,7 @@ public final class CsvWriter {
     private static void printDelayRecords(BasicLetterInfo letter, CSVPrinter printer, AtomicInteger count) {
         try {
             printer.printRecord(FileNameHelper.generateName(letter.getType(),
-                letter.getService(), letter.getCreatedAt(), letter.getId(), true),
+                letter.getService(), letter.getCreatedAt(), letter.getId(), true, null),
                     letter.getService(), letter.getCreatedAt(),
                     letter.getSentToPrintAt(), letter.getPrintedAt());
             count.incrementAndGet();

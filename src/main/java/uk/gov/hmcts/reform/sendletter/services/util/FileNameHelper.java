@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.services.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.FilenameUtils;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -67,12 +70,14 @@ public final class FileNameHelper {
      * @return The file name
      */
     public static String generateName(Letter letter) {
+        ObjectMapper objectMapper = new ObjectMapper();
         return generateName(
             letter.getType(),
             letter.getService(),
             letter.getCreatedAt(),
             letter.getId(),
-            letter.isEncrypted()
+            letter.isEncrypted(),
+            objectMapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){})
         );
     }
 
@@ -91,17 +96,42 @@ public final class FileNameHelper {
         String service,
         LocalDateTime createdAtDateTime,
         UUID id,
-        Boolean isEncrypted
+        Boolean isEncrypted,
+        Map<String, Object> additionalData
     ) {
         return String.format(
-            "%s_%s_%s_%s.%s",
+            "%s%s_%s_%s_%s.%s",
             type.replace("_", ""),
+            infectedBloodInfix(service, additionalData),
             service.replace("_", ""),
             createdAtDateTime.format(dateTimeFormatter),
             id,
             Boolean.TRUE.equals(isEncrypted) ? "pgp" : "zip"
         );
     }
+
+    /**
+     * Determines if the letter type is "sscs" and if isIbca in additionalInfo is true, and returns "_IB".
+     *
+     * @param service The letter type
+     * @param additionalData The additional data
+     * @return "_IB" if the type is "sscs" and if isIbca in additionalInfo infected blood param is true,
+     *      otherwise an empty string.
+     *
+     */
+    public static String infectedBloodInfix(String service, Map<String, Object> additionalData) {
+        if ("sscs".equalsIgnoreCase(service)
+            && additionalData != null
+            && additionalData.containsKey("isIbca")) {
+
+            Object isIbcaValue = additionalData.get("isIbca");
+            if (isIbcaValue instanceof Boolean && (Boolean) isIbcaValue) {
+                return SEPARATOR + "IB";
+            }
+        }
+        return "";
+    }
+
 
     private FileNameHelper() {
     }
