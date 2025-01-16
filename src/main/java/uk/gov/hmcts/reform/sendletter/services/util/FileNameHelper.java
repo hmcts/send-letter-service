@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.FilenameUtils;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
@@ -72,7 +73,8 @@ public final class FileNameHelper {
             letter.getService(),
             letter.getCreatedAt(),
             letter.getId(),
-            letter.isEncrypted()
+            letter.isEncrypted(),
+            letter.getAdditionalData()
         );
     }
 
@@ -91,16 +93,35 @@ public final class FileNameHelper {
         String service,
         LocalDateTime createdAtDateTime,
         UUID id,
-        Boolean isEncrypted
+        Boolean isEncrypted,
+        JsonNode additionalData
     ) {
         return String.format(
-            "%s_%s_%s_%s.%s",
+            "%s%s_%s_%s_%s.%s",
             type.replace("_", ""),
+            infectedBloodInfix(service, additionalData),
             service.replace("_", ""),
             createdAtDateTime.format(dateTimeFormatter),
             id,
             Boolean.TRUE.equals(isEncrypted) ? "pgp" : "zip"
         );
+    }
+
+    /**
+     * Determines if the letter type is "sscs" and additionalInfo is true, and returns "_IB".
+     *
+     * @param service The letter type
+     * @param additionalData The additional data
+     * @return "_IB" if the type is "sscs" and additionalInfo infected blood param is true, otherwise an empty string.
+     *
+     */
+    public static String infectedBloodInfix(String service, JsonNode additionalData) {
+        if ("sscs".equalsIgnoreCase(service)  && additionalData != null
+            && additionalData.has("isIbca")
+            && additionalData.get("isIbca").asBoolean()) {
+            return SEPARATOR + "IB";
+        }
+        return "";
     }
 
     private FileNameHelper() {

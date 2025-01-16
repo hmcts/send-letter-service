@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.services.zip;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.when;
 class FileNameHelperTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final String sscs = "sscs";
 
     @Test
     void should_generate_file_name_in_expected_format() {
@@ -148,7 +151,7 @@ class FileNameHelperTest {
         UUID letterId = randomUUID();
         LocalDateTime created = now();
 
-        String name = FileNameHelper.generateName("type", "cmc", created, letterId,true);
+        String name = FileNameHelper.generateName("type", "cmc", created, letterId, true, null);
 
         assertThat(name).isEqualTo(
             "type_cmc_"
@@ -158,6 +161,48 @@ class FileNameHelperTest {
                 + ".pgp"
         );
     }
+
+    @Test
+    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true() {
+        JsonNode additionalData = objectMapper.valueToTree(Map.of("isIbca", true));
+
+        String result = FileNameHelper.infectedBloodInfix(sscs, additionalData);
+
+        assertThat(result).isEqualTo("_IB");
+    }
+
+    @Test
+    void should_return_empty_string_when_type_is_not_sscs() {
+        String type = "notSscs";
+        JsonNode additionalData = objectMapper.valueToTree(Map.of("isIbca", true));
+
+        String result = FileNameHelper.infectedBloodInfix(type, additionalData);
+
+        assertThat(result).isEqualTo("");
+    }
+
+    @Test
+    void should_return_empty_string_when_additional_data_is_null() {
+        String type = "sscs";
+        JsonNode additionalData = null;
+
+        String result = FileNameHelper.infectedBloodInfix(type, additionalData);
+
+        assertThat(result).isEqualTo("");
+    }
+
+    @Test
+    void should_return_empty_string_when_isIbca_is_missing_or_false() {
+        JsonNode missingFieldData = objectMapper.valueToTree(Map.of());
+        JsonNode falseFieldData = objectMapper.valueToTree(Map.of("isIbca", false));
+
+        String resultMissing = FileNameHelper.infectedBloodInfix(sscs, missingFieldData);
+        String resultFalse = FileNameHelper.infectedBloodInfix(sscs, falseFieldData);
+
+        assertThat(resultMissing).isEqualTo("");
+        assertThat(resultFalse).isEqualTo("");
+    }
+
 
     @Test
     void should_remove_underscores_from_service_name() {
