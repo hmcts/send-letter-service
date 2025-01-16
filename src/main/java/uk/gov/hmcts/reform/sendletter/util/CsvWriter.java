@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
