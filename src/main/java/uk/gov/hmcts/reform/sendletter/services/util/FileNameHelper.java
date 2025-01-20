@@ -20,6 +20,7 @@ public final class FileNameHelper {
 
     public static final DateTimeFormatter dateTimeFormatter = ofPattern("ddMMyyyyHHmmss");
     private static final String SEPARATOR = "_";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Generates a PDF file name for a given letter.
@@ -70,7 +71,6 @@ public final class FileNameHelper {
      * @return The file name
      */
     public static String generateName(Letter letter) {
-        ObjectMapper objectMapper = new ObjectMapper();
         return generateName(
             letter.getType(),
             letter.getService(),

@@ -22,7 +22,7 @@ class FileNameHelperTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String sscs = "sscs";
+    private static final String SSCS = "sscs";
 
     @Test
     void should_generate_file_name_in_expected_format() {
@@ -165,7 +165,7 @@ class FileNameHelperTest {
     void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true() {
         Map<String, Object> additionalData = Map.of("isIbca", true);
 
-        String result = FileNameHelper.infectedBloodInfix("sscs", additionalData);
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
 
         assertThat(result).isEqualTo("_IB");
     }
@@ -182,10 +182,9 @@ class FileNameHelperTest {
 
     @Test
     void should_return_empty_string_when_additional_data_is_null() {
-        String type = "sscs";
         Map<String, Object> additionalData = null;
 
-        String result = FileNameHelper.infectedBloodInfix(type, additionalData);
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
 
         assertThat(result).isEqualTo("");
     }
@@ -195,8 +194,8 @@ class FileNameHelperTest {
         Map<String, Object> missingFieldData = Map.of();
         Map<String, Object> falseFieldData = Map.of("isIbca", false);
 
-        String resultMissing = FileNameHelper.infectedBloodInfix("sscs", missingFieldData);
-        String resultFalse = FileNameHelper.infectedBloodInfix("sscs", falseFieldData);
+        String resultMissing = FileNameHelper.infectedBloodInfix(SSCS, missingFieldData);
+        String resultFalse = FileNameHelper.infectedBloodInfix(SSCS, falseFieldData);
 
         assertThat(resultMissing).isEqualTo("");
         assertThat(resultFalse).isEqualTo("");
