@@ -208,7 +208,7 @@ launchdarkly:
 
 #(0 */2 * * * ?) replace cron with this to test, will run every 2 minutes
 delete-old-letters:
-  cron: ${DELETE_OLD_LETTERS_CRON:0 0 17 ? * SAT}
+  cron: ${DELETE_OLD_LETTERS_CRON:0 17 * * 6}
   batch-size: ${BATCH_SIZE:1000}
   civil-general-applications-interval: ${CIVIL_GENERAL_APPLICATIONS_INTERVAL:6 years}
   civil-service-interval: ${CIVIL_SERVICE_INTERVAL:6 years}

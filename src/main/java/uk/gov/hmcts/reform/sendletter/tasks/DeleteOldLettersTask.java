@@ -101,7 +101,7 @@ public class DeleteOldLettersTask {
      * default cron: Every Saturday at 5 PM
      */
     @SchedulerLock(name = TASK_NAME)
-    @Scheduled(cron = "${delete-old-letters.cron:0 0 17 ? * SAT}", zone = EUROPE_LONDON)
+    @Scheduled(cron = "${delete-old-letters.cron:0 17 * * 6}", zone = EUROPE_LONDON)
     public void run() {
         logger.info("Starting {} task", TASK_NAME);
         if (launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)) {
