@@ -45,7 +45,7 @@ WITH letters_to_delete AS (
       -- no default case
     END
   )
-  -- For below don''t delete old unprocessed / things that need investigating at some point
+  -- For below don't delete old unprocessed / things that need investigating at some point
   AND status IN ('Posted', 'PostedLocally', 'Aborted', 'Skipped', 'Uploaded')
   ORDER BY created_at ASC -- Prioritize oldest rows first
   LIMIT batch_size -- Limit the number of rows selected in each batch
