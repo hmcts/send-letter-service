@@ -162,8 +162,17 @@ class FileNameHelperTest {
     }
 
     @Test
-    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true() {
+    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true_as_boolean() {
         Map<String, Object> additionalData = Map.of("isIbca", true);
+
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
+
+        assertThat(result).isEqualTo("_IB");
+    }
+
+    @Test
+    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true_as_string() {
+        Map<String, Object> additionalData = Map.of("isIbca", "true");
 
         String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
 

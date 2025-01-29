@@ -120,12 +120,10 @@ public final class FileNameHelper {
      *
      */
     public static String infectedBloodInfix(String service, Map<String, Object> additionalData) {
-        if ("sscs".equalsIgnoreCase(service)
-            && additionalData != null
-            && additionalData.containsKey("isIbca")) {
+        if ("sscs".equalsIgnoreCase(service) && additionalData != null && additionalData.containsKey("isIbca")) {
 
             Object isIbcaValue = additionalData.get("isIbca");
-            if (isIbcaValue instanceof Boolean && (Boolean) isIbcaValue) {
+            if ("true".equalsIgnoreCase(String.valueOf(isIbcaValue))) {
                 return SEPARATOR + "IB";
             }
         }
