@@ -393,7 +393,8 @@ public class LetterService {
             serviceName,
             createdAt,
             id,
-            false
+            false,
+            letter.getAdditionalData()
         );
 
         return PgpEncryptionUtil.encryptFile(zipContent, zipFileName, pgpPublicKey);

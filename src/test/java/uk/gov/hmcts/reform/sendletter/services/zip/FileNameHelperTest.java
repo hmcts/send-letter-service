@@ -22,6 +22,8 @@ class FileNameHelperTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final String SSCS = "sscs";
+
     @Test
     void should_generate_file_name_in_expected_format() {
         // given
@@ -148,7 +150,7 @@ class FileNameHelperTest {
         UUID letterId = randomUUID();
         LocalDateTime created = now();
 
-        String name = FileNameHelper.generateName("type", "cmc", created, letterId,true);
+        String name = FileNameHelper.generateName("type", "cmc", created, letterId, true, null);
 
         assertThat(name).isEqualTo(
             "type_cmc_"
@@ -157,6 +159,55 @@ class FileNameHelperTest {
                 + letterId
                 + ".pgp"
         );
+    }
+
+    @Test
+    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true_as_boolean() {
+        Map<String, Object> additionalData = Map.of("isIbca", true);
+
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
+
+        assertThat(result).isEqualTo("_IB");
+    }
+
+    @Test
+    void should_return_infected_blood_infix_when_type_is_sscs_and_isIbca_is_true_as_string() {
+        Map<String, Object> additionalData = Map.of("isIbca", "true");
+
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
+
+        assertThat(result).isEqualTo("_IB");
+    }
+
+    @Test
+    void should_return_empty_string_when_type_is_not_sscs() {
+        String type = "notSscs";
+        Map<String, Object> additionalData = Map.of("isIbca", true);
+
+        String result = FileNameHelper.infectedBloodInfix(type, additionalData);
+
+        assertThat(result).isEqualTo("");
+    }
+
+    @Test
+    void should_return_empty_string_when_additional_data_is_null() {
+        Map<String, Object> additionalData = null;
+
+        String result = FileNameHelper.infectedBloodInfix(SSCS, additionalData);
+
+        assertThat(result).isEqualTo("");
+    }
+
+    @Test
+    void should_return_empty_string_when_isIbca_is_missing_or_false() {
+        Map<String, Object> missingFieldData = Map.of();
+        Map<String, Object> falseFieldData = Map.of("isIbca", false);
+
+        String resultMissing = FileNameHelper.infectedBloodInfix(SSCS, missingFieldData);
+        String resultFalse = FileNameHelper.infectedBloodInfix(SSCS, falseFieldData);
+
+        assertThat(resultMissing).isEqualTo("");
+        assertThat(resultFalse).isEqualTo("");
     }
 
     @Test
