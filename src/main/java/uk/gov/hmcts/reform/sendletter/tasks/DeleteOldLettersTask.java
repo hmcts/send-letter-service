@@ -152,8 +152,6 @@ public class DeleteOldLettersTask {
                     long batchEndTime = System.nanoTime();  // End batch timer
                     long batchDurationMillis = TimeUnit.NANOSECONDS.toMillis(batchEndTime - batchStartTime);
 
-                    totalRowsDeleted += rowsDeleted;
-
                     logger.info("Batch deleted: {} rows in {} ms (~{} secs), Total deleted: {} rows",
                         rowsDeleted, batchDurationMillis, batchDurationMillis / 1000, totalRowsDeleted);
                 } while (rowsDeleted > 0);
