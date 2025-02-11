@@ -58,7 +58,7 @@ class DeleteOldLettersTaskTest {
             // This allows the System.getMilliSeconds thing to return either the first or second number
             @Override
             protected long getCurrentTimeMillis() {
-                return callCount++ == 0 ? 1000L : 100000000L;
+                return callCount++ == 0 ? 10L : 2L * 60 * 60 * 1001;
             }
         };
 

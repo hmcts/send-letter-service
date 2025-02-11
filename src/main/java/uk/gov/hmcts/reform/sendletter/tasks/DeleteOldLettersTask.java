@@ -117,7 +117,7 @@ public class DeleteOldLettersTask {
 
             try {
                 do {
-                    long taskMaxExecutionTime = 2 * 60 * 60 * 1000; // Maximum of two hours run time
+                    long taskMaxExecutionTime = 2L * 60 * 60 * 1000; // Maximum of two hours run time
                     long elapsedTime = getCurrentTimeMillis() - taskStartTime;
 
                     // If the task has run for a certain amount of time, prevent it from running indefinitely.
