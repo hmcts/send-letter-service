@@ -112,13 +112,13 @@ public class DeleteOldLettersTask {
 
             int totalRowsDeleted = 0;
             int rowsDeleted;
-            long taskStartTime = System.currentTimeMillis();
+            long taskStartTime = getCurrentTimeMillis();
             long taskEndTimeStart = System.nanoTime();
 
             try {
                 do {
                     long taskMaxExecutionTime = 2 * 60 * 60 * 1000; // Maximum of two hours run time
-                    long elapsedTime = System.currentTimeMillis() - taskStartTime;
+                    long elapsedTime = getCurrentTimeMillis() - taskStartTime;
 
                     // If the task has run for a certain amount of time, prevent it from running indefinitely.
                     // This will stop it from still being active after the early hours of the weekend.
@@ -169,5 +169,9 @@ public class DeleteOldLettersTask {
             logger.info("Flag disabled. Task {} did not run", TASK_NAME);
         }
 
+    }
+
+    protected long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
     }
 }
