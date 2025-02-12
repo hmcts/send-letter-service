@@ -51,6 +51,35 @@ class DeleteOldLettersTaskTest {
     }
 
     @Test
+    void testRunWhenFeatureFlagIsEnabledAndTimeExceeded() {
+        deleteOldLettersTask = new DeleteOldLettersTask(jdbcTemplate, launchDarklyClient) {
+            private int callCount = 0;
+
+            // This allows the System.getMilliSeconds thing to return either the first or second number
+            @Override
+            protected long getCurrentTimeMillis() {
+                return callCount++ == 0 ? 10L : 2L * 60 * 60 * 1001;
+            }
+        };
+
+        // Arrange: Mock LaunchDarkly feature flag to return true
+        when(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)).thenReturn(true);
+
+        // Mock JdbcTemplate behavior for the deletion loop
+        when(jdbcTemplate.queryForObject(anyString(), any(Object[].class), eq(Integer.class)))
+            .thenReturn(100)
+            .thenReturn(50)
+            .thenReturn(0); // Simulate 3 batches with 100, 50 rows deleted, and then no more rows
+
+        // Act: Call the run method
+        deleteOldLettersTask.run();
+
+        // Assert: Check if the correct number of deletions were made
+        verify(jdbcTemplate, times(0))
+            .queryForObject(anyString(), any(Object[].class), eq(Integer.class));
+    }
+
+    @Test
     void testRunWhenFeatureFlagIsDisabled() {
         // Arrange: Mock LaunchDarkly feature flag to return false
         when(launchDarklyClient.isFeatureEnabled(SEND_LETTER_SERVICE_DELETE_LETTERS_CRON)).thenReturn(false);

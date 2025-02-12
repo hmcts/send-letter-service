@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.launchdarkly.LaunchDarklyClient;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static uk.gov.hmcts.reform.sendletter.launchdarkly.Flags.SEND_LETTER_SERVICE_DELETE_LETTERS_CRON;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
@@ -70,25 +71,26 @@ public class DeleteOldLettersTask {
 
     // See V028__Add_batch_delete_letters_function.sql for sql function
     private final String deleteQuery = """
-       SELECT batch_delete_letters(
-          ?, -- Batch size
-          CAST(? AS INTERVAL), -- civil_general_applications_interval
-          CAST(? AS INTERVAL), -- civil_service_interval
-          CAST(? AS INTERVAL), -- cmc_claim_store_interval
-          CAST(? AS INTERVAL), -- divorce_frontend_interval
-          CAST(? AS INTERVAL), -- finrem_case_orchestration_interval
-          CAST(? AS INTERVAL), -- finrem_document_generator_interval
-          CAST(? AS INTERVAL), -- fpl_case_service_interval
-          CAST(? AS INTERVAL), -- nfdiv_case_api_interval
-          CAST(? AS INTERVAL), -- prl_cos_api_interval
-          CAST(? AS INTERVAL), -- probate_backend_interval
-          CAST(? AS INTERVAL), -- send_letter_tests_interval
-          CAST(? AS INTERVAL)  -- sscs_interval
-        );
-        """;
+        SELECT batch_delete_letters(
+           ?, -- Batch size
+           CAST(? AS INTERVAL), -- civil_general_applications_interval
+           CAST(? AS INTERVAL), -- civil_service_interval
+           CAST(? AS INTERVAL), -- cmc_claim_store_interval
+           CAST(? AS INTERVAL), -- divorce_frontend_interval
+           CAST(? AS INTERVAL), -- finrem_case_orchestration_interval
+           CAST(? AS INTERVAL), -- finrem_document_generator_interval
+           CAST(? AS INTERVAL), -- fpl_case_service_interval
+           CAST(? AS INTERVAL), -- nfdiv_case_api_interval
+           CAST(? AS INTERVAL), -- prl_cos_api_interval
+           CAST(? AS INTERVAL), -- probate_backend_interval
+           CAST(? AS INTERVAL), -- send_letter_tests_interval
+           CAST(? AS INTERVAL)  -- sscs_interval
+         );
+         """;
 
     /**
      * Constructor for the DeleteOldLettersTask.
+     *
      * @param jdbcTemplate The JDBC template for running SQL queries.
      */
     public DeleteOldLettersTask(JdbcTemplate jdbcTemplate, LaunchDarklyClient launchDarklyClient) {
@@ -99,8 +101,9 @@ public class DeleteOldLettersTask {
     /**
      * Deletes old letters from the database in batches based on the batch_delete_letters query.
      * default cron: Every Saturday at 5 PM
+     * lockAtMostFor will prevent another task instance from occurring within this time frame.
      */
-    @SchedulerLock(name = TASK_NAME)
+    @SchedulerLock(name = TASK_NAME, lockAtMostFor = "2h")
     @Scheduled(cron = "${delete-old-letters.cron:0 0 17 * * 6}", zone = EUROPE_LONDON)
     public void run() {
         logger.info("Starting {} task", TASK_NAME);
@@ -109,9 +112,23 @@ public class DeleteOldLettersTask {
 
             int totalRowsDeleted = 0;
             int rowsDeleted;
+            long taskStartTime = getCurrentTimeMillis();
+            long taskEndTimeStart = System.nanoTime();
 
             try {
                 do {
+                    long taskMaxExecutionTime = 2L * 60 * 60 * 1000; // Maximum of two hours run time
+                    long elapsedTime = getCurrentTimeMillis() - taskStartTime;
+
+                    // If the task has run for a certain amount of time, prevent it from running indefinitely.
+                    // This will stop it from still being active after the early hours of the weekend.
+                    if (elapsedTime > taskMaxExecutionTime) {
+                        logger.warn("Stopping {} task as execution time exceeded {} ms",
+                            TASK_NAME, taskMaxExecutionTime);
+                        break;
+                    }
+
+                    long batchStartTime = System.nanoTime();
                     rowsDeleted = Optional.ofNullable(
                         jdbcTemplate.queryForObject(
                             deleteQuery,
@@ -134,9 +151,17 @@ public class DeleteOldLettersTask {
                         )
                     ).orElse(0);
                     totalRowsDeleted += rowsDeleted;
-                    logger.info("Batch deleted: {} rows, Total deleted: {} rows", rowsDeleted, totalRowsDeleted);
+                    long batchEndTime = System.nanoTime();  // End batch timer
+                    long batchDurationMillis = TimeUnit.NANOSECONDS.toMillis(batchEndTime - batchStartTime);
+
+                    logger.info("Batch deleted: {} rows in {} ms (~{} secs), Total deleted: {} rows",
+                        rowsDeleted, batchDurationMillis, batchDurationMillis / 1000, totalRowsDeleted);
                 } while (rowsDeleted > 0);
-                logger.info("{} task completed. Total rows deleted: {}", TASK_NAME, totalRowsDeleted);
+                long endTime = System.nanoTime();
+                long totalDurationMillis = TimeUnit.NANOSECONDS.toMillis(endTime - taskEndTimeStart);
+
+                logger.info("{} task completed. Total rows deleted: {} in {} ms (~{} mins)",
+                    TASK_NAME, totalRowsDeleted, totalDurationMillis, totalDurationMillis / 60000);
             } catch (Exception e) {
                 logger.error("Error occurred during {} task", TASK_NAME, e);
             }
@@ -144,5 +169,9 @@ public class DeleteOldLettersTask {
             logger.info("Flag disabled. Task {} did not run", TASK_NAME);
         }
 
+    }
+
+    protected long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
     }
 }
