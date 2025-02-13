@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.model.in.print;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,5 +88,29 @@ class PrintRequestTest {
 
         assertThat(printRequest.letterType)
             .isEqualTo("first-contact-pack");
+    }
+
+    @Test
+    void should_throw_exception_when_documents_size_exceeds_limit() {
+        List<Document> documents = new ArrayList<>();
+        for (int i = 0; i < 102; i++) {
+            documents.add(new Document("doc" + i + ".pdf", "content-" + i, 1));
+        }
+
+        PrintRequest printRequest = new PrintRequest(
+            "SSC001",
+            documents,
+            "12345",
+            "162MC066",
+            "first-contact-pack"
+        );
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        var violations = validator.validate(printRequest);
+
+        assertThat(violations)
+            .isNotEmpty()
+            .anyMatch(violation -> violation.getMessage().contains("size must be between 1 and 100"));
     }
 }

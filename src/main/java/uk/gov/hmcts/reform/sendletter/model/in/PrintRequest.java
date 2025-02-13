@@ -24,7 +24,7 @@ public class PrintRequest implements Serializable {
 
     @JsonProperty
     @NotEmpty
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 100)
     public final List<@Valid Document> documents;
 
     @JsonProperty("case_id")
