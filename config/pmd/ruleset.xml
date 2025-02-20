@@ -8,7 +8,7 @@
 
   <rule ref="category/java/bestpractices.xml">
     <exclude name="GuardLogStatement" />
-    <exclude name="JUnitTestContainsTooManyAsserts" />
+    <exclude name="UnitTestContainsTooManyAsserts" />
   </rule>
   <rule ref="category/java/codestyle.xml">
     <exclude name="AtLeastOneConstructor" />
@@ -61,7 +61,7 @@
     <exclude name="UncommentedEmptyMethodBody" />
   </rule>
   <rule ref="category/java/errorprone.xml">
-    <exclude name="BeanMembersShouldSerialize" />
+    <exclude name="NonSerializableClass" />
   </rule>
   <rule ref="category/java/multithreading.xml" />
   <rule ref="category/java/performance.xml" />
