@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameExc
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,6 +36,94 @@ class FileNameHelperTest {
 
         // then
         assertThat(result).isEqualTo("typeA_cmc_" + letterId + ".pdf");
+    }
+
+    @Test
+    void should_generate_file_name_in_expected_format_when_letter_is_sscs_ib() {
+        final Map<String, Object> additionalData = new HashMap<>();
+
+        additionalData.put("isIbca", "true");
+
+        Letter letter = new Letter(
+            randomUUID(),
+            randomUUID().toString(),
+            "sscs",
+            objectMapper.valueToTree(additionalData),
+            "SSCS001",
+            null,
+            false,
+            null,
+            now(),
+            objectMapper.valueToTree(Map.of("Document_1", 1))
+        );
+
+        String result = FileNameHelper.generatePdfName(letter);
+        assertThat(result).isEqualTo("SSCS001_IB_sscs_" + letter.getId() + ".pdf");
+    }
+
+    @Test
+    void should_generate_file_name_in_expected_format_when_letter_is_sscs_but_not_ib() {
+        final Map<String, Object> additionalData = new HashMap<>();
+
+        additionalData.put("isIbca", "false");
+
+        Letter letter = new Letter(
+            randomUUID(),
+            randomUUID().toString(),
+            "sscs",
+            objectMapper.valueToTree(additionalData),
+            "SSCS001",
+            null,
+            false,
+            null,
+            now(),
+            objectMapper.valueToTree(Map.of("Document_1", 1))
+        );
+
+        String result = FileNameHelper.generatePdfName(letter);
+        assertThat(result).isEqualTo("SSCS001_sscs_" + letter.getId() + ".pdf");
+    }
+
+    @Test
+    void should_generate_name_when_there_is_no_additional_data() {
+        final Map<String, Object> additionalData = new HashMap<>();
+
+        Letter letter = new Letter(
+            randomUUID(),
+            randomUUID().toString(),
+            "prlcosapi",
+            objectMapper.valueToTree(additionalData),
+            "PRL001",
+            null,
+            false,
+            null,
+            now(),
+            objectMapper.valueToTree(Map.of("Document_1", 1))
+        );
+
+        String result = FileNameHelper.generatePdfName(letter);
+        assertThat(result).isEqualTo("PRL001_prlcosapi_" + letter.getId() + ".pdf");
+    }
+
+    @Test
+    void should_generate_name_without_ib_if_not_sscs() {
+        final Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("isIbca", "true");
+        Letter letter = new Letter(
+            randomUUID(),
+            randomUUID().toString(),
+            "prlcosapi",
+            objectMapper.valueToTree(additionalData),
+            "PRL001",
+            null,
+            false,
+            null,
+            now(),
+            objectMapper.valueToTree(Map.of("Document_1", 1))
+        );
+
+        String result = FileNameHelper.generatePdfName(letter);
+        assertThat(result).isEqualTo("PRL001_prlcosapi_" + letter.getId() + ".pdf");
     }
 
     @Test

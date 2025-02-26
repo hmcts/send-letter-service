@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,11 +22,12 @@ public final class CsvReportWriter {
     public static void writeReport(Stream<UUID> letterIds, File reportFolder) throws IOException {
         // We expect these columns in csv reports
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADER).build();
+
         // Prepare a record for each of our letters.
         List<List<String>> records = letterIds.map(id -> Lists.newArrayList(
             "01-01-2018",
             "10:30",
-            FileNameHelper.generatePdfName("aType", "aService", id)
+            FileNameHelper.generatePdfName("aType", "aService", id, new HashMap<>())
         )).collect(Collectors.toList());
 
         File report = new File(reportFolder, UUID.randomUUID() + ".csv");

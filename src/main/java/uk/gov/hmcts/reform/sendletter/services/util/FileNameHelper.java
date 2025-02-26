@@ -29,20 +29,25 @@ public final class FileNameHelper {
      * @return The PDF file name
      */
     public static String generatePdfName(Letter letter) {
-        return generatePdfName(letter.getType(), letter.getService(), letter.getId());
+        return generatePdfName(letter.getType(), letter.getService(), letter.getId(),
+            objectMapper.convertValue(letter.getAdditionalData(), new TypeReference<>(){}));
     }
 
     /**
      * Generates a PDF file name for a given letter.
-     *
-     * @param type       The letter type
-     * @param serviceName The service name
-     * @param id         The letter ID
+     * Creates the PDF file name for the letter based on letter information. It also
+     * checks if the letter is related to infected blood and inserts the relevant
+     * acronym into the name if so.
+     * @param type       The letter type e.g. SSCS001
+     * @param serviceName The service name - e.g. cmc
+     * @param id         The letter ID - a UUID
+     * @param additionalData more data on the letter e.g. whether it is international
      * @return The PDF file name
      */
-    public static String generatePdfName(String type, String serviceName, UUID id) {
+    public static String generatePdfName(String type, String serviceName, UUID id, Map<String, Object> additionalData) {
         String strippedService = serviceName.replace(SEPARATOR, "");
-        return type + SEPARATOR + strippedService + SEPARATOR + id + ".pdf";
+        return type + infectedBloodInfix(serviceName, additionalData)
+            + SEPARATOR + strippedService + SEPARATOR + id + ".pdf";
     }
 
     /**
@@ -89,6 +94,7 @@ public final class FileNameHelper {
      * @param createdAtDateTime The creation date and time
      * @param id               The letter ID
      * @param isEncrypted      Whether the letter is encrypted
+     * @param additionalData    Any additional data about the letter e.g. whether it is international
      * @return The file name
      */
     public static String generateName(
