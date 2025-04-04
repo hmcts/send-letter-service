@@ -24,7 +24,6 @@ plugins {
   id 'org.sonarqube' version '6.1.0.5360'
   id 'info.solidsoft.pitest' version '1.15.0'
   id 'au.com.dius.pact' version '4.6.17'
-  id 'nebula.lint' version '20.5.6' // remove after
 }
 
 flyway {
@@ -237,36 +236,28 @@ configurations.all {
   exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
 }
 
-allprojects {
-  apply plugin :"java"
-  apply plugin :"nebula.lint"
-  gradleLint {
-    rules=['unused-dependency']
-  }
-}
-
-dependencyManagement {
-  dependencies {
-    // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '33.3.1-jre') {
-      entry 'guava'
-    }
-    // CVE-2022-25857
-    dependencySet(group: 'org.yaml', version: '2.3') {
-      entry 'snakeyaml'
-    }
-    // CVE-2023-24998
-    dependencySet(group: 'commons-fileupload', version: '1.5') {
-      entry 'commons-fileupload'
-    }
-    //CVE-2023-33202
-    dependencySet(group: 'org.bouncycastle', version: '1.78.1') {
-      entry 'bcprov-jdk18on'
-      entry 'bcpkix-jdk18on'
-      entry 'bcpg-jdk18on'
-    }
-  }
-}
+//dependencyManagement {
+//  dependencies {
+//    // CVE-2018-10237 - Unbounded memory allocation
+//    dependencySet(group: 'com.google.guava', version: '33.3.1-jre') {
+//      entry 'guava'
+//    }
+//    // CVE-2022-25857
+//    dependencySet(group: 'org.yaml', version: '2.3') {
+//      entry 'snakeyaml'
+//    }
+//    // CVE-2023-24998
+//    dependencySet(group: 'commons-fileupload', version: '1.5') {
+//      entry 'commons-fileupload'
+//    }
+//    //CVE-2023-33202
+//    dependencySet(group: 'org.bouncycastle', version: '1.78.1') {
+//      entry 'bcprov-jdk18on'
+//      entry 'bcpkix-jdk18on'
+//      entry 'bcpg-jdk18on'
+//    }
+//  }
+//}
 
 dependencies {
   def withoutJunit4 = {
