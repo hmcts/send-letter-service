@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
 
 import java.io.File;
@@ -29,7 +29,7 @@ class DailyFtpLetterUploadSummaryReportTest {
     @Autowired
     private EmailSender emailSender;
 
-    @SpyBean
+    @MockitoSpyBean
     private JavaMailSender mailSender;
 
     @Autowired
