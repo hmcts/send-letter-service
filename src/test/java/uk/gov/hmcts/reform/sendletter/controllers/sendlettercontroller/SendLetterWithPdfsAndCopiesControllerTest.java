@@ -4,7 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
@@ -30,8 +30,11 @@ class SendLetterWithPdfsAndCopiesControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    @MockBean private LetterService letterService;
-    @MockBean private AuthService authService;
+    @MockitoBean
+    private LetterService letterService;
+
+    @MockitoBean
+    private AuthService authService;
 
     @ParameterizedTest
     @ValueSource(strings = {"false","true"})

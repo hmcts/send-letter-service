@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.config.PdfConversionConfig;
@@ -37,25 +37,25 @@ import static org.mockito.Mockito.when;
 @Import({PdfConversionConfig.class})
 public class SendLetterProviderConfiguration {
 
-    @MockBean
+    @MockitoBean
     private AuthService authService;
 
-    @MockBean
+    @MockitoBean
     private LetterRepository letterRepository;
 
-    @MockBean
+    @MockitoBean
     private LetterEventRepository letterEventRepository;
 
-    @MockBean
+    @MockitoBean
     private ServiceFolderMapping serviceFolderMapping;
 
-    @MockBean
+    @MockitoBean
     private DuplicateLetterService duplicateLetterService;
 
-    @MockBean
+    @MockitoBean
     private ExceptionLetterService exceptionLetterService;
 
-    @MockBean
+    @MockitoBean
     private DocumentRepository documentRepository;
 
     @Bean
@@ -113,7 +113,7 @@ public class SendLetterProviderConfiguration {
         );
     }
 
-    @MockBean
+    @MockitoBean
     AuthTokenValidator authTokenValidator;
 
     @Bean
