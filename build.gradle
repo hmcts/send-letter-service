@@ -253,7 +253,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.service_auth
-  implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2-test'
+  implementation group: 'com.github.hmcts.reform', name: 'pdf-service', version: '1.0.2-SNAPSHOT'
+  implementation group: 'com.github.hmcts.reform', name: 'pdf-generator', version: '1.0.2-SNAPSHOT'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.1'
