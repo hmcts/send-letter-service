@@ -458,10 +458,13 @@ public class LetterService {
      */
     private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
         if (letter instanceof LetterRequest) {
+            log.info("LOG: Create letter from template");
             return pdfCreator.createFromTemplates(((LetterRequest) letter).documents, loggingContext);
         } else if (letter instanceof LetterWithPdfsRequest) {
+            log.info("LOG: Create letter from base64");
             return pdfCreator.createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents, loggingContext);
         } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
+            log.info("LOG: Create letter from base64 with copies");
             return pdfCreator
                 .createFromBase64PdfWithCopies(
                     ((LetterWithPdfsAndNumberOfCopiesRequest) letter).documents,
