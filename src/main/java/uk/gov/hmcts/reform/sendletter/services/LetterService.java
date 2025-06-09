@@ -457,7 +457,7 @@ public class LetterService {
      * @return The PDF content
      */
     private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
-        switch(letter) {
+        switch (letter) {
             case LetterWithPdfsRequest letterWithPdfsRequest -> {
                 return pdfCreator.createFromBase64Pdfs(letterWithPdfsRequest.documents, loggingContext);
             }
