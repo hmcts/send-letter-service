@@ -167,26 +167,4 @@ class UploadLettersTaskTest {
             assertThat(l.getFileContent()).isNotNull();
         }
     }
-
-//    @ParameterizedTest
-//    @ValueSource(strings = {"false","true"})
-//    void should_process_only_one_batch_of_files_in_single_run(String async) throws Exception {
-//        int letterCount = UploadLettersTask.BATCH_SIZE + 1;
-//        IntStream.rangeClosed(1, letterCount).forEach(
-//            x -> letterService.save(SampleData.letterRequest(), "bulkprint", async));
-//
-//        UploadLettersTask task = new UploadLettersTask(
-//                letterRepository,
-//            FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-//            availabilityChecker,
-//            letterEventService,
-//            serviceFolderMapping,
-//            0
-//        );
-//
-//        try (LocalSftpServer server = LocalSftpServer.create()) {
-//            task.run();
-//        }
-//        assertThat(letterRepository.findByStatus(LetterStatus.Uploaded)).hasSize(UploadLettersTask.BATCH_SIZE);
-//    }
 }
