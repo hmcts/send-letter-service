@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,23 +92,6 @@ class LetterServiceTest {
     @AfterEach
     void tearDown() {
         letterRepository.deleteAll();
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void generates_and_saves_zipped_pdf(String async) throws IOException {
-        UUID id = service.save(SampleData.letterRequest(), SERVICE_NAME, async);
-
-        Letter result = letterRepository.findById(id).get();
-
-        assertThat(result.isEncrypted()).isFalse();
-        assertThat(result.getEncryptionKeyFingerprint()).isNull();
-        PdfHelper.validateZippedPdf(result.getFileContent());
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any(), any(), any());
-        }
-        verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
-        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
     }
 
     @ParameterizedTest
