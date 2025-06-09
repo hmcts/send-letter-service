@@ -457,13 +457,15 @@ public class LetterService {
      * @return The PDF content
      */
     private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
-        if (letter instanceof LetterWithPdfsRequest letterWithPdfsRequest) {
-            return pdfCreator.createFromBase64Pdfs(letterWithPdfsRequest.documents, loggingContext);
-        } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfsAndNumberOfCopiesRequest) {
-            return pdfCreator
-                .createFromBase64PdfWithCopies(letterWithPdfsAndNumberOfCopiesRequest.documents, loggingContext);
-        } else {
-            throw new UnsupportedLetterRequestTypeException();
+        switch(letter) {
+            case LetterWithPdfsRequest letterWithPdfsRequest -> {
+                return pdfCreator.createFromBase64Pdfs(letterWithPdfsRequest.documents, loggingContext);
+            }
+            case LetterWithPdfsAndNumberOfCopiesRequest letterWithPdfsAndNumberOfCopiesRequest -> {
+                return pdfCreator
+                    .createFromBase64PdfWithCopies(letterWithPdfsAndNumberOfCopiesRequest.documents, loggingContext);
+            }
+            default -> throw new UnsupportedLetterRequestTypeException();
         }
     }
 
