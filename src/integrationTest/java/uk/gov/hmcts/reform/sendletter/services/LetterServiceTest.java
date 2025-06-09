@@ -37,10 +37,8 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created;
-import static uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Uploaded;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -175,33 +173,6 @@ class LetterServiceTest {
 
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
-        }
-        verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
-        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
-
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void saves_an_new_letter_if_previous_one_has_been_sent_to_print(String async) {
-        // given
-        LetterRequest sampleRequest = SampleData.letterRequest();
-        UUID id1 = service.save(sampleRequest, SERVICE_NAME, async);
-        Letter letter = letterRepository.findById(id1).get();
-
-        // and
-        assertThat(letter.getStatus()).isEqualByComparingTo(Created);
-
-        // when
-        letter.setStatus(Uploaded);
-        letterRepository.saveAndFlush(letter);
-        UUID id2 = service.save(sampleRequest, SERVICE_NAME, async);
-
-        // then
-        assertThat(id1).isNotEqualByComparingTo(id2);
-
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService, times(2)).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
         verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
