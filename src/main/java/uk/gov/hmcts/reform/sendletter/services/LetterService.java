@@ -457,9 +457,7 @@ public class LetterService {
      * @return The PDF content
      */
     private byte[] getPdfContent(ILetterRequest letter, String loggingContext) {
-        if (letter instanceof LetterRequest) {
-            return pdfCreator.createFromTemplates(((LetterRequest) letter).documents, loggingContext);
-        } else if (letter instanceof LetterWithPdfsRequest) {
+        if (letter instanceof LetterWithPdfsRequest) {
             return pdfCreator.createFromBase64Pdfs(((LetterWithPdfsRequest) letter).documents, loggingContext);
         } else if (letter instanceof LetterWithPdfsAndNumberOfCopiesRequest) {
             return pdfCreator

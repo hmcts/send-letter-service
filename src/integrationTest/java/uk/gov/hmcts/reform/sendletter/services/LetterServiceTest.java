@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
@@ -75,7 +74,7 @@ class LetterServiceTest {
         BDDMockito.given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder_name"));
         objectMapper = new ObjectMapper();
         service = new LetterService(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            new PdfCreator(new DuplexPreparator()),
             letterRepository,
             letterEventRepository,
             documentService,

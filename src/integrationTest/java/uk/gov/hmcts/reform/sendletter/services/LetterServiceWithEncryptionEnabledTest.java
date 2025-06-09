@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
@@ -65,7 +64,7 @@ class LetterServiceWithEncryptionEnabledTest {
 
         LetterRequest letterRequest = SampleData.letterRequest();
 
-        PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert);
+        PdfCreator pdfCreator = new PdfCreator(new DuplexPreparator());
         ExecusionService execusionService = new ExecusionService();
         DuplicateLetterService duplicateLetterService = mock(DuplicateLetterService.class);
         ExceptionLetterService exceptionLetterService = mock(ExceptionLetterService.class);
