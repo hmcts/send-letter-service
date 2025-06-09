@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
+import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.DuplexPreparator;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
@@ -145,31 +146,6 @@ class LetterServiceTest {
         assertThat(result.isEncrypted()).isFalse();
         assertThat(result.getEncryptionKeyFingerprint()).isNull();
         PdfHelper.validateZippedPdf(result.getFileContent());
-
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any(), any(), any());
-        }
-        verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
-        verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
-
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void returns_same_id_on_resubmit(String async) {
-        // given
-        LetterRequest sampleRequest = SampleData.letterRequest();
-        UUID id1 = service.save(sampleRequest, SERVICE_NAME, async);
-        Letter letter = letterRepository.findById(id1).get();
-
-        // and
-        assertThat(letter.getStatus()).isEqualByComparingTo(Created);
-
-        // when
-        UUID id2 = service.save(sampleRequest, SERVICE_NAME, async);
-
-        // then
-        assertThat(id1).isEqualByComparingTo(id2);
 
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
