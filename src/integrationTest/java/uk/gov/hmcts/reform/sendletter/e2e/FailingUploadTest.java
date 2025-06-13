@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -65,27 +64,6 @@ class FailingUploadTest {
         // This test commits transactions to the database
         // so we must clean up afterwards
         repository.deleteAll();
-    }
-
-    @Test
-    void shouldHandleEmptyFileUploadsOldLetterModel() throws Throwable {
-        try (var server = LocalSftpServer.create()) {
-
-            // sftp servers is ups, now the background jobs can start connecting to it
-            fakeFtpAvailabilityChecker.setAvailable(true);
-
-            int numberOfRequests = 5;
-            for (int i = 0; i < numberOfRequests; i++) {
-                MockHttpServletRequestBuilder request =
-                        post("/letters")
-                                .header("ServiceAuthorization", "auth-header-value")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(readResource("letter" + i + ".json"));
-                sendRequest(request);
-            }
-
-            corruptFileAndAwaitResult(numberOfRequests);
-        }
     }
 
     @Test

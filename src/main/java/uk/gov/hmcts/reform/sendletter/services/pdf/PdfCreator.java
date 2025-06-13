@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
-import uk.gov.hmcts.reform.sendletter.model.in.Document;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,35 +19,13 @@ import static java.util.stream.Collectors.toList;
 public class PdfCreator {
     private static final Logger logger = LoggerFactory.getLogger(PdfCreator.class);
     private final DuplexPreparator duplexPreparator;
-    private final IHtmlToPdfConverter converter;
 
     /**
      * Constructor for the PdfCreator.
      * @param duplexPreparator The duplex preparator
-     * @param converter The HTML to PDF converter
      */
-    public PdfCreator(DuplexPreparator duplexPreparator, IHtmlToPdfConverter converter) {
+    public PdfCreator(DuplexPreparator duplexPreparator) {
         this.duplexPreparator = duplexPreparator;
-        this.converter = converter;
-    }
-
-    /**
-     * Create a PDF from a list of documents.
-     * @param documents The documents
-     * @param loggingContext The logging context
-     * @return The PDF
-     */
-    public byte[] createFromTemplates(List<Document> documents, String loggingContext) {
-        Asserts.notNull(documents, "documents");
-
-        List<byte[]> docs =
-            documents
-                .stream()
-                .map(this::generatePdf)
-                .map(pdf -> duplexPreparator.prepare(pdf, loggingContext))
-                .collect(toList());
-
-        return PdfMerger.mergeDocuments(docs, loggingContext);
     }
 
     /**
@@ -86,16 +63,5 @@ public class PdfCreator {
             .collect(toList());
 
         return PdfMerger.mergeDocuments(pdfs, loggingContext);
-    }
-
-    /**
-     * Create a PDF from a document.
-     * @param document The document
-     * @return The PDF
-     */
-    private byte[] generatePdf(Document document) {
-        synchronized (PdfCreator.class) {
-            return converter.apply(document.template.getBytes(), document.values);
-        }
     }
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.sendletter.e2e;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 
@@ -20,17 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class EndToEndTest extends BaseTest {
 
     private static final Boolean IS_ENCRYPTION_ENABLED = false;
-
-    @Test
-    void shouldHandleOldLetterModel() throws Throwable {
-        shouldUploadLetterAndMarkPosted(
-            post("/letters")
-                .header("ServiceAuthorization", "auth-header-value")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(readResource("letter.json")),
-            IS_ENCRYPTION_ENABLED
-        );
-    }
 
     @Test
     void shouldHandleNewLetterModel() throws Throwable {

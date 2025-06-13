@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.ExtendedLetterStatus;
@@ -58,35 +57,6 @@ public class SendLetterController {
     ) {
         this.letterService = letterService;
         this.authService = authService;
-    }
-
-    /**
-     * Send letter to print and post service.
-     * @param serviceAuthHeader the service authorization header
-     * @param isAsync the isAsync flag
-     * @param letter the letter
-     * @return The send letter response
-     */
-    @PostMapping(
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.LETTER_V1},
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @Operation(description = "Send letter to print and post service")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200",
-            content = @Content(schema = @Schema(implementation = SendLetterResponse.class))),
-        @ApiResponse(responseCode = "401", description =  ControllerResponseMessage.RESPONSE_401),
-        @ApiResponse(responseCode = "403", description = ControllerResponseMessage.RESPONSE_403)
-    })
-    public ResponseEntity<SendLetterResponse> sendLetter(
-        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-        @RequestParam(name = "isAsync", defaultValue = "false") String isAsync,
-        @Parameter(description = "Letter consisting of documents and type", required = true)
-        @Valid @RequestBody LetterRequest letter
-    ) {
-        String serviceName = authService.authenticate(serviceAuthHeader);
-        UUID letterId = letterService.save(letter, serviceName, isAsync);
-        return ok().body(new SendLetterResponse(letterId));
     }
 
     /**
