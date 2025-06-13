@@ -1,0 +1,16 @@
+{
+  "documents": [
+    {
+      "content": "{{pdf143}}",
+      "copies": 1
+    },
+    {
+      "content": "{{pdf142}}",
+      "copies": 10
+    }
+  ],
+  "type": "BPS0022",
+  "additional_data": {
+    "recipients": ["one", "two"]
+  }
+}

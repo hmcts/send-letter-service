@@ -199,13 +199,6 @@ abstract class FunctionalTestSuite {
         return object.toString();
     }
 
-    String samplePdfLetterRequestJson(String requestBodyFilename, String pdfFile) throws IOException {
-        String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
-        byte[] pdf = toByteArray(getResource(pdfFile));
-
-        return requestBody.replace("{{pdf}}", new String(Base64.getEncoder().encode(pdf)));
-    }
-
     String sampleIndexedPdfLetterRequestJson(String requestBodyFilename, boolean uniqueRecipients, int... idxs)
         throws IOException, JSONException {
         String requestBody = Resources.toString(getResource(requestBodyFilename), Charsets.UTF_8);
