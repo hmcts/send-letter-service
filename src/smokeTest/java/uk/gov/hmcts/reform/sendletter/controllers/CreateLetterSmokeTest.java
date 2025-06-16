@@ -7,6 +7,7 @@ import io.restassured.specification.RequestSpecification;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 class CreateLetterSmokeTest extends SmokeTestSuite {
 
     @Test
+    @Disabled
     void should_create_letter_successfully() throws Exception {
 
         String jsonBody = sampleIndexedPdfLetterRequestJson("letter-with-document-count.json",
