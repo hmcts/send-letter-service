@@ -28,14 +28,12 @@ import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
 import uk.gov.hmcts.reform.sendletter.exception.UnsupportedLetterRequestTypeException;
 import uk.gov.hmcts.reform.sendletter.model.PdfDoc;
 import uk.gov.hmcts.reform.sendletter.model.in.ILetterRequest;
-import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.model.out.ExtendedLetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.model.out.v2.LetterStatusV2;
 import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToLoadPgpPublicKeyException;
-import uk.gov.hmcts.reform.sendletter.services.encryption.UnableToPgpEncryptZipFileException;
 import uk.gov.hmcts.reform.sendletter.services.ftp.ServiceFolderMapping;
 import uk.gov.hmcts.reform.sendletter.services.pdf.PdfCreator;
 import uk.gov.hmcts.reform.sendletter.services.zip.Zipper;
@@ -67,7 +65,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -117,29 +114,6 @@ class LetterServiceTest {
         objectMapper.convertValue(jsonNode,
             new TypeReference<Map<String, Integer>>() {});
 
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void should_generate_final_pdf_from_template_when_old_model_is_passed(String async) {
-        // given
-        thereAreNoDuplicates();
-
-        // and
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
-        createLetterService(false, null);
-
-        LetterRequest letter = SampleData.letterRequest();
-
-        // when
-        service.save(letter, "some_service", async);
-
-        // then
-        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any(), any(), any());
-        }
-        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
-        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {"false", "true"})
@@ -170,73 +144,6 @@ class LetterServiceTest {
             verify(execusionService).run(any(), any(), any(), any());
         }
         verify(duplicateLetterService).save(isA(DuplicateLetter.class));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false"})
-    void should_handle_DataIntegrityViolationException_and_exceptionletter_exception(String async) {
-        // given
-        thereAreNoDuplicates();
-
-        given(letterRepository.save(any())).willThrow(new DataIntegrityViolationException("Duplicate records"));
-
-        willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records")))
-                .given(duplicateLetterService).save(isA(DuplicateLetter.class));
-
-        given(zipper.zip(any())).willReturn("Test bytes".getBytes());
-
-        // and
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
-        createLetterService(false, null);
-
-        LetterRequest letter = SampleData.letterRequest();
-
-        // when
-        assertThrows(
-            DataIntegrityViolationException.class, () -> service.save(letter, "some_service", async));
-
-        // then
-        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
-        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
-        verify(duplicateLetterService).save(isA(DuplicateLetter.class));
-        verify(exceptionLetterService).save(isA(ExceptionLetter.class));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
-    void should_handle_ExceptionLetter(String async) {
-        // given
-        thereAreNoDuplicates();
-
-        given(letterRepository.save(any()))
-                .willThrow(new UnableToPgpEncryptZipFileException(new RuntimeException("Exception records")));
-
-        // and
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
-        createLetterService(false, null);
-
-        LetterRequest letter = SampleData.letterRequest();
-
-        // when
-        if (Boolean.parseBoolean(async)) {
-            service.save(letter, "some_service", async);
-        } else {
-            assertThrows(
-                UnableToPgpEncryptZipFileException.class, () -> service.save(letter, "some_service", async));
-        }
-
-        // then
-        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
-        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any(), any(), any());
-        }
-        verify(duplicateLetterService, never()).save(isA(DuplicateLetter.class));
-        if (Boolean.parseBoolean(async)) {
-            verify(exceptionLetterService).save(isA(ExceptionLetter.class));
-        } else {
-            verify(exceptionLetterService, never()).save(isA(ExceptionLetter.class));
-        }
     }
 
     @ParameterizedTest
@@ -325,43 +232,6 @@ class LetterServiceTest {
         if (Boolean.parseBoolean(async)) {
             verify(execusionService).run(any(), any(), any(), any());
         }
-        verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false", "true"})
-    void should_generate_final_pdf_from_template_when_old_model_is_passed_and_encryption_enabled(String async)
-        throws Exception {
-        // given
-        thereAreNoDuplicates();
-
-        // and
-        given(serviceFolderMapping.getFolderFor(any())).willReturn(Optional.of("some_folder"));
-        createLetterService(true, new String(loadPublicKey()));
-
-        LetterRequest letter = SampleData.letterRequest();
-
-        byte[] inputZipFile = Resources.toByteArray(getResource("unencrypted.zip"));
-
-        when(zipper.zip(any(PdfDoc.class))).thenReturn(inputZipFile);
-
-        // when
-        service.save(letter, "some_service", async);
-
-        // then
-        verify(pdfCreator).createFromTemplates(eq(letter.documents), anyString());
-        verify(zipper).zip(any(PdfDoc.class));
-
-        if (Boolean.parseBoolean(async)) {
-            verify(execusionService).run(any(), any(), any(), any());
-        }
-
-        ArgumentCaptor<Letter> letterArgumentCaptor = ArgumentCaptor.forClass(Letter.class);
-        verify(letterRepository).save(letterArgumentCaptor.capture());
-        verify(documentService, never()).checkDocumentDuplicates(anyList(), anyString());
-
-        assertThat(getCopies.apply(letterArgumentCaptor.getValue().getCopies()))
-                .containsAllEntriesOf(Map.of("Document_1", 1));
         verify(documentService).saveDocuments(any(UUID.class), anyList(), isNull());
     }
 

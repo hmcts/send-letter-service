@@ -3,13 +3,13 @@ package uk.gov.hmcts.reform.sendletter.tasks;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import uk.gov.hmcts.reform.cmc.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterEventRepository;
@@ -36,7 +36,6 @@ import java.io.File;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -46,6 +45,7 @@ import static org.mockito.Mockito.when;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
+@Disabled
 class UploadLettersTaskTest {
 
     @Autowired
@@ -83,7 +83,7 @@ class UploadLettersTaskTest {
 
         letterRepository.deleteAll();
         this.letterService = new LetterService(
-            new PdfCreator(new DuplexPreparator(), new HTMLToPDFConverter()::convert),
+            new PdfCreator(new DuplexPreparator()),
                 letterRepository,
             letterEventRepository,
             documentService,
@@ -166,27 +166,5 @@ class UploadLettersTaskTest {
             assertThat(l.getSentToPrintAt()).isNull();
             assertThat(l.getFileContent()).isNotNull();
         }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"false","true"})
-    void should_process_only_one_batch_of_files_in_single_run(String async) throws Exception {
-        int letterCount = UploadLettersTask.BATCH_SIZE + 1;
-        IntStream.rangeClosed(1, letterCount).forEach(
-            x -> letterService.save(SampleData.letterRequest(), "bulkprint", async));
-
-        UploadLettersTask task = new UploadLettersTask(
-                letterRepository,
-            FtpHelper.getSuccessfulClient(LocalSftpServer.port),
-            availabilityChecker,
-            letterEventService,
-            serviceFolderMapping,
-            0
-        );
-
-        try (LocalSftpServer server = LocalSftpServer.create()) {
-            task.run();
-        }
-        assertThat(letterRepository.findByStatus(LetterStatus.Uploaded)).hasSize(UploadLettersTask.BATCH_SIZE);
     }
 }

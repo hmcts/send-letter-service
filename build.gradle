@@ -198,7 +198,9 @@ dependencyCheck {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven {
+    url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+  }
   maven { url 'https://repository.apache.org/content/repositories/snapshots/' }
 }
 
@@ -206,9 +208,9 @@ def versions = [
   bouncycastle: '1.80',
   junit: '5.12.1',
   junitPlatform: '1.12.1',
-  reformLogging: '6.1.8',
+  reformLogging: '6.1.9',
   springfoxSwagger: '2.9.2',
-  service_auth: '5.3.0',
+  service_auth: '5.3.2',
   pdfbox: '3.0.4',
   flyway: "$flywayVersion",
   postgresql: "$postgresqlVersion"
@@ -251,8 +253,6 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.service_auth
-  implementation group: 'com.github.hmcts', name: 'reform-api-standards', version: '0.5.2'
-  implementation group: 'com.github.hmcts.rpe-pdf-service', name: 'pdf-generator', version:'1.0.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.1'
@@ -291,7 +291,7 @@ dependencies {
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: versions.pdfbox
   testImplementation group: 'org.apache.pdfbox', name: 'preflight', version: versions.pdfbox, withoutJunit4
   testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '3.0.1', withoutJunit4
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.8', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.11.0'
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
