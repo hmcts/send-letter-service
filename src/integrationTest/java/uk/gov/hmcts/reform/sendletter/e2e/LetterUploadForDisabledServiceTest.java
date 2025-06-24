@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.sendletter.controllers.MediaTypes;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.helper.FakeFtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.LocalSftpServer;
@@ -61,7 +61,7 @@ class LetterUploadForDisabledServiceTest {
     }
 
     @Test
-    void shouldHandleEmptyFileUploadsOldLetterModel() throws Throwable {
+    void shouldHandleEmptyFileUploadsLetterModel() throws Throwable {
         try (var server = LocalSftpServer.create()) {
 
             // sftp servers is ups, now the background jobs can start connecting to it
@@ -70,8 +70,8 @@ class LetterUploadForDisabledServiceTest {
             MvcResult mvcResult = mvc.perform(
                     post("/letters")
                             .header("ServiceAuthorization", "auth-header-value")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(readResource("letter.json"))
+                            .contentType(MediaTypes.LETTER_V2)
+                            .content(readResource("letter-with-pdf.json"))
             ).andReturn();
 
             assertThat(mvcResult.getResponse().getStatus()).isEqualTo(403);
