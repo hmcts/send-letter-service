@@ -3,7 +3,7 @@ module "application_insights_uk" {
 
   env                 = var.env
   product             = var.product
-  override_name       = var.component
+  override_name       = "${var.component}-${var.env}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
 
