@@ -6,11 +6,6 @@ variable "location" {
   default = "UK South"
 }
 
-variable "appinsights_location" {
-  default     = "West Europe"
-  description = "Location for Application Insights"
-}
-
 variable "env" {}
 
 variable "tenant_id" {}
