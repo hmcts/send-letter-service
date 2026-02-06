@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.sendletter.tasks;
+package uk.gov.hmcts.reform.sendletter.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,17 +6,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.SampleData;
+import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
+import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.Report;
-import uk.gov.hmcts.reform.sendletter.services.LetterDataAccessService;
-import uk.gov.hmcts.reform.sendletter.services.ReportParser;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpAvailabilityChecker;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -32,36 +34,49 @@ import static org.mockito.Mockito.verify;
 class MarkLettersPostedTest {
 
     @Mock LetterDataAccessService dataAccessService;
+    @Mock LetterService letterService;
     @Mock FtpClient ftpClient;
     @Mock FtpAvailabilityChecker availabilityChecker;
     @Mock ReportParser parser;
     @Mock AppInsights insights;
+    @Mock ReportsServiceConfig reportsServiceConfig;
+    @Mock ReportRepository reportRepository;
 
-    private MarkLettersPostedTask task;
+    private MarkLettersPostedService task;
 
     @BeforeEach
     void setup() {
-        task = new MarkLettersPostedTask(dataAccessService, ftpClient, availabilityChecker, parser, insights);
+        task = new MarkLettersPostedService(
+            dataAccessService,
+            letterService,
+            ftpClient,
+            availabilityChecker,
+            parser,
+            insights,
+            reportsServiceConfig,
+            reportRepository
+        );
     }
 
     @Test
     void continues_processing_if_letter_not_found() {
-        String filePath = "a.csv";
+        String filePath = "MOJ_CMC.csv";
         UUID known = UUID.randomUUID();
         UUID unknown = UUID.randomUUID();
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
         given(ftpClient.downloadReports())
-            .willReturn(singletonList(new Report(filePath, null)));
+            .willReturn(singletonList(new Report(filePath, null, Instant.now().getEpochSecond())));
         given(parser.parse(any()))
             .willReturn(SampleData.parsedReport(filePath, asList(known, unknown), true));
         Letter letter = SampleData.letterEntity("a.service");
         letter.setStatus(LetterStatus.Uploaded);
         given(dataAccessService.findLetterStatus(known)).willReturn(Optional.of(letter.getStatus()));
         given(dataAccessService.findLetterStatus(unknown)).willReturn(Optional.empty());
+        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("CMC"));
 
         // when
-        task.run();
+        task.processReports();
 
         // then
         verify(dataAccessService).markLetterAsPosted(eq(known), any(LocalDateTime.class));
@@ -70,21 +85,23 @@ class MarkLettersPostedTest {
 
     @Test
     void should_delete_report_if_all_records_were_successfully_parsed() {
-        final String reportName = "report.csv";
+        final String reportName = "MOJ_CMC.csv";
         final boolean allParsed = true;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
 
         given(ftpClient.downloadReports())
-            .willReturn(singletonList(new Report(reportName, null)));
+            .willReturn(singletonList(new Report(reportName, null, Instant.now().getEpochSecond())));
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
         given(dataAccessService.findLetterStatus(any()))
             .willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
+        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("CMC"));
+
         // when
-        task.run();
+        task.processReports();
 
         // then
         verify(ftpClient).deleteReport(reportName);
@@ -92,21 +109,23 @@ class MarkLettersPostedTest {
 
     @Test
     void should_not_delete_report_if_some_records_were_not_successfully_parsed() {
-        final String reportName = "report.csv";
+        final String reportName = "MOJ_CMC.csv";
         final boolean allParsed = false;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
 
         given(ftpClient.downloadReports())
-            .willReturn(singletonList(new Report(reportName, null)));
+            .willReturn(singletonList(new Report(reportName, null, Instant.now().getEpochSecond())));
 
         given(parser.parse(any())).willReturn(SampleData.parsedReport(reportName, allParsed));
 
         given(dataAccessService.findLetterStatus(any()))
             .willReturn(Optional.of(SampleData.letterEntity("cmc").getStatus()));
 
+        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("CMC"));
+
         // when
-        task.run();
+        task.processReports();
 
         // then
         verify(ftpClient, never()).deleteReport(anyString());
@@ -117,7 +136,7 @@ class MarkLettersPostedTest {
         given(availabilityChecker.isFtpAvailable(any())).willReturn(false);
 
         // when
-        task.run();
+        task.processReports();
 
         // then
         verify(ftpClient, never()).downloadReports();

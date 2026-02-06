@@ -79,26 +79,37 @@ reports:
   service-config:
     - service: cmc_claim_store
       display-name: CMC
+      report-code: CMC
     - service: civil_service
       display-name: OCMC
+      report-code: CMC
     - service: send_letter_tests
       display-name: Bulk Print
+      report-code: BULKPRINT
     - service: divorce_frontend
       display-name: Divorce
+      report-code: DIV
     - service: probate_backend
       display-name: Probate
+      report-code: Probate
     - service: sscs
       display-name: SSCS
+      report-code: SSCS
     - service: finrem_document_generator
       display-name: FINREM
+      report-code: FRM
     - service: finrem_case_orchestration
       display-name: FINREM
+      report-code: FRM
     - service: fpl_case_service
       display-name: FPLA
+      report-code: FPL
     - service: prl_cos_api
       display-name: PRIVATELAW
+      report-code: PRIVLAW
     - service: civil_general_applications
       display-name: general_applications
+      report-code: CMC
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
