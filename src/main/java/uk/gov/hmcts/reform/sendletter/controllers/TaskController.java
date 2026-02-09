@@ -21,14 +21,20 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/tasks")
-@RequiredArgsConstructor
 @Slf4j
 public class TaskController {
 
-    @Value("${actions.api-key}")
     final String apiKey;
     final MarkLettersPostedService markLettersPostedService;
     final CheckLettersPostedService checkLettersPostedService;
+
+    public TaskController(@Value("${actions.api-key}") String apiKey,
+                          MarkLettersPostedService markLettersPostedService,
+                          CheckLettersPostedService checkLettersPostedService) {
+        this.apiKey = apiKey;
+        this.markLettersPostedService = markLettersPostedService;
+        this.checkLettersPostedService = checkLettersPostedService;
+    }
 
     @GetMapping("/process-reports")
     public ResponseEntity<List<PostedReportTaskResponse>> processReports(
