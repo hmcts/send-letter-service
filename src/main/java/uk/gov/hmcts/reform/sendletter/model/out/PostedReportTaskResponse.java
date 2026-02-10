@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class PostedReportTaskResponse {
     final String serviceName;
     final LocalDate reportDate;
-    final long markedPostedCount;
+    long markedPostedCount = 0;
 
     boolean processingFailed = false;
     String errorMessage = null;
