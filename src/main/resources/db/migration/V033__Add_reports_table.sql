@@ -1,4 +1,4 @@
-CREATE TABLE report(
+CREATE TABLE reports(
   id UUID,
   report_name VARCHAR(256),
   service VARCHAR(256),
