@@ -41,7 +41,7 @@ public class Report {
 
     @Size(max = 256)
     @NotEmpty
-    private String service;
+    private String reportCode;
 
     @NotNull
     private LocalDate reportDate;
@@ -53,4 +53,6 @@ public class Report {
     @CreationTimestamp
     @Setter(AccessLevel.NONE)
     LocalDateTime processedAt;
+
+    private boolean isInternational;
 }

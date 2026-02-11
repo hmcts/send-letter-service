@@ -6,8 +6,11 @@ import java.time.LocalDate;
 
 @Data
 public class PostedReportTaskResponse {
-    final String serviceName;
+
+    final String reportCode;
     final LocalDate reportDate;
+    final boolean isInternational;
+
     long markedPostedCount = 0;
 
     boolean processingFailed = false;
