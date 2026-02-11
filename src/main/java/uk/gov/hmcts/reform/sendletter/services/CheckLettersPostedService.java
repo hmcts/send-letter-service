@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
-import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.out.CheckPostedTaskResponse;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -35,33 +33,38 @@ public class CheckLettersPostedService {
             LocalDateTime.now(ZoneOffset.UTC).minusDays(7)
         );
         for (BasicLetterInfo letter : letters) {
-            Optional<String> reportCode = calculateReportCode(letter);
-            if (reportCode.isPresent()) {
-                LocalDate printDate = letter.getSentToPrintAt().toLocalDate();
-                Optional<Report> report =
-                    reportRepository.findFirstByServiceAndReportDate(letter.getService(), printDate);
-                if (report.isEmpty()) {
-                    // We have a letter that's older than 7 days, and for which no report
-                    // for its specific service was received/processed for that date.
-                    letterActionService.markLetterAsNoReportAborted(letter.getId());
+            try {
+                if (!reportExistsForLetter(letter)) {
+                    count += letterActionService.markLetterAsNoReportAborted(letter.getId());
                 }
-
-            } else {
-                log.warn("Unable to determine report code for service {}", letter.getService());
+            } catch (LetterNotFoundException e) {
+                log.warn("Letter not found for id {} during posted check", letter.getId());
             }
         }
         return new CheckPostedTaskResponse(count);
     }
 
-    private Optional<String> calculateReportCode(BasicLetterInfo letter) {
-        try {
-            uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
-                letterService.getStatus(letter.getId(), Boolean.TRUE.toString(), Boolean.FALSE.toString());
-            return Optional.ofNullable(reportsServiceConfig.getReportCode(letter.getService(), status));
-        } catch (LetterNotFoundException e) {
-            log.warn("Letter not found for id {} during posted check", letter.getId());
+    private boolean reportExistsForLetter(BasicLetterInfo letter) {
+        uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
+            letterService.getStatus(letter.getId(), Boolean.TRUE.toString(), Boolean.FALSE.toString());
+        String reportCode = reportsServiceConfig.getReportCode(letter.getService(), status);
+        if (reportCode != null) {
+            return reportRepository.findFirstByReportCodeAndReportDateAndIsInternational(
+                reportCode,
+                letter.getSentToPrintAt().toLocalDate(),
+                calculateIsInternational(status)
+            ).isPresent();
         }
-        return Optional.empty();
+        log.warn("Unable to determine report code for service {}, assuming no report.", letter.getService());
+        return false;
+    }
+
+    private boolean calculateIsInternational(final uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status) {
+        return Optional.ofNullable(status.additionalData)
+            .map(m -> m.get("isInternational"))
+            .map(Object::toString) // probably unnecessary
+            .map(Boolean::valueOf)
+            .orElse(false);
     }
 
 }

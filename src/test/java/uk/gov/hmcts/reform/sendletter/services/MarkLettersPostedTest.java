@@ -71,7 +71,7 @@ class MarkLettersPostedTest {
 
     @Test
     void continues_processing_if_letter_not_found() {
-        String filePath = "MOJ_CMC.csv";
+        String filePath = "MOJ_CMC_domestic.csv";
         UUID known = UUID.randomUUID();
         UUID unknown = UUID.randomUUID();
 
@@ -96,7 +96,7 @@ class MarkLettersPostedTest {
 
     @Test
     void should_delete_report_if_all_records_were_successfully_parsed() {
-        final String reportName = "MOJ_CMC.csv";
+        final String reportName = "MOJ_CMC_domestic.csv";
         final boolean allParsed = true;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
@@ -120,7 +120,7 @@ class MarkLettersPostedTest {
 
     @Test
     void should_not_delete_report_if_some_records_were_not_successfully_parsed() {
-        final String reportName = "MOJ_CMC.csv";
+        final String reportName = "MOJ_CMC_domestic.csv";
         final boolean allParsed = false;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
@@ -190,7 +190,7 @@ class MarkLettersPostedTest {
 
     @Test
     void should_delete_report_and_return_success_response_if_report_id_can_only_be_identified_from_letters() {
-        final String reportName = "MOJ_CMC.csv";
+        final String reportName = "POORLY_NAMED_REPORT.csv";
         final boolean allParsed = true;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
@@ -216,7 +216,6 @@ class MarkLettersPostedTest {
                 null
             ));
 
-        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("CODE1", "CODE2"));
         given(reportsServiceConfig.getReportCode(eq("some_service_name"),
             any(uk.gov.hmcts.reform.sendletter.model.out.LetterStatus.class)))
             .willReturn("CODE1");
@@ -237,13 +236,13 @@ class MarkLettersPostedTest {
             // SampleData parsedReport has 2 letters in it
             assertThat(p.getMarkedPostedCount()).isEqualTo(parsedReport.statuses.size());
             assertThat(p.getErrorMessage()).isNull();
-            assertThat(p.getServiceName()).isEqualTo("CODE1");
+            assertThat(p.getReportCode()).isEqualTo("CODE1");
         });
     }
 
     @Test
     void should_not_delete_report_and_return_error_response_when_mark_posted_fails() {
-        final String reportName = "MOJ_CODE1.csv";
+        final String reportName = "MOJ_CODE1_domestic.csv";
         final boolean allParsed = true;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);
@@ -323,12 +322,12 @@ class MarkLettersPostedTest {
         verify(ftpClient).deleteReport(reportName);
         verify(reportRepository).save(any());
         assertThat(processedReports).isNotNull().isNotEmpty().hasSize(1);
-        assertThat(processedReports.getFirst().getServiceName()).isEqualTo("CODE1");
+        assertThat(processedReports.getFirst().getReportCode()).isEqualTo("CODE1");
     }
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"MOJ_CODE1_13-01-2026.csv","MOJ_CODE1_2026-01-13.csv"})
+    @ValueSource(strings = {"MOJ_CODE1_domestic-13-01-2026.csv","MOJ_CODE1_domestic-2026-01-13.csv"})
     void should_resolve_report_date_from_report_filename_if_present(String reportName) {
         final boolean allParsed = true;
 
@@ -354,7 +353,7 @@ class MarkLettersPostedTest {
 
     @Test
     void should_resolve_report_date_from_parsed_report_when_filename_date_is_malformed() {
-        final String reportName = "MOJ_CODE1_99-76-2026.csv";
+        final String reportName = "MOJ_CODE1_domestic-99-76-2026.csv";
         final boolean allParsed = true;
 
         given(availabilityChecker.isFtpAvailable(any())).willReturn(true);

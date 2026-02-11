@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,16 @@ import static uk.gov.hmcts.reform.sendletter.util.TimeZones.EUROPE_LONDON;
 @RequiredArgsConstructor
 public class MarkLettersPostedService {
 
+    /**
+     * Used to store the calculated report details, allowing limited calls to the DB.
+     *
+     * @param reportCode      the report code
+     * @param reportDate      the report date
+     * @param isInternational the international status
+     */
+    private record ReportInfo(String reportCode, LocalDate reportDate, boolean isInternational) {
+    }
+
     private final LetterDataAccessService dataAccessService;
     private final LetterService letterService;
     private final FtpClient ftpClient;
@@ -58,6 +67,7 @@ public class MarkLettersPostedService {
     private static final String TASK_NAME = "MarkLettersPosted";
     private static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}|\\d{2})-\\d{2}-(\\d{4}|\\d{2})");
     private static final Pattern REPORT_CODE_PATTERN = Pattern.compile("(?<=MOJ_)[^_.]+");
+
     private final ReportRepository reportRepository;
 
     // default formatter used when resolving dates from a report path
@@ -81,76 +91,75 @@ public class MarkLettersPostedService {
             logger.info("Not processing '{}' task due to FTP downtime window", TASK_NAME);
             return Collections.emptyList();
         }
-
         logger.info("Started '{}' task", TASK_NAME);
         final AtomicReference<PostedReportTaskResponse> currentResponse = new AtomicReference<>();
         final List<PostedReportTaskResponse> responseList = new ArrayList<>();
         try {
-            ftpClient
-                .downloadReports()
-                .stream()
-                .map(parser::parse)
-                .forEach(parsedReport -> {
-                    insights.trackPrintReportReceived(parsedReport);
-                    logger.info(
-                        "Updating letters from report {}. Letter count: {}",
-                        parsedReport.path,
-                        parsedReport.statuses.size()
+            ftpClient.downloadReports().stream().map(parser::parse).forEach(parsedReport -> {
+                insights.trackPrintReportReceived(parsedReport);
+                logger.info("Updating letters from report {}. Letter count: {}",
+                    parsedReport.path, parsedReport.statuses.size());
+
+                ReportInfo reportInfo = extractReportInfoFromParsedReport(parsedReport);
+
+                if (reportInfo == null) {
+                    // this is an edge case where the report filename didn't contain a know reportCode
+                    // and there were no letters referenced in the parsed report that could be used
+                    // to determine a report code from their assigned service.
+                    //
+                    // When this happens, processing is allowed to move on to the next parsed report,
+                    // but an error response will be added to indicate that a report couldn't be married
+                    // up to a specific service.
+                    currentResponse.set(new PostedReportTaskResponse(
+                        "UNKNOWN",
+                        parsedReport.reportDate,
+                        false)
+                    );
+                    currentResponse.get().markAsFailed(
+                        String.format("Service not found for report with name '%s'", parsedReport.path));
+                } else {
+
+                    // create a response now so that we can ensure a response in the case of an
+                    // exceptional failure during the markAsPosted iteration below.
+                    currentResponse.set(new PostedReportTaskResponse(
+                        reportInfo.reportCode,
+                        reportInfo.reportDate,
+                        reportInfo.isInternational)
                     );
 
-                    Optional<String> reportCode = extractReportCodeFromParsedReport(parsedReport);
+                    long count = parsedReport.statuses.stream()
+                        .filter(status -> markAsPosted(status, parsedReport.path))
+                        .count();
 
-                    if (reportCode.isEmpty()) {
-                        // this is an edge case where the report filename didn't contain a know reportCode
-                        // and there were no letters referenced in the parsed report that could be used
-                        // to determine a report code from their assigned service.
-                        //
-                        // When this happens, processing is allowed to move on to the next parsed report,
-                        // but an error response will be added to indicate that a report couldn't be married
-                        // up to a specific service.
-                        currentResponse.set(new PostedReportTaskResponse("UNKNOWN", parsedReport.reportDate));
-                        currentResponse.get().markAsFailed(
-                            String.format("Service not found for report with name '%s'", parsedReport.path));
+                    currentResponse.get().setMarkedPostedCount(count);
+
+                    if (parsedReport.allRowsParsed) {
+                        logger.info("Report {} successfully parsed, deleting", parsedReport.path);
+                        ftpClient.deleteReport(parsedReport.path);
+                        // now that we've processed the file, we can save a report.
+                        reportRepository.save(Report.builder()
+                            .reportName(parsedReport.path)
+                            .reportCode(reportInfo.reportCode)
+                            .reportDate(reportInfo.reportDate)
+                            .printedLettersCount(count)
+                            .isInternational(reportInfo.isInternational)
+                            .build()
+                        );
                     } else {
-
-                        LocalDate reportDate = extractDateFromReportPath(parsedReport.path)
-                            .orElse(parsedReport.reportDate);
-
-                        // create a response now so that we can ensure a response in the case of an
-                        // exceptional failure during the markAsPosted iteration below.
-                        currentResponse.set(new PostedReportTaskResponse(reportCode.get(), reportDate));
-
-                        long count = parsedReport.statuses.stream()
-                            .filter(status -> markAsPosted(status, parsedReport.path))
-                            .count();
-
-                        currentResponse.get().setMarkedPostedCount(count);
-
-                        if (parsedReport.allRowsParsed) {
-                            logger.info("Report {} successfully parsed, deleting", parsedReport.path);
-                            ftpClient.deleteReport(parsedReport.path);
-                            // now that we've processed the file, we can save a report.
-                            reportRepository.save(Report.builder()
-                                .reportName(parsedReport.path)
-                                .reportDate(reportDate)
-                                .service(reportCode.get())
-                                .printedLettersCount(count)
-                                .build());
-                        } else {
-                            logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
-                            currentResponse.get().markAsFailed("Report " + parsedReport.path
-                                + " contained invalid rows");
-                        }
+                        logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
+                        currentResponse.get().markAsFailed("Report "
+                            + parsedReport.path + " contained invalid rows");
                     }
-                    responseList.add(currentResponse.getAndSet(null));
-                });
+                }
+                responseList.add(currentResponse.getAndSet(null));
+            });
 
             logger.info("Completed '{}' task", TASK_NAME);
         } catch (Exception e) {
             logger.error("An error occurred when downloading reports from SFTP server", e);
             Optional.ofNullable(currentResponse.getAndSet(null)).ifPresent(ptr -> {
-                ptr.markAsFailed("An error occurred when processing downloaded reports from the SFTP server: "
-                    + e.getMessage());
+                ptr.markAsFailed(
+                    "An error occurred when processing downloaded reports from the SFTP server: " + e.getMessage());
                 responseList.add(ptr);
             });
         }
@@ -165,51 +174,40 @@ public class MarkLettersPostedService {
      */
     private boolean markAsPosted(LetterPrintStatus letterPrintStatus, String reportFileName) {
         final AtomicBoolean markedAsPosted = new AtomicBoolean(false);
-        dataAccessService
-            .findLetterStatus(letterPrintStatus.id)
-            .ifPresentOrElse(
-                status -> {
-                    if (status.equals(LetterStatus.Uploaded)) {
-                        dataAccessService.markLetterAsPosted(
-                            letterPrintStatus.id,
-                            letterPrintStatus.printedAt.toLocalDateTime()
-                        );
-                        markedAsPosted.set(true);
-                        logger.info("Marked letter {} as posted", letterPrintStatus.id);
-                    } else {
-                        logger.warn(
-                            "Failed to mark letter {} as posted - unexpected status: {}. Report file name: {}",
-                            letterPrintStatus.id,
-                            status,
-                            reportFileName
-                        );
-                    }
-                },
-                () -> logger.error(
-                    "Failed to mark letter {} as posted - unknown letter. Report file name: {}",
+        dataAccessService.findLetterStatus(letterPrintStatus.id).ifPresentOrElse(status -> {
+            if (status.equals(LetterStatus.Uploaded)) {
+                dataAccessService.markLetterAsPosted(
                     letterPrintStatus.id,
-                    reportFileName
-                )
-            );
+                    letterPrintStatus.printedAt.toLocalDateTime()
+                );
+                markedAsPosted.set(true);
+                logger.info("Marked letter {} as posted", letterPrintStatus.id);
+            } else {
+                logger.warn("Failed to mark letter {} as posted - unexpected status: {}. Report file name: {}",
+                    letterPrintStatus.id, status, reportFileName);
+            }
+        }, () -> logger.error("Failed to mark letter {} as posted - unknown letter. Report file name: {}",
+            letterPrintStatus.id, reportFileName));
         return markedAsPosted.get();
     }
 
-    private Optional<String> extractReportCodeFromParsedReport(ParsedReport parsedReport) {
-        // the ideal is that we can simply extract the report code from the
+    private ReportInfo extractReportInfoFromParsedReport(ParsedReport parsedReport) {
+
+        // the ideal is that we can simply extract the report info from the
         // report filename, though we do need to ensure that extracted report
-        // name is known/expected.
-        Matcher matcher = REPORT_CODE_PATTERN.matcher(parsedReport.path);
-        if (matcher.find()) {
-            String reportCode = matcher.group();
-            if (reportsServiceConfig.getReportCodes().contains(reportCode)) {
-                return Optional.of(reportCode);
-            }
+        // name is known/expected, and we need all three elements before
+        // proceeding.
+        Optional<String> reportCode = calculateReportCodeFromReportPath(parsedReport.path);
+        Optional<Boolean> isInternational = calculateIsInternationalFromReportPath(parsedReport.path);
+        LocalDate reportDate = calculateDateFromReport(parsedReport);
+
+        // if we've got the lot, we can call it here
+        if (reportCode.isPresent() && isInternational.isPresent()) {
+            return new ReportInfo(reportCode.get(), reportDate, isInternational.get());
         }
 
-        logger.info("Could not determine report code from report filename: {}", parsedReport.path);
-
-        // if the above doesn't provide a result, start digging through the entries in
-        // the report file until we can find a service that we can map to a report code
+        // if we couldn't extract the required data from the filename, then we
+        // need to start looking into the associated letter records
         for (LetterPrintStatus lps : parsedReport.statuses) {
             // initially, we just need to find a letter that exists
             try {
@@ -218,29 +216,59 @@ public class MarkLettersPostedService {
                     // then use that letter, and potentially it's status to look up the right code
                     uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
                         letterService.getStatus(lps.id, Boolean.TRUE.toString(), Boolean.FALSE.toString());
-                    String code = reportsServiceConfig.getReportCode(service.get(), status);
+                    String code = reportCode.orElseGet(() -> reportsServiceConfig.getReportCode(service.get(), status));
                     if (code != null) {
-                        return Optional.of(code);
+                        boolean international = isInternational.orElseGet(
+                            () -> Optional.ofNullable(status.additionalData)
+                                .map(m -> m.get("isInternational"))
+                                .map(Object::toString) // probably unnecessary
+                                .map(Boolean::valueOf)
+                                .orElse(false));
+                        return new ReportInfo(code, reportDate, international);
                     }
                 }
             } catch (LetterNotFoundException e) {
                 logger.warn("Letter not found for id '{}' during report code lookup", lps.id);
             }
         }
+
+        return null;
+    }
+
+    private Optional<Boolean> calculateIsInternationalFromReportPath(final String path) {
+        String pathLc = path.toLowerCase();
+        if (pathLc.contains("international")) {
+            return Optional.of(Boolean.TRUE);
+        } else if (pathLc.contains("domestic")) {
+            return Optional.of(Boolean.FALSE);
+        }
         return Optional.empty();
     }
 
-    private Optional<LocalDate> extractDateFromReportPath(String path) {
-        Matcher matcher = DATE_PATTERN.matcher(path);
+    private Optional<String> calculateReportCodeFromReportPath(final String reportPath) {
+        Matcher matcher = REPORT_CODE_PATTERN.matcher(reportPath.toUpperCase());
+        if (matcher.find()) {
+            String reportCode = matcher.group();
+            if (reportsServiceConfig.getReportCodes().contains(reportCode)) {
+                return Optional.of(reportCode);
+            }
+        }
+        logger.info("Could not determine report code from report filename: {}", reportPath);
+        return Optional.empty();
+    }
+
+    private LocalDate calculateDateFromReport(ParsedReport parsedReport) {
+        Matcher matcher = DATE_PATTERN.matcher(parsedReport.path);
         if (matcher.find()) {
             String dateString = matcher.group();
             try {
-                return Optional.of(LocalDate.parse(dateString,
-                    dateString.charAt(4) == '-' ? DateTimeFormatter.ISO_LOCAL_DATE : REPORT_DATE_FORMATTER));
+                return LocalDate.parse(dateString, dateString.charAt(4) == '-'
+                    ? DateTimeFormatter.ISO_LOCAL_DATE
+                    : REPORT_DATE_FORMATTER);
             } catch (DateTimeParseException e) {
-                logger.warn("Could not parse date from report path '{}'", path);
+                logger.warn("Could not parse date from report path '{}'", parsedReport.path);
             }
         }
-        return Optional.empty();
+        return parsedReport.reportDate;
     }
 }
