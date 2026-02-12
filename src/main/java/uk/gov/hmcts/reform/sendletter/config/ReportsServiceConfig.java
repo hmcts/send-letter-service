@@ -10,17 +10,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toMap;
-
 /**
  * Configuration properties for reports service.
  */
 @ConfigurationProperties(prefix = "reports")
 public class ReportsServiceConfig {
 
-    private static final String SSCS_CODE = "SSCS";
-    private static final String SSCS_IB_SUFFIX = "-IB";
-    private static final String SSCS_REFORM_SUFFIX = "-REFORM";
+    static final String SSCS_CODE = "SSCS";
+    static final String SSCS_IB_SUFFIX = "-IB";
+    static final String SSCS_REFORM_SUFFIX = "-REFORM";
 
     private Map<String, Mapping> serviceConfig;
 
@@ -112,7 +110,7 @@ public class ReportsServiceConfig {
     public void setServiceConfig(List<Mapping> mappings) {
         this.serviceConfig = mappings
             .stream()
-            .collect(toMap(Mapping::getService, Mapping::getSelf));
+            .collect(Collectors.toMap(Mapping::getService, Mapping::getSelf));
     }
 
     /**
@@ -139,8 +137,9 @@ public class ReportsServiceConfig {
             .orElse(null);
 
         // special case for sscs
-        if (SSCS_CODE.equalsIgnoreCase(code)) {
-            if (letterStatus.additionalData != null && letterStatus.additionalData.containsKey("isIbca")) {
+        if (SSCS_CODE.equalsIgnoreCase(code) && letterStatus != null) {
+            if (letterStatus.additionalData != null && letterStatus.additionalData.get("isIbca") instanceof Boolean ib
+                && ib.booleanValue()) {
                 code = code + SSCS_IB_SUFFIX;
             } else {
                 code = code + SSCS_REFORM_SUFFIX;
