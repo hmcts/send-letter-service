@@ -35,6 +35,12 @@ public class TaskController {
         this.checkLettersPostedService = checkLettersPostedService;
     }
 
+    /**
+     * Kicks off report processing in the Mark Letters Posted Service.
+     *
+     * @param authHeader Auth header from the request containing the API key
+     * @return a {@link List} of {@link PostedReportTaskResponse} records
+     */
     @GetMapping("/process-reports")
     public ResponseEntity<List<PostedReportTaskResponse>> processReports(
         @RequestHeader(value = AUTHORIZATION, required = false) String authHeader) {
@@ -49,6 +55,12 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Kicks of the letter check int he Check Letters Posted Service.
+     *
+     * @param authHeader Auth header from the request containing the API key
+     * @return a {@link CheckPostedTaskResponse}
+     */
     @GetMapping("/check-posted")
     public ResponseEntity<CheckPostedTaskResponse> checkPosted(
         @RequestHeader(value = AUTHORIZATION, required = false) String authHeader) {

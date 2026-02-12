@@ -119,7 +119,7 @@ public class MarkLettersPostedService {
                         String.format("Service not found for report with name '%s'", parsedReport.path));
                 } else {
 
-                    // create a response now so that we can ensure a response in the case of an
+                    // initialise a response now so that we can ensure a response in the case of an
                     // exceptional failure during the markAsPosted iteration below.
                     currentResponse.set(new PostedReportTaskResponse(
                         reportInfo.reportCode,
@@ -157,6 +157,8 @@ public class MarkLettersPostedService {
             logger.info("Completed '{}' task", TASK_NAME);
         } catch (Exception e) {
             logger.error("An error occurred when downloading reports from SFTP server", e);
+            // If we opened a response before the exception was thrown, we need to commit
+            // that response to the list and mark it up as an error.
             Optional.ofNullable(currentResponse.getAndSet(null)).ifPresent(ptr -> {
                 ptr.markAsFailed(
                     "An error occurred when processing downloaded reports from the SFTP server: " + e.getMessage());
@@ -216,6 +218,8 @@ public class MarkLettersPostedService {
                     // then use that letter, and potentially it's status to look up the right code
                     uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
                         letterService.getStatus(lps.id, Boolean.TRUE.toString(), Boolean.FALSE.toString());
+                    // if we've already extracted the report code and/or international
+                    // flag from the filename, then we'll use those as a priority.
                     String code = reportCode.orElseGet(() -> reportsServiceConfig.getReportCode(service.get(), status));
                     if (code != null) {
                         boolean international = isInternational.orElseGet(
@@ -235,6 +239,16 @@ public class MarkLettersPostedService {
         return null;
     }
 
+    /**
+     * Calculates the internation status from the report path.
+     *
+     * <p>This returns an {@link Optional} {@link Boolean} as the lack of either the "international" string isn't
+     * enough evidence that the report was "domestic".
+     *
+     * @param path the report path
+     * @return an {@link Optional} {@link Boolean} which, if present, indicates whether the report is international
+     *         or domestic. If empty, then an empirical determination couldn't be made.
+     */
     private Optional<Boolean> calculateIsInternationalFromReportPath(final String path) {
         String pathLc = path.toLowerCase();
         if (pathLc.contains("international")) {
@@ -245,6 +259,12 @@ public class MarkLettersPostedService {
         return Optional.empty();
     }
 
+    /**
+     * Attempts to calculate the report code from the report path.
+     *
+     * @param reportPath the filename of the report
+     * @return An {@link Optional} containing the code, if located
+     */
     private Optional<String> calculateReportCodeFromReportPath(final String reportPath) {
         Matcher matcher = REPORT_CODE_PATTERN.matcher(reportPath.toUpperCase());
         if (matcher.find()) {
@@ -257,6 +277,13 @@ public class MarkLettersPostedService {
         return Optional.empty();
     }
 
+    /**
+     * Calculate the report date from the parsed report, preferring the date of the file to the date in the
+     * {@link ParsedReport}.
+     *
+     * @param parsedReport the parsed report
+     * @return A {@link LocalDate}
+     */
     private LocalDate calculateDateFromReport(ParsedReport parsedReport) {
         Matcher matcher = DATE_PATTERN.matcher(parsedReport.path);
         if (matcher.find()) {

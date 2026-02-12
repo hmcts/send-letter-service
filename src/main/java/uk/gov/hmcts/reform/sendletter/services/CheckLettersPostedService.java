@@ -26,6 +26,24 @@ public class CheckLettersPostedService {
     private final ReportRepository reportRepository;
     private final ReportsServiceConfig reportsServiceConfig;
 
+    /**
+     * This function performs the following tasks.
+     *
+     * <ol>
+     *     <li>Retrieves the set of documents that have been in an
+     *         {@link LetterStatus#Uploaded} status for more than 7 days.</li>
+     *     <li>For each letter retrieved:
+     *         <ol>
+     *             <li>Works out the expected report code, date and international status using the status/attributes
+     *                 of the letter.</li>
+     *             <li>If a report was NOT recorded for that date (no row in reports table): Sets the letter to
+     *                 {@link LetterStatus#NoReportAborted}.</li>
+     *         </ol>
+     *     </li>
+     * </ol>
+     * @return a{@link CheckPostedTaskResponse} that contains details of the letters marked as
+     *         {@link LetterStatus#NoReportAborted}.
+     */
     public CheckPostedTaskResponse checkLetters() {
         int count = 0;
         List<BasicLetterInfo> letters = staleLetterService.getStaleLetters(
