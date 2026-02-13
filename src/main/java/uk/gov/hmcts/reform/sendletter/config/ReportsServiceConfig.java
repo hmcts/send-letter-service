@@ -138,12 +138,12 @@ public class ReportsServiceConfig {
 
         // special case for sscs
         if (SSCS_CODE.equalsIgnoreCase(code) && letterStatus != null) {
-            if (letterStatus.additionalData != null && letterStatus.additionalData.get("isIbca") instanceof Boolean ib
-                && ib.booleanValue()) {
-                code = code + SSCS_IB_SUFFIX;
-            } else {
-                code = code + SSCS_REFORM_SUFFIX;
-            }
+            code = Optional.ofNullable(letterStatus.additionalData)
+                .map(ad -> ad.get("isIbca"))
+                .map(Object::toString)// can be either a string or a boolean...
+                .filter("true"::equalsIgnoreCase)
+                .map(c -> SSCS_CODE + SSCS_IB_SUFFIX)
+                .orElse(SSCS_CODE + SSCS_REFORM_SUFFIX);
         }
 
         return code;
