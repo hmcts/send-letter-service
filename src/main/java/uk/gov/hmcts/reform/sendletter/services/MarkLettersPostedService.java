@@ -95,64 +95,69 @@ public class MarkLettersPostedService {
         final AtomicReference<PostedReportTaskResponse> currentResponse = new AtomicReference<>();
         final List<PostedReportTaskResponse> responseList = new ArrayList<>();
         try {
-            ftpClient.downloadReports().stream().map(parser::parse).forEach(parsedReport -> {
-                insights.trackPrintReportReceived(parsedReport);
-                logger.info("Updating letters from report {}. Letter count: {}",
-                    parsedReport.path, parsedReport.statuses.size());
+            ftpClient
+                .downloadReports()
+                .stream()
+                .map(parser::parse)
+                .forEach(parsedReport -> {
 
-                ReportInfo reportInfo = extractReportInfoFromParsedReport(parsedReport);
+                    insights.trackPrintReportReceived(parsedReport);
+                    logger.info("Updating letters from report {}. Letter count: {}",
+                        parsedReport.path, parsedReport.statuses.size());
 
-                if (reportInfo == null) {
-                    // this is an edge case where the report filename didn't contain a know reportCode
-                    // and there were no letters referenced in the parsed report that could be used
-                    // to determine a report code from their assigned service.
-                    //
-                    // When this happens, processing is allowed to move on to the next parsed report,
-                    // but an error response will be added to indicate that a report couldn't be married
-                    // up to a specific service.
-                    currentResponse.set(new PostedReportTaskResponse(
-                        "UNKNOWN",
-                        parsedReport.reportDate,
-                        false)
-                    );
-                    currentResponse.get().markAsFailed(
-                        String.format("Service not found for report with name '%s'", parsedReport.path));
-                } else {
+                    ReportInfo reportInfo = extractReportInfoFromParsedReport(parsedReport);
 
-                    // initialise a response now so that we can ensure a response in the case of an
-                    // exceptional failure during the markAsPosted iteration below.
-                    currentResponse.set(new PostedReportTaskResponse(
-                        reportInfo.reportCode,
-                        reportInfo.reportDate,
-                        reportInfo.isInternational)
-                    );
-
-                    long count = parsedReport.statuses.stream()
-                        .filter(status -> markAsPosted(status, parsedReport.path))
-                        .count();
-
-                    currentResponse.get().setMarkedPostedCount(count);
-
-                    if (parsedReport.allRowsParsed) {
-                        logger.info("Report {} successfully parsed, deleting", parsedReport.path);
-                        ftpClient.deleteReport(parsedReport.path);
-                        // now that we've processed the file, we can save a report.
-                        reportRepository.save(Report.builder()
-                            .reportName(parsedReport.path)
-                            .reportCode(reportInfo.reportCode)
-                            .reportDate(reportInfo.reportDate)
-                            .printedLettersCount(count)
-                            .isInternational(reportInfo.isInternational)
-                            .build()
+                    if (reportInfo == null) {
+                        // this is an edge case where the report filename didn't contain a know reportCode
+                        // and there were no letters referenced in the parsed report that could be used
+                        // to determine a report code from their assigned service.
+                        //
+                        // When this happens, processing is allowed to move on to the next parsed report,
+                        // but an error response will be added to indicate that a report couldn't be married
+                        // up to a specific service.
+                        currentResponse.set(new PostedReportTaskResponse(
+                            "UNKNOWN",
+                            parsedReport.reportDate,
+                            false)
                         );
+                        currentResponse.get().markAsFailed(
+                            String.format("Service not found for report with name '%s'", parsedReport.path));
                     } else {
-                        logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
-                        currentResponse.get().markAsFailed("Report "
-                            + parsedReport.path + " contained invalid rows");
+
+                        // initialise a response now so that we can ensure a response in the case of an
+                        // exceptional failure during the markAsPosted iteration below.
+                        currentResponse.set(new PostedReportTaskResponse(
+                            reportInfo.reportCode,
+                            reportInfo.reportDate,
+                            reportInfo.isInternational)
+                        );
+
+                        long count = parsedReport.statuses.stream()
+                            .filter(status -> markAsPosted(status, parsedReport.path))
+                            .count();
+
+                        currentResponse.get().setMarkedPostedCount(count);
+
+                        if (parsedReport.allRowsParsed) {
+                            logger.info("Report {} successfully parsed, deleting", parsedReport.path);
+                            ftpClient.deleteReport(parsedReport.path);
+                            // now that we've processed the file, we can save a report.
+                            reportRepository.save(Report.builder()
+                                .reportName(parsedReport.path)
+                                .reportCode(reportInfo.reportCode)
+                                .reportDate(reportInfo.reportDate)
+                                .printedLettersCount(count)
+                                .isInternational(reportInfo.isInternational)
+                                .build()
+                            );
+                        } else {
+                            logger.warn("Report {} contained invalid rows, file not removed.", parsedReport.path);
+                            currentResponse.get().markAsFailed("Report "
+                                + parsedReport.path + " contained invalid rows");
+                        }
                     }
-                }
-                responseList.add(currentResponse.getAndSet(null));
-            });
+                    responseList.add(currentResponse.getAndSet(null));
+                });
 
             logger.info("Completed '{}' task", TASK_NAME);
         } catch (Exception e) {
