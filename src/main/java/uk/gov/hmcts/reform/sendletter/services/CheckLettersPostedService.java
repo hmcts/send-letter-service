@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
@@ -20,6 +21,10 @@ import java.util.Optional;
 @Slf4j
 public class CheckLettersPostedService {
 
+    private static final String TASK_NAME = "Check letters posted";
+
+    @Value("${stale-letters.min-age-in-days-for-no-report-abort}")
+    private int minAgeInDaysForNoReportAbort;
     private final StaleLetterService staleLetterService;
     private final LetterService letterService;
     private final LetterActionService letterActionService;
@@ -45,10 +50,11 @@ public class CheckLettersPostedService {
      *         {@link LetterStatus#NoReportAborted}.
      */
     public CheckPostedTaskResponse checkLetters() {
+        log.info("Started '{}' task", TASK_NAME);
         int count = 0;
         List<BasicLetterInfo> letters = staleLetterService.getStaleLetters(
             List.of(LetterStatus.Uploaded),
-            LocalDateTime.now(ZoneOffset.UTC).minusDays(7)
+            LocalDateTime.now(ZoneOffset.UTC).minusDays(minAgeInDaysForNoReportAbort)
         );
         for (BasicLetterInfo letter : letters) {
             try {
@@ -59,6 +65,7 @@ public class CheckLettersPostedService {
                 log.warn("Letter not found for id {} during posted check", letter.getId());
             }
         }
+        log.info("Completed '{}' task", TASK_NAME);
         return new CheckPostedTaskResponse(count);
     }
 

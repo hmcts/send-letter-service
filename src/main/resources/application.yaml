@@ -191,7 +191,8 @@ encryption:
   publicKey: ${ENCRYPTION_PUBLIC_KEY:}
 
 stale-letters:
-  min-age-in-business-days: 2
+  min-age-in-business-days: ${STALE_BUSINESS_DAYS:2}
+  min-age-in-days-for-no-report-abort: ${NO_REPORT_ABORT_DAYS:7}
 
 async:
   threadpool-size: ${ASYNC_THREADPOOL_SIZE:20}
