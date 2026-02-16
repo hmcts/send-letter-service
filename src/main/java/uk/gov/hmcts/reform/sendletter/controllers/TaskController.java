@@ -56,7 +56,7 @@ public class TaskController {
     }
 
     /**
-     * Kicks of the letter check int he Check Letters Posted Service.
+     * Kicks of the letter check in the Check Letters Posted Service.
      *
      * @param authHeader Auth header from the request containing the API key
      * @return a {@link CheckPostedTaskResponse}

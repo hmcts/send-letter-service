@@ -89,6 +89,9 @@ reports:
     - service: divorce_frontend
       display-name: Divorce
       report-code: DIV
+    - service: nfdiv_case_api
+      display-name: Divorce
+      report-code: NFDIV
     - service: probate_backend
       display-name: Probate
       report-code: Probate
