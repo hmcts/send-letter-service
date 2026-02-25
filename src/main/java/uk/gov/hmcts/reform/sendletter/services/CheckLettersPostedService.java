@@ -73,7 +73,7 @@ public class CheckLettersPostedService {
         uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
             letterService.getStatus(letter.getId(), Boolean.TRUE.toString(), Boolean.FALSE.toString());
         String reportCode = reportsServiceConfig.getReportCode(letter.getService(), status);
-        if (reportCode != null) {
+        if (reportCode != null && letter.getSentToPrintAt() != null) {
             return reportRepository.findFirstByReportCodeAndReportDateAndIsInternational(
                 reportCode,
                 letter.getSentToPrintAt().toLocalDate(),
