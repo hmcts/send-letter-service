@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.sendletter.exception.FtpDownloadException;
 import uk.gov.hmcts.reform.sendletter.model.out.CheckPostedTaskResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PostedReportTaskResponse;
 import uk.gov.hmcts.reform.sendletter.services.CheckLettersPostedService;
@@ -40,6 +41,16 @@ class TaskControllerTest {
 
     @MockitoBean
     private CheckLettersPostedService checkLettersPostedService;
+
+    @Test
+    void processReportsShouldReturn503WhenFtpDownloadExceptionOccurs() throws Exception {
+        when(markLettersPostedService.processReports())
+            .thenThrow(new FtpDownloadException("Download Failed!"));
+
+        mockMvc.perform(get("/tasks/process-reports")
+                .header("Authorization", AUTH_HEADER))
+            .andExpect(status().isServiceUnavailable());
+    }
 
     @Test
     void processReportsShouldReturn204WhenEmpty() throws Exception {

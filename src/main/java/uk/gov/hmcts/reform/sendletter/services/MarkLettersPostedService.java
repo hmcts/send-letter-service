@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.exception.FtpDownloadException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.logging.AppInsights;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
@@ -164,11 +165,28 @@ public class MarkLettersPostedService {
             logger.error("An error occurred when downloading reports from SFTP server", e);
             // If we opened a response before the exception was thrown, we need to commit
             // that response to the list and mark it up as an error.
-            Optional.ofNullable(currentResponse.getAndSet(null)).ifPresent(ptr -> {
+            Optional.ofNullable(currentResponse.getAndSet(null)).ifPresentOrElse(ptr -> {
                 ptr.markAsFailed(
                     "An error occurred when processing downloaded reports from the SFTP server: " + e.getMessage());
                 responseList.add(ptr);
+            }, () -> {
+                // otherwise, make a choice about adding a general error or just throwing a 503
+                if (responseList.isEmpty()) {
+                    // if we have an empty response list at this point, we should
+                    // throw a formal 503
+                    throw new FtpDownloadException("An error occurred when downloading reports from SFTP server", e);
+                } else {
+                    // if the response list already has some errors in it then we need to add
+                    // another one with an UNKNOWN report code that details the error
+                    PostedReportTaskResponse errorReport =
+                        new PostedReportTaskResponse("UNKNOWN", LocalDate.now(), false);
+                    errorReport.setMarkedPostedCount(0);
+                    errorReport.markAsFailed(
+                        "An error occurred when downloading reports from SFTP server: " + e.getMessage());
+                    responseList.add(errorReport);
+                }
             });
+
         }
         return responseList;
     }
