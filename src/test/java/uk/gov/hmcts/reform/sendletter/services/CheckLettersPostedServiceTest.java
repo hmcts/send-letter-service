@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,7 +53,8 @@ class CheckLettersPostedServiceTest {
         Report report = Report.builder().build();
 
         List<BasicLetterInfo> letters = createStaleLetters(5, "some_service_name");
-        when(staleLetterService.getStaleLetters(anyList(), any(LocalDateTime.class))).thenReturn(letters);
+        when(staleLetterService.getStaleLettersWithValidPrintDate(anyList(), any(LocalDateTime.class)))
+            .thenReturn(letters);
         when(letterService.getStatus(any(UUID.class), eq("true"), eq("false")))
             .thenReturn(letterStatus);
         when(reportsServiceConfig.getReportCode(any(), any())).thenReturn("CODE1");
@@ -75,7 +75,8 @@ class CheckLettersPostedServiceTest {
 
         List<BasicLetterInfo> letters = createStaleLetters(1, "some_service_name");
         letters.addAll(createStaleLetters(4, "another_service_name"));
-        when(staleLetterService.getStaleLetters(anyList(), any(LocalDateTime.class))).thenReturn(letters);
+        when(staleLetterService.getStaleLettersWithValidPrintDate(anyList(), any(LocalDateTime.class)))
+            .thenReturn(letters);
         when(letterService.getStatus(any(UUID.class), eq("true"), eq("false")))
             .thenReturn(letterStatus);
         when(reportsServiceConfig.getReportCode(eq("some_service_name"), any())).thenReturn("CODE1");
@@ -101,7 +102,8 @@ class CheckLettersPostedServiceTest {
 
         List<BasicLetterInfo> letters = createStaleLetters(1, "some_service_name");
         letters.addAll(createStaleLetters(4, "another_service_name"));
-        when(staleLetterService.getStaleLetters(anyList(), any(LocalDateTime.class))).thenReturn(letters);
+        when(staleLetterService.getStaleLettersWithValidPrintDate(anyList(), any(LocalDateTime.class)))
+            .thenReturn(letters);
         when(letterService.getStatus(any(UUID.class), eq("true"), eq("false")))
             .thenReturn(letterStatus);
         when(reportsServiceConfig.getReportCode(eq("some_service_name"), any())).thenReturn("CODE1");
@@ -125,7 +127,8 @@ class CheckLettersPostedServiceTest {
 
         List<BasicLetterInfo> letters = createStaleLetters(1, "some_service_name");
         letters.addAll(createStaleLetters(4, "another_service_name"));
-        when(staleLetterService.getStaleLetters(anyList(), any(LocalDateTime.class))).thenReturn(letters);
+        when(staleLetterService.getStaleLettersWithValidPrintDate(anyList(), any(LocalDateTime.class)))
+            .thenReturn(letters);
         when(letterService.getStatus(any(UUID.class), eq("true"), eq("false")))
             .thenReturn(letterStatus);
         when(reportsServiceConfig.getReportCode(eq("some_service_name"), any())).thenReturn("CODE1");
@@ -141,33 +144,6 @@ class CheckLettersPostedServiceTest {
             .isNotNull()
             .extracting("markedNoReportAbortedCount").isEqualTo(0);
     }
-
-    @Test
-    void shouldNotFailedWhenSentToPrintIsNull() {
-
-        List<BasicLetterInfo> letters = createStaleLetters(1, "some_service_name");
-        letters.addAll(createStaleLetters(4, "another_service_name"));
-        letters.forEach(letter -> {
-            letter.setSentToPrintAt(null);
-        });
-        when(staleLetterService.getStaleLetters(anyList(), any(LocalDateTime.class))).thenReturn(letters);
-        when(letterService.getStatus(any(UUID.class), eq("true"), eq("false")))
-            .thenReturn(letterStatus);
-        when(reportsServiceConfig.getReportCode(eq("some_service_name"), any())).thenReturn("CODE1");
-        when(reportsServiceConfig.getReportCode(eq("another_service_name"), any()))
-            .thenThrow(LetterNotFoundException.class);
-
-        CheckPostedTaskResponse response = checkLettersPostedService.checkLetters();
-
-        // expect no interactions with the report repo due to missing sent to print
-        verifyNoInteractions(reportRepository);
-
-        // expect no letters to be aborted as there was either a report, or the letter couldn't be found
-        assertThat(response)
-            .isNotNull()
-            .extracting("markedNoReportAbortedCount").isEqualTo(0);
-    }
-
 
     private List<BasicLetterInfo> createStaleLetters(int count, String serviceName) {
         List<BasicLetterInfo> letters = new ArrayList<>();

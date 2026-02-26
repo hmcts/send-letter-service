@@ -108,6 +108,20 @@ public class StaleLetterService {
     }
 
     /**
+     * Get stale letters for a specific status and before date that have a non-null sent_to_print_date.
+     *
+     * @return The stale letters
+     */
+    public List<BasicLetterInfo> getStaleLettersWithValidPrintDate(
+        Collection<LetterStatus> statuses,
+        LocalDateTime beforeDateTime) {
+        log.info("Stale letters before {} where status in: {}, and sent_to_print_at is not noll",
+            beforeDateTime, statuses);
+        return letterRepository.findByStatusInAndCreatedAtBeforeAndSentToPrintAtNotNullOrderByCreatedAtAsc(
+            statuses, beforeDateTime);
+    }
+
+    /**
      * Get weekly stale letters.
      *
      * @return The weekly stale letters

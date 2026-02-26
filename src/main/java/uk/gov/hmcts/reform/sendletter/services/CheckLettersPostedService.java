@@ -52,7 +52,7 @@ public class CheckLettersPostedService {
     public CheckPostedTaskResponse checkLetters() {
         log.info("Started '{}' task", TASK_NAME);
         int count = 0;
-        List<BasicLetterInfo> letters = staleLetterService.getStaleLetters(
+        List<BasicLetterInfo> letters = staleLetterService.getStaleLettersWithValidPrintDate(
             List.of(LetterStatus.Uploaded),
             LocalDateTime.now(ZoneOffset.UTC).minusDays(minAgeInDaysForNoReportAbort)
         );
@@ -73,7 +73,7 @@ public class CheckLettersPostedService {
         uk.gov.hmcts.reform.sendletter.model.out.LetterStatus status =
             letterService.getStatus(letter.getId(), Boolean.TRUE.toString(), Boolean.FALSE.toString());
         String reportCode = reportsServiceConfig.getReportCode(letter.getService(), status);
-        if (reportCode != null && letter.getSentToPrintAt() != null) {
+        if (reportCode != null) {
             return reportRepository.findFirstByReportCodeAndReportDateAndIsInternational(
                 reportCode,
                 letter.getSentToPrintAt().toLocalDate(),

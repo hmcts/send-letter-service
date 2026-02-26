@@ -64,6 +64,17 @@ public interface LetterRepository extends JpaRepository<Letter, UUID> {
     List<BasicLetterInfo> findByStatusInAndCreatedAtBeforeOrderByCreatedAtAsc(Collection<LetterStatus> statuses, LocalDateTime createdAtBefore);
 
     /**
+     * Find by status in and created before where sentToPrintAt is not null, ordered by created at
+     * ascending.
+     *
+     * @param statuses the letter statuses
+     * @param createdAtBefore the created before date
+     * @return the {@link List} of found {@link BasicLetterInfo}s
+     */
+    List<BasicLetterInfo> findByStatusInAndCreatedAtBeforeAndSentToPrintAtNotNullOrderByCreatedAtAsc(
+        Collection<LetterStatus> statuses, LocalDateTime createdAtBefore);
+
+    /**
      * Find by status not in and type not and created at between order by created at asc.
      * @param letterStatuses the letter statuses
      * @param type the type
