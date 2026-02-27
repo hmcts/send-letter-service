@@ -100,13 +100,20 @@ class ReportsServiceConfigTest {
         final LetterStatus letterStatusIb = new LetterStatus(id, "", "", now, now, now, ibAttr, 1);
         final LetterStatus letterStatusNoIb = new LetterStatus(id, "", "", now, now, now, notIbAttr, 1);
 
+        // missing isIcba attribute == REFORM
         assertThat(reportsServiceConfig.getReportCode("sscs", letterStatusNoAttr))
             .isNotNull().isEqualTo(ReportsServiceConfig.SSCS_CODE + ReportsServiceConfig.SSCS_REFORM_SUFFIX);
 
+        // isIcba attribute present and set to true == IB
         assertThat(reportsServiceConfig.getReportCode("sscs", letterStatusIb))
             .isNotNull().isEqualTo(ReportsServiceConfig.SSCS_CODE + ReportsServiceConfig.SSCS_IB_SUFFIX);
 
+        // isIcba attribute present and set to false == REFORM
         assertThat(reportsServiceConfig.getReportCode("sscs", letterStatusNoIb))
+            .isNotNull().isEqualTo(ReportsServiceConfig.SSCS_CODE + ReportsServiceConfig.SSCS_REFORM_SUFFIX);
+
+        // no letter status provided == REFORM
+        assertThat(reportsServiceConfig.getReportCode("sscs", null))
             .isNotNull().isEqualTo(ReportsServiceConfig.SSCS_CODE + ReportsServiceConfig.SSCS_REFORM_SUFFIX);
     }
 }

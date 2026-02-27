@@ -137,8 +137,9 @@ public class ReportsServiceConfig {
             .orElse(null);
 
         // special case for sscs
-        if (SSCS_CODE.equalsIgnoreCase(code) && letterStatus != null) {
-            code = Optional.ofNullable(letterStatus.additionalData)
+        if (SSCS_CODE.equalsIgnoreCase(code)) {
+            code = Optional.ofNullable(letterStatus)
+                .map(ls -> ls.additionalData)
                 .map(ad -> ad.get("isIbca"))
                 .map(Object::toString)// can be either a string or a boolean...
                 .filter("true"::equalsIgnoreCase)
