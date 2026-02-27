@@ -182,7 +182,7 @@ public class MarkLettersPostedService {
                         new PostedReportTaskResponse("UNKNOWN", LocalDate.now(), false);
                     errorReport.setMarkedPostedCount(0);
                     errorReport.markAsFailed(
-                        "An error occurred when downloading reports from SFTP server: " + e.getMessage());
+                        "An error occurred when processing reports from SFTP server: " + e.getMessage());
                     responseList.add(errorReport);
                 }
             });
