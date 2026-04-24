@@ -6,13 +6,13 @@ import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 import uk.gov.hmcts.reform.sendletter.model.out.MissingReportsResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -90,26 +90,28 @@ public class ReportsService {
         LocalDate startDate,
         LocalDate endDate
     ) {
-        Set<String> expectedCodes = reportsServiceConfig.getReportCodes();
-        Set<String> presentReports = reportRepository.findAllByReportDateBetweenAndReportCodeIn(
-            startDate, endDate, expectedCodes.stream().toList())
-                .stream()
-                .map(r -> r.getReportDate() + r.getReportCode() + r.isInternational())
-                .collect(Collectors.toSet());
+        List<ServiceLettersReport> serviceLetters = repo.getServiceLettersReport(
+            startDate.atStartOfDay(),
+            endDate.atTime(LocalTime.MAX)
+        );
 
-        List<MissingReportsResponse> missingReports = new ArrayList<>();
+        Set<String> presentReports = reportRepository.findByReportDateBetween(startDate, endDate)
+            .stream()
+            .map(r -> r.getReportDate() + r.getReportCode() + r.isInternational())
+            .collect(Collectors.toSet());
 
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-            for (String code : expectedCodes) {
-                if (!presentReports.contains(date.toString() + code + "false")) {
-                    missingReports.add(new MissingReportsResponse(code, false, date));
+        return serviceLetters.stream()
+            .map(sl -> {
+                String service = sl.getService();
+                String reportCode = reportsServiceConfig.getReportCode(service, null);
+                if (reportCode == null && service != null && service.startsWith("sscs-")) {
+                    reportCode = "SSCS-" + service.substring(5).toUpperCase();
                 }
-                if (!presentReports.contains(date.toString() + code + "true")) {
-                    missingReports.add(new MissingReportsResponse(code, true, date));
-                }
-            }
-        }
-        return missingReports;
+                return new MissingReportsResponse(reportCode, sl.isInternational(), sl.getCreatedAt());
+            })
+            .filter(r -> r.serviceName != null
+                && !presentReports.contains(r.reportDate.toString() + r.serviceName + r.isInternational))
+            .collect(Collectors.toList());
     }
 
     /**

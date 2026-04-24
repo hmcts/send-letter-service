@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCount;
+import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 import uk.gov.hmcts.reform.sendletter.model.out.MissingReportsResponse;
 
@@ -19,12 +20,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.sendletter.util.TimeZones.localDateTimeWithUtc;
 
 @ExtendWith(MockitoExtension.class)
@@ -194,16 +196,27 @@ class ReportsServiceTest {
     void should_return_empty_list_when_all_reports_exist() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("SERVICE_A"));
-        given(
-            reportRepository
-                .findAllByReportDateBetweenAndReportCodeIn(date, date, List.of("SERVICE_A")))
+        given(reportRepository.findByReportDateBetween(date, date))
             .willReturn(
                 Arrays.asList(
                     Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build(),
                     Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(true).build()
                 )
             );
+
+        ServiceLettersReport sent1 = mock(ServiceLettersReport.class);
+        given(sent1.getService()).willReturn("service1");
+        given(sent1.isInternational()).willReturn(false);
+        given(sent1.getCreatedAt()).willReturn(date);
+
+        ServiceLettersReport sent2 = mock(ServiceLettersReport.class);
+        given(sent2.getService()).willReturn("service1");
+        given(sent2.isInternational()).willReturn(true);
+        given(sent2.getCreatedAt()).willReturn(date);
+
+        given(repository.getServiceLettersReport(any(), any())).willReturn(List.of(sent1, sent2));
+
+        given(reportsServiceConfig.getReportCode(eq("service1"), any())).willReturn("SERVICE_A");
 
         // when
         List<MissingReportsResponse> result = service.checkReports(date, date);
@@ -216,13 +229,24 @@ class ReportsServiceTest {
     void should_return_missing_reports_when_some_are_not_in_db() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportsServiceConfig.getReportCodes()).willReturn(Set.of("SERVICE_A"));
         // Only domestic report exists
-        given(
-            reportRepository
-                .findAllByReportDateBetweenAndReportCodeIn(date, date, List.of("SERVICE_A")))
+        given(reportRepository.findByReportDateBetween(date, date))
             .willReturn(
                 List.of(Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build()));
+
+        ServiceLettersReport sent1 = mock(ServiceLettersReport.class);
+        given(sent1.getService()).willReturn("service1");
+        given(sent1.isInternational()).willReturn(false);
+        given(sent1.getCreatedAt()).willReturn(date);
+
+        ServiceLettersReport sent2 = mock(ServiceLettersReport.class);
+        given(sent2.getService()).willReturn("service1");
+        given(sent2.isInternational()).willReturn(true);
+        given(sent2.getCreatedAt()).willReturn(date);
+
+        given(repository.getServiceLettersReport(any(), any())).willReturn(List.of(sent1, sent2));
+
+        given(reportsServiceConfig.getReportCode(eq("service1"), any())).willReturn("SERVICE_A");
 
         // when
         List<MissingReportsResponse> result = service.checkReports(date, date);
@@ -231,5 +255,50 @@ class ReportsServiceTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).serviceName).isEqualTo("SERVICE_A");
         assertThat(result.get(0).isInternational).isEqualTo(true);
+    }
+
+    @Test
+    void should_not_return_missing_report_if_no_letters_sent() {
+        // given
+        LocalDate date = LocalDate.of(2021, 1, 1);
+        // No reports in DB
+        given(reportRepository.findByReportDateBetween(date, date))
+            .willReturn(Collections.emptyList());
+
+        // No letters sent
+        given(repository.getServiceLettersReport(any(), any())).willReturn(Collections.emptyList());
+
+        // when
+        List<MissingReportsResponse> result = service.checkReports(date, date);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void should_handle_sscs_special_cases() {
+        // given
+        LocalDate date = LocalDate.of(2021, 1, 1);
+        given(reportRepository.findByReportDateBetween(any(), any()))
+            .willReturn(Collections.emptyList());
+
+        ServiceLettersReport sent1 = mock(ServiceLettersReport.class);
+        given(sent1.getService()).willReturn("sscs-ib");
+        given(sent1.isInternational()).willReturn(false);
+        given(sent1.getCreatedAt()).willReturn(date);
+
+        ServiceLettersReport sent2 = mock(ServiceLettersReport.class);
+        given(sent2.getService()).willReturn("sscs-reform");
+        given(sent2.isInternational()).willReturn(true);
+        given(sent2.getCreatedAt()).willReturn(date);
+
+        given(repository.getServiceLettersReport(any(), any())).willReturn(List.of(sent1, sent2));
+
+        // when
+        List<MissingReportsResponse> result = service.checkReports(date, date);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("serviceName").containsExactlyInAnyOrder("SSCS-IB", "SSCS-REFORM");
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +31,34 @@ public interface LettersCountSummaryRepository extends JpaRepository<Letter, UUI
             + "  ORDER BY service ASC"
     )
     List<ServiceLettersCountSummary> countByDate(
+        @Param("dateFrom") LocalDateTime dateFrom,
+        @Param("dateTo") LocalDateTime dateTo);
+
+    /**
+     * Get distinct service/international letters created within date range.
+     *
+     * @param dateFrom the date from
+     * @param dateTo   the date to
+     * @return the list
+     */
+    @Query(
+        nativeQuery = true,
+        value = "SELECT DISTINCT \n"
+            + "  created_at::date as \"createdAt\", \n"
+            + "  (CASE \n"
+            + "    WHEN service = 'sscs' THEN (CASE \n"
+            + "      WHEN additional_data->>'isIbca' = 'true' THEN 'sscs-ib' \n"
+            + "        ELSE 'sscs-reform' END) \n"
+            + "      ELSE service \n"
+            + "  END) as \"service\",\n"
+            + "  (additional_data->>'isInternational')::boolean as \"international\"\n"
+            + " FROM letters \n"
+            + " WHERE status IN ('Created', 'Uploaded', 'FailedToUpload')\n"
+            + "  AND type <> 'smoke_test'\n"
+            + "  AND created_at >= :dateFrom AND created_at <= :dateTo\n"
+            + " ORDER BY createdAt, service, international"
+    )
+    List<ServiceLettersReport> getServiceLettersReport(
         @Param("dateFrom") LocalDateTime dateFrom,
         @Param("dateTo") LocalDateTime dateTo);
 }
