@@ -50,13 +50,14 @@ public interface LettersCountSummaryRepository extends JpaRepository<Letter, UUI
             + "      WHEN additional_data->>'isIbca' = 'true' THEN 'sscs-ib' \n"
             + "        ELSE 'sscs-reform' END) \n"
             + "      ELSE service \n"
-            + "  END) as \"service\",\n"
-            + "  (additional_data->>'isInternational')::boolean as \"international\"\n"
+            + "  END) as service,\n"
+            + "  COALESCE(CAST(additional_data->>'isInternational' AS boolean), false) as international\n"
             + " FROM letters \n"
-            + " WHERE status IN ('Created', 'Uploaded', 'FailedToUpload')\n"
+            + " WHERE status IN "
+            + "('Created', 'Uploaded', 'FailedToUpload', 'Posted', 'PostedLocally', 'Aborted', 'NotSent')\n"
             + "  AND type <> 'smoke_test'\n"
             + "  AND created_at >= :dateFrom AND created_at <= :dateTo\n"
-            + " ORDER BY createdAt, service, international"
+            + " ORDER BY \"createdAt\", service, international"
     )
     List<ServiceLettersReport> getServiceLettersReport(
         @Param("dateFrom") LocalDateTime dateFrom,
