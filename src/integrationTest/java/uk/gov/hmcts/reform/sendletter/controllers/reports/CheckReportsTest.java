@@ -9,11 +9,16 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +34,9 @@ class CheckReportsTest {
     private ReportRepository reportRepository;
 
     @Autowired
+    private LetterRepository letterRepository;
+
+    @Autowired
     private ReportsServiceConfig reportsServiceConfig;
 
     @MockitoBean
@@ -37,6 +45,7 @@ class CheckReportsTest {
     @AfterEach
     void tearDown() {
         reportRepository.deleteAll();
+        letterRepository.deleteAll();
     }
 
     @Test
@@ -53,12 +62,14 @@ class CheckReportsTest {
                     .reportCode(code)
                     .reportDate(date)
                     .isInternational(false)
+                    .status(ReportStatus.SUCCESS)
                     .build());
                 reportRepository.save(Report.builder()
                     .reportName("Test " + code + " International")
                     .reportCode(code)
                     .reportDate(date)
                     .isInternational(true)
+                    .status(ReportStatus.SUCCESS)
                     .build());
             }
         }
@@ -83,12 +94,14 @@ class CheckReportsTest {
                     .reportCode(code)
                     .reportDate(LocalDate.now().minusDays(day))
                     .isInternational(false)
+                    .status(ReportStatus.SUCCESS)
                     .build());
                 reportRepository.save(Report.builder()
                     .reportName("Test " + code + " International")
                     .reportCode(code)
                     .reportDate(LocalDate.now().minusDays(day))
                     .isInternational(true)
+                    .status(ReportStatus.SUCCESS)
                     .build());
             }
         }
@@ -104,14 +117,27 @@ class CheckReportsTest {
         // given
         LocalDate startDate = LocalDate.of(2026, 1, 1);
         LocalDate endDate = LocalDate.of(2026, 1, 1);
-        Set<String> reportCodes = reportsServiceConfig.getReportCodes();
-        String code = reportCodes.iterator().next(); // Use the first code
+        Set<String> services = reportsServiceConfig.getServiceConfig().keySet();
+        String service = services.iterator().next(); // Use the first service
+
+        letterRepository.save(new Letter(
+            UUID.randomUUID(),
+            "checksum",
+            service,
+            null,
+            "type",
+            new byte[1],
+            false,
+            null,
+            startDate.atStartOfDay(),
+            null
+        ));
 
         // when
         mvc.perform(get("/reports/check-reports")
                 .param("startDate", startDate.toString())
                 .param("endDate", endDate.toString()))
             // then
-            .andExpect(status().isOk());
+            .andExpect(status().isNotFound());
     }
 }
