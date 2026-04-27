@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
-import uk.gov.hmcts.reform.sendletter.entity.LetterStatus;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
