@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.sendletter.exception.FtpDownloadException;
+import uk.gov.hmcts.reform.sendletter.entity.Report;
+import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.model.out.CheckPostedTaskResponse;
 import uk.gov.hmcts.reform.sendletter.model.out.PostedReportTaskResponse;
 import uk.gov.hmcts.reform.sendletter.services.CheckLettersPostedService;
@@ -18,8 +19,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TaskController.class)
@@ -42,33 +45,38 @@ class TaskControllerTest {
     @MockitoBean
     private CheckLettersPostedService checkLettersPostedService;
 
-    @Test
-    void processReportsShouldReturn503WhenFtpDownloadExceptionOccurs() throws Exception {
-        when(markLettersPostedService.processReports())
-            .thenThrow(new FtpDownloadException("Download Failed!"));
-
-        mockMvc.perform(get("/tasks/process-reports")
-                .header("Authorization", AUTH_HEADER))
-            .andExpect(status().isServiceUnavailable());
-    }
+    @MockitoBean
+    private ReportRepository reportRepository;
 
     @Test
-    void processReportsShouldReturn204WhenEmpty() throws Exception {
-        when(markLettersPostedService.processReports()).thenReturn(Collections.emptyList());
+    void processedReportsShouldReturn204WhenEmpty() throws Exception {
+        when(reportRepository.findByProcessedAtAfter(any())).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/tasks/process-reports")
+        mockMvc.perform(get("/tasks/processed-reports")
                 .header("Authorization", AUTH_HEADER))
             .andExpect(status().isNoContent());
     }
 
     @Test
-    void processReportsShouldReturn200WithList() throws Exception {
-        final LocalDate reportDate = LocalDate.now();
-        PostedReportTaskResponse item = new PostedReportTaskResponse("CODE1", reportDate, false);
-        item.setMarkedPostedCount(100);
-        when(markLettersPostedService.processReports()).thenReturn(List.of(item));
+    void processReportsShouldReturn204() throws Exception {
+        mockMvc.perform(post("/tasks/process-reports")
+                .header("Authorization", AUTH_HEADER))
+            .andExpect(status().isNoContent());
+    }
 
-        String responseBodyStr = mockMvc.perform(get("/tasks/process-reports")
+    @Test
+    void processedReportsShouldReturn200WithList() throws Exception {
+        final LocalDate reportDate = LocalDate.now();
+        Report report = Report.builder()
+            .reportCode("CODE1")
+            .reportDate(reportDate)
+            .isInternational(false)
+            .printedLettersCount(100)
+            .build();
+
+        when(reportRepository.findByProcessedAtAfter(any())).thenReturn(List.of(report));
+
+        String responseBodyStr = mockMvc.perform(get("/tasks/processed-reports")
                 .header("Authorization", AUTH_HEADER))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
@@ -77,7 +85,7 @@ class TaskControllerTest {
             responseBodyStr, new TypeReference<List<PostedReportTaskResponse>>() {});
 
         assertThat(response).isNotNull().hasSize(1);
-        assertThat(response.getFirst()).isEqualTo(item);
+        assertThat(response.getFirst()).isEqualTo(PostedReportTaskResponse.fromReport(report));
     }
 
     @Test
@@ -96,7 +104,7 @@ class TaskControllerTest {
 
     @Test
     void shouldReturn401WhenMissingApiKey() throws Exception {
-        mockMvc.perform(get("/tasks/process-reports"))
+        mockMvc.perform(get("/tasks/processed-reports"))
             .andExpect(status().isUnauthorized());
     }
 
@@ -104,7 +112,7 @@ class TaskControllerTest {
     void shouldReturn401WhenInvalidApiKey() throws Exception {
         // Would normally expect a 403, but historically the api has been
         // written to throw an unauthorised in this situation.
-        mockMvc.perform(get("/tasks/process-reports")
+        mockMvc.perform(get("/tasks/processed-reports")
                 .header("Authorization", INVALID_AUTH_HEADER))
             .andExpect(status().isUnauthorized());
     }
