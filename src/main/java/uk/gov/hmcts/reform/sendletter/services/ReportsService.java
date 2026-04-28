@@ -92,7 +92,7 @@ public class ReportsService {
     ) {
         List<ServiceLettersReport> serviceLetters = repo.getServiceLettersReport(
             startDate.atStartOfDay(),
-            endDate.atTime(LocalTime.MAX)
+            endDate.plusDays(1).atStartOfDay()
         );
 
         Set<String> presentReports = reportRepository.findByReportDateBetween(startDate, endDate)
@@ -101,17 +101,19 @@ public class ReportsService {
             .collect(Collectors.toSet());
 
         return serviceLetters.stream()
-            .map(sl -> {
-                String service = sl.getService();
-                String reportCode = reportsServiceConfig.getReportCode(service, null);
-                if (reportCode == null && service != null && service.startsWith("sscs-")) {
-                    reportCode = "SSCS-" + service.substring(5).toUpperCase();
-                }
-                return new MissingReportsResponse(reportCode, sl.isInternational(), sl.getCreatedAt());
-            })
+            .map(this::toMissingReportsResponse)
             .filter(r -> r.serviceName != null
                 && !presentReports.contains(r.reportDate.toString() + r.serviceName + r.isInternational))
             .collect(Collectors.toList());
+    }
+
+    private MissingReportsResponse toMissingReportsResponse(ServiceLettersReport sl) {
+        String service = sl.getService();
+        String reportCode = reportsServiceConfig.getReportCode(service, null);
+        if (reportCode == null && service != null && service.startsWith("sscs-")) {
+            reportCode = "SSCS-" + service.substring(5).toUpperCase();
+        }
+        return new MissingReportsResponse(reportCode, sl.isInternational(), sl.getCreatedAt());
     }
 
     /**

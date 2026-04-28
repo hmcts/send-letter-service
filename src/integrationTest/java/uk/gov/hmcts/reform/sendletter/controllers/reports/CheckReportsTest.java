@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
 import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -138,5 +139,52 @@ class CheckReportsTest {
                 .param("endDate", endDate.toString()))
             // then
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_return_200_when_reports_are_present_for_letter() throws Exception {
+        // given
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 1);
+        Set<String> services = reportsServiceConfig.getServiceConfig().keySet();
+        String service = services.iterator().next();
+        String reportCode = reportsServiceConfig.getReportCode(service, new LetterStatus(
+            null,
+            uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created.name(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ));
+
+        letterRepository.save(new Letter(
+            UUID.randomUUID(),
+            "checksum",
+            service,
+            null,
+            "type",
+            new byte[1],
+            false,
+            null,
+            startDate.atStartOfDay(),
+            null
+        ));
+
+        reportRepository.save(Report.builder()
+            .reportName("Test " + reportCode + " Domestic")
+            .reportCode(reportCode)
+            .reportDate(startDate)
+            .isInternational(false)
+            .status(ReportStatus.SUCCESS)
+            .build());
+
+        // when
+        mvc.perform(get("/reports/check-reports")
+                .param("startDate", startDate.toString())
+                .param("endDate", endDate.toString()))
+            // then
+            .andExpect(status().isOk());
     }
 }
