@@ -69,6 +69,9 @@ public class DeleteOldLettersTask {
     @Value("${delete-old-letters.sscs-interval:3 months}")
     private String sscsInterval;
 
+    @Value("${delete-old-letters.pcs-interval:6 months}")
+    private String pcsInterval;
+
     // See V028__Add_batch_delete_letters_function.sql for sql function
     private final String deleteQuery = """
         SELECT batch_delete_letters(
@@ -85,6 +88,7 @@ public class DeleteOldLettersTask {
            CAST(? AS INTERVAL), -- probate_backend_interval
            CAST(? AS INTERVAL), -- send_letter_tests_interval
            CAST(? AS INTERVAL)  -- sscs_interval
+           CAST(? AS INTERVAL)  -- pcs_interval
          );
          """;
 
@@ -145,7 +149,8 @@ public class DeleteOldLettersTask {
                                 prlCosApiInterval,                // prl_cos_api_interval
                                 probateBackendInterval,           // probate_backend_interval
                                 sendLetterTestsInterval,          // send_letter_tests_interval
-                                sscsInterval                      // sscs_interval
+                                sscsInterval,                     // sscs_interval
+                                pcsInterval                       // pcs_interval
                             },
                             Integer.class
                         )

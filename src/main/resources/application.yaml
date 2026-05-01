@@ -239,4 +239,4 @@ delete-old-letters:
   probate-backend-interval: ${PROBATE_BACKEND_INTERVAL:1 year}
   send-letter-tests-interval: ${SEND_LETTER_TESTS_INTERVAL:2 years}
   sscs-interval: ${SSCS_INTERVAL:3 months}
-
+  pcs-interval: ${PCS_INTERVAL:6 months}
