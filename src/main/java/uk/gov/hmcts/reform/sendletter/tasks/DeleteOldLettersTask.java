@@ -87,7 +87,7 @@ public class DeleteOldLettersTask {
            CAST(? AS INTERVAL), -- prl_cos_api_interval
            CAST(? AS INTERVAL), -- probate_backend_interval
            CAST(? AS INTERVAL), -- send_letter_tests_interval
-           CAST(? AS INTERVAL)  -- sscs_interval
+           CAST(? AS INTERVAL), -- sscs_interval
            CAST(? AS INTERVAL)  -- pcs_interval
          );
          """;
