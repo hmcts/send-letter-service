@@ -113,6 +113,9 @@ reports:
     - service: civil_general_applications
       display-name: general_applications
       report-code: CMC
+    - service: pcs_api
+      display-name: PCS
+      report-code: PCS
   delayed-stale-report:
     cron: ${DELAYED_STALE_REPORT_CRON:0 0 13 * * *}
     enabled: ${DELAYED_STALE_REPORT_ENABLED:false}
@@ -161,6 +164,8 @@ ftp:
       folder: FPL
     - service: prl_cos_api
       folder: PRIVLAW
+    - service: pcs_api
+      folder: PCS
 
 scheduling:
   enabled: ${SCHEDULING_ENABLED:false}
@@ -234,5 +239,4 @@ delete-old-letters:
   probate-backend-interval: ${PROBATE_BACKEND_INTERVAL:1 year}
   send-letter-tests-interval: ${SEND_LETTER_TESTS_INTERVAL:2 years}
   sscs-interval: ${SSCS_INTERVAL:3 months}
-
-
+  pcs-interval: ${PCS_INTERVAL:6 months}
