@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.Report;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCount;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
@@ -196,7 +197,7 @@ class ReportsServiceTest {
     void should_return_empty_list_when_all_reports_exist() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportRepository.findByReportDateBetween(date, date))
+        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(
                 Arrays.asList(
                     Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build(),
@@ -230,7 +231,7 @@ class ReportsServiceTest {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
         // Only domestic report exists
-        given(reportRepository.findByReportDateBetween(date, date))
+        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(
                 List.of(Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build()));
 
@@ -262,7 +263,7 @@ class ReportsServiceTest {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
         // No reports in DB
-        given(reportRepository.findByReportDateBetween(date, date))
+        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(Collections.emptyList());
 
         // No letters sent
@@ -279,7 +280,7 @@ class ReportsServiceTest {
     void should_handle_sscs_special_cases() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportRepository.findByReportDateBetween(any(), any()))
+        given(reportRepository.findByStatusAndReportDateBetween(any(), any(), any()))
             .willReturn(Collections.emptyList());
 
         ServiceLettersReport sent1 = mock(ServiceLettersReport.class);

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
 import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
@@ -95,7 +96,8 @@ public class ReportsService {
             endDate.plusDays(1).atStartOfDay()
         );
 
-        Set<String> presentReports = reportRepository.findByReportDateBetween(startDate, endDate)
+        Set<String> presentReports =
+            reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, startDate, endDate)
             .stream()
             .map(r -> r.getReportDate() + r.getReportCode() + r.isInternational())
             .collect(Collectors.toSet());

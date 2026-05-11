@@ -26,13 +26,15 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     /**
      * Retrieves all reports within a specified date range.
      *
+     * @param status the report status
      * @param startDate the start date of the range
      * @param endDate the end date of the range
      *
      * @return a list of {@link Report} entities
      */
-    List<Report> findByReportDateBetween(LocalDate startDate, LocalDate endDate);
-  
+    List<Report> findByStatusAndReportDateBetween(
+        ReportStatus status, LocalDate startDate, LocalDate endDate);
+
     /**
      * Retrieves all reports processed after a specific timestamp.
      *
