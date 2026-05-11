@@ -97,7 +97,7 @@ public class ReportsService {
         );
 
         Set<String> presentReports =
-            reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, startDate, endDate)
+            reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, startDate, endDate)
             .stream()
             .map(r -> r.getReportDate() + r.getReportCode() + r.isInternational())
             .collect(Collectors.toSet());

@@ -32,7 +32,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
      *
      * @return a list of {@link Report} entities
      */
-    List<Report> findByStatusAndReportDateBetween(
+    List<Report> findAllByStatusAndReportDateBetween(
         ReportStatus status, LocalDate startDate, LocalDate endDate);
 
     /**

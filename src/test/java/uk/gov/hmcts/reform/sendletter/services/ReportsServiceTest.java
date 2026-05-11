@@ -197,7 +197,7 @@ class ReportsServiceTest {
     void should_return_empty_list_when_all_reports_exist() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
+        given(reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(
                 Arrays.asList(
                     Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build(),
@@ -231,7 +231,7 @@ class ReportsServiceTest {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
         // Only domestic report exists
-        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
+        given(reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(
                 List.of(Report.builder().reportCode("SERVICE_A").reportDate(date).isInternational(false).build()));
 
@@ -263,7 +263,7 @@ class ReportsServiceTest {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
         // No reports in DB
-        given(reportRepository.findByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
+        given(reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, date, date))
             .willReturn(Collections.emptyList());
 
         // No letters sent
@@ -280,7 +280,7 @@ class ReportsServiceTest {
     void should_handle_sscs_special_cases() {
         // given
         LocalDate date = LocalDate.of(2021, 1, 1);
-        given(reportRepository.findByStatusAndReportDateBetween(any(), any(), any()))
+        given(reportRepository.findAllByStatusAndReportDateBetween(any(), any(), any()))
             .willReturn(Collections.emptyList());
 
         ServiceLettersReport sent1 = mock(ServiceLettersReport.class);
