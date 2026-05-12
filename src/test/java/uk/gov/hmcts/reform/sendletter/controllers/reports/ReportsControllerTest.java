@@ -8,12 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.model.out.MissingReportsResponse;
 import uk.gov.hmcts.reform.sendletter.services.ReportsService;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 
 import static java.util.Collections.emptyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -84,5 +86,33 @@ class ReportsControllerTest {
         mockMvc
             .perform(get("/reports/count-summary?date=2019-05-26"))
             .andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    void should_return_200_when_no_reports_are_missing() throws Exception {
+        given(reportsService.checkReports(any(LocalDate.class), any(LocalDate.class)))
+            .willReturn(emptyList());
+
+        mockMvc
+            .perform(get("/reports/check-reports?startDate=2026-01-01&endDate=2026-01-07"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_404_with_missing_reports_list() throws Exception {
+        LocalDate date = LocalDate.of(2026, 1, 1);
+        given(reportsService.checkReports(any(LocalDate.class), any(LocalDate.class)))
+            .willReturn(Arrays.asList(
+                new MissingReportsResponse("SERVICE_A", false, date),
+                new MissingReportsResponse("SERVICE_A", true, date)
+            ));
+
+        mockMvc
+            .perform(get("/reports/check-reports?startDate=2026-01-01&endDate=2026-01-07"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().json("["
+                + "{\"service_name\":\"SERVICE_A\",\"is_international\":false,\"report_date\":\"2026-01-01\"},"
+                + "{\"service_name\":\"SERVICE_A\",\"is_international\":true,\"report_date\":\"2026-01-01\"}"
+                + "]"));
     }
 }

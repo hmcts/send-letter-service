@@ -4,13 +4,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
 import uk.gov.hmcts.reform.sendletter.entity.LettersCountSummaryRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
 import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
+import uk.gov.hmcts.reform.sendletter.model.out.MissingReportsResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -26,6 +32,8 @@ public class ReportsService {
 
     private final LettersCountSummaryRepository repo;
 
+    private final ReportRepository reportRepository;
+
     private final ReportsServiceConfig reportsServiceConfig;
 
     private final ZeroRowFiller zeroRowFiller;
@@ -38,6 +46,7 @@ public class ReportsService {
      * Constructor for the ReportsService.
      *
      * @param repo The repository for letters count summary
+     * @param reportRepository The repository for reports
      * @param reportsServiceConfig The configuration for reports service
      * @param zeroRowFiller The utility for filling zero rows
      * @param downtimeFromHour The downtime from hour
@@ -45,12 +54,14 @@ public class ReportsService {
      */
     public ReportsService(
         LettersCountSummaryRepository repo,
+        ReportRepository reportRepository,
         ReportsServiceConfig reportsServiceConfig,
         ZeroRowFiller zeroRowFiller,
         @Value("${ftp.downtime.from}") String downtimeFromHour,
         @Value("${ftp.downtime.to}") String downtimeToHour
     ) {
         this.repo = repo;
+        this.reportRepository = reportRepository;
         this.reportsServiceConfig = reportsServiceConfig;
         this.zeroRowFiller = zeroRowFiller;
         this.timeFromHour = downtimeToHour;
@@ -74,6 +85,37 @@ public class ReportsService {
                 summary -> isNotBlank(summary.serviceName) && !summary.serviceName.equals(TEST_SERVICE)
             ) //excludes nulls, empty values and test service
             .collect(toList());
+    }
+
+    public List<MissingReportsResponse> checkReports(
+        LocalDate startDate,
+        LocalDate endDate
+    ) {
+        List<ServiceLettersReport> serviceLetters = repo.getServiceLettersReport(
+            startDate.atStartOfDay(),
+            endDate.plusDays(1).atStartOfDay()
+        );
+
+        Set<String> presentReports =
+            reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, startDate, endDate)
+            .stream()
+            .map(r -> r.getReportDate() + r.getReportCode() + r.isInternational())
+            .collect(Collectors.toSet());
+
+        return serviceLetters.stream()
+            .map(this::toMissingReportsResponse)
+            .filter(r -> r.serviceName != null
+                && !presentReports.contains(r.reportDate.toString() + r.serviceName + r.isInternational))
+            .collect(Collectors.toList());
+    }
+
+    private MissingReportsResponse toMissingReportsResponse(ServiceLettersReport sl) {
+        String service = sl.getService();
+        String reportCode = reportsServiceConfig.getReportCode(service, null);
+        if (reportCode == null && service != null && service.startsWith("sscs-")) {
+            reportCode = "SSCS-" + service.substring(5).toUpperCase();
+        }
+        return new MissingReportsResponse(reportCode, sl.isInternational(), sl.getCreatedAt());
     }
 
     /**

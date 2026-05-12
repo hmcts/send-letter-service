@@ -1,0 +1,190 @@
+package uk.gov.hmcts.reform.sendletter.controllers.reports;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.sendletter.config.ReportsServiceConfig;
+import uk.gov.hmcts.reform.sendletter.entity.Letter;
+import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
+import uk.gov.hmcts.reform.sendletter.entity.Report;
+import uk.gov.hmcts.reform.sendletter.entity.ReportRepository;
+import uk.gov.hmcts.reform.sendletter.entity.ReportStatus;
+import uk.gov.hmcts.reform.sendletter.model.out.LetterStatus;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@AutoConfigureMockMvc
+@SpringBootTest
+class CheckReportsTest {
+
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private ReportRepository reportRepository;
+
+    @Autowired
+    private LetterRepository letterRepository;
+
+    @Autowired
+    private ReportsServiceConfig reportsServiceConfig;
+
+    @MockitoBean
+    private AuthTokenValidator tokenValidator;
+
+    @AfterEach
+    void tearDown() {
+        reportRepository.deleteAll();
+        letterRepository.deleteAll();
+    }
+
+    @Test
+    void should_return_200_when_all_reports_are_present() throws Exception {
+        // given
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 7);
+        Set<String> reportCodes = reportsServiceConfig.getReportCodes();
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            for (String code : reportCodes) {
+                reportRepository.save(Report.builder()
+                    .reportName("Test " + code + " Domestic")
+                    .reportCode(code)
+                    .reportDate(date)
+                    .isInternational(false)
+                    .status(ReportStatus.SUCCESS)
+                    .build());
+                reportRepository.save(Report.builder()
+                    .reportName("Test " + code + " International")
+                    .reportCode(code)
+                    .reportDate(date)
+                    .isInternational(true)
+                    .status(ReportStatus.SUCCESS)
+                    .build());
+            }
+        }
+
+        // when
+        mvc.perform(get("/reports/check-reports")
+                .param("startDate", startDate.toString())
+                .param("endDate", endDate.toString()))
+            // then
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_200_when_parameters_are_missing_and_reports_exist_for_last_week() throws Exception {
+        // given
+        Set<String> reportCodes = reportsServiceConfig.getReportCodes();
+
+        for (String code : reportCodes) {
+            for (int day = 1; day <= 7; day++) {
+                reportRepository.save(Report.builder()
+                    .reportName("Test " + code + " Domestic")
+                    .reportCode(code)
+                    .reportDate(LocalDate.now().minusDays(day))
+                    .isInternational(false)
+                    .status(ReportStatus.SUCCESS)
+                    .build());
+                reportRepository.save(Report.builder()
+                    .reportName("Test " + code + " International")
+                    .reportCode(code)
+                    .reportDate(LocalDate.now().minusDays(day))
+                    .isInternational(true)
+                    .status(ReportStatus.SUCCESS)
+                    .build());
+            }
+        }
+
+        // when
+        mvc.perform(get("/reports/check-reports"))
+            // then
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_404_when_reports_are_missing() throws Exception {
+        // given
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 1);
+        Set<String> services = reportsServiceConfig.getServiceConfig().keySet();
+        String service = services.iterator().next(); // Use the first service
+
+        letterRepository.save(new Letter(
+            UUID.randomUUID(),
+            "checksum",
+            service,
+            null,
+            "type",
+            new byte[1],
+            false,
+            null,
+            startDate.atStartOfDay(),
+            null
+        ));
+
+        // when
+        mvc.perform(get("/reports/check-reports")
+                .param("startDate", startDate.toString())
+                .param("endDate", endDate.toString()))
+            // then
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_return_200_when_reports_are_present_for_letter() throws Exception {
+        // given
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 1);
+        Set<String> services = reportsServiceConfig.getServiceConfig().keySet();
+        String service = services.iterator().next();
+        String reportCode = reportsServiceConfig.getReportCode(service, new LetterStatus(
+            null,
+            uk.gov.hmcts.reform.sendletter.entity.LetterStatus.Created.name(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ));
+
+        letterRepository.save(new Letter(
+            UUID.randomUUID(),
+            "checksum",
+            service,
+            null,
+            "type",
+            new byte[1],
+            false,
+            null,
+            startDate.atStartOfDay(),
+            null
+        ));
+
+        reportRepository.save(Report.builder()
+            .reportName("Test " + reportCode + " Domestic")
+            .reportCode(reportCode)
+            .reportDate(startDate)
+            .isInternational(false)
+            .status(ReportStatus.SUCCESS)
+            .build());
+
+        // when
+        mvc.perform(get("/reports/check-reports")
+                .param("startDate", startDate.toString())
+                .param("endDate", endDate.toString()))
+            // then
+            .andExpect(status().isOk());
+    }
+}
