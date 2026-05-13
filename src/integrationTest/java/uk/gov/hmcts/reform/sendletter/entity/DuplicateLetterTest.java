@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class DuplicateLetterTest {
     }
 
     @Test
-    void should_Save_Duplicate() throws JsonProcessingException {
+    void should_Save_Duplicate() throws JacksonException {
         UUID uuid = UUID.randomUUID();
         DuplicateLetter duplicateLetter = new DuplicateLetter(uuid,
                 "checksum",
@@ -66,7 +66,7 @@ public class DuplicateLetterTest {
 
 
     @Test
-    void should_Save_Duplicate_Default_Contructor() throws JsonProcessingException {
+    void should_Save_Duplicate_Default_Contructor() throws JacksonException {
         UUID uuid = UUID.randomUUID();
         DuplicateLetter duplicateLetter = new DuplicateLetter();
         duplicateLetter.setId(uuid);

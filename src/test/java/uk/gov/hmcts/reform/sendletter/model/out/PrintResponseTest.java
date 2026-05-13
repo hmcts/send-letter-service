@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.sendletter.model.out;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 
@@ -27,7 +26,6 @@ class PrintResponseTest {
         String json = Resources.toString(getResource("print_job_response.json"), UTF_8);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
 
         PrintResponse printResponse = objectMapper.readValue(json, PrintResponse.class);
 

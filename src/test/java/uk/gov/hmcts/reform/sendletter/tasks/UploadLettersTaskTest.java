@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.sendletter.tasks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.schmizz.sshj.sftp.SFTPClient;
 import nl.altindag.log.LogCaptor;
 import nl.altindag.log.model.LogEvent;
@@ -12,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.entity.LetterRepository;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;

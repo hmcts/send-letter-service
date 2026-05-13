@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ class PrintRepositoryTest {
     }
 
     @Test
-    void should_create_new_record_when_saved() throws JsonProcessingException {
+    void should_create_new_record_when_saved() throws JacksonException {
         UUID uuid = UUID.randomUUID();
         String idempotencyKey = md5DigestAsHex(serialize(uuid));
 
@@ -81,7 +81,7 @@ class PrintRepositoryTest {
     }
 
     @Test
-    void should_update_sendToPrint_printAt_failed_status_when_saved() throws JsonProcessingException {
+    void should_update_sendToPrint_printAt_failed_status_when_saved() throws JacksonException {
         UUID uuid = UUID.randomUUID();
         String idempotencyKey = md5DigestAsHex(serialize(uuid));
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -132,7 +132,7 @@ class PrintRepositoryTest {
             .isTrue();
     }
 
-    private JsonNode getDocuments() throws JsonProcessingException {
+    private JsonNode getDocuments() throws JacksonException {
         return objectMapper.readTree(
             "[{\n"
                 + "\"file_name\": \"mypdf.pdf\",\n"
@@ -148,7 +148,7 @@ class PrintRepositoryTest {
     private Print getPrintEntity(UUID uuid,
                                  String idempotencyKey,
                                  LocalDateTime currentDateTime)
-        throws JsonProcessingException {
+        throws JacksonException {
         return SampleData.printEntity(
             uuid,
             "sscs",

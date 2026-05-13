@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.sendletter;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.entity.Print;
 import uk.gov.hmcts.reform.sendletter.model.LetterPrintStatus;
 import uk.gov.hmcts.reform.sendletter.model.ParsedReport;
@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -107,23 +106,19 @@ public final class SampleData {
         Map<String, Integer> copies,
         Supplier<String> checkSum
     ) {
+        return new uk.gov.hmcts.reform.sendletter.entity.Letter(
+            UUID.randomUUID(),
+            checkSum.get(),
+            service,
+            objectMapper.readTree("{}"),
+            type,
+            new byte[1],
+            false,
+            fingerprint,
+            createdAt,
+            objectMapper.valueToTree(copies)
+        );
 
-        try {
-            return new uk.gov.hmcts.reform.sendletter.entity.Letter(
-                UUID.randomUUID(),
-                checkSum.get(),
-                service,
-                objectMapper.readTree("{}"),
-                type,
-                new byte[1],
-                false,
-                fingerprint,
-                createdAt,
-                objectMapper.valueToTree(copies)
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntity(
@@ -136,22 +131,19 @@ public final class SampleData {
         Map<String, Object> additionalData
     ) {
 
-        try {
-            return new uk.gov.hmcts.reform.sendletter.entity.Letter(
-                UUID.randomUUID(),
-                checkSum.get(),
-                service,
-                objectMapper.readTree(objectMapper.writeValueAsString(additionalData)),
-                type,
-                new byte[1],
-                false,
-                fingerprint,
-                createdAt,
-                objectMapper.valueToTree(copies)
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new uk.gov.hmcts.reform.sendletter.entity.Letter(
+            UUID.randomUUID(),
+            checkSum.get(),
+            service,
+            objectMapper.readTree(objectMapper.writeValueAsString(additionalData)),
+            type,
+            new byte[1],
+            false,
+            fingerprint,
+            createdAt,
+            objectMapper.valueToTree(copies)
+        );
+
     }
 
     public static uk.gov.hmcts.reform.sendletter.entity.Letter letterEntityWithRecipients(

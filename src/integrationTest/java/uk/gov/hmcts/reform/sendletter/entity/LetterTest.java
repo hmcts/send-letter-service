@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.sendletter.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ class LetterTest {
     }
 
     @Test
-    void should_successfully_save_report_in_db() throws JsonProcessingException {
+    void should_successfully_save_report_in_db() throws JacksonException {
         repository.save(SampleData.letterEntity("a.service"));
         List<Letter> letters = Lists.newArrayList(repository.findAll());
         assertThat(letters.size()).isEqualTo(1);

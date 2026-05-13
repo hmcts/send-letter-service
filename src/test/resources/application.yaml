@@ -2,5 +2,5 @@ spring:
   application:
     name: Send Letter Provider
   jackson:
-    serialization:
+    SerializationFeature:
       write_dates_as_timestamps: false
