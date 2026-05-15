@@ -302,4 +302,43 @@ class ReportsServiceTest {
         assertThat(result).hasSize(2);
         assertThat(result).extracting("serviceName").containsExactlyInAnyOrder("SSCS-IB", "SSCS-REFORM");
     }
+
+    @Test
+    void should_exclude_weekend_days_from_check_reports() {
+        // given
+        LocalDate friday = LocalDate.of(2026, 5, 1);
+        LocalDate saturday = LocalDate.of(2026, 5, 2);
+        LocalDate sunday = LocalDate.of(2026, 5, 3);
+        LocalDate monday = LocalDate.of(2026, 5, 4);
+
+        given(reportRepository.findAllByStatusAndReportDateBetween(any(), any(), any()))
+            .willReturn(Collections.emptyList());
+
+        ServiceLettersReport sentFriday = mock(ServiceLettersReport.class);
+        given(sentFriday.getService()).willReturn("service1");
+        given(sentFriday.getCreatedAt()).willReturn(friday);
+
+        ServiceLettersReport sentSaturday = mock(ServiceLettersReport.class);
+        given(sentSaturday.getCreatedAt()).willReturn(saturday);
+
+        ServiceLettersReport sentSunday = mock(ServiceLettersReport.class);
+        given(sentSunday.getCreatedAt()).willReturn(sunday);
+
+        ServiceLettersReport sentMonday = mock(ServiceLettersReport.class);
+        given(sentMonday.getService()).willReturn("service2");
+        given(sentMonday.getCreatedAt()).willReturn(monday);
+
+        given(repository.getServiceLettersReport(any(), any()))
+            .willReturn(List.of(sentFriday, sentSaturday, sentSunday, sentMonday));
+
+        given(reportsServiceConfig.getReportCode(eq("service1"), any())).willReturn("SERVICE_1");
+        given(reportsServiceConfig.getReportCode(eq("service2"), any())).willReturn("SERVICE_2");
+
+        // when
+        List<MissingReportsResponse> result = service.checkReports(friday, monday);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("serviceName").containsExactlyInAnyOrder("SERVICE_1", "SERVICE_2");
+    }
 }

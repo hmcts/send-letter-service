@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.sendletter.entity.reports.ServiceLettersReport;
 import uk.gov.hmcts.reform.sendletter.model.out.LettersCountSummary;
 import uk.gov.hmcts.reform.sendletter.model.out.MissingReportsResponse;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -93,8 +94,12 @@ public class ReportsService {
     ) {
         List<ServiceLettersReport> serviceLetters = repo.getServiceLettersReport(
             startDate.atStartOfDay(),
-            endDate.plusDays(1).atStartOfDay()
-        );
+            endDate.plusDays(1).atStartOfDay())
+            .stream()
+            .filter(sl ->
+                sl.getCreatedAt().getDayOfWeek() != DayOfWeek.SATURDAY
+                && sl.getCreatedAt().getDayOfWeek() != DayOfWeek.SUNDAY)
+            .toList();
 
         Set<String> presentReports =
             reportRepository.findAllByStatusAndReportDateBetween(ReportStatus.SUCCESS, startDate, endDate)
