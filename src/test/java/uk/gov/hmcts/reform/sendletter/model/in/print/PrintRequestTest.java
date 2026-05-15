@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.model.in.print;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.model.Document;
 import uk.gov.hmcts.reform.sendletter.model.in.PrintRequest;
 

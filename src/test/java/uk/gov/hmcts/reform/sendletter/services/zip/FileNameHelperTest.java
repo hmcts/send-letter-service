@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.sendletter.services.zip;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
 import uk.gov.hmcts.reform.sendletter.services.util.FileNameHelper;

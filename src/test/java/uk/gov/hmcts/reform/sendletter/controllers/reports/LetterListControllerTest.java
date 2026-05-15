@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.sendletter.controllers.reports;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.sendletter.entity.BasicLetterInfo;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LetterListController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class LetterListControllerTest {
 
     @Autowired MockMvc mockMvc;
@@ -62,7 +64,7 @@ class LetterListControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(
                 "{"
-                    + "'count': 2,"
+                    + "\"count\": 2,"
                     + "'letters': ["
                     + "  {"
                     + "    'id': '9b9c019d-78e7-479d-afc6-a7b5b585c47e',"
@@ -83,8 +85,7 @@ class LetterListControllerTest {
                     + "    'printed_at': null"
                     + "  }"
                     + "]"
-                    + "}",
-                true
+                    + "}"
                 )
             );
     }

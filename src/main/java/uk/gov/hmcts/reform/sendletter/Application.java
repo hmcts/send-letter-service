@@ -8,7 +8,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 /**
  * The main application class.
  */
-@SpringBootApplication
+@SpringBootApplication(
+    exclude = {uk.gov.hmcts.reform.authorisation.ServiceAuthAutoConfiguration.class}
+)
 @EnableHystrix
 @EnableAsync
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class

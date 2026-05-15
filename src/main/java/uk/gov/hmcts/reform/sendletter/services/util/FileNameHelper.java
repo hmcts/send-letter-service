@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.sendletter.services.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.FilenameUtils;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.sendletter.entity.Letter;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToExtractIdFromFileNameException;
 
