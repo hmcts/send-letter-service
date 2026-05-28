@@ -4,12 +4,6 @@ locals {
   db_name      = "send_letter"
 }
 
-data "azurerm_user_assigned_identity" "jenkins_cftptl_intsvc" {
-  provider            = azurerm.cftptl_intsvc
-  name                = "jenkins-cftptl-intsvc-mi"
-  resource_group_name = "managed-identities-cftptl-intsvc-rg"
-}
-
 module "postgresql" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
@@ -32,8 +26,7 @@ module "postgresql" {
   pgsql_version = "15"
   subnet_suffix = "expanded"
 
-  admin_user_object_id          = var.jenkins_AAD_objectId
-  existing_admin_user_object_id = data.azurerm_user_assigned_identity.jenkins_cftptl_intsvc.principal_id
+  admin_user_object_id = var.jenkins_AAD_objectId
 
   # Force user permissions
   force_user_permissions_trigger = "1"

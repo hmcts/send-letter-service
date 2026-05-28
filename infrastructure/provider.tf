@@ -19,12 +19,6 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  alias           = "cftptl_intsvc"
-  subscription_id = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
-}
-
-provider "azurerm" {
-  features {}
   alias           = "aks_perftest_mgmt"
   subscription_id = "7a4e3bd5-ae3a-4d0c-b441-2188fee3ff1c"
 }
