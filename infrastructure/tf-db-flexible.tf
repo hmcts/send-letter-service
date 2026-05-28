@@ -9,7 +9,7 @@ module "postgresql" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   name                 = local.db_host_name
   product              = "send-letter"
   component            = var.component
@@ -26,7 +26,8 @@ module "postgresql" {
   pgsql_version = "15"
   subnet_suffix = "expanded"
 
-  admin_user_object_id = var.jenkins_AAD_objectId
+  admin_user_object_id          = var.jenkins_AAD_objectId
+  existing_admin_user_object_id = "ca6d5085-485a-417d-8480-c3cefa29df31" # jenkins-cftptl-intsvc-mi
 
   # Force user permissions
   force_user_permissions_trigger = "1"
