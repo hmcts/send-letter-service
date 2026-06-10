@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.sendletter.services;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
+import net.schmizz.sshj.sftp.Response.StatusCode;
 import net.schmizz.sshj.sftp.SFTPClient;
+import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
+import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalSourceFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.sendletter.config.RetryConfig;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterFileNotFoundException;
 import uk.gov.hmcts.reform.sendletter.model.Report;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FileToSend;
 import uk.gov.hmcts.reform.sendletter.services.ftp.FtpClient;
@@ -35,6 +39,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.doNothing;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -87,6 +92,81 @@ class FtpClientTest {
 
         // then
         assertThat(exception).isInstanceOf(FtpException.class);
+    }
+
+    @Test
+    void should_download_file_from_ftp() throws IOException {
+        // given
+        String path = "target/cmc/letter.zip";
+        byte[] content = "letter-content".getBytes();
+        given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
+        doAnswer(invocation -> {
+            LocalDestFile destination = invocation.getArgument(1);
+            destination.getOutputStream().write(content);
+            return null;
+        }).when(sftpFileTransfer).download(eq(path), any(LocalDestFile.class));
+
+        // when
+        byte[] downloadedFile = client.downloadFile(path);
+
+        // then
+        assertThat(downloadedFile).isEqualTo(content);
+    }
+
+    @Test
+    void should_throw_letter_file_not_found_when_download_file_is_missing() throws IOException {
+        // given
+        String path = "target/cmc/missing-letter.zip";
+        given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
+        willThrow(new SFTPException(StatusCode.NO_SUCH_FILE, "No such file"))
+            .given(sftpFileTransfer).download(eq(path), any(LocalDestFile.class));
+
+        // when
+        Throwable exception = catchThrowable(() -> client.downloadFile(path));
+
+        // then
+        assertThat(exception)
+            .isInstanceOf(LetterFileNotFoundException.class)
+            .hasMessage("File '" + path + "' was not found on SFTP");
+    }
+
+    @Test
+    void should_throw_letter_file_not_found_when_download_path_is_missing() throws IOException {
+        // given
+        String path = "target/missing-folder/letter.zip";
+        given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
+        willThrow(new SFTPException(StatusCode.NO_SUCH_PATH, "No such path"))
+            .given(sftpFileTransfer).download(eq(path), any(LocalDestFile.class));
+
+        // when
+        Throwable exception = catchThrowable(() -> client.downloadFile(path));
+
+        // then
+        assertThat(exception)
+            .isInstanceOf(LetterFileNotFoundException.class)
+            .hasMessage("File '" + path + "' was not found on SFTP");
+    }
+
+    @Test
+    void should_throw_ftp_exception_when_download_file_fails() throws IOException {
+        // given
+        String path = "target/cmc/letter.zip";
+        IOException cause = new IOException("Connection closed");
+        given(sshClient.newSFTPClient()).willReturn(sftpClient);
+        given(sftpClient.getFileTransfer()).willReturn(sftpFileTransfer);
+        willThrow(cause).given(sftpFileTransfer).download(eq(path), any(LocalDestFile.class));
+
+        // when
+        Throwable exception = catchThrowable(() -> client.downloadFile(path));
+
+        // then
+        assertThat(exception)
+            .isInstanceOf(FtpException.class)
+            .hasMessage("Unable to download file " + path)
+            .hasCause(cause);
     }
 
     @Test
