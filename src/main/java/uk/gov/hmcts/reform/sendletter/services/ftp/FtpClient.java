@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.sendletter.services.ftp;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
+import net.schmizz.sshj.sftp.Response.StatusCode;
 import net.schmizz.sshj.sftp.SFTPClient;
+import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.sftp.SFTPFileTransfer;
 import net.schmizz.sshj.userauth.UserAuthException;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.sendletter.config.FtpConfigProperties;
 import uk.gov.hmcts.reform.sendletter.exception.FtpException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterFileNotFoundException;
 import uk.gov.hmcts.reform.sendletter.logging.Dependency;
 import uk.gov.hmcts.reform.sendletter.model.InMemoryDownloadedFile;
 import uk.gov.hmcts.reform.sendletter.model.Report;
@@ -148,6 +151,32 @@ public class FtpClient {
                 return reports;
             } catch (IOException exc) {
                 throw new FtpException("Error while downloading reports", exc);
+            }
+        });
+    }
+
+    /**
+     * Downloads a file from the FTP server.
+     * @param path The remote path to download
+     * @return The file content
+     */
+    public byte[] downloadFile(String path) {
+        logger.info("Downloading file '{}' from SFTP server", path);
+
+        return runWith(sftp -> {
+            try {
+                InMemoryDownloadedFile inMemoryFile = new InMemoryDownloadedFile();
+                sftp.getFileTransfer().download(path, inMemoryFile);
+                logger.info("Downloaded file '{}' from SFTP server", path);
+                return inMemoryFile.getBytes();
+            } catch (SFTPException exception) {
+                if (StatusCode.NO_SUCH_FILE.equals(exception.getStatusCode())
+                    || StatusCode.NO_SUCH_PATH.equals(exception.getStatusCode())) {
+                    throw new LetterFileNotFoundException(path);
+                }
+                throw new FtpException("Unable to download file " + path, exception);
+            } catch (IOException exception) {
+                throw new FtpException("Unable to download file " + path, exception);
             }
         });
     }
