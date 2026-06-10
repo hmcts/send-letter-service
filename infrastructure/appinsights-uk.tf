@@ -6,6 +6,7 @@ module "application_insights_uk" {
   override_name       = "${var.component}-${var.env}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
+  sampling_percentage = 100
 
   common_tags = var.common_tags
 }
