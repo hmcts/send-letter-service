@@ -19,10 +19,12 @@ import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
 import uk.gov.hmcts.reform.sendletter.exception.FtpDownloadException;
 import uk.gov.hmcts.reform.sendletter.exception.InvalidApiKeyException;
+import uk.gov.hmcts.reform.sendletter.exception.LetterFileNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterNotStaleException;
 import uk.gov.hmcts.reform.sendletter.exception.LetterSaveException;
 import uk.gov.hmcts.reform.sendletter.exception.ServiceNotConfiguredException;
+import uk.gov.hmcts.reform.sendletter.exception.TestingSupportLetterNotFoundException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToAbortLetterException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToGenerateSasTokenException;
 import uk.gov.hmcts.reform.sendletter.exception.UnableToMarkLetterPostedException;
@@ -116,6 +118,32 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Void> handleLetterNotFoundException(LetterNotFoundException exc) {
         log.warn(exc.getMessage(), exc);
         return status(NOT_FOUND).build();
+    }
+
+    /**
+     * Handles TestingSupportLetterNotFoundException.
+     *
+     * @param exc TestingSupportLetterNotFoundException
+     * @return ResponseEntity
+     */
+    @ExceptionHandler(TestingSupportLetterNotFoundException.class)
+    protected ResponseEntity<String> handleTestingSupportLetterNotFoundException(
+        TestingSupportLetterNotFoundException exc
+    ) {
+        log.warn(exc.getMessage(), exc);
+        return status(NOT_FOUND).body(exc.getMessage());
+    }
+
+    /**
+     * Handles LetterFileNotFoundException.
+     *
+     * @param exc LetterFileNotFoundException
+     * @return ResponseEntity
+     */
+    @ExceptionHandler(LetterFileNotFoundException.class)
+    protected ResponseEntity<String> handleLetterFileNotFoundException(LetterFileNotFoundException exc) {
+        log.warn(exc.getMessage(), exc);
+        return status(NOT_FOUND).body(exc.getMessage());
     }
 
     /**
