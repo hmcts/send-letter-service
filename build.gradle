@@ -202,7 +202,7 @@ repositories {
 
 def versions = [
   bouncycastle: '1.84',
-  reformLogging: '6.1.9',
+  reformLogging: '8.0.0',
   springfoxSwagger: '2.9.2',
   service_auth: '5.3.3',
   pdfbox: '3.0.7',
