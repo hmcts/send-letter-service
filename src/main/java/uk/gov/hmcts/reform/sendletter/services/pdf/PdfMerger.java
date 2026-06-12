@@ -38,11 +38,11 @@ public final class PdfMerger {
         }
 
         try {
-            return mergeDocuments(documents, loggingContext, false);
+            return mergeDocuments(documents, false);
         } catch (IOException e) {
             try {
                 log.warn("Error while merging documents, attempting optimised merge", e);
-                return mergeDocuments(documents, loggingContext, true);
+                return mergeDocuments(documents, true);
             } catch (IOException e1) {
                 log.warn("Optimised merge failed, throwing original exception");
                 throw new PdfMergeException("Exception occurred while merging PDF files." + loggingContext, e);
@@ -50,7 +50,7 @@ public final class PdfMerger {
         }
     }
 
-    private static byte[] mergeDocuments(List<byte[]> documents, String loggingContext, boolean optimizeResourcesMode)
+    private static byte[] mergeDocuments(List<byte[]> documents, boolean optimizeResourcesMode)
         throws IOException {
         ByteArrayOutputStream docOutputStream = new ByteArrayOutputStream();
 

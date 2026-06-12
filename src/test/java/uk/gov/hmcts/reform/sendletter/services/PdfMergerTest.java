@@ -60,7 +60,7 @@ class PdfMergerTest {
             // the struct tree PDF doesn't have a page we'll just check that page 0 is
             // the same as page 0 of the second PDF
             InputStream actualPdfPage1 = getPdfPageContents(actualMergedPdf, 0);
-            InputStream expectedPdfPage1 = getPdfPageContents(test2Pdf, 0);
+            InputStream expectedPdfPage1 = getPdfPageContents(test2Pdf, 0)
         ) {
             assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
         }
