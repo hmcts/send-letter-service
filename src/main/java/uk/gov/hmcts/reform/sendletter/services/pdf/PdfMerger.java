@@ -38,6 +38,7 @@ public final class PdfMerger {
         }
 
         try {
+            log.info("Merging {} PDFs using default mode", documents.size());
             return mergeDocuments(documents, false);
         } catch (IOException e) {
             try {
