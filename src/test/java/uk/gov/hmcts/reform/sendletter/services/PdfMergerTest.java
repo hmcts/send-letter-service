@@ -67,6 +67,31 @@ class PdfMergerTest {
     }
 
     @Test
+    void should_still_create_a_merged_pdf_when_source_pdfs_are_structurally_broken() throws Exception {
+
+        // this test is essentially the same as the above test, but using a provided PDF
+
+        //given
+        byte[] test1Pdf = loadResource("fact-2683_bad_doc.pdf");
+        byte[] test2Pdf = loadResource("test2.pdf");
+
+        //when
+        byte[] actualMergedPdf = PdfMerger.mergeDocuments(asList(test1Pdf, test2Pdf), "test_service");
+
+        // then
+        try (
+            InputStream actualPdfPage1 = getPdfPageContents(actualMergedPdf, 0);
+            InputStream actualPdfPage2 = getPdfPageContents(actualMergedPdf, 1);
+
+            InputStream expectedPdfPage1 = getPdfPageContents(test1Pdf, 0);
+            InputStream expectedPdfPage2 = getPdfPageContents(test2Pdf, 0)
+        ) {
+            assertThat(actualPdfPage1).hasSameContentAs(expectedPdfPage1);
+            assertThat(actualPdfPage2).hasSameContentAs(expectedPdfPage2);
+        }
+    }
+
+    @Test
     void should_return_a_merged_pdf_same_as_original_pdf_when_single_pdf_is_sent() throws Exception {
         //given
         byte[] testPdf = loadResource("test1.pdf");
