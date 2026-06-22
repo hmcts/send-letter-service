@@ -97,8 +97,8 @@ public class ReportsService {
             endDate.plusDays(1).atStartOfDay())
             .stream()
             .filter(sl ->
-                sl.getCreatedAt().getDayOfWeek() != DayOfWeek.SATURDAY
-                && sl.getCreatedAt().getDayOfWeek() != DayOfWeek.SUNDAY)
+                !DayOfWeek.SATURDAY.equals(sl.getCreatedAt().getDayOfWeek())
+                && !DayOfWeek.SUNDAY.equals(sl.getCreatedAt().getDayOfWeek()))
             .toList();
 
         Set<String> presentReports =
