@@ -203,7 +203,7 @@ repositories {
 def versions = [
   bouncycastle: '1.84',
   springfoxSwagger: '2.9.2',
-  service_auth: '5.3.3',
+  service_auth: '5.3.4',
   pdfbox: '3.0.7',
   flyway: "$flywayVersion",
   postgresql: "$postgresqlVersion"
