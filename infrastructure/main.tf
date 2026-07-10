@@ -21,7 +21,7 @@ module "send-letter-key-vault" {
   common_tags                          = var.common_tags
   create_managed_identity              = true
   additional_managed_identities_access = ["rpe-shared", "bulk-scan"]
-  grant_preview_jenkins_access = var.env == "aat"
+  grant_preview_jenkins_access         = var.env == "aat"
 }
 
 data "azurerm_user_assigned_identity" "jenkins" {
