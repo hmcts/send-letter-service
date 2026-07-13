@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "rg" {
 
 # region save DB details to Azure Key Vault
 module "send-letter-key-vault" {
-  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source              = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
   name                = "${var.product}-send-letter-${var.env}"
   product             = var.product
   env                 = var.env
@@ -21,6 +21,7 @@ module "send-letter-key-vault" {
   common_tags                          = var.common_tags
   create_managed_identity              = true
   additional_managed_identities_access = ["rpe-shared", "bulk-scan"]
+  grant_preview_jenkins_access         = var.env == "aat"
 }
 
 data "azurerm_user_assigned_identity" "jenkins" {
