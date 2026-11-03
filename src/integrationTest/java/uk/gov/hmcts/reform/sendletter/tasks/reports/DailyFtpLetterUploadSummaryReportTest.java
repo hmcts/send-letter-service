@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.sendletter.tasks.reports;
 import com.google.common.collect.ImmutableMap;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.sendletter.services.FtpFileSummaryService;
 
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class DailyFtpLetterUploadSummaryReportTest {
 
-    @Mock
+    @MockitoBean
     private FtpFileSummaryService ftpFileSummaryService;
 
     @Value("${reports.ftp-uploaded-letters-summary.recipients}")
