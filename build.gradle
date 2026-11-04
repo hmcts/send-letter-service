@@ -279,6 +279,8 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-webmvc-test'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa-test'
+  testImplementation group: 'com.eatthepath', name: 'java-otp', version: '0.4.0'
+  testImplementation group: 'commons-codec', name: 'commons-codec'
   testImplementation group: 'com.icegreen', name: 'greenmail', version: '2.1.15'
   testImplementation 'org.apache.commons:commons-email2-jakarta:2.0.0-M1'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: versions.pdfbox
