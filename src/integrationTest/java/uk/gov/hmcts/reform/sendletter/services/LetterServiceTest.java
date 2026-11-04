@@ -9,10 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import uk.gov.hmcts.reform.sendletter.PdfHelper;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.entity.DuplicateLetter;
@@ -57,8 +56,7 @@ class LetterServiceTest {
     @Autowired
     private LetterEventRepository letterEventRepository;
 
-    @Mock
-    private DocumentService documentService;
+    private DocumentService documentService = mock(DocumentService.class);
 
     @BeforeEach
     void setUp() {

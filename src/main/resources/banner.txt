@@ -1,4 +1,7 @@
-
-┌─┐┌─┐┌┐┌┌┬┐   ┬  ┌─┐┌┬┐┌┬┐┌─┐┬─┐
-└─┐├┤ │││ ││───│  ├┤  │  │ ├┤ ├┬┘
-└─┘└─┘┘└┘─┴┘   ┴─┘└─┘ ┴  ┴ └─┘┴└─
+${AnsiColor.GREEN}
+▞▀▖▛▀▘▙ ▌▛▀▖   ▌  ▛▀▘▀▛▘▀▛▘▛▀▘▛▀▖
+▚▄ ▙▄ ▌▌▌▌ ▌▄▄▖▌  ▙▄  ▌  ▌ ▙▄ ▙▄▘
+▖ ▌▌  ▌▝▌▌ ▌   ▌  ▌   ▌  ▌ ▌  ▌▚
+▝▀ ▀▀▘▘ ▘▀▀    ▀▀▘▀▀▘ ▘  ▘ ▀▀▘▘ ▘
+${spring.application.name}
+${AnsiColor.BLUE}Spring Boot Version: ${spring-boot.version} ${AnsiColor.DEFAULT}

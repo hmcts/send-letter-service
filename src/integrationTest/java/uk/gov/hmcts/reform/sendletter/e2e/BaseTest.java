@@ -8,11 +8,13 @@ import com.microsoft.applicationinsights.telemetry.TelemetryContext;
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.DirtiesContext;
@@ -59,6 +61,7 @@ import static uk.gov.hmcts.reform.sendletter.logging.DependencyType.FTP;
 
 
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 @ComponentScan(basePackages = "...", lazyInit = true)
 @ContextConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

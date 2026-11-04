@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.sendletter;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.schmizz.sshj.SSHClient;
@@ -20,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.sendletter.util.TotpHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,7 +43,7 @@ import java.util.zip.ZipInputStream;
 
 import static com.google.common.io.Resources.getResource;
 import static com.google.common.io.Resources.toByteArray;
-import static org.apache.commons.lang.time.DateUtils.addSeconds;
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.util.DateUtil.now;
@@ -103,7 +103,7 @@ abstract class FunctionalTestSuite {
     String signIn() {
         Map<String, Object> params = ImmutableMap.of(
             "microservice", this.s2sName,
-            "oneTimePassword", new GoogleAuthenticator().getTotpPassword(this.s2sSecret)
+            "oneTimePassword", TotpHelper.generate(this.s2sSecret)
         );
 
         Response response = RestAssured

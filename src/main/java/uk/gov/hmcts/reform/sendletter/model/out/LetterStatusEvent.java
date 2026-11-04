@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.model.out;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.ZonedDateTime;
@@ -13,6 +14,7 @@ public class LetterStatusEvent {
     public final String notes;
 
     @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime createdAt;
 
     /**

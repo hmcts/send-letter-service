@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplexException;
 import uk.gov.hmcts.reform.sendletter.exception.DuplicateDocumentException;
@@ -151,7 +152,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
      *
      * @return ResponseEntity
      */
-    @ExceptionHandler(JsonProcessingException.class)
+    @ExceptionHandler({JsonProcessingException.class, JacksonException.class})
     protected ResponseEntity<String> handleJsonProcessingException() {
         return status(BAD_REQUEST).body("Exception occurred while parsing letter contents");
     }

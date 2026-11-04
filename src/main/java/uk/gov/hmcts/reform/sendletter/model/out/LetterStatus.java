@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.model.out;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,12 +26,15 @@ public class LetterStatus {
     public final String checksum;
 
     @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime createdAt;
 
     @JsonProperty("sent_to_print_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime sentToPrintAt;
 
     @JsonProperty("printed_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime printedAt;
 
     @Schema(description = "Additional information about the letter")
