@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.sendletter.model.out;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import uk.gov.hmcts.reform.sendletter.entity.PrintStatus;
@@ -19,12 +20,15 @@ public class PrintJob implements Serializable {
     public final UUID id;
 
     @JsonProperty("created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime createdAt;
 
     @JsonProperty("printed_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime printedAt;
 
     @JsonProperty("sent_to_print_at")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     public final ZonedDateTime sentToPrintAt;
 
     public final String service;

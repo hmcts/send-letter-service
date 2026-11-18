@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.sendletter.services.AuthService;
 import uk.gov.hmcts.reform.sendletter.services.LetterService;
 
 import static java.lang.String.join;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,11 +43,18 @@ class SendLetterWithPdfsAndCopiesControllerTest {
     void should_call_service(String async) throws Exception {
         given(authService.authenticate(anyString())).willReturn("some_service_name");
 
-        // when
-        sendLetter(getLetterJson("controller/letter/v3/valid_letter.json"), async);
+        String requestJson = getLetterJson("controller/letter/v3/valid_letter.json")
+            .replace("\"type\":", "\"future_field\":\"ignored\",\"type\":");
+        sendLetter(requestJson, async);
 
-        // then
-        verify(letterService).save(any(LetterWithPdfsAndNumberOfCopiesRequest.class), anyString(), eq(async));
+        ArgumentCaptor<LetterWithPdfsAndNumberOfCopiesRequest> request =
+            ArgumentCaptor.forClass(LetterWithPdfsAndNumberOfCopiesRequest.class);
+        verify(letterService).save(request.capture(), anyString(), eq(async));
+        assertThat(request.getValue().documents).extracting(document -> document.copies).containsExactly(1, 10);
+        assertThat(request.getValue().documents).extracting(document -> new String(document.content))
+            .containsExactly("hello", "world");
+        assertThat(request.getValue().additionalData).containsEntry("recipients", java.util.List.of(
+            "Joe Bloggins", "Jessica Jelly"));
     }
 
     @ParameterizedTest
