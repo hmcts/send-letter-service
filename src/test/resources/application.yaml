@@ -1,6 +1,3 @@
 spring:
   application:
     name: Send Letter Provider
-  jackson:
-    serialization:
-      write_dates_as_timestamps: false

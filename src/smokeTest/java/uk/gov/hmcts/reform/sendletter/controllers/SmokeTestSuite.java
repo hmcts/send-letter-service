@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.sendletter.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.sendletter.util.TotpHelper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -42,7 +42,7 @@ class SmokeTestSuite {
     String signIn() {
         Map<String, Object> params = ImmutableMap.of(
             "microservice", this.s2sName,
-            "oneTimePassword", new GoogleAuthenticator().getTotpPassword(this.s2sSecret)
+            "oneTimePassword", TotpHelper.generate(this.s2sSecret)
         );
 
         var response = RestAssured

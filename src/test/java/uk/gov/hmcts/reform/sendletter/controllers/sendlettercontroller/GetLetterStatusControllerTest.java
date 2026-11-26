@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.sendletter.controllers.sendlettercontroller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -84,6 +84,35 @@ class GetLetterStatusControllerTest {
                     + "\"printed_at\":\"2000-02-12T01:02:03.123Z\","
                     + "\"copies\":null"
                     + "}"
+            ));
+    }
+
+    @Test
+    void should_preserve_json_contract_for_non_utc_status_and_additional_data() throws Exception {
+        ZonedDateTime parisTime = ZonedDateTime.of(
+            2000, 2, 12, 1, 2, 3, 123_000_000, ZoneId.of("Europe/Paris")
+        );
+        Map<String, Object> additionalData = Map.of("recipients", asList("caller-a", "caller-b"));
+        LetterStatus statusWithAdditionalData = new LetterStatus(
+            letterStatus.id, "Created", "some-message-id", parisTime, parisTime, parisTime, additionalData, null
+        );
+        given(service.getStatus(letterStatus.id, "false", "false")).willReturn(statusWithAdditionalData);
+
+        getLetter(letterStatus.id, "false", "false")
+            .andExpect(status().isOk())
+            .andExpect(content().json(
+                "{"
+                    + "\"id\":\"" + letterStatus.id + "\","
+                    + "\"status\":\"Created\","
+                    + "\"message_id\":\"some-message-id\","
+                    + "\"checksum\":\"some-message-id\","
+                    + "\"created_at\":\"2000-02-12T00:02:03.123Z\","
+                    + "\"sent_to_print_at\":\"2000-02-12T00:02:03.123Z\","
+                    + "\"printed_at\":\"2000-02-12T00:02:03.123Z\","
+                    + "\"additional_data\":{\"recipients\":[\"caller-a\",\"caller-b\"]},"
+                    + "\"copies\":null"
+                    + "}",
+                true
             ));
     }
 
