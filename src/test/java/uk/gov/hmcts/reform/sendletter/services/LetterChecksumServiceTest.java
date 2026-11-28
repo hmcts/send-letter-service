@@ -1,7 +1,17 @@
 package uk.gov.hmcts.reform.sendletter.services;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDFormContentStream;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.sendletter.SampleData;
 import uk.gov.hmcts.reform.sendletter.model.in.Doc;
 import uk.gov.hmcts.reform.sendletter.model.in.Document;
@@ -9,6 +19,10 @@ import uk.gov.hmcts.reform.sendletter.model.in.LetterRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsAndNumberOfCopiesRequest;
 import uk.gov.hmcts.reform.sendletter.model.in.LetterWithPdfsRequest;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
@@ -18,6 +32,58 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LetterChecksumServiceTest {
 
     private final LetterChecksumService letterChecksumService = new LetterChecksumService();
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void distinguishes_different_photos_but_matches_a_regenerated_copy(boolean inForm) throws IOException {
+        byte[] red = photoPdf(Color.RED, "first submission", inForm);
+        byte[] blue = photoPdf(Color.BLUE, "first submission", inForm);
+        byte[] retry = photoPdf(Color.RED, "regenerated copy", inForm);
+
+        assertThat(retry).isNotEqualTo(red);
+        assertThat(letterChecksumService.calculateContentChecksum(red))
+            .isNotEqualTo(letterChecksumService.calculateContentChecksum(blue))
+            .isEqualTo(letterChecksumService.calculateContentChecksum(retry));
+    }
+
+    @Test
+    void retains_the_stored_checksum_for_a_pdf_without_xobjects() throws IOException {
+        try (PDDocument pdf = new PDDocument()) {
+            pdf.addPage(new PDPage());
+            var bytes = new ByteArrayOutputStream();
+            pdf.save(bytes);
+            // The legacy key for an empty page is MD5 of its empty content stream.
+            assertThat(letterChecksumService.calculateContentChecksum(bytes.toByteArray()))
+                .isEqualTo("d41d8cd98f00b204e9800998ecf8427e");
+        }
+    }
+
+    private static byte[] photoPdf(Color colour, String title, boolean inForm) throws IOException {
+        try (PDDocument pdf = new PDDocument()) {
+            pdf.getDocumentInformation().setTitle(title);
+            PDPage page = new PDPage();
+            pdf.addPage(page);
+            var pixels = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+            pixels.setRGB(0, 0, colour.getRGB());
+            var photo = LosslessFactory.createFromImage(pdf, pixels);
+            try (var contents = new PDPageContentStream(pdf, page)) {
+                if (inForm) {
+                    var form = new PDFormXObject(pdf);
+                    form.setBBox(PDRectangle.A4);
+                    form.setResources(new PDResources());
+                    try (var nested = new PDFormContentStream(form)) {
+                        nested.drawImage(photo, 20, 20, 100, 100);
+                    }
+                    contents.drawForm(form);
+                } else {
+                    contents.drawImage(photo, 20, 20, 100, 100);
+                }
+            }
+            var bytes = new ByteArrayOutputStream();
+            pdf.save(bytes);
+            return bytes.toByteArray();
+        }
+    }
 
     @Test
     void should_return_same_md5_checksum_hex_for_same_letter_document_objects_version_3() throws Exception {
